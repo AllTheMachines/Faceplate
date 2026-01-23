@@ -1,11 +1,13 @@
 import { useRef, useEffect, useState } from 'react'
 import { useStore } from '../../store'
-import { usePan, useZoom, useKeyboardShortcuts } from './hooks'
+import { usePan, useZoom, useKeyboardShortcuts, useMarquee } from './hooks'
 import { Element } from '../elements'
 import { SelectionOverlay } from './SelectionOverlay'
+import { MarqueeSelection } from './MarqueeSelection'
 
 export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
+  const canvasBackgroundRef = useRef<HTMLDivElement>(null)
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 })
 
   // Get viewport state from store
@@ -30,6 +32,9 @@ export function Canvas() {
   // Use pan and zoom hooks
   const { handlers: panHandlers } = usePan(viewportRef)
   useZoom(viewportRef)
+
+  // Use marquee selection
+  const { marqueeRect, handlers: marqueeHandlers } = useMarquee(canvasBackgroundRef)
 
   // Use keyboard shortcuts
   useKeyboardShortcuts()
@@ -94,6 +99,7 @@ export function Canvas() {
         >
           {/* Canvas background (the actual canvas area) */}
           <div
+            ref={canvasBackgroundRef}
             className="canvas-background"
             style={{
               width: `${canvasWidth}px`,
@@ -103,6 +109,10 @@ export function Canvas() {
               ...getBackgroundStyle(),
             }}
             onClick={clearSelection}
+            onMouseDown={marqueeHandlers.onMouseDown}
+            onMouseMove={marqueeHandlers.onMouseMove}
+            onMouseUp={marqueeHandlers.onMouseUp}
+            onMouseLeave={marqueeHandlers.onMouseLeave}
           >
             {/* Elements render here */}
             {elements.map((element) => (
@@ -113,6 +123,11 @@ export function Canvas() {
             {selectedIds.map((id) => (
               <SelectionOverlay key={`selection-${id}`} elementId={id} />
             ))}
+
+            {/* Marquee selection rectangle (only show after 5px threshold) */}
+            {marqueeRect && marqueeRect.width > 5 && marqueeRect.height > 5 && (
+              <MarqueeSelection rect={marqueeRect} />
+            )}
           </div>
         </div>
       </div>

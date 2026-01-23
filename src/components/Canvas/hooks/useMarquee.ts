@@ -15,6 +15,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   const elements = useStore((state) => state.elements)
   const selectMultiple = useStore((state) => state.selectMultiple)
   const clearSelection = useStore((state) => state.clearSelection)
+  const isPanning = useStore((state) => state.isPanning)
   const scale = useStore((state) => state.scale)
   const offsetX = useStore((state) => state.offsetX)
   const offsetY = useStore((state) => state.offsetY)
@@ -40,8 +41,8 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      // Only start marquee on left click
-      if (e.button !== 0) return
+      // Only start marquee on left click, and not during pan mode
+      if (e.button !== 0 || isPanning) return
 
       const { x, y } = screenToCanvas(e.clientX, e.clientY)
       setMarquee({
@@ -52,7 +53,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
         currentY: y,
       })
     },
-    [screenToCanvas]
+    [screenToCanvas, isPanning]
   )
 
   const handleMouseMove = useCallback(
