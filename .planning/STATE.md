@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 1 of 8 (Foundation)
-Plan: Ready to plan
-Status: Ready to plan
-Last activity: 2026-01-23 — Roadmap revised: Element Library moved to Phase 2
+Plan: 1 of 1 complete
+Status: Phase 1 complete
+Last activity: 2026-01-23 — Completed 01-01-PLAN.md
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 12.5% (1/8 phases)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: N/A
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 5.5 min
+- Total execution time: 0.09 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-foundation | 1/1 | 5.5 min | 5.5 min |
 
 **Recent Trend:**
-- No plans completed yet
-- Trend: N/A
+- 01-01: 5.5 min (foundation infrastructure)
+- Trend: Phase 1 complete
 
 *Updated after each plan completion*
 
@@ -47,6 +47,9 @@ Recent decisions affecting current work:
 - **Undo architecture**: Must use command pattern or Zustand temporal middleware (zundo), not naive snapshots
 - **Coordinate systems**: Typed coordinate utilities required in Phase 1 to prevent mixing screen/canvas/element spaces
 - **Phase ordering**: Element Library moved to Phase 2 (from Phase 8) to enable testing with real elements from Phase 3 onward
+- **React-konva version** (01-01): Explicitly use react-konva@18.x for React 18 compatibility, not v19
+- **Viewport undo exclusion** (01-01): Viewport state (scale, offset, panning) excluded from undo history - camera position should not be undoable
+- **Dark mode strategy** (01-01): Use Tailwind manual dark mode (class strategy) for explicit control rather than system preference
 
 ### Pending Todos
 
@@ -54,10 +57,10 @@ None yet.
 
 ### Blockers/Concerns
 
-**Phase 1:**
-- Need to add react-konva to stack (not currently in package.json)
-- Coordinate transform utilities are critical—must test at multiple zoom levels
-- SVG vs hybrid rendering decision needed (start with pure SVG, optimize later if profiling shows bottleneck)
+**Phase 1:** ✅ Complete
+- ✅ react-konva@18 added and verified
+- ✅ Coordinate transform utilities implemented with branded types
+- SVG vs hybrid rendering decision deferred to Phase 3 (Canvas Basics)
 
 **Phase 2 (Element Library):**
 - Element implementations need property interfaces from docs/SPECIFICATION.md
@@ -70,6 +73,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-23 (roadmap revision)
-Stopped at: Phase order updated per user feedback (Element Library → Phase 2)
+Last session: 2026-01-23T18:47:59Z (plan execution)
+Stopped at: Completed 01-01-PLAN.md - Phase 1 Foundation complete
 Resume file: None
+Next: Phase 2 Element Library (create plan)
