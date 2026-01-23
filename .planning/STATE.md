@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 3 of 8 (Selection & History)
-Plan: 3 of 4 in phase
-Status: In progress
-Last activity: 2026-01-23 — Completed 03-03-PLAN.md (Click-to-select functionality)
+Plan: 4 of 4 in phase
+Status: Phase complete
+Last activity: 2026-01-23 — Completed 03-04-PLAN.md (Marquee selection)
 
-Progress: [███░░░░░░░] 36% (2 phases complete, Phase 3 in progress: 3/4 plans)
+Progress: [███░░░░░░░] 38% (2 phases complete, Phase 3 complete: 4/4 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: 3.23 min
-- Total execution time: 0.54 hours
+- Total plans completed: 11
+- Average duration: 3.16 min
+- Total execution time: 0.58 hours
 
 **By Phase:**
 
@@ -29,7 +29,7 @@ Progress: [███░░░░░░░] 36% (2 phases complete, Phase 3 in pr
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 9.5 min | 3.17 min |
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
-| 03-selection-history | 3/4 | 6.27 min | 2.09 min |
+| 03-selection-history | 4/4 | 9.29 min | 2.32 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -42,7 +42,8 @@ Progress: [███░░░░░░░] 36% (2 phases complete, Phase 3 in pr
 - 03-01: 2 min (selection state foundation)
 - 03-02: 2.82 min (selection overlay + keyboard shortcuts)
 - 03-03: 1.45 min (click-to-select functionality)
-- Trend: Exceptionally fast velocity in Phase 3 (~1.5-2 min per plan)
+- 03-04: 3.02 min (marquee selection)
+- Trend: Consistent fast velocity in Phase 3 (~2-3 min per plan)
 
 *Updated after each plan completion*
 
@@ -91,6 +92,9 @@ Recent decisions affecting current work:
 - **Event propagation pattern** (03-03): Elements stopPropagation to prevent canvas background click
 - **BaseElement onClick** (03-03): BaseElement accepts onClick prop and forwards to wrapper div
 - **Modifier key selection** (03-03): Shift+click adds, Ctrl/Cmd+click toggles element selection
+- **Marquee conflict prevention** (03-04): Marquee disabled during pan mode (isPanning check) to prevent interaction conflicts
+- **Screen-to-canvas transform** (03-04): (screen - offset) / scale reverses viewport transforms for correct coordinate space
+- **Marquee threshold** (03-04): 5px minimum drag distance before showing marquee to avoid accidental activation on clicks
 
 ### Pending Todos
 
@@ -125,7 +129,7 @@ Recent decisions affecting current work:
 - ✅ Demo elements showcase all types on startup
 - react-konva kept in package.json as fallback (remove in Phase 8 if unused)
 
-**Phase 3 (Selection & History):** IN PROGRESS (3/4 plans)
+**Phase 3 (Selection & History):** COMPLETE (4/4 plans)
 - ✅ Selection state foundation complete (Plan 01)
 - ✅ Selection actions: selectElement, toggleSelection, addToSelection, clearSelection, selectMultiple
 - ✅ AABB intersection utility for marquee selection
@@ -137,7 +141,12 @@ Recent decisions affecting current work:
 - ✅ Click element to select, Shift+click to add, Ctrl/Cmd+click to toggle
 - ✅ Background click clears selection
 - ✅ Event propagation pattern established
-- Next: Plan 04 (undo/redo history implementation)
+- ✅ Marquee selection complete (Plan 04)
+- ✅ useMarquee hook with screen-to-canvas coordinate transformation
+- ✅ MarqueeSelection visual component with dashed blue rectangle
+- ✅ Real-time selection updates during drag using AABB intersection
+- ✅ Pan mode conflict prevention (marquee disabled when spacebar held)
+- Next: Phase 4 (Drag & Drop)
 
 **Phase 8 (Code Export):**
 - JUCE WebView2 API integration needs deeper research during planning
@@ -145,7 +154,7 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-01-23 21:12 UTC (phase execution)
-Stopped at: Completed 03-03-PLAN.md (Click-to-select functionality)
+Last session: 2026-01-23 21:13 UTC (phase execution)
+Stopped at: Completed 03-04-PLAN.md (Marquee selection) - Phase 3 COMPLETE
 Resume file: None
-Next: Proceed to 03-04-PLAN.md (Undo/redo history implementation)
+Next: Proceed to Phase 4 (Drag & Drop)
