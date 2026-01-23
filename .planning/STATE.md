@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 5 of 8 (Properties & Transform)
-Plan: 2 of 7 in phase complete
+Plan: 4 of 7 in phase complete
 Status: Phase 5 in progress
-Last activity: 2026-01-23 — Completed 05-03-PLAN.md (Interactive resize handles)
+Last activity: 2026-01-23 — Completed 05-05-PLAN.md (Keyboard nudge & snap-to-grid)
 
-Progress: [█████░░░░░] 52% (17/33 total plans complete)
+Progress: [█████░░░░░] 58% (19/33 total plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 3.06 min
-- Total execution time: 0.87 hours
+- Total plans completed: 19
+- Average duration: 3.02 min
+- Total execution time: 0.96 hours
 
 **By Phase:**
 
@@ -31,7 +31,7 @@ Progress: [█████░░░░░] 52% (17/33 total plans complete)
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
 | 03-selection-history | 4/4 | 9.29 min | 2.32 min |
 | 04-palette-element-creation | 6/6 | 15.76 min | 2.63 min |
-| 05-properties-transform | 2/7 | 5 min | 2.5 min |
+| 05-properties-transform | 4/7 | 11.5 min | 2.88 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -53,7 +53,9 @@ Progress: [█████░░░░░] 52% (17/33 total plans complete)
 - 04-06: 1.17 min (viewport-centered SVG import - gap closure)
 - 05-01: 2 min (property input components)
 - 05-03: 3 min (interactive resize handles)
-- Trend: Phase 5 at 2.5 min average per plan (2 of 7 complete)
+- 05-04: 3 min (property panel with type-specific editors)
+- 05-05: 3.5 min (keyboard nudge & snap-to-grid)
+- Trend: Phase 5 at 2.88 min average per plan (4 of 7 complete)
 
 *Updated after each plan completion*
 
@@ -129,6 +131,13 @@ Recent decisions affecting current work:
 - **Scale-aware resize transform** (05-03): Mouse deltas divided by viewport scale to convert screen space to canvas space for accurate resizing at any zoom
 - **Minimum size constraint** (05-03): 20px minimum enforced for all resize operations to prevent elements from becoming unusable
 - **Pointer events for handles** (05-03): Parent overlay uses pointerEvents: 'none', individual handles use pointerEvents: 'auto' for selective interactivity
+- **Type-specific property routing** (05-04): PropertyPanel uses type guards to route to correct property component for each element type
+- **Multi-selection placeholder** (05-04): Multi-selection shows "Multiple elements selected" message - multi-edit deferred to Phase 6
+- **Property organization** (05-04): Properties grouped by category (Position & Size, Identity, Value, Style, etc.) using PropertySection component
+- **Snap-only-on-finalize pattern** (05-05): Snap-to-grid applies only on drag/resize finalization (mouseup/dragend), not during movement for smooth UX
+- **Input focus detection** (05-05): isTypingInInput() checks document.activeElement to prevent arrow key nudge while typing in property fields
+- **Arrow key nudge distances** (05-05): Arrow keys move 1px, Shift+Arrow moves 10px for precision + speed control
+- **Default grid size** (05-05): 10px grid for snap-to-grid (configurable in store, displayed in UI)
 
 ### Pending Todos
 
@@ -212,7 +221,7 @@ Recent decisions affecting current work:
   - Eliminates hardcoded (100, 100) position
   - Works correctly with all zoom/pan states
 
-**Phase 5 (Properties & Transform):** IN PROGRESS (2/7 plans)
+**Phase 5 (Properties & Transform):** IN PROGRESS (4/7 plans)
 - ✅ Property input components (Plan 01)
   - react-colorful@5.6.1 installed for lightweight color picker
   - NumberInput with controlled input, min/max clamping on blur, NaN handling
@@ -228,7 +237,21 @@ Recent decisions affecting current work:
   - ResizeHandle sub-component with proper cursor feedback (nwse, nesw, ns, ew)
   - pointerEvents: 'auto' on handles for selective interactivity
   - All 8 handles (4 corners + 4 edges) connected to mouse events
-- Next: Snap-to-grid and element dragging
+- ✅ Property panel with type-specific editors (Plan 04)
+  - PropertyPanel component routes to type-specific property editors
+  - Type-specific property components for all 6 element types
+  - Multi-selection placeholder message
+  - Properties organized by category using PropertySection
+- ✅ Keyboard nudge & snap-to-grid (Plan 05)
+  - useElementNudge hook with arrow key handlers
+  - Arrow keys nudge 1px, Shift+Arrow nudges 10px
+  - Input focus detection prevents conflicts with property editing
+  - snapToGrid state in canvasSlice (default: off, 10px grid)
+  - Snap toggle in RightPanel Canvas Settings
+  - Drag finalization applies snap when enabled
+  - Resize finalization applies snap when enabled
+  - Smooth movement during drag/resize (snap only on release)
+- Next: Continue Phase 5 (remaining 3 plans)
 
 **Phase 8 (Code Export):**
 - JUCE WebView2 API integration needs deeper research during planning
@@ -236,7 +259,7 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-01-23 22:42 UTC (phase execution)
-Stopped at: Completed 05-03-PLAN.md (Interactive resize handles)
+Last session: 2026-01-23 22:50 UTC (phase execution)
+Stopped at: Completed 05-05-PLAN.md (Keyboard nudge & snap-to-grid)
 Resume file: None
-Next: Continue Phase 5 (Snap-to-grid and element dragging)
+Next: Continue Phase 5 (remaining plans)
