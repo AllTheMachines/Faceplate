@@ -4,9 +4,10 @@ import { ElementConfig } from '../../types/elements'
 interface BaseElementProps {
   element: ElementConfig
   children: React.ReactNode
+  onClick?: (e: React.MouseEvent) => void
 }
 
-export function BaseElement({ element, children }: BaseElementProps) {
+export function BaseElement({ element, children, onClick }: BaseElementProps) {
   const style = React.useMemo(
     () => ({
       position: 'absolute' as const,
@@ -18,6 +19,8 @@ export function BaseElement({ element, children }: BaseElementProps) {
       zIndex: element.zIndex,
       visibility: element.visible ? ('visible' as const) : ('hidden' as const),
       pointerEvents: element.locked ? ('none' as const) : ('auto' as const),
+      cursor: element.locked ? 'default' : 'pointer',
+      userSelect: 'none' as const,
     }),
     [
       element.x,
@@ -32,7 +35,7 @@ export function BaseElement({ element, children }: BaseElementProps) {
   )
 
   return (
-    <div data-element-id={element.id} style={style}>
+    <div data-element-id={element.id} style={style} onClick={onClick}>
       {children}
     </div>
   )
