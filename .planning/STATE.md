@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Phase 5 complete - Ready for Phase 6
+**Current focus:** Phase 6 in progress (Alignment & Polish)
 
 ## Current Position
 
-Phase: 5 of 8 (Properties & Transform)
-Plan: 5 of 5 in phase complete
-Status: Phase 5 complete
-Last activity: 2026-01-23 — Phase 5 verification passed (8/8 must-haves)
+Phase: 6 of 8 (Alignment & Polish)
+Plan: 2 of 2 in phase complete
+Status: Phase 6 complete
+Last activity: 2026-01-23 — Completed 06-02-PLAN.md (help panel with keyboard shortcuts)
 
-Progress: [██████░░░░] 63% (21/33 total plans complete)
+Progress: [███████░░░] 70% (23/33 total plans complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
-- Average duration: 2.98 min
-- Total execution time: 1.04 hours
+- Total plans completed: 23
+- Average duration: 2.85 min
+- Total execution time: 1.09 hours
 
 **By Phase:**
 
@@ -32,6 +32,7 @@ Progress: [██████░░░░] 63% (21/33 total plans complete)
 | 03-selection-history | 4/4 | 9.29 min | 2.32 min |
 | 04-palette-element-creation | 6/6 | 15.76 min | 2.63 min |
 | 05-properties-transform | 5/5 | 13.5 min | 2.7 min |
+| 06-alignment-polish | 2/2 | 3.5 min | 1.75 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -56,7 +57,9 @@ Progress: [██████░░░░] 63% (21/33 total plans complete)
 - 05-04: 3 min (property panel with type-specific editors)
 - 05-05: 3.5 min (keyboard nudge & snap-to-grid)
 - 05-02: 2 min (element dragging on canvas)
-- Trend: Phase 5 complete at 2.7 min average per plan (5/5)
+- 06-01: 2 min (copy/paste with Ctrl+C/Ctrl+V)
+- 06-02: 1.5 min (help panel with keyboard shortcuts)
+- Trend: Phase 6 complete at 1.75 min average per plan (2/2)
 
 *Updated after each plan completion*
 
@@ -139,6 +142,12 @@ Recent decisions affecting current work:
 - **Input focus detection** (05-05): isTypingInInput() checks document.activeElement to prevent arrow key nudge while typing in property fields
 - **Arrow key nudge distances** (05-05): Arrow keys move 1px, Shift+Arrow moves 10px for precision + speed control
 - **Default grid size** (05-05): 10px grid for snap-to-grid (configurable in store, displayed in UI)
+- **In-memory clipboard** (06-01): Copy/paste uses React ref for clipboard storage (no system clipboard access needed)
+- **Paste offset** (06-01): Pasted elements offset by (20, 20) pixels to avoid overlapping originals
+- **Unique IDs on paste** (06-01): Pasted elements get new UUIDs via crypto.randomUUID()
+- **Data-driven help panel** (06-02): Shortcut categories as data array for easy maintenance
+- **Collapsible help panel** (06-02): Expanded by default, collapsible to save space
+- **Ctrl/Cmd modifier display** (06-02): Show "Ctrl/Cmd" for cross-platform modifier key notation
 
 ### Pending Todos
 
@@ -248,7 +257,19 @@ Recent decisions affecting current work:
   - Input focus detection prevents conflicts
   - snapToGrid state and toggle in RightPanel
   - Snap applies on drag/resize finalization
-- Next: Proceed to Phase 6 (Alignment & Polish)
+
+**Phase 6 (Alignment & Polish):** COMPLETE (2/2 plans)
+- ✅ Copy/paste functionality (Plan 01)
+  - useCopyPaste hook with Ctrl+C/Ctrl+V shortcuts
+  - In-memory clipboard storage via React ref
+  - Pasted elements offset by (20, 20) pixels
+  - New UUIDs generated for pasted elements
+- ✅ Keyboard shortcuts help panel (Plan 02)
+  - HelpPanel component with all shortcuts by category
+  - 5 categories: Selection, Edit, Z-Order, Transform, View
+  - Cross-platform modifier key display (Ctrl/Cmd)
+  - Collapsible panel integrated into RightPanel
+- Next: Proceed to Phase 7 (Save/Load)
 
 **Phase 8 (Code Export):**
 - JUCE WebView2 API integration needs deeper research during planning
@@ -257,6 +278,6 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-01-23 (phase execution)
-Stopped at: Phase 5 complete - verification passed (8/8 must-haves)
+Stopped at: Phase 6 complete - 06-02-PLAN.md (help panel)
 Resume file: None
-Next: Proceed to Phase 6 (Alignment & Polish)
+Next: Proceed to Phase 7 (Save/Load)
