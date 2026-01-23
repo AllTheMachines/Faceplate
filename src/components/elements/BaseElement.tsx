@@ -1,5 +1,7 @@
 import React from 'react'
+import { useDraggable } from '@dnd-kit/core'
 import { ElementConfig } from '../../types/elements'
+import { useStore } from '../../store'
 
 interface BaseElementProps {
   element: ElementConfig
@@ -8,6 +10,27 @@ interface BaseElementProps {
 }
 
 export function BaseElement({ element, children, onClick }: BaseElementProps) {
+  // Check if element is selected
+  const selectedIds = useStore((state) => state.selectedIds)
+  const isSelected = selectedIds.includes(element.id)
+
+  // Enable dragging for selected, unlocked elements
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `element-${element.id}`,
+    data: {
+      sourceType: 'element',
+      element,
+    },
+    disabled: !isSelected || element.locked,
+  })
+
+  // Apply drag transform for live preview
+  const dragStyle = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+      }
+    : undefined
+
   const style = React.useMemo(
     () => ({
       position: 'absolute' as const,
@@ -19,8 +42,9 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       zIndex: element.zIndex,
       visibility: element.visible ? ('visible' as const) : ('hidden' as const),
       pointerEvents: element.locked ? ('none' as const) : ('auto' as const),
-      cursor: element.locked ? 'default' : 'pointer',
+      cursor: isDragging ? 'grabbing' : element.locked ? 'default' : isSelected ? 'grab' : 'pointer',
       userSelect: 'none' as const,
+      ...dragStyle,
     }),
     [
       element.x,
@@ -31,11 +55,21 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       element.zIndex,
       element.visible,
       element.locked,
+      isSelected,
+      isDragging,
+      dragStyle,
     ]
   )
 
   return (
-    <div data-element-id={element.id} style={style} onClick={onClick}>
+    <div
+      ref={setNodeRef}
+      data-element-id={element.id}
+      style={style}
+      onClick={onClick}
+      {...listeners}
+      {...attributes}
+    >
       {children}
     </div>
   )
