@@ -20,8 +20,8 @@ Progress: [████░░░░░░] 50% (4/8 phases complete)
 
 **Velocity:**
 - Total plans completed: 16
-- Average duration: 3.21 min
-- Total execution time: 0.86 hours
+- Average duration: 3.06 min
+- Total execution time: 0.82 hours
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [████░░░░░░] 50% (4/8 phases complete)
 | 01-foundation | 3/3 | 9.5 min | 3.17 min |
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
 | 03-selection-history | 4/4 | 9.29 min | 2.32 min |
-| 04-palette-element-creation | 6/6 | 17.26 min | 2.88 min |
+| 04-palette-element-creation | 6/6 | 15.76 min | 2.63 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -48,9 +48,9 @@ Progress: [████░░░░░░] 50% (4/8 phases complete)
 - 04-02: 5 min (drag-drop to canvas with coordinate transform)
 - 04-03: 3.7 min (z-order management)
 - 04-04: 3.36 min (custom SVG import with layer detection)
-- 04-05: ~3.5 min (palette element size alignment - gap closure)
+- 04-05: 2 min (element type mismatch fix - gap closure)
 - 04-06: 1.17 min (viewport-centered SVG import - gap closure)
-- Trend: Phase 4 complete at 2.88 min average per plan
+- Trend: Phase 4 complete at 2.63 min average per plan
 
 *Updated after each plan completion*
 
@@ -117,6 +117,8 @@ Recent decisions affecting current work:
 - **Droppable target boundary** (04-02): Droppable on canvas-background (not viewport) rejects drops outside canvas bounds
 - **Coordinate transform for drag-drop** (04-02): (finalX - viewportRect.left - offsetX) / scale handles zoom and pan for correct element placement
 - **Viewport-centered SVG placement** (04-06): Imported SVGs placed at viewport center using (screenCenter - offset) / scale coordinate transform
+- **Base type + variant pattern** (04-05): Palette items use base types (knob, slider, button) with variant objects for configuration (style, orientation, mode)
+- **Variant merging in factories** (04-05): Element factory calls spread variant to override defaults: { ...baseOverrides, ...variant }
 
 ### Pending Todos
 
@@ -191,9 +193,10 @@ Recent decisions affecting current work:
   - SVG parsing utility with layer detection (indicator, thumb, track, fill, glow)
   - CustomSVGUpload component with drag-drop, preview, and layer listing
   - SVG files added to canvas as image elements with data URL
-- ✅ Gap closure: Palette element size alignment (Plan 05)
-  - DEFAULT_SIZES constant ensures palette elements match canvas rendering
-  - Consistent visual feedback prevents size surprises on drop
+- ✅ Gap closure: Element type mismatch fix (Plan 05)
+  - All 9 palette items normalized to base types with variant objects
+  - Arc Knob, V/H Slider, Momentary/Toggle, Meter now successfully create elements on drop
+  - Base type + variant pattern established: elementType is base type, variant carries configuration
 - ✅ Gap closure: Viewport-centered SVG import (Plan 06)
   - Imported SVGs placed at viewport center using screen-to-canvas transform
   - Eliminates hardcoded (100, 100) position
@@ -206,7 +209,7 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-01-23 22:12 UTC (phase execution)
-Stopped at: Completed 04-06-PLAN.md (Viewport-centered SVG import) - Phase 4 complete with gap closures
+Last session: 2026-01-23 22:13 UTC (phase execution)
+Stopped at: Completed 04-05-PLAN.md (Element type mismatch fix) - Phase 4 complete with gap closures
 Resume file: None
 Next: Proceed to Phase 5 (Property Panel)
