@@ -8,21 +8,21 @@ const paletteCategories = [
     name: 'Rotary Controls',
     items: [
       { id: 'knob-standard', type: 'knob', name: 'Knob' },
-      { id: 'knob-arc', type: 'knob-arc', name: 'Arc Knob' },
+      { id: 'knob-arc', type: 'knob', name: 'Arc Knob', variant: { style: 'arc' } },
     ],
   },
   {
     name: 'Linear Controls',
     items: [
-      { id: 'slider-vertical', type: 'slider-vertical', name: 'V Slider' },
-      { id: 'slider-horizontal', type: 'slider-horizontal', name: 'H Slider' },
+      { id: 'slider-vertical', type: 'slider', name: 'V Slider', variant: { orientation: 'vertical' } },
+      { id: 'slider-horizontal', type: 'slider', name: 'H Slider', variant: { orientation: 'horizontal' } },
     ],
   },
   {
     name: 'Buttons & Switches',
     items: [
-      { id: 'button-momentary', type: 'button-momentary', name: 'Momentary' },
-      { id: 'button-toggle', type: 'button-toggle', name: 'Toggle' },
+      { id: 'button-momentary', type: 'button', name: 'Momentary', variant: { mode: 'momentary' } },
+      { id: 'button-toggle', type: 'button', name: 'Toggle', variant: { mode: 'toggle' } },
     ],
   },
   {
@@ -31,7 +31,7 @@ const paletteCategories = [
   },
   {
     name: 'Meters',
-    items: [{ id: 'meter-vertical', type: 'meter-vertical', name: 'Meter' }],
+    items: [{ id: 'meter-vertical', type: 'meter', name: 'Meter', variant: { orientation: 'vertical' } }],
   },
   {
     name: 'Images & Decorative',
