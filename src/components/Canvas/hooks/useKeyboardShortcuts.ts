@@ -51,9 +51,8 @@ export function useKeyboardShortcuts() {
     'mod+shift+]',
     (e) => {
       e.preventDefault()
-      const id = selectedIds[0]
-      if (selectedIds.length === 1 && id) {
-        moveToFront(id)
+      if (selectedIds.length === 1 && selectedIds[0]) {
+        moveToFront(selectedIds[0])
       }
     },
     { enableOnFormTags: false },
@@ -65,9 +64,8 @@ export function useKeyboardShortcuts() {
     'mod+shift+[',
     (e) => {
       e.preventDefault()
-      const id = selectedIds[0]
-      if (selectedIds.length === 1 && id) {
-        moveToBack(id)
+      if (selectedIds.length === 1 && selectedIds[0]) {
+        moveToBack(selectedIds[0])
       }
     },
     { enableOnFormTags: false },
@@ -79,9 +77,8 @@ export function useKeyboardShortcuts() {
     'mod+]',
     (e) => {
       e.preventDefault()
-      const id = selectedIds[0]
-      if (selectedIds.length === 1 && id) {
-        moveForward(id)
+      if (selectedIds.length === 1 && selectedIds[0]) {
+        moveForward(selectedIds[0])
       }
     },
     { enableOnFormTags: false },
@@ -93,9 +90,8 @@ export function useKeyboardShortcuts() {
     'mod+[',
     (e) => {
       e.preventDefault()
-      const id = selectedIds[0]
-      if (selectedIds.length === 1 && id) {
-        moveBackward(id)
+      if (selectedIds.length === 1 && selectedIds[0]) {
+        moveBackward(selectedIds[0])
       }
     },
     { enableOnFormTags: false },

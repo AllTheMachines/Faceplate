@@ -1,4 +1,5 @@
 import { useStore } from '../../store'
+import { ZOrderPanel } from '../Canvas/ZOrderPanel'
 
 export function RightPanel() {
   const canvasWidth = useStore((state) => state.canvasWidth)
