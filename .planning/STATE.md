@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 3 of 8 (Selection & History)
-Plan: 2 of 4 in phase
+Plan: 3 of 4 in phase
 Status: In progress
-Last activity: 2026-01-23 — Completed 03-02-PLAN.md (Selection visuals & keyboard shortcuts)
+Last activity: 2026-01-23 — Completed 03-03-PLAN.md (Click-to-select functionality)
 
-Progress: [███░░░░░░░] 32% (2 phases complete, Phase 3 in progress: 2/4 plans)
+Progress: [███░░░░░░░] 36% (2 phases complete, Phase 3 in progress: 3/4 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 3.45 min
-- Total execution time: 0.52 hours
+- Total plans completed: 10
+- Average duration: 3.23 min
+- Total execution time: 0.54 hours
 
 **By Phase:**
 
@@ -29,7 +29,7 @@ Progress: [███░░░░░░░] 32% (2 phases complete, Phase 3 in pr
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 9.5 min | 3.17 min |
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
-| 03-selection-history | 2/4 | 4.82 min | 2.41 min |
+| 03-selection-history | 3/4 | 6.27 min | 2.09 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -41,7 +41,8 @@ Progress: [███░░░░░░░] 32% (2 phases complete, Phase 3 in pr
 - 02-04: 6.17 min (ImageRenderer, demo elements, passive listener fix)
 - 03-01: 2 min (selection state foundation)
 - 03-02: 2.82 min (selection overlay + keyboard shortcuts)
-- Trend: Consistently fast velocity (~2-4 min per plan)
+- 03-03: 1.45 min (click-to-select functionality)
+- Trend: Exceptionally fast velocity in Phase 3 (~1.5-2 min per plan)
 
 *Updated after each plan completion*
 
@@ -87,6 +88,9 @@ Recent decisions affecting current work:
 - **Selection overlay design** (03-02): Blue border (#3b82f6) with 8 resize handles (decorative in Phase 3, interactive in Phase 5)
 - **Keyboard shortcut library** (03-02): react-hotkeys-hook for clean hook-based API
 - **Redo key support** (03-02): Both Ctrl+Y (Windows) and Ctrl+Shift+Z (Mac) conventions supported
+- **Event propagation pattern** (03-03): Elements stopPropagation to prevent canvas background click
+- **BaseElement onClick** (03-03): BaseElement accepts onClick prop and forwards to wrapper div
+- **Modifier key selection** (03-03): Shift+click adds, Ctrl/Cmd+click toggles element selection
 
 ### Pending Todos
 
@@ -121,7 +125,7 @@ Recent decisions affecting current work:
 - ✅ Demo elements showcase all types on startup
 - react-konva kept in package.json as fallback (remove in Phase 8 if unused)
 
-**Phase 3 (Selection & History):** IN PROGRESS (2/4 plans)
+**Phase 3 (Selection & History):** IN PROGRESS (3/4 plans)
 - ✅ Selection state foundation complete (Plan 01)
 - ✅ Selection actions: selectElement, toggleSelection, addToSelection, clearSelection, selectMultiple
 - ✅ AABB intersection utility for marquee selection
@@ -129,7 +133,11 @@ Recent decisions affecting current work:
 - ✅ Selection visuals & keyboard shortcuts complete (Plan 02)
 - ✅ SelectionOverlay component with blue border and 8 resize handles
 - ✅ Keyboard shortcuts: Ctrl+Z (undo), Ctrl+Y/Ctrl+Shift+Z (redo), Delete/Backspace (delete), Escape (clear selection)
-- Next: Plan 03 (marquee selection with drag interaction)
+- ✅ Click-to-select functionality complete (Plan 03)
+- ✅ Click element to select, Shift+click to add, Ctrl/Cmd+click to toggle
+- ✅ Background click clears selection
+- ✅ Event propagation pattern established
+- Next: Plan 04 (undo/redo history implementation)
 
 **Phase 8 (Code Export):**
 - JUCE WebView2 API integration needs deeper research during planning
@@ -137,7 +145,7 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-01-23 21:07 UTC (phase execution)
-Stopped at: Completed 03-02-PLAN.md (Selection visuals & keyboard shortcuts)
+Last session: 2026-01-23 21:12 UTC (phase execution)
+Stopped at: Completed 03-03-PLAN.md (Click-to-select functionality)
 Resume file: None
-Next: Proceed to 03-03-PLAN.md (Marquee selection with drag interaction)
+Next: Proceed to 03-04-PLAN.md (Undo/redo history implementation)
