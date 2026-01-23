@@ -10,6 +10,9 @@ export function CustomSVGUpload() {
   const [isOpen, setIsOpen] = useState(false);
 
   const addElement = useStore((state) => state.addElement);
+  const scale = useStore((state) => state.scale);
+  const offsetX = useStore((state) => state.offsetX);
+  const offsetY = useStore((state) => state.offsetY);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -37,11 +40,26 @@ export function CustomSVGUpload() {
   const handleAddToCanvas = () => {
     if (!parsedSVG) return;
 
+    // Get the canvas viewport element dimensions
+    const canvasViewport = document.querySelector('.canvas-viewport');
+    const viewportWidth = canvasViewport?.clientWidth || 800;
+    const viewportHeight = canvasViewport?.clientHeight || 600;
+
+    // Calculate center of viewport in canvas coordinates
+    // Screen center: (viewportWidth / 2, viewportHeight / 2)
+    // Canvas coords: (screenX - offsetX) / scale
+    const centerCanvasX = (viewportWidth / 2 - offsetX) / scale;
+    const centerCanvasY = (viewportHeight / 2 - offsetY) / scale;
+
+    // Center the SVG on this point (subtract half its dimensions)
+    const svgX = centerCanvasX - parsedSVG.width / 2;
+    const svgY = centerCanvasY - parsedSVG.height / 2;
+
     // Create image element with SVG as data URL
     const dataUrl = svgToDataUrl(parsedSVG.svgString);
     const element = createImage({
-      x: 100, // Default position (will be centered later or dropped)
-      y: 100,
+      x: svgX,
+      y: svgY,
       width: parsedSVG.width,
       height: parsedSVG.height,
       src: dataUrl,
