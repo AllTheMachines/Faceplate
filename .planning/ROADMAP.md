@@ -133,10 +133,14 @@ Plans:
   7. User can nudge elements with arrow keys (1px) or Shift+arrow (10px)
   8. User can toggle snap-to-grid and see elements snap when dragging
 
-**Plans**: TBD
+**Plans**: 5 plans in 2 waves
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 05-01-PLAN.md — Property panel foundation: react-colorful, NumberInput, TextInput, ColorInput components
+- [ ] 05-02-PLAN.md — Element dragging on canvas with coordinate transform
+- [ ] 05-03-PLAN.md — Interactive resize handles with useResize hook
+- [ ] 05-04-PLAN.md — Type-specific property panels (Knob, Slider, Button, Label, Meter, Image)
+- [ ] 05-05-PLAN.md — Keyboard nudge and snap-to-grid functionality
 
 ### Phase 6: Alignment & Polish
 **Goal**: Add productivity features that make the tool efficient for creating complex UIs with many controls (copy/paste, duplicate, keyboard shortcuts).
@@ -206,7 +210,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Element Library | 4/4 | Complete | 2026-01-23 |
 | 3. Selection & History | 4/4 | Complete | 2026-01-23 |
 | 4. Palette & Element Creation | 6/6 | Complete | 2026-01-23 |
-| 5. Properties & Transform | 0/TBD | Not started | - |
+| 5. Properties & Transform | 0/5 | Planned | - |
 | 6. Alignment & Polish | 0/TBD | Not started | - |
 | 7. Save/Load | 0/TBD | Not started | - |
 | 8. Code Export | 0/TBD | Not started | - |
