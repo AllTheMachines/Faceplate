@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-23)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Phase 2 - Element Library
+**Current focus:** Phase 3 - Selection & History
 
 ## Current Position
 
-Phase: 2 of 8 (Element Library)
-Plan: 4 of 4 in phase
-Status: Phase complete
-Last activity: 2026-01-23 — Completed 02-04-PLAN.md (ImageRenderer and demo elements)
+Phase: 3 of 8 (Selection & History)
+Plan: 1 of 4 in phase
+Status: In progress
+Last activity: 2026-01-23 — Completed 03-01-PLAN.md (Selection state foundation)
 
-Progress: [██░░░░░░░░] 25% (2/8 phases complete, Phase 2 complete)
+Progress: [███░░░░░░░] 30% (2 phases complete, Phase 3 in progress: 1/4 plans)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 3.69 min
-- Total execution time: 0.43 hours
+- Total plans completed: 8
+- Average duration: 3.44 min
+- Total execution time: 0.46 hours
 
 **By Phase:**
 
@@ -29,6 +29,7 @@ Progress: [██░░░░░░░░] 25% (2/8 phases complete, Phase 2 com
 |-------|-------|-------|----------|
 | 01-foundation | 3/3 | 9.5 min | 3.17 min |
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
+| 03-selection-history | 1/4 | 2 min | 2 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -38,7 +39,8 @@ Progress: [██░░░░░░░░] 25% (2/8 phases complete, Phase 2 com
 - 02-02: 2.93 min (BaseElement wrapper & element renderers)
 - 02-03: 2.73 min (Button, Label, Meter renderers)
 - 02-04: 6.17 min (ImageRenderer, demo elements, passive listener fix)
-- Trend: Consistently fast velocity (~3-4 min per plan)
+- 03-01: 2 min (selection state foundation)
+- Trend: Consistently fast velocity (~2-4 min per plan)
 
 *Updated after each plan completion*
 
@@ -78,6 +80,9 @@ Recent decisions affecting current work:
 - **Image error handling** (02-04): Show placeholder div for broken/missing images with error state
 - **Demo element pattern** (02-04): Auto-populate canvas on startup with empty check to prevent duplication
 - **Passive wheel listener** (02-04): Use native addEventListener with { passive: false } to prevent console warnings during zoom
+- **Selection state in undo** (03-01): Selection state included in undo history - selection changes are meaningful user actions
+- **AABB algorithm** (03-01): Simple rectangle intersection detection for marquee selection
+- **updateElement type fix** (03-01): Use type assertion `as ElementConfig` instead of explicit type spreading to avoid discriminated union conflicts
 
 ### Pending Todos
 
@@ -112,13 +117,20 @@ Recent decisions affecting current work:
 - ✅ Demo elements showcase all types on startup
 - react-konva kept in package.json as fallback (remove in Phase 8 if unused)
 
+**Phase 3 (Selection & History):** IN PROGRESS (1/4 plans)
+- ✅ Selection state foundation complete (Plan 01)
+- ✅ Selection actions: selectElement, toggleSelection, addToSelection, clearSelection, selectMultiple
+- ✅ AABB intersection utility for marquee selection
+- ✅ react-hotkeys-hook installed for keyboard shortcuts
+- Next: Plan 02 (keyboard shortcuts: Delete, Escape, Ctrl+Z, Ctrl+Y)
+
 **Phase 8 (Code Export):**
 - JUCE WebView2 API integration needs deeper research during planning
 - Code export templates require validation with real JUCE project
 
 ## Session Continuity
 
-Last session: 2026-01-23 20:25 UTC (phase execution)
-Stopped at: Completed 02-04-PLAN.md (Phase 2 complete)
+Last session: 2026-01-23 21:01 UTC (phase execution)
+Stopped at: Completed 03-01-PLAN.md (Selection state foundation)
 Resume file: None
-Next: Proceed to Phase 3 (Canvas Basics - element selection, drag, multi-select)
+Next: Proceed to 03-02-PLAN.md (Keyboard shortcuts for selection and undo/redo)
