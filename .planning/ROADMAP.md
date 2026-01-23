@@ -83,10 +83,13 @@ Plans:
   5. User can undo actions with Ctrl+Z and redo with Ctrl+Y
   6. Undo/redo works correctly after 50+ consecutive operations without memory issues
 
-**Plans**: TBD
+**Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 03-01-PLAN.md — Selection state foundation, AABB intersection utility, react-hotkeys-hook install
+- [ ] 03-02-PLAN.md — SelectionOverlay component, keyboard shortcuts (undo/redo/delete/escape)
+- [ ] 03-03-PLAN.md — Click selection (single, shift+click, ctrl+click, background click)
+- [ ] 03-04-PLAN.md — Marquee drag selection with coordinate transforms
 
 ### Phase 4: Palette & Element Creation
 **Goal**: Enable users to drag components from a palette onto the canvas, creating element instances with correct coordinate transforms and establishing the three-panel layout scaffolding.
@@ -196,7 +199,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-01-23 |
 | 2. Element Library | 4/4 | Complete | 2026-01-23 |
-| 3. Selection & History | 0/TBD | Not started | - |
+| 3. Selection & History | 0/4 | Not started | - |
 | 4. Palette & Element Creation | 0/TBD | Not started | - |
 | 5. Properties & Transform | 0/TBD | Not started | - |
 | 6. Alignment & Polish | 0/TBD | Not started | - |
