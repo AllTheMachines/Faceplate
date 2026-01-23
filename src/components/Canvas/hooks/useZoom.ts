@@ -1,4 +1,4 @@
-import { useCallback, RefObject } from 'react'
+import { useEffect, RefObject } from 'react'
 import { useStore } from '../../../store'
 
 const MIN_SCALE = 0.1
@@ -10,15 +10,16 @@ export function useZoom(viewportRef: RefObject<HTMLDivElement>) {
   const offsetY = useStore((state) => state.offsetY)
   const setViewport = useStore((state) => state.setViewport)
 
-  const handleWheel = useCallback(
-    (e: React.WheelEvent<HTMLDivElement>) => {
+  useEffect(() => {
+    const element = viewportRef.current
+    if (!element) return
+
+    const handleWheel = (e: WheelEvent) => {
       // Prevent default browser scroll
       e.preventDefault()
 
-      if (!viewportRef.current) return
-
       // Get viewport bounds
-      const rect = viewportRef.current.getBoundingClientRect()
+      const rect = element.getBoundingClientRect()
 
       // Calculate pointer position relative to viewport
       const pointer = {
@@ -35,23 +36,30 @@ export function useZoom(viewportRef: RefObject<HTMLDivElement>) {
       // Calculate scale factor: 1.05 for zoom in, 0.95 for zoom out (5% per step)
       const scaleFactor = deltaY < 0 ? 1.05 : 0.95
 
+      // Get current state values
+      const currentScale = useStore.getState().scale
+      const currentOffsetX = useStore.getState().offsetX
+      const currentOffsetY = useStore.getState().offsetY
+
       // Calculate new scale: clamp between MIN_SCALE and MAX_SCALE
-      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * scaleFactor))
+      const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, currentScale * scaleFactor))
 
       // Calculate point under cursor BEFORE zoom: (pointer - offset) / currentScale
-      const pointX = (pointer.x - offsetX) / scale
-      const pointY = (pointer.y - offsetY) / scale
+      const pointX = (pointer.x - currentOffsetX) / currentScale
+      const pointY = (pointer.y - currentOffsetY) / currentScale
 
       // Calculate new offset to keep point stationary: pointer - (point * newScale)
       const newOffsetX = pointer.x - pointX * newScale
       const newOffsetY = pointer.y - pointY * newScale
 
-      setViewport(newScale, newOffsetX, newOffsetY)
-    },
-    [scale, offsetX, offsetY, setViewport, viewportRef]
-  )
+      useStore.getState().setViewport(newScale, newOffsetX, newOffsetY)
+    }
 
-  return {
-    handleWheel,
-  }
+    // Add event listener with { passive: false } to allow preventDefault
+    element.addEventListener('wheel', handleWheel, { passive: false })
+
+    return () => {
+      element.removeEventListener('wheel', handleWheel)
+    }
+  }, [viewportRef, scale, offsetX, offsetY, setViewport])
 }

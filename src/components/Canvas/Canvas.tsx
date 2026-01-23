@@ -26,7 +26,7 @@ export function Canvas() {
 
   // Use pan and zoom hooks
   const { handlers: panHandlers } = usePan(viewportRef)
-  const { handleWheel } = useZoom(viewportRef)
+  useZoom(viewportRef)
 
   // Measure viewport size with ResizeObserver
   useEffect(() => {
@@ -76,7 +76,6 @@ export function Canvas() {
         className="canvas-viewport w-full h-full overflow-hidden"
         style={{ cursor }}
         {...panHandlers}
-        onWheel={handleWheel}
       >
         {/* Transform container (applies zoom/pan) */}
         <div
