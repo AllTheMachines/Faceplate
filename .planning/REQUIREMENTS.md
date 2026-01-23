@@ -138,14 +138,14 @@ Which phases cover which requirements. Updated during roadmap revision.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CANV-01 | Phase 1 | Pending |
-| CANV-02 | Phase 1 | Pending |
-| CANV-03 | Phase 1 | Pending |
+| CANV-01 | Phase 1 | Complete |
+| CANV-02 | Phase 1 | Complete |
+| CANV-03 | Phase 1 | Complete |
 | CANV-04 | Phase 3 | Pending |
 | CANV-05 | Phase 3 | Pending |
 | CANV-06 | Phase 3 | Pending |
 | CANV-07 | Phase 3 | Pending |
-| CANV-08 | Phase 1 | Pending |
+| CANV-08 | Phase 1 | Complete |
 | CANV-09 | Phase 4 | Pending |
 | CANV-10 | Phase 4 | Pending |
 | PALT-01 | Phase 4 | Pending |
@@ -169,15 +169,15 @@ Which phases cover which requirements. Updated during roadmap revision.
 | EXPO-01 | Phase 8 | Pending |
 | EXPO-02 | Phase 8 | Pending |
 | EXPO-03 | Phase 8 | Pending |
-| UIUX-01 | Phase 1 | Pending |
-| UIUX-02 | Phase 1 | Pending |
+| UIUX-01 | Phase 1 | Complete |
+| UIUX-02 | Phase 1 | Complete |
 | UIUX-03 | Phase 6 | Pending |
-| TECH-01 | Phase 1 | Pending |
-| TECH-02 | Phase 1 | Pending |
-| TECH-03 | Phase 1 | Pending |
-| TECH-04 | Phase 1 | Pending |
-| TECH-05 | Phase 1 | Pending |
-| TECH-06 | Phase 1 | Pending |
+| TECH-01 | Phase 1 | Complete |
+| TECH-02 | Phase 1 | Complete |
+| TECH-03 | Phase 1 | Complete |
+| TECH-04 | Phase 1 | Complete |
+| TECH-05 | Phase 1 | Complete |
+| TECH-06 | Phase 1 | Complete |
 | ELEM-01 | Phase 2 | Pending |
 | ELEM-02 | Phase 2 | Pending |
 | ELEM-03 | Phase 2 | Pending |
