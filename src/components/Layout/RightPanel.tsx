@@ -1,6 +1,7 @@
 import { useStore } from '../../store'
 import { ZOrderPanel } from '../Canvas/ZOrderPanel'
 import { PropertyPanel } from '../Properties'
+import { HelpPanel } from './HelpPanel'
 
 export function RightPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -99,6 +100,9 @@ export function RightPanel() {
         )}
       </div>
       <ZOrderPanel />
+      <div className="mt-auto">
+        <HelpPanel />
+      </div>
     </div>
   )
 }
