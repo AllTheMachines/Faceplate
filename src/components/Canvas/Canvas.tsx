@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { useStore } from '../../store'
 import { usePan, useZoom } from './hooks'
+import { Element } from '../elements'
 
 export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -97,34 +98,9 @@ export function Canvas() {
               ...getBackgroundStyle(),
             }}
           >
-            {/* Elements will render here */}
+            {/* Elements render here */}
             {elements.map((element) => (
-              <div
-                key={element.id}
-                className="canvas-element"
-                style={{
-                  position: 'absolute',
-                  left: `${element.x}px`,
-                  top: `${element.y}px`,
-                  width: `${element.width}px`,
-                  height: `${element.height}px`,
-                  transform: `rotate(${element.rotation}deg)`,
-                  zIndex: element.zIndex,
-                  visibility: element.visible ? 'visible' : 'hidden',
-                  pointerEvents: element.locked ? 'none' : 'auto',
-                  // Placeholder styling for v1 (Phase 3+ will render actual elements)
-                  border: '2px dashed #3b82f6',
-                  backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#3b82f6',
-                  fontSize: '12px',
-                  fontFamily: 'monospace',
-                }}
-              >
-                {element.type}
-              </div>
+              <Element key={element.id} element={element} />
             ))}
           </div>
         </div>
