@@ -3,7 +3,7 @@ import { Stage, Layer, Rect } from 'react-konva'
 import Konva from 'konva'
 import { useStore } from '../../store'
 import { CanvasBackground } from './CanvasBackground'
-import { usePan } from './hooks'
+import { usePan, useZoom } from './hooks'
 
 export function CanvasStage() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -20,8 +20,9 @@ export function CanvasStage() {
   const canvasWidth = useStore((state) => state.canvasWidth)
   const canvasHeight = useStore((state) => state.canvasHeight)
 
-  // Use pan hook
+  // Use pan and zoom hooks
   const { isPanning, handlers: panHandlers } = usePan()
+  const { handleWheel } = useZoom()
 
   // Measure container size with ResizeObserver
   useEffect(() => {
@@ -54,6 +55,7 @@ export function CanvasStage() {
             x={offsetX}
             y={offsetY}
             {...panHandlers}
+            onWheel={handleWheel}
             style={{
               cursor: isPanning && dragStart ? 'grabbing' : isPanning ? 'grab' : 'default',
             }}
