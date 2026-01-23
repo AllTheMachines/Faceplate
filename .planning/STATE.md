@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 8 (Palette & Element Creation)
-Plan: 4 of 4 in phase complete
-Status: Phase 4 complete
-Last activity: 2026-01-23 — Completed 04-02-PLAN.md (Drag-drop to canvas)
+Plan: 6 of 6 in phase complete (including gap closure plans)
+Status: Phase 4 complete with gap closures
+Last activity: 2026-01-23 — Completed 04-06-PLAN.md (Viewport-centered SVG import)
 
 Progress: [████░░░░░░] 50% (4/8 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: 3.30 min
-- Total execution time: 0.82 hours
+- Total plans completed: 16
+- Average duration: 3.21 min
+- Total execution time: 0.86 hours
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [████░░░░░░] 50% (4/8 phases complete)
 | 01-foundation | 3/3 | 9.5 min | 3.17 min |
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
 | 03-selection-history | 4/4 | 9.29 min | 2.32 min |
-| 04-palette-element-creation | 4/4 | 16.09 min | 4.02 min |
+| 04-palette-element-creation | 6/6 | 17.26 min | 2.88 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -48,7 +48,9 @@ Progress: [████░░░░░░] 50% (4/8 phases complete)
 - 04-02: 5 min (drag-drop to canvas with coordinate transform)
 - 04-03: 3.7 min (z-order management)
 - 04-04: 3.36 min (custom SVG import with layer detection)
-- Trend: Phase 4 complete at 4.02 min average per plan
+- 04-05: ~3.5 min (palette element size alignment - gap closure)
+- 04-06: 1.17 min (viewport-centered SVG import - gap closure)
+- Trend: Phase 4 complete at 2.88 min average per plan
 
 *Updated after each plan completion*
 
@@ -114,6 +116,7 @@ Recent decisions affecting current work:
 - **Drag activation threshold** (04-02): 8px drag threshold prevents accidental drags while remaining responsive
 - **Droppable target boundary** (04-02): Droppable on canvas-background (not viewport) rejects drops outside canvas bounds
 - **Coordinate transform for drag-drop** (04-02): (finalX - viewportRect.left - offsetX) / scale handles zoom and pan for correct element placement
+- **Viewport-centered SVG placement** (04-06): Imported SVGs placed at viewport center using (screenCenter - offset) / scale coordinate transform
 
 ### Pending Todos
 
@@ -166,7 +169,7 @@ Recent decisions affecting current work:
 - ✅ Real-time selection updates during drag using AABB intersection
 - ✅ Pan mode conflict prevention (marquee disabled when spacebar held)
 
-**Phase 4 (Palette & Element Creation):** COMPLETE (4/4 plans)
+**Phase 4 (Palette & Element Creation):** COMPLETE (6/6 plans including gap closures)
 - ✅ Palette components with visual previews (Plan 01)
   - @dnd-kit/core@6.3.1 installed
   - Palette.tsx with 6 categorized sections
@@ -188,6 +191,13 @@ Recent decisions affecting current work:
   - SVG parsing utility with layer detection (indicator, thumb, track, fill, glow)
   - CustomSVGUpload component with drag-drop, preview, and layer listing
   - SVG files added to canvas as image elements with data URL
+- ✅ Gap closure: Palette element size alignment (Plan 05)
+  - DEFAULT_SIZES constant ensures palette elements match canvas rendering
+  - Consistent visual feedback prevents size surprises on drop
+- ✅ Gap closure: Viewport-centered SVG import (Plan 06)
+  - Imported SVGs placed at viewport center using screen-to-canvas transform
+  - Eliminates hardcoded (100, 100) position
+  - Works correctly with all zoom/pan states
 - Next: Proceed to Phase 5 (Property Panel)
 
 **Phase 8 (Code Export):**
@@ -196,7 +206,7 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-01-23 21:56 UTC (phase execution)
-Stopped at: Completed 04-02-PLAN.md (Drag-drop to canvas) - Phase 4 complete
+Last session: 2026-01-23 22:12 UTC (phase execution)
+Stopped at: Completed 04-06-PLAN.md (Viewport-centered SVG import) - Phase 4 complete with gap closures
 Resume file: None
 Next: Proceed to Phase 5 (Property Panel)
