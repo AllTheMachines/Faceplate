@@ -1,7 +1,7 @@
 function App() {
   return (
-    <div>
-      <h1>VST3 WebView UI Designer</h1>
+    <div className="dark min-h-screen p-8">
+      <h1 className="text-3xl font-bold text-gray-100">VST3 WebView UI Designer</h1>
     </div>
   )
 }
