@@ -60,10 +60,13 @@ Plans:
   6. User can add Image elements for backgrounds, logos, and decorative graphics
   7. All element properties from docs/SPECIFICATION.md are available in property panel
 
-**Plans**: TBD
+**Plans**: 4 plans in 4 waves
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 02-01-PLAN.md — Element type system, elements store slice, canvas refactor to HTML/CSS
+- [ ] 02-02-PLAN.md — BaseElement wrapper, KnobRenderer, SliderRenderer
+- [ ] 02-03-PLAN.md — ButtonRenderer, LabelRenderer, MeterRenderer
+- [ ] 02-04-PLAN.md — ImageRenderer, integration demo with all element types
 
 ### Phase 3: Selection & History
 **Goal**: Implement selection model and undo/redo architecture that prevents naive snapshot pitfalls and enables all future editing operations with real element types.
@@ -191,8 +194,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/3 | ✓ Complete | 2026-01-23 |
-| 2. Element Library | 0/TBD | Ready to plan | - |
+| 1. Foundation | 3/3 | Complete | 2026-01-23 |
+| 2. Element Library | 0/4 | Planned | - |
 | 3. Selection & History | 0/TBD | Not started | - |
 | 4. Palette & Element Creation | 0/TBD | Not started | - |
 | 5. Properties & Transform | 0/TBD | Not started | - |
