@@ -8,11 +8,13 @@ export interface ViewportSlice {
 
   // Interaction state
   isPanning: boolean
+  dragStart: { x: number; y: number } | null
 
   // Actions
   setViewport: (scale: number, offsetX: number, offsetY: number) => void
   setScale: (scale: number) => void
   setPanning: (isPanning: boolean) => void
+  setDragStart: (dragStart: { x: number; y: number } | null) => void
 }
 
 export const createViewportSlice: StateCreator<ViewportSlice, [], [], ViewportSlice> = (set) => ({
@@ -21,6 +23,7 @@ export const createViewportSlice: StateCreator<ViewportSlice, [], [], ViewportSl
   offsetX: 0,
   offsetY: 0,
   isPanning: false,
+  dragStart: null,
 
   // Actions
   setViewport: (scale, offsetX, offsetY) =>
@@ -31,4 +34,7 @@ export const createViewportSlice: StateCreator<ViewportSlice, [], [], ViewportSl
 
   setPanning: (isPanning) =>
     set({ isPanning }),
+
+  setDragStart: (dragStart) =>
+    set({ dragStart }),
 })

@@ -3,6 +3,7 @@ import { Stage, Layer, Rect } from 'react-konva'
 import Konva from 'konva'
 import { useStore } from '../../store'
 import { CanvasBackground } from './CanvasBackground'
+import { usePan } from './hooks'
 
 export function CanvasStage() {
   const stageRef = useRef<Konva.Stage>(null)
@@ -13,11 +14,14 @@ export function CanvasStage() {
   const scale = useStore((state) => state.scale)
   const offsetX = useStore((state) => state.offsetX)
   const offsetY = useStore((state) => state.offsetY)
-  const isPanning = useStore((state) => state.isPanning)
+  const dragStart = useStore((state) => state.dragStart)
 
   // Get canvas dimensions for border
   const canvasWidth = useStore((state) => state.canvasWidth)
   const canvasHeight = useStore((state) => state.canvasHeight)
+
+  // Use pan hook
+  const { isPanning, handlers: panHandlers } = usePan()
 
   // Measure container size with ResizeObserver
   useEffect(() => {
@@ -49,8 +53,9 @@ export function CanvasStage() {
             scaleY={scale}
             x={offsetX}
             y={offsetY}
+            {...panHandlers}
             style={{
-              cursor: isPanning ? 'grabbing' : 'default',
+              cursor: isPanning && dragStart ? 'grabbing' : isPanning ? 'grab' : 'default',
             }}
           >
             <Layer>
