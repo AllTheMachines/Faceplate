@@ -134,17 +134,65 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+Which phases cover which requirements. Updated during roadmap revision.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled during roadmap creation) | | |
+| CANV-01 | Phase 1 | Pending |
+| CANV-02 | Phase 1 | Pending |
+| CANV-03 | Phase 1 | Pending |
+| CANV-04 | Phase 3 | Pending |
+| CANV-05 | Phase 3 | Pending |
+| CANV-06 | Phase 3 | Pending |
+| CANV-07 | Phase 3 | Pending |
+| CANV-08 | Phase 1 | Pending |
+| CANV-09 | Phase 4 | Pending |
+| CANV-10 | Phase 4 | Pending |
+| PALT-01 | Phase 4 | Pending |
+| PALT-02 | Phase 4 | Pending |
+| PALT-03 | Phase 4 | Pending |
+| PALT-04 | Phase 4 | Pending |
+| MANP-01 | Phase 5 | Pending |
+| MANP-02 | Phase 5 | Pending |
+| MANP-03 | Phase 5 | Pending |
+| MANP-04 | Phase 5 | Pending |
+| MANP-05 | Phase 6 | Pending |
+| PROP-01 | Phase 5 | Pending |
+| PROP-02 | Phase 5 | Pending |
+| PROP-03 | Phase 5 | Pending |
+| PROP-04 | Phase 5 | Pending |
+| PROP-05 | Phase 5 | Pending |
+| HIST-01 | Phase 3 | Pending |
+| HIST-02 | Phase 3 | Pending |
+| PERS-01 | Phase 7 | Pending |
+| PERS-02 | Phase 7 | Pending |
+| EXPO-01 | Phase 8 | Pending |
+| EXPO-02 | Phase 8 | Pending |
+| EXPO-03 | Phase 8 | Pending |
+| UIUX-01 | Phase 1 | Pending |
+| UIUX-02 | Phase 1 | Pending |
+| UIUX-03 | Phase 6 | Pending |
+| TECH-01 | Phase 1 | Pending |
+| TECH-02 | Phase 1 | Pending |
+| TECH-03 | Phase 1 | Pending |
+| TECH-04 | Phase 1 | Pending |
+| TECH-05 | Phase 1 | Pending |
+| TECH-06 | Phase 1 | Pending |
+| ELEM-01 | Phase 2 | Pending |
+| ELEM-02 | Phase 2 | Pending |
+| ELEM-03 | Phase 2 | Pending |
+| ELEM-04 | Phase 2 | Pending |
+| ELEM-05 | Phase 2 | Pending |
+| ELEM-06 | Phase 2 | Pending |
+| REF-01 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 35 total
-- Mapped to phases: 0
-- Unmapped: 35
+- Mapped to phases: 35
+- Unmapped: 0
+
+✓ All v1 requirements mapped to phases
 
 ---
 *Requirements defined: 2025-01-23*
-*Last updated: 2025-01-23 after initial definition*
+*Last updated: 2026-01-23 after roadmap revision (Element Library moved to Phase 2)*
