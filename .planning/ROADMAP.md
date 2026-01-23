@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Selection & History** - Selection model, undo/redo architecture
 - [x] **Phase 4: Palette & Element Creation** - Drag-drop, element instantiation, layout scaffolding
 - [x] **Phase 5: Properties & Transform** - Property panel, move/resize elements
-- [ ] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
+- [x] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
 - [ ] **Phase 7: Save/Load** - JSON persistence, project validation
 - [ ] **Phase 8: Code Export** - JUCE WebView2 template generation
 
@@ -158,8 +158,8 @@ Plans:
 **Plans**: 2 plans in 1 wave
 
 Plans:
-- [ ] 06-01-PLAN.md — Copy/paste functionality with Ctrl+C/Ctrl+V keyboard shortcuts
-- [ ] 06-02-PLAN.md — Help panel displaying all keyboard shortcuts
+- [x] 06-01-PLAN.md — Copy/paste functionality with Ctrl+C/Ctrl+V keyboard shortcuts
+- [x] 06-02-PLAN.md — Help panel displaying all keyboard shortcuts
 
 ### Phase 7: Save/Load
 **Goal**: Implement JSON serialization with validation and versioning that enables project persistence without breaking on future schema changes.
@@ -212,6 +212,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Selection & History | 4/4 | Complete | 2026-01-23 |
 | 4. Palette & Element Creation | 6/6 | Complete | 2026-01-23 |
 | 5. Properties & Transform | 5/5 | Complete | 2026-01-23 |
-| 6. Alignment & Polish | 0/2 | Not started | - |
+| 6. Alignment & Polish | 2/2 | Complete | 2026-01-23 |
 | 7. Save/Load | 0/TBD | Not started | - |
 | 8. Code Export | 0/TBD | Not started | - |

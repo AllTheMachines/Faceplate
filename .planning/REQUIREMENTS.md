@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **MANP-02**: Resize elements with handles
 - [x] **MANP-03**: Arrow key nudge (1px, shift+10px)
 - [x] **MANP-04**: Snap to grid
-- [ ] **MANP-05**: Copy/paste elements (Ctrl+C/V)
+- [x] **MANP-05**: Copy/paste elements (Ctrl+C/V)
 
 ### Properties
 
@@ -63,7 +63,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **UIUX-01**: Three-panel layout (palette, canvas, properties)
 - [ ] **UIUX-02**: Dark theme
-- [ ] **UIUX-03**: Delete key shortcut
+- [x] **UIUX-03**: Delete key shortcut
 
 ### Tech Stack
 
@@ -156,7 +156,7 @@ Which phases cover which requirements. Updated during roadmap revision.
 | MANP-02 | Phase 5 | Complete |
 | MANP-03 | Phase 5 | Complete |
 | MANP-04 | Phase 5 | Complete |
-| MANP-05 | Phase 6 | Pending |
+| MANP-05 | Phase 6 | Complete |
 | PROP-01 | Phase 5 | Complete |
 | PROP-02 | Phase 5 | Complete |
 | PROP-03 | Phase 5 | Complete |
@@ -171,7 +171,7 @@ Which phases cover which requirements. Updated during roadmap revision.
 | EXPO-03 | Phase 8 | Pending |
 | UIUX-01 | Phase 1 | Complete |
 | UIUX-02 | Phase 1 | Complete |
-| UIUX-03 | Phase 6 | Pending |
+| UIUX-03 | Phase 6 | Complete |
 | TECH-01 | Phase 1 | Complete |
 | TECH-02 | Phase 1 | Complete |
 | TECH-03 | Phase 1 | Complete |
