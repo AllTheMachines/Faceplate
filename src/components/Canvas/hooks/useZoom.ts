@@ -1,32 +1,36 @@
-import { useCallback } from 'react'
-import { KonvaEventObject } from 'konva/lib/Node'
+import { useCallback, RefObject } from 'react'
 import { useStore } from '../../../store'
 
 const MIN_SCALE = 0.1
 const MAX_SCALE = 10
 
-export function useZoom() {
+export function useZoom(viewportRef: RefObject<HTMLDivElement>) {
   const scale = useStore((state) => state.scale)
   const offsetX = useStore((state) => state.offsetX)
   const offsetY = useStore((state) => state.offsetY)
   const setViewport = useStore((state) => state.setViewport)
 
   const handleWheel = useCallback(
-    (e: KonvaEventObject<WheelEvent>) => {
+    (e: React.WheelEvent<HTMLDivElement>) => {
       // Prevent default browser scroll
-      e.evt.preventDefault()
+      e.preventDefault()
 
-      const stage = e.target.getStage()
-      if (!stage) return
+      if (!viewportRef.current) return
 
-      const pointer = stage.getPointerPosition()
-      if (!pointer) return
+      // Get viewport bounds
+      const rect = viewportRef.current.getBoundingClientRect()
+
+      // Calculate pointer position relative to viewport
+      const pointer = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      }
 
       // Determine zoom direction
       // For trackpad pinch (ctrlKey is true): use -deltaY
       // For scroll wheel: use deltaY
       // Positive = zoom out, negative = zoom in
-      const deltaY = e.evt.ctrlKey ? -e.evt.deltaY : e.evt.deltaY
+      const deltaY = e.ctrlKey ? -e.deltaY : e.deltaY
 
       // Calculate scale factor: 1.05 for zoom in, 0.95 for zoom out (5% per step)
       const scaleFactor = deltaY < 0 ? 1.05 : 0.95
@@ -44,7 +48,7 @@ export function useZoom() {
 
       setViewport(newScale, newOffsetX, newOffsetY)
     },
-    [scale, offsetX, offsetY, setViewport]
+    [scale, offsetX, offsetY, setViewport, viewportRef]
   )
 
   return {

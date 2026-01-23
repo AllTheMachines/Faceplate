@@ -1,8 +1,7 @@
-import { useEffect, useCallback } from 'react'
-import { KonvaEventObject } from 'konva/lib/Node'
+import { useEffect, useCallback, RefObject } from 'react'
 import { useStore } from '../../../store'
 
-export function usePan() {
+export function usePan(viewportRef: RefObject<HTMLDivElement>) {
   const isPanning = useStore((state) => state.isPanning)
   const setPanning = useStore((state) => state.setPanning)
   const dragStart = useStore((state) => state.dragStart)
@@ -40,14 +39,11 @@ export function usePan() {
   }, [isPanning, setPanning, setDragStart])
 
   const handleMouseDown = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isPanning) return
 
-      const stage = e.target.getStage()
-      if (!stage) return
-
-      const pointer = stage.getPointerPosition()
-      if (!pointer) return
+      // Get pointer position from viewport
+      const pointer = { x: e.clientX, y: e.clientY }
 
       // Calculate dragStart: pointer position minus current offset
       setDragStart({
@@ -59,14 +55,11 @@ export function usePan() {
   )
 
   const handleMouseMove = useCallback(
-    (e: KonvaEventObject<MouseEvent>) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isPanning || !dragStart) return
 
-      const stage = e.target.getStage()
-      if (!stage) return
-
-      const pointer = stage.getPointerPosition()
-      if (!pointer) return
+      // Get pointer position from viewport
+      const pointer = { x: e.clientX, y: e.clientY }
 
       // Calculate new offset: pointer position minus dragStart
       const newOffsetX = pointer.x - dragStart.x
