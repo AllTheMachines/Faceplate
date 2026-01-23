@@ -178,12 +178,12 @@ Which phases cover which requirements. Updated during roadmap revision.
 | TECH-04 | Phase 1 | Complete |
 | TECH-05 | Phase 1 | Complete |
 | TECH-06 | Phase 1 | Complete |
-| ELEM-01 | Phase 2 | Pending |
-| ELEM-02 | Phase 2 | Pending |
-| ELEM-03 | Phase 2 | Pending |
-| ELEM-04 | Phase 2 | Pending |
-| ELEM-05 | Phase 2 | Pending |
-| ELEM-06 | Phase 2 | Pending |
+| ELEM-01 | Phase 2 | Complete |
+| ELEM-02 | Phase 2 | Complete |
+| ELEM-03 | Phase 2 | Complete |
+| ELEM-04 | Phase 2 | Complete |
+| ELEM-05 | Phase 2 | Complete |
+| ELEM-06 | Phase 2 | Complete |
 | REF-01 | Phase 8 | Pending |
 
 **Coverage:**

@@ -13,7 +13,7 @@ This roadmap delivers a browser-based visual design tool for audio plugin interf
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - State management, coordinate systems, canvas basics
-- [ ] **Phase 2: Element Library** - Core element types (knobs, sliders, buttons, meters, labels, images)
+- [x] **Phase 2: Element Library** - Core element types (knobs, sliders, buttons, meters, labels, images)
 - [ ] **Phase 3: Selection & History** - Selection model, undo/redo architecture
 - [ ] **Phase 4: Palette & Element Creation** - Drag-drop, element instantiation, layout scaffolding
 - [ ] **Phase 5: Properties & Transform** - Property panel, move/resize elements
@@ -63,10 +63,10 @@ Plans:
 **Plans**: 4 plans in 4 waves
 
 Plans:
-- [ ] 02-01-PLAN.md — Element type system, elements store slice, canvas refactor to HTML/CSS
-- [ ] 02-02-PLAN.md — BaseElement wrapper, KnobRenderer, SliderRenderer
-- [ ] 02-03-PLAN.md — ButtonRenderer, LabelRenderer, MeterRenderer
-- [ ] 02-04-PLAN.md — ImageRenderer, integration demo with all element types
+- [x] 02-01-PLAN.md — Element type system, elements store slice, canvas refactor to HTML/CSS
+- [x] 02-02-PLAN.md — BaseElement wrapper, KnobRenderer, SliderRenderer
+- [x] 02-03-PLAN.md — ButtonRenderer, LabelRenderer, MeterRenderer
+- [x] 02-04-PLAN.md — ImageRenderer, integration demo with all element types
 
 ### Phase 3: Selection & History
 **Goal**: Implement selection model and undo/redo architecture that prevents naive snapshot pitfalls and enables all future editing operations with real element types.
@@ -195,7 +195,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-01-23 |
-| 2. Element Library | 0/4 | Planned | - |
+| 2. Element Library | 4/4 | Complete | 2026-01-23 |
 | 3. Selection & History | 0/TBD | Not started | - |
 | 4. Palette & Element Creation | 0/TBD | Not started | - |
 | 5. Properties & Transform | 0/TBD | Not started | - |
