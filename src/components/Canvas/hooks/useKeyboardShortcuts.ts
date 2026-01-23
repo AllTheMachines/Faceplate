@@ -1,5 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useStore } from '../../../store'
+import { useCopyPaste } from './useCopyPaste'
 
 export function useKeyboardShortcuts() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -9,6 +10,9 @@ export function useKeyboardShortcuts() {
   const moveToBack = useStore((state) => state.moveToBack)
   const moveForward = useStore((state) => state.moveForward)
   const moveBackward = useStore((state) => state.moveBackward)
+
+  // Copy/paste functionality
+  const { copyToClipboard, pasteFromClipboard } = useCopyPaste()
 
   // Undo
   useHotkeys(
@@ -96,5 +100,27 @@ export function useKeyboardShortcuts() {
     },
     { enableOnFormTags: false },
     [selectedIds, moveBackward]
+  )
+
+  // Copy: Ctrl/Cmd + C
+  useHotkeys(
+    'mod+c',
+    (e) => {
+      e.preventDefault()
+      copyToClipboard()
+    },
+    { enableOnFormTags: false },
+    [copyToClipboard]
+  )
+
+  // Paste: Ctrl/Cmd + V
+  useHotkeys(
+    'mod+v',
+    (e) => {
+      e.preventDefault()
+      pasteFromClipboard()
+    },
+    { enableOnFormTags: false },
+    [pasteFromClipboard]
   )
 }
