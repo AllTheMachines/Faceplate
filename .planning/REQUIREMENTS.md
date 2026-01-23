@@ -12,10 +12,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CANV-01**: Canvas with configurable dimensions (e.g., 800x600)
 - [ ] **CANV-02**: Pan with spacebar+drag
 - [ ] **CANV-03**: Zoom with scroll/pinch
-- [ ] **CANV-04**: Click to select single element
-- [ ] **CANV-05**: Shift+click for multi-select
-- [ ] **CANV-06**: Marquee (drag) selection
-- [ ] **CANV-07**: Delete selected elements
+- [x] **CANV-04**: Click to select single element
+- [x] **CANV-05**: Shift+click for multi-select
+- [x] **CANV-06**: Marquee (drag) selection
+- [x] **CANV-07**: Delete selected elements
 - [ ] **CANV-08**: Background color/gradient or image
 - [ ] **CANV-09**: Foreground/overlay images
 - [ ] **CANV-10**: Element z-order (layering)
@@ -45,8 +45,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### History
 
-- [ ] **HIST-01**: Undo (Ctrl+Z)
-- [ ] **HIST-02**: Redo (Ctrl+Y)
+- [x] **HIST-01**: Undo (Ctrl+Z)
+- [x] **HIST-02**: Redo (Ctrl+Y)
 
 ### Persistence
 
@@ -141,10 +141,10 @@ Which phases cover which requirements. Updated during roadmap revision.
 | CANV-01 | Phase 1 | Complete |
 | CANV-02 | Phase 1 | Complete |
 | CANV-03 | Phase 1 | Complete |
-| CANV-04 | Phase 3 | Pending |
-| CANV-05 | Phase 3 | Pending |
-| CANV-06 | Phase 3 | Pending |
-| CANV-07 | Phase 3 | Pending |
+| CANV-04 | Phase 3 | Complete |
+| CANV-05 | Phase 3 | Complete |
+| CANV-06 | Phase 3 | Complete |
+| CANV-07 | Phase 3 | Complete |
 | CANV-08 | Phase 1 | Complete |
 | CANV-09 | Phase 4 | Pending |
 | CANV-10 | Phase 4 | Pending |
@@ -162,8 +162,8 @@ Which phases cover which requirements. Updated during roadmap revision.
 | PROP-03 | Phase 5 | Pending |
 | PROP-04 | Phase 5 | Pending |
 | PROP-05 | Phase 5 | Pending |
-| HIST-01 | Phase 3 | Pending |
-| HIST-02 | Phase 3 | Pending |
+| HIST-01 | Phase 3 | Complete |
+| HIST-02 | Phase 3 | Complete |
 | PERS-01 | Phase 7 | Pending |
 | PERS-02 | Phase 7 | Pending |
 | EXPO-01 | Phase 8 | Pending |

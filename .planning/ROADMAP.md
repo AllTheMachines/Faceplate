@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - State management, coordinate systems, canvas basics
 - [x] **Phase 2: Element Library** - Core element types (knobs, sliders, buttons, meters, labels, images)
-- [ ] **Phase 3: Selection & History** - Selection model, undo/redo architecture
+- [x] **Phase 3: Selection & History** - Selection model, undo/redo architecture
 - [ ] **Phase 4: Palette & Element Creation** - Drag-drop, element instantiation, layout scaffolding
 - [ ] **Phase 5: Properties & Transform** - Property panel, move/resize elements
 - [ ] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
@@ -86,10 +86,10 @@ Plans:
 **Plans**: 4 plans in 3 waves
 
 Plans:
-- [ ] 03-01-PLAN.md — Selection state foundation, AABB intersection utility, react-hotkeys-hook install
-- [ ] 03-02-PLAN.md — SelectionOverlay component, keyboard shortcuts (undo/redo/delete/escape)
-- [ ] 03-03-PLAN.md — Click selection (single, shift+click, ctrl+click, background click)
-- [ ] 03-04-PLAN.md — Marquee drag selection with coordinate transforms
+- [x] 03-01-PLAN.md — Selection state foundation, AABB intersection utility, react-hotkeys-hook install
+- [x] 03-02-PLAN.md — SelectionOverlay component, keyboard shortcuts (undo/redo/delete/escape)
+- [x] 03-03-PLAN.md — Click selection (single, shift+click, ctrl+click, background click)
+- [x] 03-04-PLAN.md — Marquee drag selection with coordinate transforms
 
 ### Phase 4: Palette & Element Creation
 **Goal**: Enable users to drag components from a palette onto the canvas, creating element instances with correct coordinate transforms and establishing the three-panel layout scaffolding.
@@ -199,7 +199,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-01-23 |
 | 2. Element Library | 4/4 | Complete | 2026-01-23 |
-| 3. Selection & History | 0/4 | Not started | - |
+| 3. Selection & History | 4/4 | Complete | 2026-01-23 |
 | 4. Palette & Element Creation | 0/TBD | Not started | - |
 | 5. Properties & Transform | 0/TBD | Not started | - |
 | 6. Alignment & Polish | 0/TBD | Not started | - |
