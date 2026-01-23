@@ -58,7 +58,7 @@ Plans:
   4. User can add Label elements for text display with font, size, color configuration
   5. User can add Level Meter elements (peak meter) with orientation and color stops
   6. User can add Image elements for backgrounds, logos, and decorative graphics
-  7. All element properties from docs/SPECIFICATION.md are available in property panel
+  7. Element type interfaces support all properties from docs/SPECIFICATION.md
 
 **Plans**: 4 plans in 4 waves
 
