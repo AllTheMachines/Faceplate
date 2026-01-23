@@ -32,11 +32,33 @@ function App() {
   const offsetX = useStore((state) => state.offsetX)
   const offsetY = useStore((state) => state.offsetY)
   const addElement = useStore((state) => state.addElement)
+  const updateElement = useStore((state) => state.updateElement)
 
-  // Handle drag end - create element at drop position
+  // Handle drag end - create element at drop position or move existing element
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+    const { active, over, delta } = event
 
+    // Check if this is an element move (dragging existing element)
+    const sourceType = active.data.current?.sourceType
+    if (sourceType === 'element') {
+      // Element move - update position
+      const element = active.data.current?.element
+      if (!element) return
+
+      // Convert screen delta to canvas delta (divide by scale)
+      const canvasDeltaX = delta.x / scale
+      const canvasDeltaY = delta.y / scale
+
+      // Calculate new position
+      const newX = element.x + canvasDeltaX
+      const newY = element.y + canvasDeltaY
+
+      // Update element position
+      updateElement(element.id, { x: newX, y: newY })
+      return
+    }
+
+    // Palette drop - create new element at drop position
     // Only handle drops over canvas
     if (!over || over.id !== 'canvas-droppable') {
       return
