@@ -2,6 +2,7 @@ import { useStore } from '../../store'
 import { ZOrderPanel } from '../Canvas/ZOrderPanel'
 import { PropertyPanel } from '../Properties'
 import { HelpPanel } from './HelpPanel'
+import { SaveLoadPanel } from '../project/SaveLoadPanel'
 
 export function RightPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -17,6 +18,7 @@ export function RightPanel() {
 
   return (
     <div className="bg-gray-800 border-l border-gray-700 overflow-y-auto flex flex-col">
+      <SaveLoadPanel />
       <div className="p-4 flex-1 overflow-y-auto">
         <h2 className="text-lg font-semibold text-gray-100 mb-4">Properties</h2>
 
