@@ -20,6 +20,12 @@ export interface ElementsSlice {
   addToSelection: (id: string) => void
   clearSelection: () => void
   selectMultiple: (ids: string[]) => void
+
+  // Z-order actions
+  moveToFront: (id: string) => void
+  moveToBack: (id: string) => void
+  moveForward: (id: string) => void
+  moveBackward: (id: string) => void
 }
 
 export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSlice> = (
@@ -95,5 +101,46 @@ export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSl
   selectMultiple: (ids) =>
     set({
       selectedIds: ids,
+    }),
+
+  // Z-order actions
+  moveToFront: (id) =>
+    set((state) => {
+      const element = state.elements.find((el) => el.id === id)
+      if (!element) return state
+      return {
+        elements: [...state.elements.filter((el) => el.id !== id), element],
+      }
+    }),
+
+  moveToBack: (id) =>
+    set((state) => {
+      const element = state.elements.find((el) => el.id === id)
+      if (!element) return state
+      return {
+        elements: [element, ...state.elements.filter((el) => el.id !== id)],
+      }
+    }),
+
+  moveForward: (id) =>
+    set((state) => {
+      const index = state.elements.findIndex((el) => el.id === id)
+      if (index === -1 || index === state.elements.length - 1) return state
+      const newElements = [...state.elements]
+      const temp = newElements[index]!
+      newElements[index] = newElements[index + 1]!
+      newElements[index + 1] = temp
+      return { elements: newElements }
+    }),
+
+  moveBackward: (id) =>
+    set((state) => {
+      const index = state.elements.findIndex((el) => el.id === id)
+      if (index <= 0) return state
+      const newElements = [...state.elements]
+      const temp = newElements[index]!
+      newElements[index] = newElements[index - 1]!
+      newElements[index - 1] = temp
+      return { elements: newElements }
     }),
 })
