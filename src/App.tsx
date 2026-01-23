@@ -1,4 +1,10 @@
-import { useEffect } from 'react'
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
@@ -12,146 +18,88 @@ import {
 } from './types/elements'
 
 function App() {
-  useEffect(() => {
-    const store = useStore.getState()
+  // Configure sensors with activation constraint to prevent accidental drags
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px drag threshold prevents accidental drags
+      },
+    })
+  )
 
-    // Only add demo elements if canvas is empty
-    // (This is for demo/testing - can be removed once property panel is built)
-    if (store.elements.length === 0) {
-      // Row 1: Knobs
-      store.addElement(
-        createKnob({
-          x: 50,
-          y: 50,
-          name: 'Gain',
-          value: 0.75,
-        })
-      )
-      store.addElement(
-        createKnob({
-          x: 150,
-          y: 50,
-          name: 'Pan',
-          value: 0.5,
-          fillColor: '#10b981', // emerald
-        })
-      )
+  // Get store state for drag-drop handling
+  const scale = useStore((state) => state.scale)
+  const offsetX = useStore((state) => state.offsetX)
+  const offsetY = useStore((state) => state.offsetY)
+  const addElement = useStore((state) => state.addElement)
 
-      // Row 2: Sliders
-      store.addElement(
-        createSlider({
-          x: 280,
-          y: 30,
-          name: 'Volume',
-          orientation: 'vertical',
-          value: 0.6,
-          height: 120,
-          width: 40,
-        })
-      )
-      store.addElement(
-        createSlider({
-          x: 340,
-          y: 80,
-          name: 'Cutoff',
-          orientation: 'horizontal',
-          value: 0.3,
-          width: 120,
-          height: 30,
-        })
-      )
+  // Handle drag end - create element at drop position
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
 
-      // Row 3: Buttons
-      store.addElement(
-        createButton({
-          x: 50,
-          y: 180,
-          name: 'Play',
-          label: 'Play',
-          width: 80,
-          height: 36,
-        })
-      )
-      store.addElement(
-        createButton({
-          x: 140,
-          y: 180,
-          name: 'Bypass',
-          label: 'Bypass',
-          mode: 'toggle',
-          pressed: true,
-          width: 80,
-          height: 36,
-          backgroundColor: '#ef4444', // red when active
-        })
-      )
-
-      // Row 4: Labels
-      store.addElement(
-        createLabel({
-          x: 50,
-          y: 240,
-          name: 'Title',
-          text: 'My Plugin',
-          fontSize: 24,
-          fontWeight: 700,
-          width: 200,
-          height: 36,
-        })
-      )
-      store.addElement(
-        createLabel({
-          x: 50,
-          y: 280,
-          name: 'Subtitle',
-          text: 'v1.0.0',
-          fontSize: 12,
-          color: '#9ca3af',
-          width: 100,
-          height: 20,
-        })
-      )
-
-      // Meters
-      store.addElement(
-        createMeter({
-          x: 500,
-          y: 30,
-          name: 'Level L',
-          value: 0.7,
-          width: 20,
-          height: 140,
-        })
-      )
-      store.addElement(
-        createMeter({
-          x: 530,
-          y: 30,
-          name: 'Level R',
-          value: 0.55,
-          width: 20,
-          height: 140,
-        })
-      )
-
-      // Image placeholder
-      store.addElement(
-        createImage({
-          x: 600,
-          y: 30,
-          name: 'Logo',
-          width: 100,
-          height: 100,
-          // No src - will show placeholder
-        })
-      )
+    // Only handle drops over canvas
+    if (!over || over.id !== 'canvas-droppable') {
+      return
     }
-  }, [])
+
+    // Get element type and variant from draggable data
+    const { elementType, variant } = active.data.current || {}
+    if (!elementType) return
+
+    // Get the canvas viewport element to calculate offset
+    const canvasViewport = document.querySelector('.canvas-viewport')
+    if (!canvasViewport) return
+    const viewportRect = canvasViewport.getBoundingClientRect()
+
+    // Get drop position from the pointer event
+    // Use delta to calculate final position from initial pointer position
+    const pointerEvent = event.activatorEvent as PointerEvent
+    const finalX = pointerEvent.clientX + (event.delta?.x || 0)
+    const finalY = pointerEvent.clientY + (event.delta?.y || 0)
+
+    // Transform screen coordinates to canvas coordinates:
+    // 1. Subtract viewport offset to get relative position in viewport
+    // 2. Subtract offsetX/Y to account for pan
+    // 3. Divide by scale to account for zoom
+    const canvasX = (finalX - viewportRect.left - offsetX) / scale
+    const canvasY = (finalY - viewportRect.top - offsetY) / scale
+
+    // Create element using factory function based on type
+    let newElement
+    switch (elementType) {
+      case 'knob':
+        newElement = createKnob({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'slider':
+        newElement = createSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'button':
+        newElement = createButton({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'label':
+        newElement = createLabel({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'meter':
+        newElement = createMeter({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'image':
+        newElement = createImage({ x: canvasX, y: canvasY, ...variant })
+        break
+      default:
+        return
+    }
+
+    addElement(newElement)
+  }
+
+  // Demo elements removed - users add elements via palette drag-drop
 
   return (
-    <ThreePanelLayout>
-      <CanvasStage />
-    </ThreePanelLayout>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <ThreePanelLayout>
+        <CanvasStage />
+      </ThreePanelLayout>
+    </DndContext>
   )
 }
 
