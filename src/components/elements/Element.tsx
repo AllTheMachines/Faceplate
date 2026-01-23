@@ -1,5 +1,6 @@
 import React from 'react'
 import { ElementConfig } from '../../types/elements'
+import { useStore } from '../../store'
 import { BaseElement } from './BaseElement'
 import { KnobRenderer } from './renderers/KnobRenderer'
 import { SliderRenderer } from './renderers/SliderRenderer'
@@ -13,6 +14,27 @@ interface ElementProps {
 }
 
 function ElementComponent({ element }: ElementProps) {
+  // Get selection actions from store
+  const selectElement = useStore((state) => state.selectElement)
+  const toggleSelection = useStore((state) => state.toggleSelection)
+  const addToSelection = useStore((state) => state.addToSelection)
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Stop propagation to prevent canvas background click
+    e.stopPropagation()
+
+    if (e.shiftKey) {
+      // Shift+click: add to selection
+      addToSelection(element.id)
+    } else if (e.ctrlKey || e.metaKey) {
+      // Ctrl/Cmd+click: toggle in selection
+      toggleSelection(element.id)
+    } else {
+      // Plain click: select only this element
+      selectElement(element.id)
+    }
+  }
+
   const renderContent = () => {
     switch (element.type) {
       case 'knob':
@@ -35,7 +57,11 @@ function ElementComponent({ element }: ElementProps) {
     }
   }
 
-  return <BaseElement element={element}>{renderContent()}</BaseElement>
+  return (
+    <BaseElement element={element} onClick={handleClick}>
+      {renderContent()}
+    </BaseElement>
+  )
 }
 
 // Memoize to prevent re-renders when other elements change
