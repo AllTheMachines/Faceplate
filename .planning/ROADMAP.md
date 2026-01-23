@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - State management, coordinate systems, canvas basics
 - [x] **Phase 2: Element Library** - Core element types (knobs, sliders, buttons, meters, labels, images)
 - [x] **Phase 3: Selection & History** - Selection model, undo/redo architecture
-- [ ] **Phase 4: Palette & Element Creation** - Drag-drop, element instantiation, layout scaffolding
+- [x] **Phase 4: Palette & Element Creation** - Drag-drop, element instantiation, layout scaffolding
 - [ ] **Phase 5: Properties & Transform** - Property panel, move/resize elements
 - [ ] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
 - [ ] **Phase 7: Save/Load** - JSON persistence, project validation
@@ -113,8 +113,8 @@ Plans:
 - [x] 04-02-PLAN.md — DndContext wrapper, droppable canvas, coordinate transform for drops
 - [x] 04-03-PLAN.md — Z-order actions in store, keyboard shortcuts, ZOrderPanel in right panel
 - [x] 04-04-PLAN.md — Custom SVG import with svgson, layer detection, react-dropzone upload
-- [ ] 04-05-PLAN.md — Gap closure: Fix element type mismatch (normalize palette to base types)
-- [ ] 04-06-PLAN.md — Gap closure: Fix SVG hardcoded position (center in viewport)
+- [x] 04-05-PLAN.md — Gap closure: Fix element type mismatch (normalize palette to base types)
+- [x] 04-06-PLAN.md — Gap closure: Fix SVG hardcoded position (center in viewport)
 
 ### Phase 5: Properties & Transform
 **Goal**: Build dynamic property panel and transform controls that let users configure elements precisely and manipulate them spatially with immediate visual feedback.
@@ -205,7 +205,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. Foundation | 3/3 | Complete | 2026-01-23 |
 | 2. Element Library | 4/4 | Complete | 2026-01-23 |
 | 3. Selection & History | 4/4 | Complete | 2026-01-23 |
-| 4. Palette & Element Creation | 4/6 | Gap closure | - |
+| 4. Palette & Element Creation | 6/6 | Complete | 2026-01-23 |
 | 5. Properties & Transform | 0/TBD | Not started | - |
 | 6. Alignment & Polish | 0/TBD | Not started | - |
 | 7. Save/Load | 0/TBD | Not started | - |
