@@ -25,6 +25,7 @@ export function Canvas() {
   // Get elements
   const elements = useStore((state) => state.elements)
   const selectedIds = useStore((state) => state.selectedIds)
+  const clearSelection = useStore((state) => state.clearSelection)
 
   // Use pan and zoom hooks
   const { handlers: panHandlers } = usePan(viewportRef)
@@ -101,6 +102,7 @@ export function Canvas() {
               position: 'relative',
               ...getBackgroundStyle(),
             }}
+            onClick={clearSelection}
           >
             {/* Elements render here */}
             {elements.map((element) => (
