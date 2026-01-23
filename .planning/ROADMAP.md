@@ -175,10 +175,11 @@ Plans:
   4. User sees clear error messages if loading a corrupt or invalid project file
   5. All element properties, canvas settings, and layer order persist correctly
 
-**Plans**: TBD
+**Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 07-01-PLAN.md — Install Zod/browser-fs-access, create project schemas and serialization service
+- [ ] 07-02-PLAN.md — File system service, SaveLoadPanel UI, store integration
 
 ### Phase 8: Code Export
 **Goal**: Generate working JUCE WebView2 code (HTML/CSS/JS + C++ boilerplate) from the canvas design with sensible IDs and proper WebSliderRelay bindings.
@@ -213,5 +214,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Palette & Element Creation | 6/6 | Complete | 2026-01-23 |
 | 5. Properties & Transform | 5/5 | Complete | 2026-01-23 |
 | 6. Alignment & Polish | 2/2 | Complete | 2026-01-23 |
-| 7. Save/Load | 0/TBD | Not started | - |
+| 7. Save/Load | 0/2 | Not started | - |
 | 8. Code Export | 0/TBD | Not started | - |
