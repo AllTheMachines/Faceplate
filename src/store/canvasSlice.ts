@@ -25,7 +25,7 @@ export interface CanvasSlice {
   setCanvasDimensions: (width: number, height: number) => void
   setBackgroundColor: (color: string) => void
   setBackgroundType: (type: 'color' | 'gradient' | 'image') => void
-  setGradientConfig: (config: GradientConfig) => void
+  setGradientConfig: (config: GradientConfig | undefined) => void
   setSnapToGrid: (enabled: boolean) => void
   setGridSize: (size: number) => void
 }
