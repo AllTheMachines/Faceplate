@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { useStore } from '../../store'
-import { usePan, useZoom, useKeyboardShortcuts, useMarquee } from './hooks'
+import { usePan, useZoom, useKeyboardShortcuts, useMarquee, useElementNudge } from './hooks'
 import { Element } from '../elements'
 import { SelectionOverlay } from './SelectionOverlay'
 import { MarqueeSelection } from './MarqueeSelection'
@@ -44,6 +44,7 @@ export function Canvas() {
 
   // Use keyboard shortcuts
   useKeyboardShortcuts()
+  useElementNudge()
 
   // Combine refs for canvas background (both droppable and local ref)
   // Use effect to sync the droppable ref after canvasBackgroundRef is set
