@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 4 of 8 (Palette & Element Creation)
-Plan: 3 of 4 in phase (04-01, 04-03, 04-04 complete; 04-02 skipped)
-Status: In progress
-Last activity: 2026-01-23 — Completed 04-04-PLAN.md (Custom SVG import)
+Plan: 4 of 4 in phase complete
+Status: Phase 4 complete
+Last activity: 2026-01-23 — Completed 04-02-PLAN.md (Drag-drop to canvas)
 
-Progress: [████░░░░░░] 40% (3/8 phases complete, 3/4 plans in Phase 4)
+Progress: [████░░░░░░] 50% (4/8 phases complete)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
-- Average duration: 3.33 min
-- Total execution time: 0.78 hours
+- Total plans completed: 15
+- Average duration: 3.30 min
+- Total execution time: 0.82 hours
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [████░░░░░░] 40% (3/8 phases complete, 3/4 plans i
 | 01-foundation | 3/3 | 9.5 min | 3.17 min |
 | 02-element-library | 4/4 | 15.6 min | 3.9 min |
 | 03-selection-history | 4/4 | 9.29 min | 2.32 min |
-| 04-palette-element-creation | 3/4 | 11.09 min | 3.70 min |
+| 04-palette-element-creation | 4/4 | 16.09 min | 4.02 min |
 
 **Recent Trend:**
 - 01-01: 5.5 min (foundation infrastructure)
@@ -45,9 +45,10 @@ Progress: [████░░░░░░] 40% (3/8 phases complete, 3/4 plans i
 - 03-03: 1.45 min (click-to-select functionality)
 - 03-04: 3.02 min (marquee selection)
 - 04-01: 4.03 min (palette components with drag-drop)
+- 04-02: 5 min (drag-drop to canvas with coordinate transform)
 - 04-03: 3.7 min (z-order management)
 - 04-04: 3.36 min (custom SVG import with layer detection)
-- Trend: Phase 4 velocity improving (~3.7 min per plan, down from 3.87)
+- Trend: Phase 4 complete at 4.02 min average per plan
 
 *Updated after each plan completion*
 
@@ -110,6 +111,9 @@ Recent decisions affecting current work:
 - **Layer naming conventions** (04-04): Detects indicator, thumb, track, fill, glow via id and inkscape:label attributes
 - **SVG data URL storage** (04-04): SVG stored as data URL in image element src for inline rendering
 - **Preview-before-add pattern** (04-04): Shows SVG preview, dimensions, and detected layers before adding to canvas
+- **Drag activation threshold** (04-02): 8px drag threshold prevents accidental drags while remaining responsive
+- **Droppable target boundary** (04-02): Droppable on canvas-background (not viewport) rejects drops outside canvas bounds
+- **Coordinate transform for drag-drop** (04-02): (finalX - viewportRect.left - offsetX) / scale handles zoom and pan for correct element placement
 
 ### Pending Todos
 
@@ -162,14 +166,19 @@ Recent decisions affecting current work:
 - ✅ Real-time selection updates during drag using AABB intersection
 - ✅ Pan mode conflict prevention (marquee disabled when spacebar held)
 
-**Phase 4 (Palette & Element Creation):** IN PROGRESS (3/4 plans)
+**Phase 4 (Palette & Element Creation):** COMPLETE (4/4 plans)
 - ✅ Palette components with visual previews (Plan 01)
   - @dnd-kit/core@6.3.1 installed
   - Palette.tsx with 6 categorized sections
   - PaletteItem.tsx uses useDraggable hook
   - Visual previews use actual element renderers at reduced scale
   - LeftPanel integration complete
-- ⏭️ Plan 02 skipped (assumed superseded by later plans)
+- ✅ Drag-drop to canvas (Plan 02)
+  - DndContext wraps App with PointerSensor (8px activation threshold)
+  - handleDragEnd with coordinate transform: (screen - viewportRect - offset) / scale
+  - Canvas droppable area with blue ring visual feedback
+  - Elements instantiated at correct position accounting for zoom/pan
+  - Demo elements removed - users add via palette
 - ✅ Z-order management with keyboard shortcuts and UI (Plan 03)
   - Array-based z-order (last element renders on top)
   - ZOrderPanel in right panel with 4 buttons
@@ -179,7 +188,7 @@ Recent decisions affecting current work:
   - SVG parsing utility with layer detection (indicator, thumb, track, fill, glow)
   - CustomSVGUpload component with drag-drop, preview, and layer listing
   - SVG files added to canvas as image elements with data URL
-- Next: Complete any remaining Phase 4 plans or proceed to Phase 5
+- Next: Proceed to Phase 5 (Property Panel)
 
 **Phase 8 (Code Export):**
 - JUCE WebView2 API integration needs deeper research during planning
@@ -187,7 +196,7 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-01-23 21:54 UTC (phase execution)
-Stopped at: Completed 04-04-PLAN.md (Custom SVG import)
+Last session: 2026-01-23 21:56 UTC (phase execution)
+Stopped at: Completed 04-02-PLAN.md (Drag-drop to canvas) - Phase 4 complete
 Resume file: None
-Next: Complete any remaining Phase 4 plans or proceed to Phase 5
+Next: Proceed to Phase 5 (Property Panel)
