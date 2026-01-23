@@ -9,8 +9,8 @@ export function RightPanel() {
   const setBackgroundColor = useStore((state) => state.setBackgroundColor)
 
   return (
-    <div className="bg-gray-800 border-l border-gray-700 overflow-y-auto">
-      <div className="p-4">
+    <div className="bg-gray-800 border-l border-gray-700 overflow-y-auto flex flex-col">
+      <div className="p-4 flex-1">
         <h2 className="text-lg font-semibold text-gray-100 mb-4">Properties</h2>
 
         {/* Canvas Settings Section */}
@@ -76,6 +76,7 @@ export function RightPanel() {
 
         <p className="text-sm text-gray-400">Full property panel (Phase 5)</p>
       </div>
+      <ZOrderPanel />
     </div>
   )
 }
