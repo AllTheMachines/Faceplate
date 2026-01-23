@@ -3,6 +3,7 @@ import { ElementConfig } from '../../types/elements'
 import { BaseElement } from './BaseElement'
 import { KnobRenderer } from './renderers/KnobRenderer'
 import { SliderRenderer } from './renderers/SliderRenderer'
+import { ButtonRenderer } from './renderers/ButtonRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -16,8 +17,7 @@ function ElementComponent({ element }: ElementProps) {
       case 'slider':
         return <SliderRenderer config={element} />
       case 'button':
-        // Placeholder for now (Phase 2 Plan 03)
-        return <div>Button</div>
+        return <ButtonRenderer config={element} />
       case 'label':
         // Placeholder for now (Phase 2 Plan 03)
         return <div>Label</div>
