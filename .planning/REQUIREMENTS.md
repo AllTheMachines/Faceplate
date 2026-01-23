@@ -17,31 +17,31 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CANV-06**: Marquee (drag) selection
 - [x] **CANV-07**: Delete selected elements
 - [ ] **CANV-08**: Background color/gradient or image
-- [ ] **CANV-09**: Foreground/overlay images
-- [ ] **CANV-10**: Element z-order (layering)
+- [x] **CANV-09**: Foreground/overlay images
+- [x] **CANV-10**: Element z-order (layering)
 
 ### Palette
 
-- [ ] **PALT-01**: Component palette with categorized controls
-- [ ] **PALT-02**: Drag from palette onto canvas
-- [ ] **PALT-03**: Built-in SVG library (knobs, sliders, buttons, meters, labels)
-- [ ] **PALT-04**: Custom SVG import with layer name detection (indicator, thumb, track, fill)
+- [x] **PALT-01**: Component palette with categorized controls
+- [x] **PALT-02**: Drag from palette onto canvas
+- [x] **PALT-03**: Built-in SVG library (knobs, sliders, buttons, meters, labels)
+- [x] **PALT-04**: Custom SVG import with layer name detection (indicator, thumb, track, fill)
 
 ### Manipulation
 
-- [ ] **MANP-01**: Move elements by dragging
-- [ ] **MANP-02**: Resize elements with handles
-- [ ] **MANP-03**: Arrow key nudge (1px, shift+10px)
-- [ ] **MANP-04**: Snap to grid
+- [x] **MANP-01**: Move elements by dragging
+- [x] **MANP-02**: Resize elements with handles
+- [x] **MANP-03**: Arrow key nudge (1px, shift+10px)
+- [x] **MANP-04**: Snap to grid
 - [ ] **MANP-05**: Copy/paste elements (Ctrl+C/V)
 
 ### Properties
 
-- [ ] **PROP-01**: Property panel for selected element
-- [ ] **PROP-02**: Direct numeric input for all values
-- [ ] **PROP-03**: Color pickers for color properties
-- [ ] **PROP-04**: Element name field (becomes ID in export)
-- [ ] **PROP-05**: Parameter ID field for JUCE binding
+- [x] **PROP-01**: Property panel for selected element
+- [x] **PROP-02**: Direct numeric input for all values
+- [x] **PROP-03**: Color pickers for color properties
+- [x] **PROP-04**: Element name field (becomes ID in export)
+- [x] **PROP-05**: Parameter ID field for JUCE binding
 
 ### History
 
@@ -146,22 +146,22 @@ Which phases cover which requirements. Updated during roadmap revision.
 | CANV-06 | Phase 3 | Complete |
 | CANV-07 | Phase 3 | Complete |
 | CANV-08 | Phase 1 | Complete |
-| CANV-09 | Phase 4 | Pending |
-| CANV-10 | Phase 4 | Pending |
-| PALT-01 | Phase 4 | Pending |
-| PALT-02 | Phase 4 | Pending |
-| PALT-03 | Phase 4 | Pending |
-| PALT-04 | Phase 4 | Pending |
-| MANP-01 | Phase 5 | Pending |
-| MANP-02 | Phase 5 | Pending |
-| MANP-03 | Phase 5 | Pending |
-| MANP-04 | Phase 5 | Pending |
+| CANV-09 | Phase 4 | Complete |
+| CANV-10 | Phase 4 | Complete |
+| PALT-01 | Phase 4 | Complete |
+| PALT-02 | Phase 4 | Complete |
+| PALT-03 | Phase 4 | Complete |
+| PALT-04 | Phase 4 | Complete |
+| MANP-01 | Phase 5 | Complete |
+| MANP-02 | Phase 5 | Complete |
+| MANP-03 | Phase 5 | Complete |
+| MANP-04 | Phase 5 | Complete |
 | MANP-05 | Phase 6 | Pending |
-| PROP-01 | Phase 5 | Pending |
-| PROP-02 | Phase 5 | Pending |
-| PROP-03 | Phase 5 | Pending |
-| PROP-04 | Phase 5 | Pending |
-| PROP-05 | Phase 5 | Pending |
+| PROP-01 | Phase 5 | Complete |
+| PROP-02 | Phase 5 | Complete |
+| PROP-03 | Phase 5 | Complete |
+| PROP-04 | Phase 5 | Complete |
+| PROP-05 | Phase 5 | Complete |
 | HIST-01 | Phase 3 | Complete |
 | HIST-02 | Phase 3 | Complete |
 | PERS-01 | Phase 7 | Pending |
