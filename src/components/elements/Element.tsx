@@ -29,7 +29,8 @@ function ElementComponent({ element }: ElementProps) {
         return <ImageRenderer config={element} />
       default:
         // TypeScript exhaustive check
-        const _exhaustive: never = element
+        const exhaustive: never = element
+        void exhaustive
         return null
     }
   }

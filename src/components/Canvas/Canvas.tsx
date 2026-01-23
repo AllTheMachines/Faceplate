@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState } from 'react'
 import { useStore } from '../../store'
-import { usePan, useZoom } from './hooks'
+import { usePan, useZoom, useKeyboardShortcuts } from './hooks'
 import { Element } from '../elements'
+import { SelectionOverlay } from './SelectionOverlay'
 
 export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -23,10 +24,14 @@ export function Canvas() {
 
   // Get elements
   const elements = useStore((state) => state.elements)
+  const selectedIds = useStore((state) => state.selectedIds)
 
   // Use pan and zoom hooks
   const { handlers: panHandlers } = usePan(viewportRef)
   useZoom(viewportRef)
+
+  // Use keyboard shortcuts
+  useKeyboardShortcuts()
 
   // Measure viewport size with ResizeObserver
   useEffect(() => {
@@ -100,6 +105,11 @@ export function Canvas() {
             {/* Elements render here */}
             {elements.map((element) => (
               <Element key={element.id} element={element} />
+            ))}
+
+            {/* Selection overlays */}
+            {selectedIds.map((id) => (
+              <SelectionOverlay key={`selection-${id}`} elementId={id} />
             ))}
           </div>
         </div>

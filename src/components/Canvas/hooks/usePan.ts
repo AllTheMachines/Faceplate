@@ -1,7 +1,7 @@
 import { useEffect, useCallback, RefObject } from 'react'
 import { useStore } from '../../../store'
 
-export function usePan(viewportRef: RefObject<HTMLDivElement>) {
+export function usePan(_viewportRef: RefObject<HTMLDivElement>) {
   const isPanning = useStore((state) => state.isPanning)
   const setPanning = useStore((state) => state.setPanning)
   const dragStart = useStore((state) => state.dragStart)
