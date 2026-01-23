@@ -6,6 +6,7 @@ import { SliderRenderer } from './renderers/SliderRenderer'
 import { ButtonRenderer } from './renderers/ButtonRenderer'
 import { LabelRenderer } from './renderers/LabelRenderer'
 import { MeterRenderer } from './renderers/MeterRenderer'
+import { ImageRenderer } from './renderers/ImageRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -25,8 +26,7 @@ function ElementComponent({ element }: ElementProps) {
       case 'meter':
         return <MeterRenderer config={element} />
       case 'image':
-        // Placeholder for now (Phase 2 Plan 03)
-        return <div>Image</div>
+        return <ImageRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const _exhaustive: never = element
