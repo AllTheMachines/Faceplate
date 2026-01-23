@@ -106,13 +106,15 @@ Plans:
   5. User can add foreground/overlay images to the canvas
   6. User can reorder elements (z-order/layering) to control visual stacking
 
-**Plans**: 4 plans in 2 waves
+**Plans**: 6 plans (4 core + 2 gap closure)
 
 Plans:
-- [ ] 04-01-PLAN.md — Install @dnd-kit, create categorized palette with element previews
-- [ ] 04-02-PLAN.md — DndContext wrapper, droppable canvas, coordinate transform for drops
-- [ ] 04-03-PLAN.md — Z-order actions in store, keyboard shortcuts, ZOrderPanel in right panel
-- [ ] 04-04-PLAN.md — Custom SVG import with svgson, layer detection, react-dropzone upload
+- [x] 04-01-PLAN.md — Install @dnd-kit, create categorized palette with element previews
+- [x] 04-02-PLAN.md — DndContext wrapper, droppable canvas, coordinate transform for drops
+- [x] 04-03-PLAN.md — Z-order actions in store, keyboard shortcuts, ZOrderPanel in right panel
+- [x] 04-04-PLAN.md — Custom SVG import with svgson, layer detection, react-dropzone upload
+- [ ] 04-05-PLAN.md — Gap closure: Fix element type mismatch (normalize palette to base types)
+- [ ] 04-06-PLAN.md — Gap closure: Fix SVG hardcoded position (center in viewport)
 
 ### Phase 5: Properties & Transform
 **Goal**: Build dynamic property panel and transform controls that let users configure elements precisely and manipulate them spatially with immediate visual feedback.
@@ -203,7 +205,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. Foundation | 3/3 | Complete | 2026-01-23 |
 | 2. Element Library | 4/4 | Complete | 2026-01-23 |
 | 3. Selection & History | 4/4 | Complete | 2026-01-23 |
-| 4. Palette & Element Creation | 0/4 | Not started | - |
+| 4. Palette & Element Creation | 4/6 | Gap closure | - |
 | 5. Properties & Transform | 0/TBD | Not started | - |
 | 6. Alignment & Polish | 0/TBD | Not started | - |
 | 7. Save/Load | 0/TBD | Not started | - |
