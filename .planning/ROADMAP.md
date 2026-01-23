@@ -37,10 +37,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. User can configure canvas background color, gradient, or image
   5. Canvas maintains correct coordinate transforms at all zoom levels (0.25x, 1x, 4x)
 
-**Plans**: TBD
+**Plans**: 3 plans in 3 waves
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 01-01-PLAN.md — Project setup: Vite, React 18, TypeScript, Zustand store, coordinate utilities
+- [ ] 01-02-PLAN.md — Three-panel layout, canvas stage, background rendering
+- [ ] 01-03-PLAN.md — Pan (spacebar+drag) and zoom (scroll/pinch) interactions
 
 ### Phase 2: Element Library
 **Goal**: Implement the six core element types with full property interfaces and rendering, enabling users to build 80% of audio plugin UIs with real components from Phase 3 onward.
@@ -185,11 +187,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/3 | Ready to execute | - |
 | 2. Element Library | 0/TBD | Not started | - |
 | 3. Selection & History | 0/TBD | Not started | - |
 | 4. Palette & Element Creation | 0/TBD | Not started | - |
