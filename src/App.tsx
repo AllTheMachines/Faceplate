@@ -8,6 +8,7 @@ import {
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
+import { snapValue } from './store/canvasSlice'
 import {
   createKnob,
   createSlider,
@@ -33,6 +34,8 @@ function App() {
   const offsetY = useStore((state) => state.offsetY)
   const addElement = useStore((state) => state.addElement)
   const updateElement = useStore((state) => state.updateElement)
+  const snapToGrid = useStore((state) => state.snapToGrid)
+  const gridSize = useStore((state) => state.gridSize)
 
   // Handle drag end - create element at drop position or move existing element
   const handleDragEnd = (event: DragEndEvent) => {
@@ -53,8 +56,12 @@ function App() {
       const newX = element.x + canvasDeltaX
       const newY = element.y + canvasDeltaY
 
+      // Apply snap-to-grid if enabled
+      const finalX = snapToGrid ? snapValue(newX, gridSize) : newX
+      const finalY = snapToGrid ? snapValue(newY, gridSize) : newY
+
       // Update element position
-      updateElement(element.id, { x: newX, y: newY })
+      updateElement(element.id, { x: finalX, y: finalY })
       return
     }
 

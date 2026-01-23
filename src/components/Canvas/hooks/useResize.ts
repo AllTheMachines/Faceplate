@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useStore } from '../../../store'
+import { snapValue } from '../../../store/canvasSlice'
 
 type HandlePosition = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w'
 
@@ -19,6 +20,8 @@ export function useResize(): UseResizeReturn {
   const scale = useStore((state) => state.scale)
   const getElement = useStore((state) => state.getElement)
   const updateElement = useStore((state) => state.updateElement)
+  const snapToGrid = useStore((state) => state.snapToGrid)
+  const gridSize = useStore((state) => state.gridSize)
 
   const startResize = useCallback((e: React.MouseEvent, position: HandlePosition, id: string) => {
     e.stopPropagation()
@@ -115,6 +118,32 @@ export function useResize(): UseResizeReturn {
     }
 
     const handleMouseUp = () => {
+      // Apply snap-to-grid on mouse up if enabled
+      if (snapToGrid) {
+        const element = getElement(elementId)
+        if (element) {
+          const snappedUpdates: Partial<{ x: number; y: number; width: number; height: number }> = {}
+
+          // Snap position
+          if (element.x !== undefined) {
+            snappedUpdates.x = snapValue(element.x, gridSize)
+          }
+          if (element.y !== undefined) {
+            snappedUpdates.y = snapValue(element.y, gridSize)
+          }
+
+          // Snap dimensions
+          if (element.width !== undefined) {
+            snappedUpdates.width = snapValue(element.width, gridSize)
+          }
+          if (element.height !== undefined) {
+            snappedUpdates.height = snapValue(element.height, gridSize)
+          }
+
+          updateElement(elementId, snappedUpdates)
+        }
+      }
+
       setIsResizing(false)
       setActiveHandle(null)
       setElementId(null)
@@ -127,7 +156,7 @@ export function useResize(): UseResizeReturn {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isResizing, activeHandle, elementId, scale, updateElement])
+  }, [isResizing, activeHandle, elementId, scale, updateElement, snapToGrid, gridSize, getElement])
 
   return { isResizing, startResize }
 }
