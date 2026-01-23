@@ -43,54 +43,24 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           diameter: 40,
           width: 40,
           height: 40,
-          ...variant,
+          ...variant, // variant contains { style: 'arc' } for arc knobs
         })
-      case 'knob-arc':
-        return createKnob({
-          ...baseOverrides,
-          diameter: 40,
-          width: 40,
-          height: 40,
-          style: 'arc',
-          ...variant,
-        })
-      case 'slider-vertical':
+      case 'slider':
         return createSlider({
           ...baseOverrides,
-          width: 20,
-          height: 60,
-          orientation: 'vertical',
+          width: variant?.orientation === 'horizontal' ? 60 : 20,
+          height: variant?.orientation === 'horizontal' ? 20 : 60,
           thumbWidth: 12,
           thumbHeight: 12,
-          ...variant,
+          ...variant, // variant contains { orientation: 'vertical' | 'horizontal' }
         })
-      case 'slider-horizontal':
-        return createSlider({
-          ...baseOverrides,
-          width: 60,
-          height: 20,
-          orientation: 'horizontal',
-          thumbWidth: 12,
-          thumbHeight: 12,
-          ...variant,
-        })
-      case 'button-momentary':
+      case 'button':
         return createButton({
           ...baseOverrides,
           width: 60,
           height: 30,
-          mode: 'momentary',
-          label: 'BTN',
-          ...variant,
-        })
-      case 'button-toggle':
-        return createButton({
-          ...baseOverrides,
-          width: 60,
-          height: 30,
-          mode: 'toggle',
-          label: 'TGL',
-          ...variant,
+          label: variant?.mode === 'toggle' ? 'TGL' : 'BTN',
+          ...variant, // variant contains { mode: 'momentary' | 'toggle' }
         })
       case 'label':
         return createLabel({
@@ -101,13 +71,12 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           fontSize: 12,
           ...variant,
         })
-      case 'meter-vertical':
+      case 'meter':
         return createMeter({
           ...baseOverrides,
           width: 16,
           height: 60,
-          orientation: 'vertical',
-          ...variant,
+          ...variant, // variant contains { orientation: 'vertical' }
         })
       case 'image':
         return createImage({
