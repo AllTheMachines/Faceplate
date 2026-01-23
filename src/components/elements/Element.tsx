@@ -5,6 +5,7 @@ import { KnobRenderer } from './renderers/KnobRenderer'
 import { SliderRenderer } from './renderers/SliderRenderer'
 import { ButtonRenderer } from './renderers/ButtonRenderer'
 import { LabelRenderer } from './renderers/LabelRenderer'
+import { MeterRenderer } from './renderers/MeterRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -22,8 +23,7 @@ function ElementComponent({ element }: ElementProps) {
       case 'label':
         return <LabelRenderer config={element} />
       case 'meter':
-        // Placeholder for now (Phase 2 Plan 03)
-        return <div>Meter</div>
+        return <MeterRenderer config={element} />
       case 'image':
         // Placeholder for now (Phase 2 Plan 03)
         return <div>Image</div>
