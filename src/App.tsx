@@ -1,11 +1,10 @@
 import { ThreePanelLayout } from './components/Layout'
+import { CanvasStage } from './components/Canvas'
 
 function App() {
   return (
     <ThreePanelLayout>
-      <div className="flex items-center justify-center h-full">
-        <p className="text-gray-400">Canvas placeholder (Task 2)</p>
-      </div>
+      <CanvasStage />
     </ThreePanelLayout>
   )
 }
