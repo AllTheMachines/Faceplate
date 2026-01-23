@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PaletteCategory } from './PaletteCategory'
+import { CustomSVGUpload } from './CustomSVGUpload'
 
 // Define palette categories and items
 const paletteCategories = [
@@ -66,6 +67,7 @@ export function Palette() {
           onToggle={() => toggleCategory(index)}
         />
       ))}
+      <CustomSVGUpload />
     </div>
   )
 }

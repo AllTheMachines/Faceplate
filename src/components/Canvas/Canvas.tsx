@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
+import { useDroppable } from '@dnd-kit/core'
 import { useStore } from '../../store'
 import { usePan, useZoom, useKeyboardShortcuts, useMarquee } from './hooks'
 import { Element } from '../elements'
@@ -9,6 +10,11 @@ export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const canvasBackgroundRef = useRef<HTMLDivElement>(null)
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 })
+
+  // Setup droppable area for palette items
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: 'canvas-droppable',
+  })
 
   // Get viewport state from store
   const scale = useStore((state) => state.scale)
@@ -38,6 +44,14 @@ export function Canvas() {
 
   // Use keyboard shortcuts
   useKeyboardShortcuts()
+
+  // Combine refs for canvas background (both droppable and local ref)
+  // Use effect to sync the droppable ref after canvasBackgroundRef is set
+  useEffect(() => {
+    if (canvasBackgroundRef.current) {
+      setDroppableRef(canvasBackgroundRef.current)
+    }
+  }, [setDroppableRef])
 
   // Measure viewport size with ResizeObserver
   useEffect(() => {
@@ -100,7 +114,7 @@ export function Canvas() {
           {/* Canvas background (the actual canvas area) */}
           <div
             ref={canvasBackgroundRef}
-            className="canvas-background"
+            className={`canvas-background ${isOver ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}`}
             style={{
               width: `${canvasWidth}px`,
               height: `${canvasHeight}px`,
