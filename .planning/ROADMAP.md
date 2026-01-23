@@ -155,10 +155,11 @@ Plans:
   3. Pasted elements appear offset from originals (not overlapping)
   4. All keyboard shortcuts display in tooltips or help panel
 
-**Plans**: TBD
+**Plans**: 2 plans in 1 wave
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 06-01-PLAN.md — Copy/paste functionality with Ctrl+C/Ctrl+V keyboard shortcuts
+- [ ] 06-02-PLAN.md — Help panel displaying all keyboard shortcuts
 
 ### Phase 7: Save/Load
 **Goal**: Implement JSON serialization with validation and versioning that enables project persistence without breaking on future schema changes.
@@ -211,6 +212,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Selection & History | 4/4 | Complete | 2026-01-23 |
 | 4. Palette & Element Creation | 6/6 | Complete | 2026-01-23 |
 | 5. Properties & Transform | 5/5 | Complete | 2026-01-23 |
-| 6. Alignment & Polish | 0/TBD | Not started | - |
+| 6. Alignment & Polish | 0/2 | Not started | - |
 | 7. Save/Load | 0/TBD | Not started | - |
 | 8. Code Export | 0/TBD | Not started | - |
