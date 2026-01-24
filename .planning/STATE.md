@@ -75,6 +75,7 @@ Key decisions affecting the completed milestone:
 - **Font weight dropdown** (11-02): Show all 9 standard font weights (100-900 by 100s) with human-readable names regardless of font family - browser uses closest available weight per CSS spec
 - **Clickable checkbox labels** (11-01): Wrap checkbox and label in <label> wrapper with cursor-pointer and select-none classes for better UX
 - **Automatic dimension swapping** (11-01): When meter orientation changes, automatically swap width/height for appropriate aspect ratio
+- **Image file picker with base64 embedding** (11-03): Use browser-fs-access for native file picker, convert to base64 data URLs for self-contained designs, dual-input support (file picker + URL)
 
 ### All Phases Complete
 
@@ -101,7 +102,7 @@ None - All 10 phases complete. v1.1 issues documented for next milestone.
 
 ## Session Continuity
 
-Last session: 2026-01-24 14:17 UTC
-Stopped at: Completed 11-01-PLAN.md (Property Panel Fixes)
+Last session: 2026-01-24 14:19 UTC
+Stopped at: Completed 11-03-PLAN.md (Image File Picker)
 Resume file: None
 Next: Continue Phase 11 - remaining plans for element consolidation
