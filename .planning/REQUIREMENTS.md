@@ -9,14 +9,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Canvas
 
-- [ ] **CANV-01**: Canvas with configurable dimensions (e.g., 800x600)
-- [ ] **CANV-02**: Pan with spacebar+drag
-- [ ] **CANV-03**: Zoom with scroll/pinch
+- [x] **CANV-01**: Canvas with configurable dimensions (e.g., 800x600)
+- [x] **CANV-02**: Pan with spacebar+drag
+- [x] **CANV-03**: Zoom with scroll/pinch
 - [x] **CANV-04**: Click to select single element
 - [x] **CANV-05**: Shift+click for multi-select
 - [x] **CANV-06**: Marquee (drag) selection
 - [x] **CANV-07**: Delete selected elements
-- [ ] **CANV-08**: Background color/gradient or image
+- [x] **CANV-08**: Background color/gradient or image
 - [x] **CANV-09**: Foreground/overlay images
 - [x] **CANV-10**: Element z-order (layering)
 
@@ -61,27 +61,27 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### UI/UX
 
-- [ ] **UIUX-01**: Three-panel layout (palette, canvas, properties)
-- [ ] **UIUX-02**: Dark theme
+- [x] **UIUX-01**: Three-panel layout (palette, canvas, properties)
+- [x] **UIUX-02**: Dark theme
 - [x] **UIUX-03**: Delete key shortcut
 
 ### Tech Stack
 
-- [ ] **TECH-01**: React 18 + TypeScript
-- [ ] **TECH-02**: Vite for build
-- [ ] **TECH-03**: Zustand for state management
-- [ ] **TECH-04**: @dnd-kit/core for drag-drop
-- [ ] **TECH-05**: Tailwind CSS for styling
-- [ ] **TECH-06**: Browser-based (no Electron)
+- [x] **TECH-01**: React 18 + TypeScript
+- [x] **TECH-02**: Vite for build
+- [x] **TECH-03**: Zustand for state management
+- [x] **TECH-04**: @dnd-kit/core for drag-drop
+- [x] **TECH-05**: Tailwind CSS for styling
+- [x] **TECH-06**: Browser-based (no Electron)
 
 ### v1 Element Types
 
-- [ ] **ELEM-01**: Knob (arc style, configurable angles/colors/indicator)
-- [ ] **ELEM-02**: Slider (vertical/horizontal, track/thumb styling)
-- [ ] **ELEM-03**: Button (momentary/toggle)
-- [ ] **ELEM-04**: Label (text display)
-- [ ] **ELEM-05**: Level meter (peak, vertical/horizontal)
-- [ ] **ELEM-06**: Image (for backgrounds, logos, decorative)
+- [x] **ELEM-01**: Knob (arc style, configurable angles/colors/indicator)
+- [x] **ELEM-02**: Slider (vertical/horizontal, track/thumb styling)
+- [x] **ELEM-03**: Button (momentary/toggle)
+- [x] **ELEM-04**: Label (text display)
+- [x] **ELEM-05**: Level meter (peak, vertical/horizontal)
+- [x] **ELEM-06**: Image (for backgrounds, logos, decorative)
 
 ### Reference
 
@@ -195,4 +195,4 @@ Which phases cover which requirements. Updated during roadmap revision.
 
 ---
 *Requirements defined: 2025-01-23*
-*Last updated: 2026-01-23 after roadmap revision (Element Library moved to Phase 2)*
+*Last updated: 2026-01-24 after Phase 10 completion (all v1 requirements verified)*

@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: Save/Load** - JSON persistence, project validation
 - [x] **Phase 8: Code Export** - JUCE WebView2 template generation
 - [x] **Phase 9: Enhancements & Bug Fixes** - Bug fixes, locking, fonts, SVG design mode, template import
-- [ ] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
+- [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
 
 ## Phase Details
 
@@ -255,9 +255,9 @@ Plans:
 **Plans**: 3 plans in 1 wave
 
 Plans:
-- [ ] 10-01-PLAN.md — Fix marquee selection position offset
-- [ ] 10-02-PLAN.md — Fix element locking UX (selectable but not movable)
-- [ ] 10-03-PLAN.md — Fix template import element creation
+- [x] 10-01-PLAN.md — Fix marquee selection position offset
+- [x] 10-02-PLAN.md — Fix element locking UX (selectable but not movable)
+- [x] 10-03-PLAN.md — Fix template import element creation
 
 ## Progress
 
@@ -275,4 +275,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 7. Save/Load | 2/2 | Complete | 2026-01-24 |
 | 8. Code Export | 5/5 | Complete | 2026-01-24 |
 | 9. Enhancements & Bug Fixes | 7/7 | Complete | 2026-01-24 |
-| 10. UAT Bug Fixes | 0/3 | Ready | — |
+| 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
