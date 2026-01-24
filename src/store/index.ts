@@ -20,7 +20,7 @@ export const useStore = create<Store>()(
       // Exclude viewport state from undo history (camera position should not be undoable)
       // Elements ARE included in undo history
       partialize: (state) => {
-        const { scale, offsetX, offsetY, isPanning, dragStart, ...rest } = state
+        const { scale, offsetX, offsetY, isPanning, dragStart, lockAllMode, ...rest } = state
         return rest
       },
     }
