@@ -77,6 +77,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     if (!preview) return
 
     setImporting(true)
+    console.log('Starting import:', preview.elements.length, 'elements')
 
     // Update canvas size
     setCanvasDimensions(preview.canvasWidth, preview.canvasHeight)
@@ -85,9 +86,15 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     clearSelection()
 
     // Add each element
-    preview.elements.forEach((element) => {
+    preview.elements.forEach((element, index) => {
+      console.log(`Adding element ${index + 1}/${preview.elements.length}:`, element.id, element.type, `at (${element.x}, ${element.y})`)
       addElements(element)
     })
+
+    // Verify elements were added to store
+    const currentElements = useStore.getState().elements
+    console.log('Elements in store after import:', currentElements.length)
+    console.log('Import complete')
 
     setImporting(false)
     setFiles({})

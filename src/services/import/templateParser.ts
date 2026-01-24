@@ -129,6 +129,16 @@ export function parseJUCETemplate(options: ParseOptions): ParseResult {
     // Get parameter ID if present
     const parameterId = el.getAttribute('data-parameter-id') || undefined
 
+    // Validate position and size
+    console.log(`Parsed ${type}: ${name} at (${x}, ${y}) size ${width}x${height}`)
+
+    if (x < 0 || y < 0) {
+      errors.push(`Element ${name} has negative position (${x}, ${y})`)
+    }
+    if (width < 10 || height < 10) {
+      errors.push(`Element ${name} has very small size (${width}x${height})`)
+    }
+
     // Create element based on type
     try {
       let element: ElementConfig
@@ -211,12 +221,14 @@ export function parseJUCETemplate(options: ParseOptions): ParseResult {
           return
       }
 
+      console.log(`Created element ${element.id}:`, element)
       elements.push(element)
     } catch (err) {
       errors.push(`Failed to create ${type}: ${err}`)
     }
   })
 
+  console.log(`parseJUCETemplate returning ${elements.length} elements`)
   return {
     elements,
     canvasWidth,
