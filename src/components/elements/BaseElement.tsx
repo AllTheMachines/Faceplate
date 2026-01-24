@@ -42,8 +42,14 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       transform: `rotate(${element.rotation}deg)`,
       zIndex: element.zIndex,
       visibility: element.visible ? ('visible' as const) : ('hidden' as const),
-      pointerEvents: element.locked || lockAllMode ? ('none' as const) : ('auto' as const),
-      cursor: lockAllMode || element.locked ? 'default' : (isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
+      // Pointer events: only disable for lock-all mode (UI testing mode)
+      // Individual locked elements need pointer events for selection
+      pointerEvents: lockAllMode ? ('none' as const) : ('auto' as const),
+      cursor: lockAllMode
+        ? 'default'
+        : element.locked
+          ? 'pointer'  // Locked elements: show pointer (can click to select, but not drag)
+          : (isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
       userSelect: 'none' as const,
       ...dragStyle,
     }),
