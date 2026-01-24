@@ -65,13 +65,22 @@ function parseNumeric(value: string | undefined, fallback: number = 0): number {
  * Parse JUCE template HTML into element configurations
  */
 export function parseJUCETemplate(options: ParseOptions): ParseResult {
-  const { html, css = '' } = options
+  const { html, css: externalCss = '' } = options
   const elements: ElementConfig[] = []
   const errors: string[] = []
 
   // Parse HTML
   const parser = new DOMParser()
   const doc = parser.parseFromString(html, 'text/html')
+
+  // Extract embedded CSS from <style> tags if no external CSS provided
+  let css = externalCss
+  if (!css) {
+    const styleTags = doc.querySelectorAll('style')
+    css = Array.from(styleTags)
+      .map((tag) => tag.textContent || '')
+      .join('\n')
+  }
 
   // Find plugin container
   const container = doc.getElementById('plugin-container') || doc.body
@@ -116,12 +125,17 @@ export function parseJUCETemplate(options: ParseOptions): ParseResult {
     // Extract position from CSS or inline styles
     const selector = el.id ? `#${el.id}` : `.${classList[0]}`
     const cssStyle = extractStyle(css, selector)
-    const inlineStyle = el.style
 
-    const x = parseNumeric(inlineStyle.left || cssStyle.left, 0)
-    const y = parseNumeric(inlineStyle.top || cssStyle.top, 0)
-    const width = parseNumeric(inlineStyle.width || cssStyle.width, 60)
-    const height = parseNumeric(inlineStyle.height || cssStyle.height, 60)
+    // Get inline styles (el.style returns empty string if not set, need to handle that)
+    const inlineLeft = el.style.left || undefined
+    const inlineTop = el.style.top || undefined
+    const inlineWidth = el.style.width || undefined
+    const inlineHeight = el.style.height || undefined
+
+    const x = parseNumeric(inlineLeft || cssStyle.left, 0)
+    const y = parseNumeric(inlineTop || cssStyle.top, 0)
+    const width = parseNumeric(inlineWidth || cssStyle.width, 60)
+    const height = parseNumeric(inlineHeight || cssStyle.height, 60)
 
     // Get name from id or generate one
     const name = el.id || el.getAttribute('data-name') || `${type}-${index + 1}`
