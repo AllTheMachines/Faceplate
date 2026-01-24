@@ -38,7 +38,6 @@ function App() {
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
   const setLiveDragValues = useStore((state) => state.setLiveDragValues)
-  const selectedIds = useStore((state) => state.selectedIds)
   const getElement = useStore((state) => state.getElement)
 
   // Handle drag move - broadcast live position values for all selected elements
@@ -52,9 +51,12 @@ function App() {
       const canvasDeltaX = delta.x / scale
       const canvasDeltaY = delta.y / scale
 
+      // IMPORTANT: Read selectedIds from store directly to avoid stale closure values
+      const currentSelectedIds = useStore.getState().selectedIds
+
       // Calculate live positions for ALL selected elements
       const liveValues: Record<string, { x: number; y: number; width: number; height: number }> = {}
-      selectedIds.forEach((id) => {
+      currentSelectedIds.forEach((id) => {
         const el = getElement(id)
         if (el && !el.locked) {
           liveValues[id] = {
@@ -82,8 +84,11 @@ function App() {
       const canvasDeltaX = delta.x / scale
       const canvasDeltaY = delta.y / scale
 
+      // IMPORTANT: Read selectedIds from store directly to avoid stale closure values
+      const currentSelectedIds = useStore.getState().selectedIds
+
       // Move ALL selected elements together (not just the one being dragged)
-      selectedIds.forEach((id) => {
+      currentSelectedIds.forEach((id) => {
         const el = getElement(id)
         if (!el || el.locked) return
 

@@ -26,8 +26,9 @@ function ElementComponent({ element }: ElementProps) {
     // Lock-all mode blocks ALL interactions (for UI testing)
     if (lockAllMode) return
 
-    // Individual locked elements CAN be selected (so user can unlock them)
-    // Only move/resize is prevented (handled in BaseElement)
+    // Get current selection to check if element is already selected
+    const selectedIds = useStore.getState().selectedIds
+    const isAlreadySelected = selectedIds.includes(element.id)
 
     if (e.shiftKey) {
       // Shift+click: add to selection
@@ -35,6 +36,8 @@ function ElementComponent({ element }: ElementProps) {
     } else if (e.ctrlKey || e.metaKey) {
       // Ctrl/Cmd+click: toggle in selection
       toggleSelection(element.id)
+    } else if (isAlreadySelected && selectedIds.length > 1) {
+      // Plain click on already-selected element with multi-selection: keep selection
     } else {
       // Plain click: select only this element
       selectElement(element.id)

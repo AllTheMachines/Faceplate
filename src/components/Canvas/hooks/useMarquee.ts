@@ -46,6 +46,11 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
       // Only start marquee on left click, and not during pan mode or element drag
       if (e.button !== 0 || isPanning || isDraggingElement) return
 
+      // Don't start marquee if clicking on an element (check for data-element-id attribute)
+      const target = e.target as HTMLElement
+      const isClickOnElement = target.closest('[data-element-id]') !== null
+      if (isClickOnElement) return
+
       // Reset the justFinishedDrag flag when starting a new potential drag
       setJustFinishedDrag(false)
 

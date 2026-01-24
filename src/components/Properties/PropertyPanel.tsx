@@ -97,13 +97,6 @@ export function PropertyPanel() {
             min={20}
           />
         </div>
-        <NumberInput
-          label="Rotation"
-          value={element.rotation}
-          onChange={(rotation) => update({ rotation })}
-          min={-360}
-          max={360}
-        />
       </PropertySection>
 
       {/* Identity */}

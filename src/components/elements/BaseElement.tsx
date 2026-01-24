@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useDraggable, useDndContext } from '@dnd-kit/core'
 import { ElementConfig } from '../../types/elements'
 import { useStore } from '../../store'
@@ -29,10 +29,39 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
     disabled: !isSelected || element.locked || lockAllMode,
   })
 
+  // Track when drag just finished to prevent onClick from resetting selection
+  const wasDraggingRef = useRef(false)
+  const justFinishedDragRef = useRef(false)
+
+  useEffect(() => {
+    if (isDragging) {
+      wasDraggingRef.current = true
+    } else if (wasDraggingRef.current) {
+      // Drag just ended - set flag to block onClick
+      justFinishedDragRef.current = true
+      wasDraggingRef.current = false
+      // Clear the flag after a short delay (after onClick would fire)
+      const timer = setTimeout(() => {
+        justFinishedDragRef.current = false
+      }, 50)
+      return () => clearTimeout(timer)
+    }
+  }, [isDragging])
+
+  // Wrap onClick to skip if we just finished dragging
+  const handleClick = (e: React.MouseEvent) => {
+    if (justFinishedDragRef.current) {
+      return
+    }
+    onClick?.(e)
+  }
+
   // Check if ANY selected element is being dragged (for multi-select visual feedback)
+  const activeElementId = active?.data.current?.element?.id
   const isMultiSelectDrag =
     active?.data.current?.sourceType === 'element' &&
-    selectedIds.includes(active.data.current.element?.id)
+    activeElementId &&
+    selectedIds.includes(activeElementId)
 
   // Get the live drag position from the store (calculated in App.tsx handleDragMove)
   const liveValue = liveDragValues?.[element.id]
@@ -52,10 +81,10 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
     dragOffsetY = liveValue.y !== undefined ? liveValue.y - element.y : 0
   }
 
-  // Combine drag offset with rotation in a single transform
+  // Apply drag offset transform
   const transformValue = dragOffsetX !== 0 || dragOffsetY !== 0
-    ? `translate(${dragOffsetX}px, ${dragOffsetY}px) rotate(${element.rotation}deg)`
-    : `rotate(${element.rotation}deg)`
+    ? `translate(${dragOffsetX}px, ${dragOffsetY}px)`
+    : undefined
 
   const style: React.CSSProperties = {
     position: 'absolute',
@@ -73,7 +102,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       ? 'default'
       : element.locked
         ? 'pointer'  // Locked elements: show pointer (can click to select, but not drag)
-        : (isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
+        : (isDragging || isMultiSelectDrag ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
     userSelect: 'none',
   }
 
@@ -82,7 +111,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       ref={setNodeRef}
       data-element-id={element.id}
       style={style}
-      onClick={onClick}
+      onClick={handleClick}
       {...listeners}
       {...attributes}
     >
