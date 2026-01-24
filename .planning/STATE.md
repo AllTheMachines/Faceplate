@@ -88,10 +88,11 @@ Key decisions affecting the completed milestone:
 ### Pending Todos
 
 - **Future enhancement:** Add ability to type zoom percentage directly in zoom indicator (user feedback from 01-03)
+- **v1.1 Issues:** See `.planning/ISSUES-v1.1.md` for 9 bugs + 3 feature requests captured 2026-01-24
 
 ### Blockers/Concerns
 
-None - All 10 phases complete.
+None - All 10 phases complete. v1.1 issues documented for next milestone.
 
 ## Session Continuity
 
