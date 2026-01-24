@@ -14,6 +14,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
   const selectedIds = useStore((state) => state.selectedIds)
   const isSelected = selectedIds.includes(element.id)
   const lockAllMode = useStore((state) => state.lockAllMode)
+  const liveDragValues = useStore((state) => state.liveDragValues)
 
   // Get DnD context to detect multi-select dragging
   const { active } = useDndContext()
@@ -28,34 +29,29 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
     disabled: !isSelected || element.locked || lockAllMode,
   })
 
-  // Check if another selected element is being dragged (multi-select scenario)
-  const activeElementId = active?.data.current?.element?.id
-  const isAnotherSelectedElementDragging =
+  // Check if ANY selected element is being dragged (for multi-select visual feedback)
+  const isMultiSelectDrag =
     active?.data.current?.sourceType === 'element' &&
-    activeElementId !== element.id &&
-    selectedIds.includes(activeElementId) &&
-    isSelected &&
-    !element.locked
+    selectedIds.includes(active.data.current.element?.id)
 
-  // Get the drag delta from the active element for multi-select dragging
-  // We need to use the same delta that the dragged element has
-  const activeDragDelta = active && isAnotherSelectedElementDragging
-    ? { x: (active.rect.current.translated?.left ?? 0) - (active.rect.current.initial?.left ?? 0),
-        y: (active.rect.current.translated?.top ?? 0) - (active.rect.current.initial?.top ?? 0) }
-    : null
+  // Get the live drag position from the store (calculated in App.tsx handleDragMove)
+  const liveValue = liveDragValues?.[element.id]
 
-  // Apply drag transform for live preview
-  // For the dragged element, use its own transform
-  // For other selected elements during multi-drag, use the active element's delta
-  const dragStyle = transform
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`,
-      }
-    : activeDragDelta
-    ? {
-        transform: `translate(${activeDragDelta.x}px, ${activeDragDelta.y}px)`,
-      }
-    : undefined
+  // Calculate drag delta from live values (for elements not being directly dragged)
+  // The dragged element uses its own transform, other selected elements use the calculated delta
+  let dragStyle: React.CSSProperties | undefined
+
+  if (isDragging && transform) {
+    // This element is being dragged - use its own transform
+    dragStyle = { transform: `translate(${transform.x}px, ${transform.y}px)` }
+  } else if (isMultiSelectDrag && liveValue && isSelected && !element.locked) {
+    // Another selected element is being dragged - use calculated delta from live values
+    const deltaX = liveValue.x !== undefined ? liveValue.x - element.x : 0
+    const deltaY = liveValue.y !== undefined ? liveValue.y - element.y : 0
+    if (deltaX !== 0 || deltaY !== 0) {
+      dragStyle = { transform: `translate(${deltaX}px, ${deltaY}px)` }
+    }
+  }
 
   const style = React.useMemo(
     () => ({
@@ -91,7 +87,8 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       isSelected,
       isDragging,
       dragStyle,
-      isAnotherSelectedElementDragging,
+      isMultiSelectDrag,
+      liveValue,
     ]
   )
 
