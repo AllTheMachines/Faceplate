@@ -18,7 +18,7 @@ const paletteCategories = [
     ],
   },
   {
-    name: 'Buttons & Switches',
+    name: 'Buttons',
     items: [
       { id: 'button', type: 'button', name: 'Button', variant: { mode: 'momentary' } },
     ],
