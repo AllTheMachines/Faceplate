@@ -19,8 +19,6 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   const selectMultiple = useStore((state) => state.selectMultiple)
   const isPanning = useStore((state) => state.isPanning)
   const scale = useStore((state) => state.scale)
-  const offsetX = useStore((state) => state.offsetX)
-  const offsetY = useStore((state) => state.offsetY)
 
   // Convert screen coordinates to canvas coordinates
   const screenToCanvas = useCallback(
@@ -28,17 +26,17 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
       const rect = canvasRef.current?.getBoundingClientRect()
       if (!rect) return { x: 0, y: 0 }
 
-      // Get position relative to viewport container
+      // Get position relative to the canvas background (getBoundingClientRect already includes transform)
       const relX = screenX - rect.left
       const relY = screenY - rect.top
 
-      // Reverse the transform: first un-offset, then un-scale
-      const canvasX = (relX - offsetX) / scale
-      const canvasY = (relY - offsetY) / scale
+      // Only divide by scale - the rect already accounts for translation
+      const canvasX = relX / scale
+      const canvasY = relY / scale
 
       return { x: canvasX, y: canvasY }
     },
-    [scale, offsetX, offsetY, canvasRef]
+    [scale, canvasRef]
   )
 
   const handleMouseDown = useCallback(
