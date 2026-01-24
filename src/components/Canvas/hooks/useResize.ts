@@ -22,6 +22,7 @@ export function useResize(): UseResizeReturn {
   const updateElement = useStore((state) => state.updateElement)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
+  const setLiveDragValues = useStore((state) => state.setLiveDragValues)
 
   const startResize = useCallback((e: React.MouseEvent, position: HandlePosition, id: string) => {
     e.stopPropagation()
@@ -114,6 +115,20 @@ export function useResize(): UseResizeReturn {
           break
       }
 
+      // Get current element state for complete live values
+      const element = getElement(elementId)
+      if (element) {
+        // Broadcast live values for property panel (updates in real-time)
+        setLiveDragValues({
+          [elementId]: {
+            x: updates.x ?? element.x,
+            y: updates.y ?? element.y,
+            width: updates.width ?? element.width,
+            height: updates.height ?? element.height,
+          }
+        })
+      }
+
       updateElement(elementId, updates)
     }
 
@@ -144,6 +159,9 @@ export function useResize(): UseResizeReturn {
         }
       }
 
+      // Clear live values - element state is now source of truth
+      setLiveDragValues(null)
+
       setIsResizing(false)
       setActiveHandle(null)
       setElementId(null)
@@ -156,7 +174,7 @@ export function useResize(): UseResizeReturn {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [isResizing, activeHandle, elementId, scale, updateElement, snapToGrid, gridSize, getElement])
+  }, [isResizing, activeHandle, elementId, scale, updateElement, snapToGrid, gridSize, getElement, setLiveDragValues])
 
   return { isResizing, startResize }
 }
