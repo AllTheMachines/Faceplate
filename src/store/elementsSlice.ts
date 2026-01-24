@@ -9,6 +9,7 @@ export interface ElementsSlice {
 
   // Actions
   addElement: (element: ElementConfig) => void
+  addElements: (elements: ElementConfig[]) => void
   removeElement: (id: string) => void
   updateElement: (id: string, updates: Partial<ElementConfig>) => void
   setElements: (elements: ElementConfig[]) => void
@@ -41,6 +42,11 @@ export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSl
   addElement: (element) =>
     set((state) => ({
       elements: [...state.elements, element],
+    })),
+
+  addElements: (elements) =>
+    set((state) => ({
+      elements: [...state.elements, ...elements],
     })),
 
   removeElement: (id) =>

@@ -25,7 +25,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
   } | null>(null)
   const [importing, setImporting] = useState(false)
 
-  const addElements = useStore((state) => state.addElement)
+  const addElements = useStore((state) => state.addElements)
   const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
   const clearSelection = useStore((state) => state.clearSelection)
 
@@ -85,11 +85,9 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     // Clear existing selection
     clearSelection()
 
-    // Add each element
-    preview.elements.forEach((element, index) => {
-      console.log(`Adding element ${index + 1}/${preview.elements.length}:`, element.id, element.type, `at (${element.x}, ${element.y})`)
-      addElements(element)
-    })
+    // Add all elements in a single batch update
+    console.log('Adding elements to store...')
+    addElements(preview.elements)
 
     // Verify elements were added to store
     const currentElements = useStore.getState().elements
