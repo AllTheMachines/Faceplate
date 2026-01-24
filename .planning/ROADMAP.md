@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Properties & Transform** - Property panel, move/resize elements
 - [x] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
 - [x] **Phase 7: Save/Load** - JSON persistence, project validation
-- [ ] **Phase 8: Code Export** - JUCE WebView2 template generation
+- [x] **Phase 8: Code Export** - JUCE WebView2 template generation
 
 ## Phase Details
 
@@ -199,11 +199,11 @@ Plans:
 **Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] 08-01-PLAN.md — Install JSZip, export validators and utilities (case conversion, HTML escaping)
-- [ ] 08-02-PLAN.md — HTML and CSS generators for export bundle
-- [ ] 08-03-PLAN.md — JavaScript and C++ generators for JUCE bindings
-- [ ] 08-04-PLAN.md — Code generator orchestrator and ZIP bundle creation
-- [ ] 08-05-PLAN.md — ExportPanel UI component integrated into RightPanel
+- [x] 08-01-PLAN.md — Install JSZip, export validators and utilities (case conversion, HTML escaping)
+- [x] 08-02-PLAN.md — HTML and CSS generators for export bundle
+- [x] 08-03-PLAN.md — JavaScript and C++ generators for JUCE bindings
+- [x] 08-04-PLAN.md — Code generator orchestrator and ZIP bundle creation
+- [x] 08-05-PLAN.md — ExportPanel UI component integrated into RightPanel
 
 ## Progress
 
@@ -219,4 +219,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Properties & Transform | 5/5 | Complete | 2026-01-23 |
 | 6. Alignment & Polish | 2/2 | Complete | 2026-01-23 |
 | 7. Save/Load | 2/2 | Complete | 2026-01-24 |
-| 8. Code Export | 0/5 | In Progress | - |
+| 8. Code Export | 5/5 | Complete | 2026-01-24 |

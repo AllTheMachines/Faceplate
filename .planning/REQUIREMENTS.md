@@ -55,9 +55,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Export
 
-- [ ] **EXPO-01**: Export JUCE WebView2 bundle (index.html, styles.css, components.js, bindings.js, bindings.cpp)
-- [ ] **EXPO-02**: Export HTML preview with mock values
-- [ ] **EXPO-03**: Generated IDs use element names
+- [x] **EXPO-01**: Export JUCE WebView2 bundle (index.html, styles.css, components.js, bindings.js, bindings.cpp)
+- [x] **EXPO-02**: Export HTML preview with mock values
+- [x] **EXPO-03**: Generated IDs use element names
 
 ### UI/UX
 
@@ -85,7 +85,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Reference
 
-- [ ] **REF-01**: See docs/SPECIFICATION.md for complete property definitions per element type
+- [x] **REF-01**: See docs/SPECIFICATION.md for complete property definitions per element type
 
 ## v2 Requirements
 
@@ -166,9 +166,9 @@ Which phases cover which requirements. Updated during roadmap revision.
 | HIST-02 | Phase 3 | Complete |
 | PERS-01 | Phase 7 | Complete |
 | PERS-02 | Phase 7 | Complete |
-| EXPO-01 | Phase 8 | Pending |
-| EXPO-02 | Phase 8 | Pending |
-| EXPO-03 | Phase 8 | Pending |
+| EXPO-01 | Phase 8 | Complete |
+| EXPO-02 | Phase 8 | Complete |
+| EXPO-03 | Phase 8 | Complete |
 | UIUX-01 | Phase 1 | Complete |
 | UIUX-02 | Phase 1 | Complete |
 | UIUX-03 | Phase 6 | Complete |
@@ -184,7 +184,7 @@ Which phases cover which requirements. Updated during roadmap revision.
 | ELEM-04 | Phase 2 | Complete |
 | ELEM-05 | Phase 2 | Complete |
 | ELEM-06 | Phase 2 | Complete |
-| REF-01 | Phase 8 | Pending |
+| REF-01 | Phase 8 | Complete |
 
 **Coverage:**
 - v1 requirements: 35 total
