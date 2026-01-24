@@ -29,18 +29,19 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
           value={element.label}
           onChange={(label) => onUpdate({ label })}
         />
-        <div className="flex items-center">
+        <label
+          htmlFor="button-pressed"
+          className="flex items-center gap-2 cursor-pointer select-none"
+        >
           <input
             type="checkbox"
             id="button-pressed"
             checked={element.pressed}
             onChange={(e) => onUpdate({ pressed: e.target.checked })}
-            className="bg-gray-700 border border-gray-600 rounded"
+            className="bg-gray-700 border border-gray-600 rounded cursor-pointer"
           />
-          <label htmlFor="button-pressed" className="ml-2 text-sm text-gray-300">
-            Pressed
-          </label>
-        </div>
+          <span className="text-sm text-gray-300">Pressed</span>
+        </label>
       </PropertySection>
 
       {/* Appearance */}

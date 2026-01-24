@@ -84,18 +84,19 @@ export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
 
       {/* Peak Hold */}
       <PropertySection title="Peak Hold">
-        <div className="flex items-center">
+        <label
+          htmlFor="meter-peak-hold"
+          className="flex items-center gap-2 cursor-pointer select-none"
+        >
           <input
             type="checkbox"
             id="meter-peak-hold"
             checked={element.showPeakHold}
             onChange={(e) => onUpdate({ showPeakHold: e.target.checked })}
-            className="bg-gray-700 border border-gray-600 rounded"
+            className="bg-gray-700 border border-gray-600 rounded cursor-pointer"
           />
-          <label htmlFor="meter-peak-hold" className="ml-2 text-sm text-gray-300">
-            Show Peak Hold
-          </label>
-        </div>
+          <span className="text-sm text-gray-300">Show Peak Hold</span>
+        </label>
       </PropertySection>
     </>
   )
