@@ -18,10 +18,13 @@ function ElementComponent({ element }: ElementProps) {
   const selectElement = useStore((state) => state.selectElement)
   const toggleSelection = useStore((state) => state.toggleSelection)
   const addToSelection = useStore((state) => state.addToSelection)
+  const lockAllMode = useStore((state) => state.lockAllMode)
 
   const handleClick = (e: React.MouseEvent) => {
-    // Stop propagation to prevent canvas background click
     e.stopPropagation()
+
+    // Don't allow selection in lock-all mode or for individually locked elements
+    if (lockAllMode || element.locked) return
 
     if (e.shiftKey) {
       // Shift+click: add to selection

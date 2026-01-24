@@ -13,6 +13,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
   // Check if element is selected
   const selectedIds = useStore((state) => state.selectedIds)
   const isSelected = selectedIds.includes(element.id)
+  const lockAllMode = useStore((state) => state.lockAllMode)
 
   // Enable dragging for selected, unlocked elements
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -21,7 +22,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       sourceType: 'element',
       element,
     },
-    disabled: !isSelected || element.locked,
+    disabled: !isSelected || element.locked || lockAllMode,
   })
 
   // Apply drag transform for live preview
@@ -41,8 +42,8 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       transform: `rotate(${element.rotation}deg)`,
       zIndex: element.zIndex,
       visibility: element.visible ? ('visible' as const) : ('hidden' as const),
-      pointerEvents: element.locked ? ('none' as const) : ('auto' as const),
-      cursor: isDragging ? 'grabbing' : element.locked ? 'default' : isSelected ? 'grab' : 'pointer',
+      pointerEvents: element.locked || lockAllMode ? ('none' as const) : ('auto' as const),
+      cursor: lockAllMode || element.locked ? 'default' : (isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
       userSelect: 'none' as const,
       ...dragStyle,
     }),
@@ -55,6 +56,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       element.zIndex,
       element.visible,
       element.locked,
+      lockAllMode,
       isSelected,
       isDragging,
       dragStyle,
