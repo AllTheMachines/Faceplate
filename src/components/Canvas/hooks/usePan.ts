@@ -13,7 +13,17 @@ export function usePan(_viewportRef: RefObject<HTMLDivElement>) {
 
   // Track spacebar state with keyboard event listeners
   useEffect(() => {
+    const isTypingInInput = (): boolean => {
+      const active = document.activeElement
+      if (!active) return false
+      const tagName = active.tagName.toLowerCase()
+      return tagName === 'input' || tagName === 'textarea' || tagName === 'select' || active.getAttribute('contenteditable') === 'true'
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept spacebar when typing in input fields
+      if (isTypingInInput()) return
+
       if (e.code === 'Space' && !isPanning) {
         e.preventDefault() // Prevent page scroll
         setPanning(true)
