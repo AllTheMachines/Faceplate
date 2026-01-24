@@ -25,7 +25,7 @@ export interface HTMLGeneratorOptions {
  */
 export function generateHTML(
   elements: ElementConfig[],
-  options: HTMLGeneratorOptions
+  _options: HTMLGeneratorOptions
 ): string {
   // Sort elements by array index to preserve z-order (earlier = lower in z)
   const sortedElements = [...elements]
@@ -92,6 +92,6 @@ export function generateElementHTML(element: ElementConfig): string {
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
-      return ''
+      throw new Error(`Unknown element type: ${(_exhaustive as ElementConfig).type}`)
   }
 }

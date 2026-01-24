@@ -201,6 +201,6 @@ ${selector}:active {
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
-      return ''
+      throw new Error(`Unknown element type: ${(_exhaustive as ElementConfig).type}`)
   }
 }
