@@ -1,6 +1,7 @@
 import {
   DndContext,
   DragEndEvent,
+  DragMoveEvent,
   PointerSensor,
   useSensor,
   useSensors,
@@ -36,6 +37,37 @@ function App() {
   const updateElement = useStore((state) => state.updateElement)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
+  const setLiveDragValues = useStore((state) => state.setLiveDragValues)
+
+  // Handle drag move - broadcast live position values
+  const handleDragMove = (event: DragMoveEvent) => {
+    const { active, delta } = event
+
+    // Only track element drags, not palette drags
+    const sourceType = active.data.current?.sourceType
+    if (sourceType === 'element') {
+      const element = active.data.current?.element
+      if (!element) return
+
+      // Convert screen delta to canvas delta (divide by scale)
+      const canvasDeltaX = delta.x / scale
+      const canvasDeltaY = delta.y / scale
+
+      // Calculate live position (without snap-to-grid, that happens on drop)
+      const liveX = element.x + canvasDeltaX
+      const liveY = element.y + canvasDeltaY
+
+      // Broadcast live values for property panel
+      setLiveDragValues({
+        [element.id]: {
+          x: liveX,
+          y: liveY,
+          width: element.width,
+          height: element.height,
+        }
+      })
+    }
+  }
 
   // Handle drag end - create element at drop position or move existing element
   const handleDragEnd = (event: DragEndEvent) => {
@@ -62,6 +94,9 @@ function App() {
 
       // Update element position
       updateElement(element.id, { x: finalX, y: finalY })
+
+      // Clear live values after drag completes
+      setLiveDragValues(null)
       return
     }
 
@@ -124,7 +159,7 @@ function App() {
   // Demo elements removed - users add elements via palette drag-drop
 
   return (
-    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
       <ThreePanelLayout>
         <CanvasStage />
       </ThreePanelLayout>

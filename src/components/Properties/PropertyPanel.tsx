@@ -20,6 +20,7 @@ export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
   const getElement = useStore((state) => state.getElement)
   const updateElement = useStore((state) => state.updateElement)
+  const liveDragValues = useStore((state) => state.liveDragValues)
 
   // Handle no selection
   if (selectedIds.length === 0) {
@@ -57,6 +58,13 @@ export function PropertyPanel() {
     updateElement(element.id, updates)
   }
 
+  // Merge live values if available (live values take precedence during drag/resize)
+  const liveValues = liveDragValues?.[element.id]
+  const displayX = liveValues?.x ?? element.x
+  const displayY = liveValues?.y ?? element.y
+  const displayWidth = liveValues?.width ?? element.width
+  const displayHeight = liveValues?.height ?? element.height
+
   return (
     <div className="space-y-6">
       {/* Position & Size */}
@@ -64,23 +72,23 @@ export function PropertyPanel() {
         <div className="grid grid-cols-2 gap-3">
           <NumberInput
             label="X"
-            value={element.x}
+            value={displayX}
             onChange={(x) => update({ x })}
           />
           <NumberInput
             label="Y"
-            value={element.y}
+            value={displayY}
             onChange={(y) => update({ y })}
           />
           <NumberInput
             label="Width"
-            value={element.width}
+            value={displayWidth}
             onChange={(width) => update({ width })}
             min={20}
           />
           <NumberInput
             label="Height"
-            value={element.height}
+            value={displayHeight}
             onChange={(height) => update({ height })}
             min={20}
           />
