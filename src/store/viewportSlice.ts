@@ -10,11 +10,15 @@ export interface ViewportSlice {
   isPanning: boolean
   dragStart: { x: number; y: number } | null
 
+  // Live drag/resize values (not persisted, not undoable)
+  liveDragValues: { [elementId: string]: { x?: number; y?: number; width?: number; height?: number } } | null
+
   // Actions
   setViewport: (scale: number, offsetX: number, offsetY: number) => void
   setScale: (scale: number) => void
   setPanning: (isPanning: boolean) => void
   setDragStart: (dragStart: { x: number; y: number } | null) => void
+  setLiveDragValues: (values: { [elementId: string]: { x?: number; y?: number; width?: number; height?: number } } | null) => void
 }
 
 export const createViewportSlice: StateCreator<ViewportSlice, [], [], ViewportSlice> = (set) => ({
@@ -24,6 +28,7 @@ export const createViewportSlice: StateCreator<ViewportSlice, [], [], ViewportSl
   offsetY: 0,
   isPanning: false,
   dragStart: null,
+  liveDragValues: null,
 
   // Actions
   setViewport: (scale, offsetX, offsetY) =>
@@ -37,4 +42,7 @@ export const createViewportSlice: StateCreator<ViewportSlice, [], [], ViewportSl
 
   setDragStart: (dragStart) =>
     set({ dragStart }),
+
+  setLiveDragValues: (values) =>
+    set({ liveDragValues: values }),
 })
