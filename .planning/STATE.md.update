@@ -1,0 +1,4 @@
+- **Element drag via sourceType** (05-02): useDraggable with sourceType='element' distinguishes element moves from palette drops in handleDragEnd
+- **Coordinate transform for moves** (05-02): delta.x / scale converts screen delta to canvas delta for correct movement at all zoom levels
+- **Conditional element dragging** (05-02): Elements only draggable when selected AND unlocked (disabled: !isSelected || locked)
+- **Drag cursor states** (05-02): grab for selected, grabbing during drag, pointer for unselected - clear visual feedback

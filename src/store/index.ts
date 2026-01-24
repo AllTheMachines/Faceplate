@@ -3,9 +3,35 @@ import { temporal } from 'zundo'
 import { createCanvasSlice, CanvasSlice } from './canvasSlice'
 import { createViewportSlice, ViewportSlice } from './viewportSlice'
 import { createElementsSlice, ElementsSlice } from './elementsSlice'
+import type { Template } from '../types/template'
+
+// Template functionality
+export interface TemplateSlice {
+  loadFromTemplate: (template: Template) => void
+  clearCanvas: () => void
+}
+
+const createTemplateSlice = (set: any): TemplateSlice => ({
+  loadFromTemplate: (template: Template) => {
+    set({
+      elements: template.elements,
+      selectedIds: [],
+      canvasWidth: template.metadata.canvasWidth,
+      canvasHeight: template.metadata.canvasHeight,
+      backgroundColor: template.metadata.backgroundColor,
+    })
+  },
+  
+  clearCanvas: () => {
+    set({
+      elements: [],
+      selectedIds: [],
+    })
+  },
+})
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -14,6 +40,7 @@ export const useStore = create<Store>()(
       ...createCanvasSlice(...a),
       ...createViewportSlice(...a),
       ...createElementsSlice(...a),
+      ...createTemplateSlice(...a),
     }),
     {
       limit: 50,

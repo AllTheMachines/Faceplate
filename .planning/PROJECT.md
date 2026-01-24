@@ -71,6 +71,21 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - **JUCE WebView2 target**: Export must work with JUCE 8's WebView2 integration, WebSliderRelay API
 - **Reference spec**: `docs/SPECIFICATION.md` is source of truth for element properties
 
+## Cross-Project Integration
+
+This designer exports code consumed by:
+- **EFXvst3** - Audio effect VST3 template
+- **INSTvst3** - Instrument VST3 template
+
+See `.planning/INTEGRATION.md` for detailed integration documentation.
+
+### Integration Points
+
+- Template system (`templates/*.json`) must match VST3 UIs
+- Export format must remain compatible with JUCE WebView2
+- Element types affect C++ binding code generation
+- Breaking changes require updates in both VST3 repos
+
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
