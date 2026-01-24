@@ -94,6 +94,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     console.log('Elements in store after import:', currentElements.length)
     console.log('Import complete')
 
+    // Clean up and close modal
     setImporting(false)
     setFiles({})
     setPreview(null)
