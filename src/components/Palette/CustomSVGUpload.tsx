@@ -3,11 +3,14 @@ import { useDropzone } from 'react-dropzone';
 import { parseSVGFile, svgToDataUrl, ParsedSVG } from '../../utils/svgImport';
 import { useStore } from '../../store';
 import { createImage } from '../../types/elements';
+import { SVGDesignMode } from '../DesignMode/SVGDesignMode';
+import { SVGDesignResult } from '../../types/svg';
 
 export function CustomSVGUpload() {
   const [parsedSVG, setParsedSVG] = useState<ParsedSVG | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [designModeOpen, setDesignModeOpen] = useState(false);
 
   const addElement = useStore((state) => state.addElement);
   const scale = useStore((state) => state.scale);
@@ -75,6 +78,49 @@ export function CustomSVGUpload() {
     setParsedSVG(null);
     setError(null);
     setIsOpen(false);
+  };
+
+  const handleOpenDesignMode = () => {
+    setDesignModeOpen(true);
+  };
+
+  const handleDesignModeComplete = (result: SVGDesignResult) => {
+    // For now, just create a simple image element
+    // In the future, this could create a custom element with layer information
+    if (!parsedSVG) return;
+
+    // Get the canvas viewport element dimensions
+    const canvasViewport = document.querySelector('.canvas-viewport');
+    const viewportWidth = canvasViewport?.clientWidth || 800;
+    const viewportHeight = canvasViewport?.clientHeight || 600;
+
+    // Calculate center of viewport in canvas coordinates
+    const centerCanvasX = (viewportWidth / 2 - offsetX) / scale;
+    const centerCanvasY = (viewportHeight / 2 - offsetY) / scale;
+
+    // Center the element on this point
+    const elementX = centerCanvasX - result.width / 2;
+    const elementY = centerCanvasY - result.height / 2;
+
+    // Create image element with SVG as data URL
+    const dataUrl = svgToDataUrl(result.originalSvg);
+    const element = createImage({
+      x: elementX,
+      y: elementY,
+      width: result.width,
+      height: result.height,
+      src: dataUrl,
+      name: `Custom ${result.elementType}`,
+    });
+
+    addElement(element);
+    setDesignModeOpen(false);
+    setParsedSVG(null);
+    setIsOpen(false);
+  };
+
+  const handleDesignModeCancel = () => {
+    setDesignModeOpen(false);
   };
 
   if (!isOpen) {
@@ -160,16 +206,24 @@ export function CustomSVGUpload() {
           )}
 
           {/* Actions */}
-          <div className="flex gap-2">
-            <button
-              onClick={handleAddToCanvas}
-              className="flex-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
-            >
-              Add to Canvas
-            </button>
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <button
+                onClick={handleAddToCanvas}
+                className="flex-1 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded transition-colors"
+              >
+                Add as Image
+              </button>
+              <button
+                onClick={handleOpenDesignMode}
+                className="flex-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors"
+              >
+                Design Mode
+              </button>
+            </div>
             <button
               onClick={handleCancel}
-              className="px-3 py-1.5 text-gray-400 hover:text-gray-300 text-sm transition-colors"
+              className="w-full px-3 py-1.5 text-gray-400 hover:text-gray-300 text-sm transition-colors"
             >
               Cancel
             </button>
@@ -178,6 +232,15 @@ export function CustomSVGUpload() {
       )}
 
       {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
+
+      {/* Design Mode Dialog */}
+      {designModeOpen && parsedSVG && (
+        <SVGDesignMode
+          svgContent={parsedSVG.svgString}
+          onComplete={handleDesignModeComplete}
+          onCancel={handleDesignModeCancel}
+        />
+      )}
     </div>
   );
 }
