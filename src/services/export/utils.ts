@@ -64,14 +64,13 @@ export function escapeHTML(str: string): string {
  * Creates consistent naming for JUCE WebView2 relay pattern
  *
  * @example
- * toRelayVariableName("Gain Knob", "knob") // "gainKnobRelay"
- * toRelayVariableName("Master Volume", "slider") // "masterVolumeRelay"
- * toRelayVariableName("OSC2 Level", "slider") // "osc2LevelRelay"
+ * toRelayVariableName("Gain Knob") // "gainKnobRelay"
+ * toRelayVariableName("Master Volume") // "masterVolumeRelay"
+ * toRelayVariableName("OSC2 Level") // "osc2LevelRelay"
  *
  * @param name - Element name
- * @param type - Element type (knob, slider, button, etc.)
  * @returns C++ variable name with "Relay" suffix
  */
-export function toRelayVariableName(name: string, type: string): string {
+export function toRelayVariableName(name: string): string {
   return `${toCamelCase(name)}Relay`
 }

@@ -3,7 +3,7 @@
  * Catches common errors before generating broken code
  */
 
-import type { ElementConfig } from '@/types/elements'
+import type { ElementConfig } from '../../types/elements'
 
 // ============================================================================
 // Export Validation Types
