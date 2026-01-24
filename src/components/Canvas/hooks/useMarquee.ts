@@ -1,4 +1,5 @@
 import { useState, useCallback, RefObject } from 'react'
+import { useDndContext } from '@dnd-kit/core'
 import { useStore } from '../../../store'
 import { intersectRect, Rect } from '../../../utils/intersection'
 
@@ -12,6 +13,8 @@ interface MarqueeState {
 
 export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   const [marquee, setMarquee] = useState<MarqueeState | null>(null)
+  const { active } = useDndContext()
+  const isDraggingElement = active?.data.current?.sourceType === 'element'
   const elements = useStore((state) => state.elements)
   const selectMultiple = useStore((state) => state.selectMultiple)
   const clearSelection = useStore((state) => state.clearSelection)
@@ -41,8 +44,8 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      // Only start marquee on left click, and not during pan mode
-      if (e.button !== 0 || isPanning) return
+      // Only start marquee on left click, and not during pan mode or element drag
+      if (e.button !== 0 || isPanning || isDraggingElement) return
 
       const { x, y } = screenToCanvas(e.clientX, e.clientY)
       setMarquee({
@@ -53,7 +56,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
         currentY: y,
       })
     },
-    [screenToCanvas, isPanning]
+    [screenToCanvas, isPanning, isDraggingElement]
   )
 
   const handleMouseMove = useCallback(
