@@ -278,7 +278,13 @@ Plans:
   8. Font Weight property shows named options (Regular, Bold, etc.) instead of numeric values
   9. Image element has file picker to select from project assets or enter relative path
 
-**Plans**: TBD (to be planned with /gsd:plan-phase 11)
+**Plans**: 4 plans in 2 waves
+
+Plans:
+- [ ] 11-01-PLAN.md — Property panel fixes: hide rotation for Knob/Meter, fix checkbox clickability, fix Meter orientation
+- [ ] 11-02-PLAN.md — Font weight dropdown with named options
+- [ ] 11-03-PLAN.md — Image file picker with thumbnail preview
+- [ ] 11-04-PLAN.md — Palette consolidation: single Slider and Button entries
 
 ## Progress
 
@@ -297,4 +303,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Code Export | 5/5 | Complete | 2026-01-24 |
 | 9. Enhancements & Bug Fixes | 7/7 | Complete | 2026-01-24 |
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
-| 11. Element Consolidation & Property Fixes | 0/? | Not Started | — |
+| 11. Element Consolidation & Property Fixes | 0/4 | Not Started | — |
