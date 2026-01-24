@@ -20,8 +20,7 @@ const paletteCategories = [
   {
     name: 'Buttons & Switches',
     items: [
-      { id: 'button-momentary', type: 'button', name: 'Momentary', variant: { mode: 'momentary' } },
-      { id: 'button-toggle', type: 'button', name: 'Toggle', variant: { mode: 'toggle' } },
+      { id: 'button', type: 'button', name: 'Button', variant: { mode: 'momentary' } },
     ],
   },
   {
