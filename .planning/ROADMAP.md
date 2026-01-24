@@ -196,10 +196,14 @@ Plans:
   5. Exported code works in JUCE WebView2 without manual fixups
   6. Export validates design before generating (shows errors for missing required properties)
 
-**Plans**: TBD
+**Plans**: 5 plans in 4 waves
 
 Plans:
-- [ ] TBD during phase planning
+- [ ] 08-01-PLAN.md — Install JSZip, export validators and utilities (case conversion, HTML escaping)
+- [ ] 08-02-PLAN.md — HTML and CSS generators for export bundle
+- [ ] 08-03-PLAN.md — JavaScript and C++ generators for JUCE bindings
+- [ ] 08-04-PLAN.md — Code generator orchestrator and ZIP bundle creation
+- [ ] 08-05-PLAN.md — ExportPanel UI component integrated into RightPanel
 
 ## Progress
 
@@ -215,4 +219,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 5. Properties & Transform | 5/5 | Complete | 2026-01-23 |
 | 6. Alignment & Polish | 2/2 | Complete | 2026-01-23 |
 | 7. Save/Load | 2/2 | Complete | 2026-01-24 |
-| 8. Code Export | 0/TBD | Not started | - |
+| 8. Code Export | 0/5 | In Progress | - |
