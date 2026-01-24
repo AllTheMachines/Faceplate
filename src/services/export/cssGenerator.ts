@@ -5,11 +5,32 @@
 
 import type { ElementConfig } from '../../types/elements'
 import { toKebabCase } from './utils'
+import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
 
 export interface CSSGeneratorOptions {
   canvasWidth: number
   canvasHeight: number
   backgroundColor: string
+}
+
+/**
+ * Generate @font-face rule for a font definition
+ *
+ * @param fontDef - Font definition
+ * @returns @font-face CSS rule
+ */
+function generateFontFace(fontDef: FontDefinition): string {
+  if (!fontDef.file) return '' // System fonts don't need @font-face
+
+  // Note: In production, these would be base64 encoded
+  // For now, use relative path (works for HTML preview)
+  return `@font-face {
+  font-family: '${fontDef.family}';
+  src: url('./fonts/${fontDef.file}') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}`
 }
 
 /**
@@ -30,6 +51,23 @@ export function generateCSS(
   options: CSSGeneratorOptions
 ): string {
   const { canvasWidth, canvasHeight, backgroundColor } = options
+
+  // Collect unique fonts from label elements
+  const usedFonts = new Set<string>()
+  elements.forEach(el => {
+    if (el.type === 'label' && el.fontFamily) {
+      usedFonts.add(el.fontFamily)
+    }
+  })
+
+  // Generate @font-face rules for used fonts
+  const fontFaces = Array.from(usedFonts)
+    .map(family => getFontByFamily(family))
+    .filter((f): f is FontDefinition => f !== undefined && f.file !== '')
+    .map(generateFontFace)
+    .join('\n\n')
+
+  const fontSection = fontFaces ? `/* Embedded Fonts */\n${fontFaces}\n\n` : ''
 
   // CSS reset
   const reset = `/* Reset */
@@ -60,7 +98,7 @@ export function generateCSS(
     .map((element) => generateElementCSS(element))
     .join('\n\n')
 
-  return `${reset}
+  return `${fontSection}${reset}
 
 ${container}
 
