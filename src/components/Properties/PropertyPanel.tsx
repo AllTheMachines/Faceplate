@@ -18,9 +18,13 @@ import { ImageProperties } from './ImageProperties'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
-  const getElement = useStore((state) => state.getElement)
+  const elements = useStore((state) => state.elements)
   const updateElement = useStore((state) => state.updateElement)
   const liveDragValues = useStore((state) => state.liveDragValues)
+
+  // Get the selected element by finding it in the elements array
+  // This ensures the component re-renders when the element changes
+  const getElement = (id: string) => elements.find((el) => el.id === id)
 
   // Handle no selection
   if (selectedIds.length === 0) {

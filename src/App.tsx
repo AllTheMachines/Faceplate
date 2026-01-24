@@ -38,34 +38,36 @@ function App() {
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
   const setLiveDragValues = useStore((state) => state.setLiveDragValues)
+  const selectedIds = useStore((state) => state.selectedIds)
+  const getElement = useStore((state) => state.getElement)
 
-  // Handle drag move - broadcast live position values
+  // Handle drag move - broadcast live position values for all selected elements
   const handleDragMove = (event: DragMoveEvent) => {
     const { active, delta } = event
 
     // Only track element drags, not palette drags
     const sourceType = active.data.current?.sourceType
     if (sourceType === 'element') {
-      const element = active.data.current?.element
-      if (!element) return
-
       // Convert screen delta to canvas delta (divide by scale)
       const canvasDeltaX = delta.x / scale
       const canvasDeltaY = delta.y / scale
 
-      // Calculate live position (without snap-to-grid, that happens on drop)
-      const liveX = element.x + canvasDeltaX
-      const liveY = element.y + canvasDeltaY
-
-      // Broadcast live values for property panel
-      setLiveDragValues({
-        [element.id]: {
-          x: liveX,
-          y: liveY,
-          width: element.width,
-          height: element.height,
+      // Calculate live positions for ALL selected elements
+      const liveValues: Record<string, { x: number; y: number; width: number; height: number }> = {}
+      selectedIds.forEach((id) => {
+        const el = getElement(id)
+        if (el && !el.locked) {
+          liveValues[id] = {
+            x: el.x + canvasDeltaX,
+            y: el.y + canvasDeltaY,
+            width: el.width,
+            height: el.height,
+          }
         }
       })
+
+      // Broadcast live values for property panel
+      setLiveDragValues(liveValues)
     }
   }
 
@@ -76,24 +78,26 @@ function App() {
     // Check if this is an element move (dragging existing element)
     const sourceType = active.data.current?.sourceType
     if (sourceType === 'element') {
-      // Element move - update position
-      const element = active.data.current?.element
-      if (!element) return
-
       // Convert screen delta to canvas delta (divide by scale)
       const canvasDeltaX = delta.x / scale
       const canvasDeltaY = delta.y / scale
 
-      // Calculate new position
-      const newX = element.x + canvasDeltaX
-      const newY = element.y + canvasDeltaY
+      // Move ALL selected elements together (not just the one being dragged)
+      selectedIds.forEach((id) => {
+        const el = getElement(id)
+        if (!el || el.locked) return
 
-      // Apply snap-to-grid if enabled
-      const finalX = snapToGrid ? snapValue(newX, gridSize) : newX
-      const finalY = snapToGrid ? snapValue(newY, gridSize) : newY
+        // Calculate new position
+        const newX = el.x + canvasDeltaX
+        const newY = el.y + canvasDeltaY
 
-      // Update element position
-      updateElement(element.id, { x: finalX, y: finalY })
+        // Apply snap-to-grid if enabled
+        const finalX = snapToGrid ? snapValue(newX, gridSize) : newX
+        const finalY = snapToGrid ? snapValue(newY, gridSize) : newY
+
+        // Update element position
+        updateElement(id, { x: finalX, y: finalY })
+      })
 
       // Clear live values after drag completes
       setLiveDragValues(null)

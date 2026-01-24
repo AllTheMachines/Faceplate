@@ -20,7 +20,7 @@ export function useKeyboardShortcuts() {
     () => {
       useStore.temporal.getState().undo()
     },
-    { preventDefault: true }
+    { preventDefault: true, enableOnFormTags: false }
   )
 
   // Redo (both Ctrl+Y and Ctrl+Shift+Z)
@@ -29,7 +29,7 @@ export function useKeyboardShortcuts() {
     () => {
       useStore.temporal.getState().redo()
     },
-    { preventDefault: true }
+    { preventDefault: true, enableOnFormTags: false }
   )
 
   // Delete selected elements
@@ -41,7 +41,7 @@ export function useKeyboardShortcuts() {
         clearSelection()
       }
     },
-    { preventDefault: true },
+    { preventDefault: true, enableOnFormTags: false },
     [selectedIds, removeElement, clearSelection]
   )
 

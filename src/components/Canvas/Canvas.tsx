@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { useStore } from '../../store'
 import { usePan, useZoom, useKeyboardShortcuts, useMarquee, useElementNudge } from './hooks'
@@ -10,6 +10,7 @@ export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
   const canvasBackgroundRef = useRef<HTMLDivElement>(null)
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 })
+  const wasMarqueeActiveRef = useRef(false)
 
   // Setup droppable area for palette items
   const { setNodeRef: setDroppableRef, isOver } = useDroppable({
@@ -40,11 +41,27 @@ export function Canvas() {
   useZoom(viewportRef)
 
   // Use marquee selection
-  const { marqueeRect, handlers: marqueeHandlers } = useMarquee(canvasBackgroundRef)
+  const { marqueeRect, isActive: isMarqueeActive, handlers: marqueeHandlers } = useMarquee(canvasBackgroundRef)
 
   // Use keyboard shortcuts
   useKeyboardShortcuts()
   useElementNudge()
+
+  // Track marquee state to prevent clearing selection after marquee drag
+  useEffect(() => {
+    wasMarqueeActiveRef.current = isMarqueeActive
+  }, [isMarqueeActive])
+
+  // Handle background click - only clear selection if it wasn't a marquee drag
+  const handleBackgroundClick = useCallback(() => {
+    // If we just finished a marquee drag, don't clear selection
+    // The marquee just selected elements, we don't want to immediately clear them
+    if (wasMarqueeActiveRef.current) {
+      wasMarqueeActiveRef.current = false
+      return
+    }
+    clearSelection()
+  }, [clearSelection])
 
   // Combine refs for canvas background (both droppable and local ref)
   // Use effect to sync the droppable ref after canvasBackgroundRef is set
@@ -123,7 +140,7 @@ export function Canvas() {
               position: 'relative',
               ...getBackgroundStyle(),
             }}
-            onClick={clearSelection}
+            onClick={handleBackgroundClick}
             onMouseDown={marqueeHandlers.onMouseDown}
             onMouseMove={marqueeHandlers.onMouseMove}
             onMouseUp={marqueeHandlers.onMouseUp}
