@@ -756,6 +756,54 @@ async function fetchSpectrumBinary() {
 
 ---
 
+## JavaScript Integration
+
+### JUCE Bridge API
+
+The exported `bindings.js` includes a JUCEBridge module for parameter communication:
+
+```javascript
+JUCEBridge.setParameter(paramId, value)     // Fire-and-forget update
+JUCEBridge.getParameter(paramId)            // Async value query (returns Promise)
+JUCEBridge.beginGesture(paramId)            // Start automation gesture
+JUCEBridge.endGesture(paramId)              // End automation gesture
+```
+
+### Event-Based Pattern
+
+JUCE uses events, not direct function calls:
+- Functions invoked via `__juce__invoke` events
+- Results via `__juce__complete` events
+- Fire-and-forget for instant UI response (no blocking during knob drags)
+
+```javascript
+// How the bridge invokes native functions internally:
+window.__JUCE__.backend.emitEvent('__juce__invoke', {
+  name: 'setParameter',
+  params: [paramId, value],
+  resultId: Math.random()
+});
+```
+
+### Automatic Setup Functions
+
+Bindings.js automatically generates interaction handlers for each bound element:
+- `setupKnobInteraction(knobId, paramId)` - Drag-to-rotate with gesture support
+- `setupSliderInteraction(sliderId, paramId)` - Linear drag with orientation detection
+- `setupButtonInteraction(buttonId, paramId)` - Momentary/toggle mode support
+
+All are initialized in DOMContentLoaded with automatic JUCE bridge detection.
+
+### Standalone Mode
+
+When running outside JUCE (e.g., browser preview):
+- JUCEBridge detects missing `window.__JUCE__` object
+- Falls back to mock mode with console logging
+- UI controls remain interactive for design testing
+- Status indicator shows "Standalone Mode"
+
+---
+
 ## Interaction Patterns
 
 ### Standard Behaviors to Implement

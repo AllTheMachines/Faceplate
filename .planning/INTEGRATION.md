@@ -51,6 +51,68 @@ This document explains how `vst3-webview-ui-designer` integrates with related VS
 
 ---
 
+## JUCE WebView2 Communication Pattern
+
+**CRITICAL:** JUCE native functions use an event-based invocation system.
+
+### Event-Based Invocation
+
+Native functions registered with `.withNativeFunction()` in C++ are NOT directly callable from JavaScript. They must be invoked via the `__juce__invoke` event system:
+
+**JavaScript (CORRECT):**
+```javascript
+window.__JUCE__.backend.emitEvent('__juce__invoke', {
+  name: 'setParameter',
+  params: ['volume', 0.5],
+  resultId: Math.random()
+});
+```
+
+**JavaScript (WRONG - doesn't work):**
+```javascript
+window.setParameter('volume', 0.5);  // Will not work!
+```
+
+### Fire-and-Forget Pattern
+
+For responsive UI (60fps knob dragging), use fire-and-forget:
+- Don't await parameter updates
+- Send value and immediately update visual
+- C++ processes updates via MessageManager queue
+
+This pattern is now standard in our bindings.js export.
+
+### Standard Native Functions
+
+All exports include these four functions:
+1. **setParameter(paramId, value)** - Set parameter value (fire-and-forget)
+2. **getParameter(paramId)** - Get parameter value (async with promise)
+3. **beginGesture(paramId)** - Start automation gesture (for DAW recording)
+4. **endGesture(paramId)** - End automation gesture
+
+### C++ Registration Pattern
+
+```cpp
+webView = std::make_unique<juce::WebBrowserComponent>(
+    juce::WebBrowserComponent::Options{}
+        .withNativeIntegrationEnabled()
+        .withNativeFunction("setParameter",
+            [this](const juce::Array<juce::var>& args, auto complete) {
+                auto paramId = args[0].toString();
+                auto value = static_cast<float>(args[1]);
+                if (auto* param = processorRef.apvts.getParameter(paramId)) {
+                    param->setValueNotifyingHost(value);
+                }
+                complete(juce::var());
+            })
+        // ... other native functions ...
+);
+```
+
+See exported bindings.cpp for complete implementation.
+
+---
+
 ## Data Flow
 
 ### Design → Export → Integration
