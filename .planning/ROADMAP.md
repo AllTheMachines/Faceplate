@@ -23,6 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 9: Enhancements & Bug Fixes** - Bug fixes, locking, fonts, SVG design mode, template import
 - [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
 - [x] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
+- [ ] **Phase 12: Template Import/Export Testing** - Verify template system works end-to-end with JUCE event-based pattern
 
 ## Phase Details
 
@@ -286,10 +287,33 @@ Plans:
 - [x] 11-03-PLAN.md — Image file picker with thumbnail preview
 - [x] 11-04-PLAN.md — Palette consolidation: single Slider and Button entries
 
+### Phase 12: Template Import/Export Testing
+**Goal**: Verify that the template system works correctly end-to-end, including loading templates, exporting with the new JUCE event-based pattern, and validating the exported code works in JUCE WebView2.
+
+**Depends on**: Phase 11
+
+**Requirements**: TEST-01, TEST-02, TEST-03
+
+**Success Criteria** (what must be TRUE):
+  1. User can load Effect Starter template and see all elements correctly positioned on canvas
+  2. User can load Instrument Starter template and see all elements correctly positioned on canvas
+  3. Exported bindings.js contains JUCEBridge module with event-based invocation pattern
+  4. Exported bindings.js has setupKnobInteraction/setupSliderInteraction/setupButtonInteraction calls for bound elements
+  5. Exported bindings.cpp contains four native functions (setParameter, getParameter, beginGesture, endGesture)
+  6. Exported code lists all parameter IDs from the template
+  7. Standalone browser preview shows "Standalone Mode" and allows UI interaction (mock mode)
+  8. Exported ZIP bundle contains all required files (index.html, style.css, components.js, bindings.js, bindings.cpp)
+
+**Plans**: TBD (estimated 2 plans)
+
+Plans:
+- [ ] 12-01-PLAN.md — Template loading verification and export testing
+- [ ] 12-02-PLAN.md — End-to-end validation with EFXvst3 integration (optional)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -304,3 +328,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 9. Enhancements & Bug Fixes | 7/7 | Complete | 2026-01-24 |
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
 | 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
+| 12. Template Import/Export Testing | 0/2 | Pending | — |
