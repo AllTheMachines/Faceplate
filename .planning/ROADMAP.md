@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Code Export** - JUCE WebView2 template generation
 - [x] **Phase 9: Enhancements & Bug Fixes** - Bug fixes, locking, fonts, SVG design mode, template import
 - [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
-- [ ] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
+- [x] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
 
 ## Phase Details
 
@@ -281,10 +281,10 @@ Plans:
 **Plans**: 4 plans in 2 waves
 
 Plans:
-- [ ] 11-01-PLAN.md — Property panel fixes: hide rotation for Knob/Meter, fix checkbox clickability, fix Meter orientation
-- [ ] 11-02-PLAN.md — Font weight dropdown with named options
-- [ ] 11-03-PLAN.md — Image file picker with thumbnail preview
-- [ ] 11-04-PLAN.md — Palette consolidation: single Slider and Button entries
+- [x] 11-01-PLAN.md — Property panel fixes: hide rotation for Knob/Meter, fix checkbox clickability, fix Meter orientation
+- [x] 11-02-PLAN.md — Font weight dropdown with named options
+- [x] 11-03-PLAN.md — Image file picker with thumbnail preview
+- [x] 11-04-PLAN.md — Palette consolidation: single Slider and Button entries
 
 ## Progress
 
@@ -303,4 +303,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Code Export | 5/5 | Complete | 2026-01-24 |
 | 9. Enhancements & Bug Fixes | 7/7 | Complete | 2026-01-24 |
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
-| 11. Element Consolidation & Property Fixes | 0/4 | Not Started | — |
+| 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
