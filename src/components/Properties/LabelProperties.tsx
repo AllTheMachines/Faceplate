@@ -1,5 +1,6 @@
 import { LabelElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
+import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 
 interface LabelPropertiesProps {
   element: LabelElementConfig
@@ -27,12 +28,26 @@ export function LabelProperties({ element, onUpdate }: LabelPropertiesProps) {
           min={8}
           max={72}
         />
-        <TextInput
-          label="Font Family"
-          value={element.fontFamily}
-          onChange={(fontFamily) => onUpdate({ fontFamily })}
-          placeholder="Inter, system-ui, sans-serif"
-        />
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
+          <select
+            value={element.fontFamily}
+            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            {AVAILABLE_FONTS.map((font) => (
+              <option key={font.name} value={font.family}>
+                {font.name}
+              </option>
+            ))}
+          </select>
+          <p
+            className="text-xs text-gray-500 mt-1"
+            style={{ fontFamily: element.fontFamily }}
+          >
+            Preview: {element.text || 'Sample Text'}
+          </p>
+        </div>
         <NumberInput
           label="Font Weight"
           value={element.fontWeight}
