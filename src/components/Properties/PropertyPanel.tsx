@@ -111,6 +111,22 @@ export function PropertyPanel() {
         />
       </PropertySection>
 
+      {/* Lock */}
+      <PropertySection title="Lock">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={element.locked}
+            onChange={(e) => update({ locked: e.target.checked })}
+            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+          />
+          <span className="text-gray-300">Lock element</span>
+        </label>
+        <p className="text-xs text-gray-500 mt-1">
+          Locked elements cannot be selected or moved
+        </p>
+      </PropertySection>
+
       {/* Type-specific properties */}
       {isKnob(element) && <KnobProperties element={element} onUpdate={update} />}
       {isSlider(element) && <SliderProperties element={element} onUpdate={update} />}
