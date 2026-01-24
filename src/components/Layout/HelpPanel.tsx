@@ -89,7 +89,7 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 }
 
 export function HelpPanel() {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <div className="border-t border-gray-700">

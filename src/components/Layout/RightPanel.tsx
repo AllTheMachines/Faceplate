@@ -1,5 +1,4 @@
 import { useStore } from '../../store'
-import { ZOrderPanel } from '../Canvas/ZOrderPanel'
 import { PropertyPanel } from '../Properties'
 import { HelpPanel } from './HelpPanel'
 import { SaveLoadPanel } from '../project/SaveLoadPanel'
@@ -124,7 +123,6 @@ export function RightPanel() {
           </div>
         )}
       </div>
-      <ZOrderPanel />
       <div className="mt-auto">
         <HelpPanel />
       </div>

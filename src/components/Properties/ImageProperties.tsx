@@ -7,8 +7,17 @@ interface ImagePropertiesProps {
   onUpdate: (updates: Partial<ElementConfig>) => void
 }
 
+type SourceType = 'none' | 'embedded' | 'url' | 'relative'
+
+function getSourceType(src: string): SourceType {
+  if (!src) return 'none'
+  if (src.startsWith('data:')) return 'embedded'
+  if (src.startsWith('http://') || src.startsWith('https://')) return 'url'
+  return 'relative'
+}
+
 export function ImageProperties({ element, onUpdate }: ImagePropertiesProps) {
-  const isBase64 = element.src.startsWith('data:')
+  const sourceType = getSourceType(element.src)
 
   const handleSelectImage = async () => {
     try {
@@ -45,12 +54,20 @@ export function ImageProperties({ element, onUpdate }: ImagePropertiesProps) {
 
         {element.src ? (
           <div className="mt-3 text-xs text-gray-400">
-            {isBase64 ? (
+            {sourceType === 'embedded' && (
               <p className="font-medium text-gray-300">Image loaded (embedded)</p>
-            ) : (
+            )}
+            {sourceType === 'url' && (
               <>
                 <p className="font-medium text-gray-300">External URL</p>
                 <p className="mt-1 text-gray-500 break-all">{element.src}</p>
+              </>
+            )}
+            {sourceType === 'relative' && (
+              <>
+                <p className="font-medium text-green-400">Asset path</p>
+                <p className="mt-1 text-gray-500 break-all">{element.src}</p>
+                <p className="mt-1 text-gray-500 italic">Path preserved in export</p>
               </>
             )}
 
@@ -74,14 +91,17 @@ export function ImageProperties({ element, onUpdate }: ImagePropertiesProps) {
           <p className="mt-2 text-xs text-gray-500">No image selected</p>
         )}
 
-        {/* Keep URL input as alternative */}
+        {/* Keep URL/path input as alternative */}
         <div className="mt-3 pt-3 border-t border-gray-700">
           <TextInput
-            label="Or enter URL"
-            value={isBase64 ? '' : element.src}
+            label="Or enter path/URL"
+            value={sourceType === 'embedded' ? '' : element.src}
             onChange={(src) => onUpdate({ src })}
-            placeholder="https://example.com/image.png"
+            placeholder="/assets/image.png"
           />
+          <p className="mt-1 text-xs text-gray-500">
+            Use /assets/... for images in public/assets/
+          </p>
         </div>
       </PropertySection>
 
