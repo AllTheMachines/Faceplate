@@ -7,6 +7,17 @@ interface MeterPropertiesProps {
 }
 
 export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
+  const handleOrientationChange = (newOrientation: MeterElementConfig['orientation']) => {
+    // When changing orientation, swap width and height for better UX
+    if (newOrientation !== element.orientation) {
+      onUpdate({
+        orientation: newOrientation,
+        width: element.height,
+        height: element.width,
+      })
+    }
+  }
+
   return (
     <>
       {/* Orientation */}
@@ -16,9 +27,7 @@ export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
           <select
             value={element.orientation}
             onChange={(e) =>
-              onUpdate({
-                orientation: e.target.value as MeterElementConfig['orientation'],
-              })
+              handleOrientationChange(e.target.value as MeterElementConfig['orientation'])
             }
             className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
           >
