@@ -37,60 +37,45 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
   // Get the live drag position from the store (calculated in App.tsx handleDragMove)
   const liveValue = liveDragValues?.[element.id]
 
-  // Calculate drag delta from live values (for elements not being directly dragged)
+  // Calculate drag offset for transform
   // The dragged element uses its own transform, other selected elements use the calculated delta
-  let dragStyle: React.CSSProperties | undefined
+  let dragOffsetX = 0
+  let dragOffsetY = 0
 
   if (isDragging && transform) {
     // This element is being dragged - use its own transform
-    dragStyle = { transform: `translate(${transform.x}px, ${transform.y}px)` }
+    dragOffsetX = transform.x
+    dragOffsetY = transform.y
   } else if (isMultiSelectDrag && liveValue && isSelected && !element.locked) {
     // Another selected element is being dragged - use calculated delta from live values
-    const deltaX = liveValue.x !== undefined ? liveValue.x - element.x : 0
-    const deltaY = liveValue.y !== undefined ? liveValue.y - element.y : 0
-    if (deltaX !== 0 || deltaY !== 0) {
-      dragStyle = { transform: `translate(${deltaX}px, ${deltaY}px)` }
-    }
+    dragOffsetX = liveValue.x !== undefined ? liveValue.x - element.x : 0
+    dragOffsetY = liveValue.y !== undefined ? liveValue.y - element.y : 0
   }
 
-  const style = React.useMemo(
-    () => ({
-      position: 'absolute' as const,
-      left: element.x,
-      top: element.y,
-      width: element.width,
-      height: element.height,
-      transform: `rotate(${element.rotation}deg)`,
-      zIndex: element.zIndex,
-      visibility: element.visible ? ('visible' as const) : ('hidden' as const),
-      // Pointer events: only disable for lock-all mode (UI testing mode)
-      // Individual locked elements need pointer events for selection
-      pointerEvents: lockAllMode ? ('none' as const) : ('auto' as const),
-      cursor: lockAllMode
-        ? 'default'
-        : element.locked
-          ? 'pointer'  // Locked elements: show pointer (can click to select, but not drag)
-          : (isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
-      userSelect: 'none' as const,
-      ...dragStyle,
-    }),
-    [
-      element.x,
-      element.y,
-      element.width,
-      element.height,
-      element.rotation,
-      element.zIndex,
-      element.visible,
-      element.locked,
-      lockAllMode,
-      isSelected,
-      isDragging,
-      dragStyle,
-      isMultiSelectDrag,
-      liveValue,
-    ]
-  )
+  // Combine drag offset with rotation in a single transform
+  const transformValue = dragOffsetX !== 0 || dragOffsetY !== 0
+    ? `translate(${dragOffsetX}px, ${dragOffsetY}px) rotate(${element.rotation}deg)`
+    : `rotate(${element.rotation}deg)`
+
+  const style: React.CSSProperties = {
+    position: 'absolute',
+    left: element.x,
+    top: element.y,
+    width: element.width,
+    height: element.height,
+    transform: transformValue,
+    zIndex: element.zIndex,
+    visibility: element.visible ? 'visible' : 'hidden',
+    // Pointer events: only disable for lock-all mode (UI testing mode)
+    // Individual locked elements need pointer events for selection
+    pointerEvents: lockAllMode ? 'none' : 'auto',
+    cursor: lockAllMode
+      ? 'default'
+      : element.locked
+        ? 'pointer'  // Locked elements: show pointer (can click to select, but not drag)
+        : (isDragging ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
+    userSelect: 'none',
+  }
 
   return (
     <div
