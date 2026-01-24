@@ -11,6 +11,7 @@ import { generateHTML } from './htmlGenerator'
 import { generateCSS } from './cssGenerator'
 import { generateBindingsJS, generateComponentsJS, generateMockJUCE } from './jsGenerator'
 import { generateCPP } from './cppGenerator'
+import { generateReadme } from './documentationGenerator'
 
 // ============================================================================
 // Types
@@ -91,6 +92,14 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
 
     const cppContent = generateCPP(options.elements)
 
+    // Generate README documentation
+    const readme = generateReadme({
+      projectName: options.projectName || 'Plugin UI',
+      elements: options.elements,
+      includeHtmlPreview: true,
+      includeJuceBundle: true,
+    })
+
     // Create ZIP bundle
     const zip = new JSZip()
     zip.file('index.html', htmlContent)
@@ -98,6 +107,7 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
     zip.file('components.js', componentsJS)
     zip.file('bindings.js', bindingsJS)
     zip.file('bindings.cpp', cppContent)
+    zip.file('README.md', readme)
 
     // Generate ZIP blob
     const blob = await zip.generateAsync({ type: 'blob' })
@@ -184,12 +194,21 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
     })
     const bindingsWithMock = `${mockJUCE}\n\n${bindingsJS}`
 
+    // Generate README documentation
+    const readme = generateReadme({
+      projectName: options.projectName || 'Plugin UI',
+      elements: options.elements,
+      includeHtmlPreview: true,
+      includeJuceBundle: false,
+    })
+
     // Create ZIP bundle (4 files, no C++)
     const zip = new JSZip()
     zip.file('index.html', htmlContent)
     zip.file('styles.css', cssContent)
     zip.file('components.js', componentsJS)
     zip.file('bindings.js', bindingsWithMock)
+    zip.file('README.md', readme)
 
     // Generate ZIP blob
     const blob = await zip.generateAsync({ type: 'blob' })

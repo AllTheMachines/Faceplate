@@ -11,5 +11,9 @@ export type { ExportOptions, ExportResult } from './codeGenerator'
 export { validateForExport } from './validators'
 export type { ExportValidationResult, ExportError } from './validators'
 
+// Documentation
+export * from './documentationGenerator'
+export * from './knownIssues'
+
 // Utilities (exposed for potential future use)
 export { toKebabCase, toCamelCase, escapeHTML } from './utils'
