@@ -23,8 +23,11 @@ function ElementComponent({ element }: ElementProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
 
-    // Don't allow selection in lock-all mode or for individually locked elements
-    if (lockAllMode || element.locked) return
+    // Lock-all mode blocks ALL interactions (for UI testing)
+    if (lockAllMode) return
+
+    // Individual locked elements CAN be selected (so user can unlock them)
+    // Only move/resize is prevented (handled in BaseElement)
 
     if (e.shiftKey) {
       // Shift+click: add to selection
