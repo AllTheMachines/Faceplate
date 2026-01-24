@@ -50,8 +50,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Persistence
 
-- [ ] **PERS-01**: Save project as JSON file
-- [ ] **PERS-02**: Load project from JSON file
+- [x] **PERS-01**: Save project as JSON file
+- [x] **PERS-02**: Load project from JSON file
 
 ### Export
 
@@ -164,8 +164,8 @@ Which phases cover which requirements. Updated during roadmap revision.
 | PROP-05 | Phase 5 | Complete |
 | HIST-01 | Phase 3 | Complete |
 | HIST-02 | Phase 3 | Complete |
-| PERS-01 | Phase 7 | Pending |
-| PERS-02 | Phase 7 | Pending |
+| PERS-01 | Phase 7 | Complete |
+| PERS-02 | Phase 7 | Complete |
 | EXPO-01 | Phase 8 | Pending |
 | EXPO-02 | Phase 8 | Pending |
 | EXPO-03 | Phase 8 | Pending |

@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Palette & Element Creation** - Drag-drop, element instantiation, layout scaffolding
 - [x] **Phase 5: Properties & Transform** - Property panel, move/resize elements
 - [x] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
-- [ ] **Phase 7: Save/Load** - JSON persistence, project validation
+- [x] **Phase 7: Save/Load** - JSON persistence, project validation
 - [ ] **Phase 8: Code Export** - JUCE WebView2 template generation
 
 ## Phase Details
@@ -178,8 +178,8 @@ Plans:
 **Plans**: 2 plans in 2 waves
 
 Plans:
-- [ ] 07-01-PLAN.md — Install Zod/browser-fs-access, create project schemas and serialization service
-- [ ] 07-02-PLAN.md — File system service, SaveLoadPanel UI, store integration
+- [x] 07-01-PLAN.md — Install Zod/browser-fs-access, create project schemas and serialization service
+- [x] 07-02-PLAN.md — File system service, SaveLoadPanel UI, store integration
 
 ### Phase 8: Code Export
 **Goal**: Generate working JUCE WebView2 code (HTML/CSS/JS + C++ boilerplate) from the canvas design with sensible IDs and proper WebSliderRelay bindings.
@@ -214,5 +214,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Palette & Element Creation | 6/6 | Complete | 2026-01-23 |
 | 5. Properties & Transform | 5/5 | Complete | 2026-01-23 |
 | 6. Alignment & Polish | 2/2 | Complete | 2026-01-23 |
-| 7. Save/Load | 0/2 | Not started | - |
+| 7. Save/Load | 2/2 | Complete | 2026-01-24 |
 | 8. Code Export | 0/TBD | Not started | - |
