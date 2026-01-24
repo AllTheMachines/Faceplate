@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-23)
 ## Current Position
 
 Phase: 9 of 9 (Enhancements & Bug Fixes)
-Plan: 3 of ? in phase
+Plan: 4 of ? in phase
 Status: In progress
-Last activity: 2026-01-24 — Completed 09-03-PLAN.md (Element Locking)
+Last activity: 2026-01-24 — Completed 09-01-PLAN.md (Marquee Selection Bug Fixes)
 
-Progress: [██████████] 100% (30/30 v1 plans) + 3 Phase 9 plans complete
+Progress: [██████████] 100% (30/30 v1 plans) + 4 Phase 9 plans complete
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 33
-- Average duration: 2.76 min
-- Total execution time: 1.52 hours
+- Total plans completed: 34
+- Average duration: 2.92 min
+- Total execution time: 1.65 hours
 
 **By Phase:**
 
@@ -35,10 +35,10 @@ Progress: [██████████] 100% (30/30 v1 plans) + 3 Phase 9 pla
 | 06-alignment-polish | 2/2 | 3.5 min | 1.75 min |
 | 07-save-load | 2/2 | 4.83 min | 2.42 min |
 | 08-code-export | 5/5 | 12.21 min | 2.44 min |
-| 09-enhancements-bugfixes | 3/? | 21.33 min | 7.11 min |
+| 09-enhancements-bugfixes | 4/? | 29.73 min | 7.43 min |
 
 **Phase 9 Execution:**
-- 09-01: TBD
+- 09-01: 8.4 min (Marquee selection bug fixes)
 - 09-02: TBD
 - 09-03: 7.15 min (Element locking: individual + lock all mode)
 
@@ -58,6 +58,8 @@ Key decisions affecting the completed milestone:
 - **Missing parameterId handling** (08-03): Generate TODO comment instead of broken code
 - **Dual export modes** (08-04): JUCE bundle (5 files with C++) vs HTML preview (4 files with mock backend)
 - **Lock state as view mode** (09-03): Lock mode excluded from undo history - it's a view mode like panning, not document state
+- **@dnd-kit context for drag detection** (09-01): Use useDndContext to detect when element is being dragged to prevent marquee interference
+- **Selection persistence strategy** (09-01): Selection clearing only on background click, not during marquee drag
 
 ### All Phases Complete
 
@@ -69,7 +71,7 @@ Key decisions affecting the completed milestone:
 **Phase 6:** COMPLETE (2/2 plans) - Alignment & Polish
 **Phase 7:** COMPLETE (2/2 plans) - Save/Load
 **Phase 8:** COMPLETE (5/5 plans) - Code Export
-**Phase 9:** IN PROGRESS (3/? plans) - Enhancements & Bug Fixes
+**Phase 9:** IN PROGRESS (4/? plans) - Enhancements & Bug Fixes
 
 ### Pending Todos
 
@@ -82,6 +84,6 @@ None - Milestone complete.
 ## Session Continuity
 
 Last session: 2026-01-24 (Phase 9 execution)
-Stopped at: Completed 09-03-PLAN.md (Element Locking)
+Stopped at: Completed 09-01-PLAN.md (Marquee Selection Bug Fixes)
 Resume file: None
 Next: Continue Phase 9 plans or create new enhancement plans
