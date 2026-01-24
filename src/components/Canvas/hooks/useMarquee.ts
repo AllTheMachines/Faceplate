@@ -9,10 +9,12 @@ interface MarqueeState {
   startY: number
   currentX: number // Canvas-relative current position
   currentY: number
+  didDrag: boolean // True if mouse moved significantly during marquee
 }
 
 export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   const [marquee, setMarquee] = useState<MarqueeState | null>(null)
+  const [justFinishedDrag, setJustFinishedDrag] = useState(false)
   const { active } = useDndContext()
   const isDraggingElement = active?.data.current?.sourceType === 'element'
   const elements = useStore((state) => state.elements)
@@ -44,6 +46,9 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
       // Only start marquee on left click, and not during pan mode or element drag
       if (e.button !== 0 || isPanning || isDraggingElement) return
 
+      // Reset the justFinishedDrag flag when starting a new potential drag
+      setJustFinishedDrag(false)
+
       const { x, y } = screenToCanvas(e.clientX, e.clientY)
       setMarquee({
         isActive: true,
@@ -51,6 +56,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
         startY: y,
         currentX: x,
         currentY: y,
+        didDrag: false,
       })
     },
     [screenToCanvas, isPanning, isDraggingElement]
@@ -61,7 +67,13 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
       if (!marquee?.isActive) return
 
       const { x, y } = screenToCanvas(e.clientX, e.clientY)
-      setMarquee((prev) => (prev ? { ...prev, currentX: x, currentY: y } : null))
+
+      // Check if mouse moved enough to count as a drag (5px threshold)
+      const dx = Math.abs(x - marquee.startX)
+      const dy = Math.abs(y - marquee.startY)
+      const didDrag = dx > 5 || dy > 5
+
+      setMarquee((prev) => (prev ? { ...prev, currentX: x, currentY: y, didDrag: prev.didDrag || didDrag } : null))
 
       // Calculate marquee rect (handle negative dimensions)
       const marqueeRect: Rect = {
@@ -83,7 +95,6 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
       })
 
       // Update selection with intersecting element IDs
-      // Only clear selection on background click, not during marquee drag
       if (intersecting.length > 0) {
         selectMultiple(intersecting.map((el) => el.id))
       }
@@ -92,8 +103,14 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   )
 
   const handleMouseUp = useCallback(() => {
+    // If we did a real drag (not just a click), set the flag to prevent click from clearing selection
+    if (marquee?.didDrag) {
+      setJustFinishedDrag(true)
+      // Reset the flag after a short delay (after the click event fires)
+      setTimeout(() => setJustFinishedDrag(false), 0)
+    }
     setMarquee(null)
-  }, [])
+  }, [marquee?.didDrag])
 
   // Calculate marquee rect for rendering (in canvas coordinates)
   const marqueeRect = marquee
@@ -108,6 +125,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   return {
     marqueeRect,
     isActive: marquee?.isActive ?? false,
+    justFinishedDrag,
     handlers: {
       onMouseDown: handleMouseDown,
       onMouseMove: handleMouseMove,

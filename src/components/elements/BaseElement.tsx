@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDraggable } from '@dnd-kit/core'
+import { useDraggable, useDndContext } from '@dnd-kit/core'
 import { ElementConfig } from '../../types/elements'
 import { useStore } from '../../store'
 
@@ -15,6 +15,9 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
   const isSelected = selectedIds.includes(element.id)
   const lockAllMode = useStore((state) => state.lockAllMode)
 
+  // Get DnD context to detect multi-select dragging
+  const { active } = useDndContext()
+
   // Enable dragging for selected, unlocked elements
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `element-${element.id}`,
@@ -25,10 +28,32 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
     disabled: !isSelected || element.locked || lockAllMode,
   })
 
+  // Check if another selected element is being dragged (multi-select scenario)
+  const activeElementId = active?.data.current?.element?.id
+  const isAnotherSelectedElementDragging =
+    active?.data.current?.sourceType === 'element' &&
+    activeElementId !== element.id &&
+    selectedIds.includes(activeElementId) &&
+    isSelected &&
+    !element.locked
+
+  // Get the drag delta from the active element for multi-select dragging
+  // We need to use the same delta that the dragged element has
+  const activeDragDelta = active && isAnotherSelectedElementDragging
+    ? { x: (active.rect.current.translated?.left ?? 0) - (active.rect.current.initial?.left ?? 0),
+        y: (active.rect.current.translated?.top ?? 0) - (active.rect.current.initial?.top ?? 0) }
+    : null
+
   // Apply drag transform for live preview
+  // For the dragged element, use its own transform
+  // For other selected elements during multi-drag, use the active element's delta
   const dragStyle = transform
     ? {
         transform: `translate(${transform.x}px, ${transform.y}px)`,
+      }
+    : activeDragDelta
+    ? {
+        transform: `translate(${activeDragDelta.x}px, ${activeDragDelta.y}px)`,
       }
     : undefined
 
@@ -66,6 +91,7 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       isSelected,
       isDragging,
       dragStyle,
+      isAnotherSelectedElementDragging,
     ]
   )
 
