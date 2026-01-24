@@ -86,6 +86,42 @@ See `.planning/INTEGRATION.md` for detailed integration documentation.
 - Element types affect C++ binding code generation
 - Breaking changes require updates in both VST3 repos
 
+## Technical Architecture
+
+### JavaScript Export - JUCE Event-Based Pattern
+
+**CRITICAL:** JUCE native functions use event-based invocation, not direct calls.
+
+**What We Export:**
+The designer exports `bindings.js` with a JUCEBridge module that wraps JUCE's event system:
+
+```javascript
+// Exported pattern (simplified):
+window.__JUCE__.backend.emitEvent('__juce__invoke', {
+  name: 'setParameter',
+  params: [paramId, value],
+  resultId: Math.random()
+});
+```
+
+**Why This Pattern:**
+- JUCE functions registered with `.withNativeFunction()` are NOT directly callable
+- Must use `__juce__invoke` event system
+- Fire-and-forget for responsive 60fps UI
+- Promise pattern for value queries
+
+**Code Generation:**
+- `jsGenerator.ts` - Generates JUCEBridge module and UI handlers
+- `cppGenerator.ts` - Generates C++ native function registration snippets
+- Fire-and-forget `setParameter()` for knob/slider interactions
+- Async `getParameter()` for value retrieval
+
+**Discovery Date:** January 24, 2026
+**Status:** Production-ready pattern based on tested EFXvst3 implementation
+**Commit:** 877b7ad
+
+See: `.planning/INTEGRATION.md` for complete pattern documentation.
+
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
