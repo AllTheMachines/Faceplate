@@ -17,7 +17,6 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   const isDraggingElement = active?.data.current?.sourceType === 'element'
   const elements = useStore((state) => state.elements)
   const selectMultiple = useStore((state) => state.selectMultiple)
-  const clearSelection = useStore((state) => state.clearSelection)
   const isPanning = useStore((state) => state.isPanning)
   const scale = useStore((state) => state.scale)
   const offsetX = useStore((state) => state.offsetX)
@@ -86,13 +85,12 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
       })
 
       // Update selection with intersecting element IDs
+      // Only clear selection on background click, not during marquee drag
       if (intersecting.length > 0) {
         selectMultiple(intersecting.map((el) => el.id))
-      } else {
-        clearSelection()
       }
     },
-    [marquee, screenToCanvas, elements, selectMultiple, clearSelection]
+    [marquee, screenToCanvas, elements, selectMultiple]
   )
 
   const handleMouseUp = useCallback(() => {
