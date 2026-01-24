@@ -131,7 +131,7 @@ export function PropertyPanel() {
           <span className="text-gray-300">Lock element</span>
         </label>
         <p className="text-xs text-gray-500 mt-1">
-          Locked elements cannot be selected or moved
+          Locked elements cannot be moved or resized
         </p>
       </PropertySection>
 
