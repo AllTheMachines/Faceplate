@@ -22,6 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Code Export** - JUCE WebView2 template generation
 - [x] **Phase 9: Enhancements & Bug Fixes** - Bug fixes, locking, fonts, SVG design mode, template import
 - [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
+- [ ] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
 
 ## Phase Details
 
@@ -259,10 +260,30 @@ Plans:
 - [x] 10-02-PLAN.md — Fix element locking UX (selectable but not movable)
 - [x] 10-03-PLAN.md — Fix template import element creation
 
+### Phase 11: Element Consolidation & Property Fixes
+**Goal**: Consolidate redundant element types, fix property panel issues, and improve image handling for a cleaner, more intuitive element palette.
+
+**Depends on**: Phase 10
+
+**Requirements**: BUG-01 through BUG-09 from UAT feedback (2026-01-24)
+
+**Success Criteria** (what must be TRUE):
+  1. Knob element has no rotation field in property panel
+  2. Single "Slider" element with orientation property (vertical/horizontal) replaces V-Slider and H-Slider
+  3. Momentary Button "Pressed" state can be toggled in property panel
+  4. Toggle Button "Pressed" state can be toggled in property panel
+  5. Single "Button" element with behavior property (momentary/toggle) replaces separate button types
+  6. Meter orientation can switch between Vertical and Horizontal in both directions
+  7. Meter element has no rotation field in property panel
+  8. Font Weight property shows named options (Regular, Bold, etc.) instead of numeric values
+  9. Image element has file picker to select from project assets or enter relative path
+
+**Plans**: TBD (to be planned with /gsd:plan-phase 11)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -276,3 +297,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Code Export | 5/5 | Complete | 2026-01-24 |
 | 9. Enhancements & Bug Fixes | 7/7 | Complete | 2026-01-24 |
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
+| 11. Element Consolidation & Property Fixes | 0/? | Not Started | — |
