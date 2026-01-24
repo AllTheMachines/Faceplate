@@ -20,6 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Alignment & Polish** - Snap to grid, copy/paste, keyboard shortcuts
 - [x] **Phase 7: Save/Load** - JSON persistence, project validation
 - [x] **Phase 8: Code Export** - JUCE WebView2 template generation
+- [ ] **Phase 9: Enhancements & Bug Fixes** - Bug fixes, locking, fonts, SVG design mode, template import
 
 ## Phase Details
 
@@ -205,10 +206,40 @@ Plans:
 - [x] 08-04-PLAN.md — Code generator orchestrator and ZIP bundle creation
 - [x] 08-05-PLAN.md — ExportPanel UI component integrated into RightPanel
 
+### Phase 9: Enhancements & Bug Fixes
+**Goal**: Fix selection bugs, add element locking, implement font selection, create SVG design mode for custom elements, and enable template import from existing JUCE WebView2 projects.
+
+**Depends on**: Phase 8
+
+**Requirements**: BUG-01, BUG-02, IMP-01, IMP-02, IMP-03, FEAT-01, FEAT-02, FEAT-03, FEAT-04, FEAT-05
+
+**Success Criteria** (what must be TRUE):
+  1. Selection rectangle does not appear when dragging an existing element
+  2. Marquee selection persists after mouse release (elements remain selected)
+  3. Position/Size values in property panel update in real-time during drag/resize
+  4. User can lock individual elements to prevent selection/movement
+  5. User can enable "lock all" mode for UI testing without accidental edits
+  6. User can select from multiple embedded fonts for Labels/Value Displays
+  7. User can enter Design Mode to dissect custom SVGs and assign parts to layers
+  8. User can import HTML/JS/CSS from existing JUCE WebView2 template projects
+  9. Export includes documentation/comments for JUCE WebView2 integration workflow
+  10. Export includes known bug workarounds and loading solutions for JUCE WebView2
+
+**Plans**: 7 plans in 2 waves
+
+Plans:
+- [ ] 09-01-PLAN.md — Fix marquee selection bugs (prevent during drag, persist after release)
+- [ ] 09-02-PLAN.md — Real-time property updates during drag/resize
+- [ ] 09-03-PLAN.md — Element locking (individual and lock-all mode)
+- [ ] 09-04-PLAN.md — Font selection with embedded WOFF2 fonts
+- [ ] 09-05-PLAN.md — Export documentation and known issues
+- [ ] 09-06-PLAN.md — SVG Design Mode for layer assignment
+- [ ] 09-07-PLAN.md — Template import from existing JUCE projects
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -220,3 +251,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 6. Alignment & Polish | 2/2 | Complete | 2026-01-23 |
 | 7. Save/Load | 2/2 | Complete | 2026-01-24 |
 | 8. Code Export | 5/5 | Complete | 2026-01-24 |
+| 9. Enhancements & Bug Fixes | 0/7 | Planning Complete | — |
