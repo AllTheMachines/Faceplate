@@ -16,11 +16,32 @@ export function RightPanel() {
   const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
   const setBackgroundColor = useStore((state) => state.setBackgroundColor)
   const setSnapToGrid = useStore((state) => state.setSnapToGrid)
+  const lockAllMode = useStore((state) => state.lockAllMode)
+  const toggleLockAllMode = useStore((state) => state.toggleLockAllMode)
 
   return (
     <div className="bg-gray-800 border-l border-gray-700 overflow-y-auto flex flex-col">
       <SaveLoadPanel />
       <ExportPanel />
+      {/* Lock All Toggle */}
+      <div className="px-4 py-2 border-b border-gray-700">
+        <button
+          onClick={toggleLockAllMode}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium transition-colors w-full justify-center ${
+            lockAllMode
+              ? 'bg-amber-600 text-white hover:bg-amber-500'
+              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+          }`}
+        >
+          <span>{lockAllMode ? '🔒' : '🔓'}</span>
+          <span>{lockAllMode ? 'Unlock All' : 'Lock All'}</span>
+        </button>
+        {lockAllMode && (
+          <p className="text-xs text-amber-400 mt-1 text-center">
+            UI Test Mode: Elements cannot be selected
+          </p>
+        )}
+      </div>
       <div className="p-4 flex-1 overflow-y-auto">
         <h2 className="text-lg font-semibold text-gray-100 mb-4">Properties</h2>
 
