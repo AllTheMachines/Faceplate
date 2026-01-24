@@ -46,18 +46,23 @@ export function ImageProperties({ element, onUpdate }: ImagePropertiesProps) {
         {element.src ? (
           <div className="mt-3 text-xs text-gray-400">
             {isBase64 ? (
-              <>
-                <p className="font-medium text-gray-300">Image loaded (embedded)</p>
-                <p className="mt-1 text-gray-500 truncate">
-                  {element.src.substring(0, 60)}...
-                </p>
-              </>
+              <p className="font-medium text-gray-300">Image loaded (embedded)</p>
             ) : (
               <>
                 <p className="font-medium text-gray-300">External URL</p>
                 <p className="mt-1 text-gray-500 break-all">{element.src}</p>
               </>
             )}
+
+            {/* Preview thumbnail */}
+            <div className="mt-2 border border-gray-600 rounded overflow-hidden bg-gray-800">
+              <img
+                src={element.src}
+                alt="Preview"
+                className="w-full h-20 object-contain"
+              />
+            </div>
+
             <button
               onClick={() => onUpdate({ src: '' })}
               className="mt-2 text-red-400 hover:text-red-300 text-xs underline"
