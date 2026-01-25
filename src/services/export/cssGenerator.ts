@@ -124,54 +124,71 @@ export function generateElementCSS(element: ElementConfig): string {
   switch (element.type) {
     case 'knob':
       return `${selector} {
-  /* Knob styles */
-  border-radius: 50%;
-  background: ${element.trackColor};
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /* Knob styles - SVG handles visual rendering */
   cursor: pointer;
-  /* SVG arc rendering will be handled by components.js */
-  --track-color: ${element.trackColor};
-  --fill-color: ${element.fillColor};
-  --indicator-color: ${element.indicatorColor};
-  --track-width: ${element.trackWidth}px;
-  --start-angle: ${element.startAngle}deg;
-  --end-angle: ${element.endAngle}deg;
+  user-select: none;
 }`
 
     case 'slider':
       if (element.orientation === 'vertical') {
         return `${selector} {
   /* Vertical slider */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  background: ${element.trackColor};
-  border-radius: 4px;
+  position: relative;
   cursor: pointer;
-  --track-color: ${element.trackColor};
-  --track-fill-color: ${element.trackFillColor};
-  --thumb-color: ${element.thumbColor};
-  --thumb-width: ${element.thumbWidth}px;
-  --thumb-height: ${element.thumbHeight}px;
+  user-select: none;
+}
+
+${selector} .slider-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+}
+
+${selector} .slider-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 4px;
+}
+
+${selector} .slider-thumb {
+  position: absolute;
+  left: 50%;
+  width: ${element.thumbWidth}px;
+  height: ${element.thumbHeight}px;
+  transform: translate(-50%, 50%);
+  border-radius: 2px;
 }`
       } else {
         return `${selector} {
   /* Horizontal slider */
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  background: ${element.trackColor};
-  border-radius: 4px;
+  position: relative;
   cursor: pointer;
-  --track-color: ${element.trackColor};
-  --track-fill-color: ${element.trackFillColor};
-  --thumb-color: ${element.thumbColor};
-  --thumb-width: ${element.thumbWidth}px;
-  --thumb-height: ${element.thumbHeight}px;
+  user-select: none;
+}
+
+${selector} .slider-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+}
+
+${selector} .slider-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-radius: 4px;
+}
+
+${selector} .slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: ${element.thumbWidth}px;
+  height: ${element.thumbHeight}px;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
 }`
       }
 
@@ -213,21 +230,37 @@ ${selector}:active {
 }`
 
     case 'meter':
-      // Generate gradient stops
-      const gradientStops = element.colorStops
-        .map((stop) => `${stop.color} ${stop.position * 100}%`)
-        .join(', ')
-
-      const gradientDirection = element.orientation === 'vertical' ? 'to top' : 'to right'
-
-      return `${selector} {
-  /* Meter */
-  background: ${element.backgroundColor};
+      if (element.orientation === 'vertical') {
+        return `${selector} {
+  /* Vertical meter */
+  position: relative;
   border-radius: 2px;
   overflow: hidden;
-  --gradient: linear-gradient(${gradientDirection}, ${gradientStops});
-  --bg-color: ${element.backgroundColor};
+}
+
+${selector} .meter-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 2px;
 }`
+      } else {
+        return `${selector} {
+  /* Horizontal meter */
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+${selector} .meter-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  border-radius: 2px;
+}`
+      }
 
     case 'image':
       return `${selector} {
