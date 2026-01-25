@@ -26,16 +26,10 @@ export function generateReadme(options: DocumentationOptions): string {
 
   // Extract string literals with backticks to avoid template literal issues
   const htmlPreviewFiles = includeHtmlPreview
-    ? '- `index.html` - Main HTML structure\n- `styles.css` - Element styles and layout\n- `components.js` - UI component rendering\n- `bindings.js` - JUCE WebSliderRelay bindings\n'
+    ? '- `index.html` - Main HTML structure\n- `style.css` - Element styles and layout\n- `components.js` - UI component rendering\n- `bindings.js` - JUCE parameter bindings\n'
     : ''
 
-  const juceBundleFiles = includeJuceBundle
-    ? '- `bindings.cpp` - C++ boilerplate for JUCE integration\n'
-    : ''
-
-  const bindingsText = includeJuceBundle
-    ? 'See `bindings.cpp` for the C++ relay setup code.'
-    : "You'll need to implement WebSliderRelay bindings manually."
+  const bindingsText = 'The C++ native functions are already implemented in your PluginEditor.cpp. Just copy these web files to your project resources.'
 
   const parameterRows = elements
     .filter(e => e.parameterId)
@@ -47,7 +41,6 @@ export function generateReadme(options: DocumentationOptions): string {
   readme += '## Contents\n\n'
   readme += 'This export bundle contains:\n\n'
   readme += htmlPreviewFiles
-  readme += juceBundleFiles
   readme += '- `README.md` - This documentation\n\n'
   readme += '## UI Summary\n\n'
   readme += '| Element Type | Count |\n'
@@ -68,7 +61,7 @@ export function generateReadme(options: DocumentationOptions): string {
   readme += '│   ├── PluginEditor.cpp\n'
   readme += '│   └── WebUI/           <- Create this folder\n'
   readme += '│       ├── index.html\n'
-  readme += '│       ├── styles.css\n'
+  readme += '│       ├── style.css\n'
   readme += '│       ├── components.js\n'
   readme += '│       └── bindings.js\n'
   readme += '```\n\n'

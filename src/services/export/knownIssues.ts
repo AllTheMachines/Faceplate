@@ -51,7 +51,7 @@ void EditorComponent::paint(juce::Graphics& g) {
     symptom: 'Moving knob in UI doesn\'t change DSP parameter',
     cause: 'Missing or incorrect WebSliderRelay setup',
     solution: 'Register each control with WebSliderRelay using matching parameter ID',
-    codeExample: `// In bindings.cpp, ensure relay is registered:
+    codeExample: `// In PluginEditor.cpp, ensure native function is registered:
 webSliderRelay->registerSlider("gain", [this](float value) {
     processor.getParameters().getParameter("gain")->setValueNotifyingHost(value);
 });`,

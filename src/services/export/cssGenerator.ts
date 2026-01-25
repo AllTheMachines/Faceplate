@@ -1,6 +1,6 @@
 /**
  * CSS stylesheet generator for VST3 WebView UI export
- * Generates styles.css with element-specific styling
+ * Generates style.css with element-specific styling
  */
 
 import type { ElementConfig } from '../../types/elements'

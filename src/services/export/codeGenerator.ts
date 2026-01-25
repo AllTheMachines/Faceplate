@@ -10,7 +10,6 @@ import { validateForExport } from './validators'
 import { generateHTML } from './htmlGenerator'
 import { generateCSS } from './cssGenerator'
 import { generateBindingsJS, generateComponentsJS, generateMockJUCE } from './jsGenerator'
-import { generateCPP } from './cppGenerator'
 import { generateReadme } from './documentationGenerator'
 
 // ============================================================================
@@ -35,7 +34,7 @@ export type ExportResult =
 
 /**
  * Export complete JUCE WebView2 bundle
- * Generates 5-file ZIP: index.html, styles.css, components.js, bindings.js, bindings.cpp
+ * Generates 4-file ZIP: index.html, style.css, components.js, bindings.js
  *
  * @param options - Export configuration
  * @returns Result indicating success or error
@@ -90,8 +89,6 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
       isPreviewMode: false,
     })
 
-    const cppContent = generateCPP(options.elements)
-
     // Generate README documentation
     const readme = generateReadme({
       projectName: options.projectName || 'Plugin UI',
@@ -100,13 +97,12 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
       includeJuceBundle: true,
     })
 
-    // Create ZIP bundle
+    // Create ZIP bundle (4 web files + README, no C++)
     const zip = new JSZip()
     zip.file('index.html', htmlContent)
-    zip.file('styles.css', cssContent)
+    zip.file('style.css', cssContent)
     zip.file('components.js', componentsJS)
     zip.file('bindings.js', bindingsJS)
-    zip.file('bindings.cpp', cppContent)
     zip.file('README.md', readme)
 
     // Generate ZIP blob
@@ -140,7 +136,7 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
 
 /**
  * Export standalone HTML preview bundle
- * Generates 4-file ZIP (no C++): index.html, styles.css, components.js, bindings.js with mock JUCE
+ * Generates 4-file ZIP: index.html, style.css, components.js, bindings.js with mock JUCE
  *
  * Preview mode includes mock JUCE backend for standalone testing without JUCE runtime.
  *
@@ -202,10 +198,10 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
       includeJuceBundle: false,
     })
 
-    // Create ZIP bundle (4 files, no C++)
+    // Create ZIP bundle (4 web files + README)
     const zip = new JSZip()
     zip.file('index.html', htmlContent)
-    zip.file('styles.css', cssContent)
+    zip.file('style.css', cssContent)
     zip.file('components.js', componentsJS)
     zip.file('bindings.js', bindingsWithMock)
     zip.file('README.md', readme)
