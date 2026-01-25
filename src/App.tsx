@@ -234,6 +234,12 @@ function App() {
         return
     }
 
+    // Center element on drop position (not top-left corner)
+    if (newElement) {
+      newElement.x = canvasX - newElement.width / 2
+      newElement.y = canvasY - newElement.height / 2
+    }
+
     addElement(newElement)
   }
 
