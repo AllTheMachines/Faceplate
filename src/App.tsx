@@ -9,6 +9,7 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { useState, useRef, useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
@@ -320,24 +321,50 @@ function App() {
   // Demo elements removed - users add elements via palette drag-drop
 
   return (
-    <DndContext
-      sensors={sensors}
-      onDragStart={handleDragStart}
-      onDragMove={handleDragMove}
-      onDragEnd={handleDragEnd}
-    >
-      <ThreePanelLayout>
-        <CanvasStage />
-      </ThreePanelLayout>
-      <DragOverlay dropAnimation={null}>
-        {activeDragData && (
-          <DragPreview
-            elementType={activeDragData.elementType}
-            variant={activeDragData.variant}
-          />
-        )}
-      </DragOverlay>
-    </DndContext>
+    <>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
+      >
+        <ThreePanelLayout>
+          <CanvasStage />
+        </ThreePanelLayout>
+        <DragOverlay dropAnimation={null}>
+          {activeDragData && (
+            <DragPreview
+              elementType={activeDragData.elementType}
+              variant={activeDragData.variant}
+            />
+          )}
+        </DragOverlay>
+      </DndContext>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          // Default styling to match dark theme
+          style: {
+            background: '#1f2937', // gray-800
+            color: '#f3f4f6', // gray-100
+          },
+          // Error toasts are red
+          error: {
+            style: {
+              background: '#7f1d1d', // red-900
+              color: '#fecaca', // red-200
+            },
+          },
+          // Success toasts are green
+          success: {
+            style: {
+              background: '#14532d', // green-900
+              color: '#bbf7d0', // green-200
+            },
+          },
+        }}
+      />
+    </>
   )
 }
 
