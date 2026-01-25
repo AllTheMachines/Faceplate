@@ -1,0 +1,70 @@
+import { DropdownElementConfig, ElementConfig } from '../../types/elements'
+import { NumberInput, ColorInput, PropertySection } from './'
+
+interface DropdownPropertiesProps {
+  element: DropdownElementConfig
+  onUpdate: (updates: Partial<ElementConfig>) => void
+}
+
+export function DropdownProperties({ element, onUpdate }: DropdownPropertiesProps) {
+  return (
+    <>
+      {/* Options */}
+      <PropertySection title="Options">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Options (one per line)</label>
+          <textarea
+            value={element.options.join('\n')}
+            onChange={(e) => {
+              const options = e.target.value.split('\n').filter((line) => line.trim() !== '')
+              if (options.length === 0) options.push('Option 1')
+              onUpdate({ options })
+            }}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm font-mono min-h-[100px]"
+            placeholder="Option 1&#10;Option 2&#10;Option 3"
+          />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Selected Index</label>
+          <select
+            value={element.selectedIndex}
+            onChange={(e) => onUpdate({ selectedIndex: parseInt(e.target.value) })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            {element.options.map((option, index) => (
+              <option key={index} value={index}>
+                {index}: {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </PropertySection>
+
+      {/* Appearance */}
+      <PropertySection title="Appearance">
+        <ColorInput
+          label="Background Color"
+          value={element.backgroundColor}
+          onChange={(backgroundColor) => onUpdate({ backgroundColor })}
+        />
+        <ColorInput
+          label="Text Color"
+          value={element.textColor}
+          onChange={(textColor) => onUpdate({ textColor })}
+        />
+        <ColorInput
+          label="Border Color"
+          value={element.borderColor}
+          onChange={(borderColor) => onUpdate({ borderColor })}
+        />
+        <NumberInput
+          label="Border Radius"
+          value={element.borderRadius}
+          onChange={(borderRadius) => onUpdate({ borderRadius })}
+          min={0}
+          max={20}
+        />
+      </PropertySection>
+    </>
+  )
+}
