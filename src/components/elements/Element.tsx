@@ -101,6 +101,10 @@ function ElementComponent({ element }: ElementProps) {
         return <FrequencyDisplayRenderer config={element} />
       case 'gainreductionmeter':
         return <GainReductionMeterRenderer config={element} />
+      case 'waveform':
+        return <WaveformRenderer config={element} />
+      case 'oscilloscope':
+        return <OscilloscopeRenderer config={element} />
       case 'textfield':
         return <TextFieldRenderer config={element} />
       case 'collapsible':
