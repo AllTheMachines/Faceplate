@@ -23,7 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 9: Enhancements & Bug Fixes** - Bug fixes, locking, fonts, SVG design mode, template import
 - [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
 - [x] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
-- [ ] **Phase 12: Export & Round-Trip Testing** - Verify templates load, exports work, round-trip preserves state
+- [x] **Phase 12: Export & Round-Trip Testing** - Verify templates load, exports work, round-trip preserves state
 
 ## Phase Details
 
@@ -311,7 +311,7 @@ Plans:
 **Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 12-01-PLAN.md — Template loading, JUCE export verification, HTML preview, round-trip integrity
+- [x] 12-01-PLAN.md — Template loading, JUCE export verification, HTML preview, round-trip integrity
 
 ## Progress
 
@@ -331,4 +331,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 9. Enhancements & Bug Fixes | 7/7 | Complete | 2026-01-24 |
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
 | 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
-| 12. Export & Round-Trip Testing | 0/1 | Pending | — |
+| 12. Export & Round-Trip Testing | 1/1 | Complete | 2026-01-25 |
