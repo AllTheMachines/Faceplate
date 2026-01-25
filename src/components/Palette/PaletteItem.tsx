@@ -16,6 +16,14 @@ import {
   createFrame,
   createGroupBox,
   createCollapsible,
+  createRangeSlider,
+  createDropdown,
+  createCheckbox,
+  createRadioGroup,
+  createTextField,
+  createWaveform,
+  createOscilloscope,
+  createPresetBrowser,
   ElementConfig,
 } from '../../types/elements'
 import { KnobRenderer } from '../elements/renderers/KnobRenderer'
@@ -33,6 +41,14 @@ import { PanelRenderer } from '../elements/renderers/PanelRenderer'
 import { FrameRenderer } from '../elements/renderers/FrameRenderer'
 import { GroupBoxRenderer } from '../elements/renderers/GroupBoxRenderer'
 import { CollapsibleRenderer } from '../elements/renderers/CollapsibleRenderer'
+import { RangeSliderRenderer } from '../elements/renderers/RangeSliderRenderer'
+import { DropdownRenderer } from '../elements/renderers/DropdownRenderer'
+import { CheckboxRenderer } from '../elements/renderers/CheckboxRenderer'
+import { RadioGroupRenderer } from '../elements/renderers/RadioGroupRenderer'
+import { TextFieldRenderer } from '../elements/renderers/TextFieldRenderer'
+import { WaveformRenderer } from '../elements/renderers/WaveformRenderer'
+import { OscilloscopeRenderer } from '../elements/renderers/OscilloscopeRenderer'
+import { PresetBrowserRenderer } from '../elements/renderers/PresetBrowserRenderer'
 
 interface PaletteItemProps {
   id: string
@@ -191,6 +207,73 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           maxContentHeight: 30,
           ...variant,
         })
+      case 'rangeslider':
+        return createRangeSlider({
+          ...baseOverrides,
+          width: 60,
+          height: 20,
+          thumbWidth: 8,
+          thumbHeight: 8,
+          ...variant,
+        })
+      case 'dropdown':
+        return createDropdown({
+          ...baseOverrides,
+          width: 60,
+          height: 24,
+          options: ['Option 1', 'Option 2'],
+          ...variant,
+        })
+      case 'checkbox':
+        return createCheckbox({
+          ...baseOverrides,
+          width: 60,
+          height: 20,
+          label: 'Check',
+          ...variant,
+        })
+      case 'radiogroup':
+        return createRadioGroup({
+          ...baseOverrides,
+          width: 60,
+          height: 50,
+          options: ['A', 'B'],
+          spacing: 4,
+          ...variant,
+        })
+      case 'textfield':
+        return createTextField({
+          ...baseOverrides,
+          width: 60,
+          height: 24,
+          placeholder: 'Text',
+          ...variant,
+        })
+      case 'waveform':
+        return createWaveform({
+          ...baseOverrides,
+          width: 60,
+          height: 40,
+          showGrid: false,
+          ...variant,
+        })
+      case 'oscilloscope':
+        return createOscilloscope({
+          ...baseOverrides,
+          width: 60,
+          height: 40,
+          showGrid: true,
+          gridDivisions: 4,
+          ...variant,
+        })
+      case 'presetbrowser':
+        return createPresetBrowser({
+          ...baseOverrides,
+          width: 60,
+          height: 50,
+          presets: ['Init'],
+          ...variant,
+        })
       default:
         return null
     }
@@ -323,6 +406,54 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <CollapsibleRenderer config={previewElement} />
+          </div>
+        )
+      case 'rangeslider':
+        return (
+          <div style={containerStyle}>
+            <RangeSliderRenderer config={previewElement} />
+          </div>
+        )
+      case 'dropdown':
+        return (
+          <div style={containerStyle}>
+            <DropdownRenderer config={previewElement} />
+          </div>
+        )
+      case 'checkbox':
+        return (
+          <div style={containerStyle}>
+            <CheckboxRenderer config={previewElement} />
+          </div>
+        )
+      case 'radiogroup':
+        return (
+          <div style={containerStyle}>
+            <RadioGroupRenderer config={previewElement} />
+          </div>
+        )
+      case 'textfield':
+        return (
+          <div style={containerStyle}>
+            <TextFieldRenderer config={previewElement} />
+          </div>
+        )
+      case 'waveform':
+        return (
+          <div style={containerStyle}>
+            <WaveformRenderer config={previewElement} />
+          </div>
+        )
+      case 'oscilloscope':
+        return (
+          <div style={containerStyle}>
+            <OscilloscopeRenderer config={previewElement} />
+          </div>
+        )
+      case 'presetbrowser':
+        return (
+          <div style={containerStyle}>
+            <PresetBrowserRenderer config={previewElement} />
           </div>
         )
       default:
