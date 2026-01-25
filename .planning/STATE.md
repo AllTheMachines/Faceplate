@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 14 of 18 (Security Foundation & Upload Pipeline)
-Plan: 1 of TBD in current phase
+Plan: 2 of TBD in current phase
 Status: In progress
-Last activity: 2026-01-25 — Completed 14-01-PLAN.md (SVG validation)
+Last activity: 2026-01-25 — Completed 14-02-PLAN.md (SVG sanitization)
 
-Progress: [█████████░] 73% (63/86 total plans estimated)
+Progress: [█████████░] 74% (64/86 total plans estimated)
 
 ## Performance Metrics
 
@@ -52,6 +52,9 @@ Recent decisions affecting current work:
 - **v1.1 (14-01)**: Vitest as test framework (Vite-native, fast, modern)
 - **v1.1 (14-01)**: Validate before sanitize - reject dangerous content rather than strip
 - **v1.1 (14-01)**: DOMParser native API for SVG element counting and detection
+- **v1.1 (14-02)**: isomorphic-dompurify for Node/browser compatibility
+- **v1.1 (14-02)**: Strict allowlist (ALLOWED_TAGS) over USE_PROFILES for security
+- **v1.1 (14-02)**: Block ALL external URLs (only fragment refs #id allowed)
 
 ### Pending Todos
 
@@ -60,9 +63,10 @@ None yet.
 ### Blockers/Concerns
 
 **Phase 14 readiness:**
-- Security is non-negotiable - must be correct before any SVG rendering
-- DOMPurify integration required (add to dependencies)
-- ESLint rules needed to enforce SafeSVG component usage
+- ✓ DOMPurify integration complete (isomorphic-dompurify installed)
+- ✓ Core sanitization logic implemented and tested
+- TODO: ESLint rules needed to enforce SafeSVG component usage
+- TODO: SafeSVG React component wrapping sanitizeSVG
 
 **Phase 17 considerations (from research):**
 - Performance with 50+ animated knobs may need optimization
@@ -71,10 +75,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-25 22:57:29 UTC
-Stopped at: Completed 14-01-PLAN.md (SVG File Validator)
+Last session: 2026-01-25 23:00:29 UTC
+Stopped at: Completed 14-02-PLAN.md (SVG Sanitizer)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-25 after plan 14-01 completion*
+*Last updated: 2026-01-25 after plan 14-02 completion*
