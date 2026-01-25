@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A browser-based visual design tool for creating audio plugin user interfaces. Users drag-and-drop SVG-based UI components (knobs, sliders, meters, buttons) onto a canvas, configure their properties through a panel, and export working code for JUCE WebView2 plugins. Built for a plugin developer who needs to iterate visually instead of hand-coding SVG and CSS.
+A browser-based visual design tool for creating audio plugin user interfaces. Users drag-and-drop UI components (knobs, sliders, meters, buttons, containers, form controls) onto a canvas, configure their properties through a panel, and export working code for JUCE WebView2 plugins. Built for plugin developers who need to iterate visually instead of hand-coding SVG and CSS.
 
 ## Core Value
 
@@ -12,63 +12,64 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Validated
 
-(None yet — ship to validate)
+- Knobs, Sliders, Buttons, Meters, Labels, Images (core 6 element types) - v1.0
+- Containers: Panel, Frame, Group Box, Collapsible - v1.0
+- Form controls: Dropdown, Checkbox, Radio Group, Text Field - v1.0
+- Audio displays: dB Display, Frequency Display, GR Meter - v1.0
+- Placeholders: Waveform, Oscilloscope, Modulation Matrix, Preset Browser - v1.0
+- Decorative: Rectangle, Line - v1.0
+- Range Slider (dual-thumb) - v1.0
+- Three-panel layout: Element Palette (left), Canvas (center), Property Panel (right) - v1.0
+- Canvas with configurable dimensions and background (color, gradient, or image) - v1.0
+- Drag elements from palette onto canvas - v1.0
+- Position elements: drag to move, handles to resize, shift-drag constrained, arrow keys nudge - v1.0
+- Property panel shows all configurable options for selected element - v1.0
+- Custom SVG import with naming conventions (indicator, thumb, track, fill, glow) - v1.0
+- Preview mode: HTML export with mock JUCE for standalone testing - v1.0
+- Export: JUCE WebView2 (HTML/CSS/JS + C++ snippets with dynamic bridge) - v1.0
+- Save/load projects as JSON files with Zod validation - v1.0
+- Dark theme UI - v1.0
+- Undo/redo with 50+ action history - v1.0
+- Copy/paste with 20px offset - v1.0
+- Snap to grid - v1.0
+- Element locking (individual and lock-all mode) - v1.0
+- Font selection (Inter, Roboto, Roboto Mono embedded) - v1.0
+- SVG Design Mode for layer assignment - v1.0
+- Template import from existing JUCE projects - v1.0
 
 ### Active
 
-- [ ] Three-panel layout: Element Palette (left), Canvas (center), Property Panel (right)
-- [ ] Canvas with configurable dimensions and background (color, gradient, or image)
-- [ ] Drag elements from palette onto canvas
-- [ ] Position elements: drag to move, handles to resize, shift-drag constrained, arrow keys nudge
-- [ ] Property panel shows all configurable options for selected element
-- [ ] Core element types: Knobs, Sliders, Buttons, Meters (per SPECIFICATION.md)
-- [ ] Custom SVG import with naming conventions (indicator, thumb, track, fill, glow)
-- [ ] Import preview: "Found: indicator (will rotate), track (static)"
-- [ ] Preview mode: interact with controls to verify behavior
-- [ ] Export: JUCE WebView2 (HTML/CSS/JS + C++ boilerplate with WebSliderRelay bindings)
-- [ ] Export: HTML only (standalone preview)
-- [ ] Export: Single element code
-- [ ] Save/load projects as JSON files
-- [ ] Dark theme UI
+(None - fresh requirements needed for v1.1)
 
 ### Out of Scope
 
-- User accounts / authentication — personal tool, no cloud
-- Real-time collaboration — single user
-- Electron packaging — browser-based for v1
-- Monetization features — may open-source later
-- Full 108-element taxonomy — v1 focuses on core controls, expand later
-- Mobile support — desktop browser workflow
+- User accounts / authentication - personal tool, no cloud
+- Real-time collaboration - single user
+- Electron packaging - browser-based for v1
+- Monetization features - may open-source later
+- Full 108-element taxonomy - v1 focuses on core controls, expand later
+- Mobile support - desktop browser workflow
+- Parent-child element hierarchy - containers are visual-only in v1
+- Rotation property for Knobs/Meters - not needed for these element types
 
 ## Context
 
-**Problem:** No visual design tool exists for JUCE WebView2 plugin UIs. Current workflow is hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration takes minutes instead of seconds. WebSliderRelay boilerplate is error-prone.
+**Current State:**
+- v1.0 MVP shipped (2026-01-25)
+- 420 files, ~99,000 lines TypeScript
+- 22 element types supported
+- Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS
 
-**Existing tools don't fit:**
-- WebKnobMan outputs bitmap filmstrips (wrong format)
-- Generic web builders don't have audio controls
-- Figma can design but doesn't export working code with interaction logic
+**Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds. WebSliderRelay boilerplate was error-prone.
 
-**Prior work:** Complete specification exists in `docs/SPECIFICATION.md` with:
-- 108 element types across 10 categories
-- Detailed property interfaces (TypeScript)
-- JUCE WebView2 integration patterns
-- Rendering code examples
-- Interaction patterns
-
-**SVG naming conventions:** Custom SVGs use layer names to identify moving parts:
-- `indicator` or `pointer` — rotates (knobs)
-- `thumb` — moves (sliders)
-- `track` — static background
-- `fill` — grows/shrinks with value
-- `glow` or `highlight` — reactive elements
+**Prior work:** Complete specification exists in `docs/SPECIFICATION.md` with 108 element types across 10 categories.
 
 ## Constraints
 
-- **Tech stack**: React 18, TypeScript, Vite, Zustand, @dnd-kit, Tailwind CSS — chosen for fast iteration and ecosystem fit
-- **Dark theme**: Required — standard for audio plugin development tools
-- **Browser-based**: No Electron for v1 — keep deployment simple
-- **JUCE WebView2 target**: Export must work with JUCE 8's WebView2 integration, WebSliderRelay API
+- **Tech stack**: React 18, TypeScript, Vite, Zustand, @dnd-kit, Tailwind CSS
+- **Dark theme**: Required for audio plugin development tools
+- **Browser-based**: No Electron for v1
+- **JUCE WebView2 target**: Export must work with JUCE 8's WebView2 integration
 - **Reference spec**: `docs/SPECIFICATION.md` is source of truth for element properties
 
 ## Cross-Project Integration
@@ -93,81 +94,28 @@ See `.planning/INTEGRATION.md` for detailed integration documentation.
 **Last Updated:** January 25, 2026
 **Status:** Production-ready (tested in EFXvst and INSTvst)
 
-#### The Working Pattern
-
 The designer exports a **dynamic function wrapper system** for JUCE WebView2 communication:
 
-**1. Dynamic Function Wrappers**
-```javascript
-function createJUCEFunctionWrappers() {
-  const functions = window.__JUCE__.initialisationData.__juce__functions || [];
+1. **Dynamic Function Wrappers** - Creates Promise-based wrappers for all JUCE native functions
+2. **Integer Result IDs** - Sequential integer (not Math.random) for reliable event matching
+3. **Polling Initialization** - Up to 5 seconds for JUCE bridge to become available
+4. **Fire-and-Forget with Error Handling** - Error suppression for smooth UI
 
-  for (const funcName of functions) {
-    wrappers[funcName] = function(...args) {
-      // Creates Promise-based wrapper dynamically
-    };
-  }
-}
-```
-
-**2. Integer Result IDs**
-```javascript
-let nextResultId = 1;  // Sequential integer
-resultId: nextResultId++  // Not Math.random()
-```
-
-**3. Polling Initialization**
-```javascript
-async function initializeJUCEBridge() {
-  for (let i = 0; i < 100; i++) {  // Up to 5 seconds
-    if (functions.length > 0) {
-      bridge = createJUCEFunctionWrappers();
-      return;
-    }
-    await new Promise(r => setTimeout(r, 50));
-  }
-}
-```
-
-**4. Fire-and-Forget with Error Handling**
-```javascript
-bridge.setParameter('volume', 0.5).catch(() => {});
-bridge.beginGesture('volume').catch(() => {});
-```
-
-#### Why This Pattern?
-
-- **Dynamic** - Works with ANY JUCE native functions, not just the standard 4
-- **Reliable** - Integer IDs prevent event collision
-- **Robust** - Polling handles timing issues
-- **Production-ready** - Error suppression for smooth UI
-
-#### Code Generation
-
-- `jsGenerator.ts` - Exports dynamic bridge implementation
-- `cppGenerator.ts` - Exports C++ native function snippets
-- Pattern generates ~200 lines of tested, working code
-
-#### Discovery
-
-Pattern discovered January 24-25, 2026 through extensive debugging of INSTvst.
-Refined from initial static implementation to this more robust dynamic version.
-
-**Tested in:**
-- EFXvst - Volume knob works perfectly
-- INSTvst - All 5 knobs (gain + ADSR) work perfectly
-
-See: `.planning/INTEGRATION.md` for complete pattern documentation.
+Pattern discovered and refined January 24-25, 2026 through extensive debugging.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Core controls first for v1 | Knobs, sliders, buttons, meters cover 80% of plugin UIs | — Pending |
-| SVG naming conventions over region drawing | Users already name layers in Figma/Illustrator; keeps workflow fast | — Pending |
-| JSON project files | Simple, version-controllable, human-readable | — Pending |
-| Zustand over Redux | Lightweight, less boilerplate, sufficient for single-user tool | — Pending |
-| @dnd-kit over react-dnd | Modern API, better touch support, active maintenance | — Pending |
+| Core controls first for v1 | Knobs, sliders, buttons, meters cover 80% of plugin UIs | Good - achieved coverage goal |
+| SVG naming conventions over region drawing | Users already name layers in Figma/Illustrator; keeps workflow fast | Good - intuitive UX |
+| JSON project files | Simple, version-controllable, human-readable | Good - works well |
+| Zustand over Redux | Lightweight, less boilerplate, sufficient for single-user tool | Good - clean architecture |
+| @dnd-kit over react-dnd | Modern API, better touch support, active maintenance | Good - reliable drag-drop |
+| HTML/CSS rendering over Canvas | True WYSIWYG - export matches design exactly | Good - key differentiator |
+| Dual export modes | JUCE bundle vs HTML preview serves different use cases | Good - flexible workflow |
+| WOFF2 font embedding | Offline VST3 plugins need self-contained fonts | Good - professional output |
+| Visual-only containers | Avoids store architecture complexity for v1 | Acceptable - noted as tech debt |
 
 ---
-*Last updated: 2026-01-25 - Dynamic JUCE bridge pattern documented*
+*Last updated: 2026-01-25 after v1.0 milestone*
