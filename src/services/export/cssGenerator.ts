@@ -98,11 +98,83 @@ export function generateCSS(
     .map((element) => generateElementCSS(element))
     .join('\n\n')
 
+  // Global label/value styles
+  const labelValueStyles = `/* Label and Value Display Styles */
+.knob-label, .slider-label {
+  position: absolute;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.knob-label-top, .slider-label-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+}
+
+.knob-label-bottom, .slider-label-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+}
+
+.knob-label-left, .slider-label-left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 4px;
+}
+
+.knob-label-right, .slider-label-right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 4px;
+}
+
+.knob-value, .slider-value {
+  position: absolute;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.knob-value-top, .slider-value-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+}
+
+.knob-value-bottom, .slider-value-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+}
+
+.knob-value-left, .slider-value-left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 4px;
+}
+
+.knob-value-right, .slider-value-right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 4px;
+}`
+
   return `${fontSection}${reset}
 
 ${container}
 
 ${baseElement}
+
+${labelValueStyles}
 
 /* Element-specific styles */
 ${elementStyles}`
