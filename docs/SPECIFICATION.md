@@ -847,7 +847,7 @@ When running outside JUCE (e.g., browser preview):
 
 ### Pattern Discovery
 
-This pattern was discovered January 24-25, 2026 through debugging INSTvst3.
+This pattern was discovered January 24-25, 2026 through debugging INSTvst.
 The previous static pattern with `Math.random()` was unreliable due to event ID collisions.
 
 ---

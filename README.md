@@ -7,9 +7,9 @@ The fastest way to create a JUCE WebView2 VST3 plugin:
 
 1. **Clone a VST3 template:**
 ```bash
-   git clone https://github.com/yourusername/EFXvst3  # For effects
+   git clone https://github.com/yourusername/EFXvst  # For effects
    # OR
-   git clone https://github.com/yourusername/INSTvst3 # For instruments
+   git clone https://github.com/yourusername/INSTvst # For instruments
 ```
 
 2. **Start the UI designer:**
@@ -32,5 +32,5 @@ See the complete [VST3 Workflow Guide](./docs/WORKFLOW.md) for detailed instruct
 
 ## Related Repositories
 
-- **[EFXvst3](https://github.com/yourusername/EFXvst3)** - Effect VST3 template with WebView2
-- **[INSTvst3](https://github.com/yourusername/INSTvst3)** - Instrument VST3 template with WebView2
+- **[EFXvst](https://github.com/yourusername/EFXvst)** - Effect VST3 template with WebView2
+- **[INSTvst](https://github.com/yourusername/INSTvst)** - Instrument VST3 template with WebView2

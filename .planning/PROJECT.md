@@ -74,8 +74,8 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Cross-Project Integration
 
 This designer exports code consumed by:
-- **EFXvst3** - Audio effect VST3 template
-- **INSTvst3** - Instrument VST3 template
+- **EFXvst** - Audio effect VST3 template
+- **INSTvst** - Instrument VST3 template
 
 See `.planning/INTEGRATION.md` for detailed integration documentation.
 
@@ -91,7 +91,7 @@ See `.planning/INTEGRATION.md` for detailed integration documentation.
 ### JavaScript Export - JUCE Event-Based Pattern
 
 **Last Updated:** January 25, 2026
-**Status:** Production-ready (tested in EFXvst3 and INSTvst3)
+**Status:** Production-ready (tested in EFXvst and INSTvst)
 
 #### The Working Pattern
 
@@ -150,12 +150,12 @@ bridge.beginGesture('volume').catch(() => {});
 
 #### Discovery
 
-Pattern discovered January 24-25, 2026 through extensive debugging of INSTvst3.
+Pattern discovered January 24-25, 2026 through extensive debugging of INSTvst.
 Refined from initial static implementation to this more robust dynamic version.
 
 **Tested in:**
-- EFXvst3 - Volume knob works perfectly
-- INSTvst3 - All 5 knobs (gain + ADSR) work perfectly
+- EFXvst - Volume knob works perfectly
+- INSTvst - All 5 knobs (gain + ADSR) work perfectly
 
 See: `.planning/INTEGRATION.md` for complete pattern documentation.
 

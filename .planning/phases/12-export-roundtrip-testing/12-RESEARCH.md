@@ -12,7 +12,7 @@ The existing codebase already has:
 1. Two built-in templates (Effect Starter, Instrument Starter) in `templates/*.json`
 2. Complete export system with JUCE bundle and HTML preview modes
 3. Project serialization with Zod schemas for validation
-4. Dynamic JUCE bridge pattern (implemented 2026-01-25, tested in INSTvst3)
+4. Dynamic JUCE bridge pattern (implemented 2026-01-25, tested in INSTvst)
 
 Research confirms no new libraries are needed. This phase requires **systematic verification** using manual testing procedures, not automated test frameworks (no Jest/Vitest in package.json, adding now would be scope creep).
 
@@ -333,7 +333,7 @@ Things that couldn't be fully resolved:
 
 **Confidence breakdown:**
 - Standard stack: HIGH - No new libraries needed, all dependencies already installed
-- Architecture: HIGH - Patterns exist in codebase, tested in INSTvst3 repo
+- Architecture: HIGH - Patterns exist in codebase, tested in INSTvst repo
 - Pitfalls: MEDIUM - Based on typical testing phase issues, not specific to this codebase
 
 **Research date:** 2026-01-25

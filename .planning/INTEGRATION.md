@@ -8,20 +8,20 @@ This document explains how `vst3-webview-ui-designer` integrates with related VS
 
 ## Related Projects
 
-### 1. EFXvst3 - Audio Effect VST3 Template
-**Repository:** https://github.com/yourusername/EFXvst3  
+### 1. EFXvst - Audio Effect VST3 Template
+**Repository:** https://github.com/yourusername/EFXvst  
 **Purpose:** Template for creating JUCE VST3 audio effect plugins  
 **Relationship:** **Consumer** of this designer's exported code
 
 **Integration Points:**
-- Uses designer-exported UI files in `EFXvst3/WebUI/` folder
+- Uses designer-exported UI files in `EFXvst/WebUI/` folder
 - Consumes: `index.html`, `style.css`, `components.js`, `bindings.js`
 - Parameter IDs in designer must match APVTS parameter IDs in C++
 - Canvas size in designer must match `setSize()` in PluginEditor.cpp
 
 **Current State:**
-- Effect Starter template (`templates/effect-starter.json`) matches EFXvst3's UI
-- EFXvst3 uses SVG knobs and meters from designer's element system
+- Effect Starter template (`templates/effect-starter.json`) matches EFXvst's UI
+- EFXvst uses SVG knobs and meters from designer's element system
 - WebView2 folder structure: `WebUI/` (not `ui/`)
 
 **Designer Features Used:**
@@ -29,20 +29,20 @@ This document explains how `vst3-webview-ui-designer` integrates with related VS
 - Meter elements (vertical gradient)
 - Label elements (plugin title, status, control labels)
 
-### 2. INSTvst3 - Instrument VST3 Template
-**Repository:** https://github.com/yourusername/INSTvst3  
+### 2. INSTvst - Instrument VST3 Template
+**Repository:** https://github.com/yourusername/INSTvst  
 **Purpose:** Template for creating JUCE VST3 instrument/synthesizer plugins  
 **Relationship:** **Consumer** of this designer's exported code
 
 **Integration Points:**
-- Uses designer-exported UI files in `INSTvst3/ui/` folder
+- Uses designer-exported UI files in `INSTvst/ui/` folder
 - Consumes: `index.html`, `style.css`, `components.js`, `bindings.js`
 - Parameter IDs: `gain`, `envAttack`, `envDecay`, `envSustain`, `envRelease`
 - Canvas size: 600x400px
 
 **Current State:**
-- Instrument Starter template (`templates/instrument-starter.json`) matches INSTvst3's UI
-- INSTvst3 uses SVG arc knobs from designer's element system
+- Instrument Starter template (`templates/instrument-starter.json`) matches INSTvst's UI
+- INSTvst uses SVG arc knobs from designer's element system
 - WebView2 folder structure: `ui/` (not `WebUI/`)
 
 **Designer Features Used:**
@@ -55,7 +55,7 @@ This document explains how `vst3-webview-ui-designer` integrates with related VS
 
 **Pattern Type:** Dynamic Function Wrappers
 **Updated:** January 25, 2026
-**Status:** Production-ready (tested in EFXvst3 and INSTvst3)
+**Status:** Production-ready (tested in EFXvst and INSTvst)
 
 ### The Problem
 
@@ -167,7 +167,7 @@ See exported bindings.cpp for complete implementation.
 
 ### Discovery
 
-Pattern discovered January 24-25, 2026 through debugging INSTvst3.
+Pattern discovered January 24-25, 2026 through debugging INSTvst.
 Previous static pattern with `Math.random()` was unreliable.
 
 ---
@@ -198,7 +198,7 @@ Downloaded ZIP:
     |
     | 4. User extracts to VST3 project
     v
-EFXvst3/WebUI/  OR  INSTvst3/ui/
+EFXvst/WebUI/  OR  INSTvst/ui/
     |
     | 5. User integrates bindings.cpp code
     v
@@ -258,7 +258,7 @@ interface Template {
     backgroundColor: string
     created: string
     author: string
-    recommendedVST3Repo?: string  // Links to EFXvst3 or INSTvst3
+    recommendedVST3Repo?: string  // Links to EFXvst or INSTvst
   }
   elements: ElementConfig[]  // Pre-configured UI elements
 }
@@ -267,13 +267,13 @@ interface Template {
 ### Available Templates
 
 1. **effect-starter.json**
-   - Targets: EFXvst3
+   - Targets: EFXvst
    - Canvas: 500x300px
    - Elements: Volume knob, output meter, labels
    - Parameter IDs: `volume`, `outputLevel`
 
 2. **instrument-starter.json**
-   - Targets: INSTvst3
+   - Targets: INSTvst
    - Canvas: 600x400px
    - Elements: Gain knob, 4 ADSR knobs, labels
    - Parameter IDs: `gain`, `envAttack`, `envDecay`, `envSustain`, `envRelease`
@@ -394,14 +394,14 @@ gainAttachment = std::make_unique<juce::WebSliderParameterAttachment>(
 
 **After implementing:**
 1. Test export with both templates (effect-starter, instrument-starter)
-2. Verify exported code integrates with EFXvst3 and INSTvst3
+2. Verify exported code integrates with EFXvst and INSTvst
 3. Update template JSON files if element properties changed
 
 ### When Fixing Bugs
 
 **Designer bugs:**
 - Check if issue affects export quality
-- Test fix with both EFXvst3 and INSTvst3
+- Test fix with both EFXvst and INSTvst
 - Verify templates still load correctly
 
 **Cross-project bugs:**
@@ -433,8 +433,8 @@ gainAttachment = std::make_unique<juce::WebSliderParameterAttachment>(
 
 ### JUCE Version Requirements
 
-- **EFXvst3:** JUCE 8.0.4+ (WebView2 patch required)
-- **INSTvst3:** JUCE 8.0.12+
+- **EFXvst:** JUCE 8.0.4+ (WebView2 patch required)
+- **INSTvst:** JUCE 8.0.12+
 - **Designer:** No JUCE dependency (browser-based)
 
 ### WebView2 API
@@ -476,11 +476,11 @@ When updating documentation, sync across:
    - `docs/WORKFLOW.md` - Integration workflow
    - `templates/README.md` - Template usage
    
-2. **EFXvst3:**
+2. **EFXvst:**
    - `README.md` - Designer integration section
    - `docs/WEBVIEW_INTEGRATION_GUIDE.md` - Technical details
    
-3. **INSTvst3:**
+3. **INSTvst:**
    - `README.md` - Designer integration section
    - `docs/WEBVIEW_INTEGRATION_GUIDE.md` - Technical details
 

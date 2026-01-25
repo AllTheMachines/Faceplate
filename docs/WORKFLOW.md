@@ -5,8 +5,8 @@ Complete guide for creating VST3 plugins with visual UI design.
 ## Prerequisites
 
 1. **VST3 Template Repository**
-   - Clone [EFXvst3](https://github.com/yourusername/EFXvst3) for effects
-   - OR [INSTvst3](https://github.com/yourusername/INSTvst3) for instruments
+   - Clone [EFXvst](https://github.com/yourusername/EFXvst) for effects
+   - OR [INSTvst](https://github.com/yourusername/INSTvst) for instruments
 
 2. **JUCE Framework**
    - Install JUCE 7.x or later
@@ -21,11 +21,11 @@ Complete guide for creating VST3 plugins with visual UI design.
 ### 1. Clone VST3 Template
 ```bash
 # For an effect plugin:
-git clone https://github.com/yourusername/EFXvst3 MyAwesomeEffect
+git clone https://github.com/yourusername/EFXvst MyAwesomeEffect
 cd MyAwesomeEffect
 
 # For an instrument:
-git clone https://github.com/yourusername/INSTvst3 MyAwesomeSynth
+git clone https://github.com/yourusername/INSTvst MyAwesomeSynth
 cd MyAwesomeSynth
 ```
 
@@ -72,7 +72,7 @@ You'll see pre-configured controls matching the VST3 template.
 ### 6. Extract to VST3 Project
 ```bash
 cd /path/to/MyAwesomeEffect
-# Extract to WebUI/ for EFXvst3, or ui/ for INSTvst3
+# Extract to WebUI/ for EFXvst, or ui/ for INSTvst
 unzip ~/Downloads/webview-ui-juce.zip -d WebUI/
 ```
 

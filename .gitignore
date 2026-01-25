@@ -25,3 +25,4 @@ dist-ssr
 
 # TypeScript build info
 *.tsbuildinfo
+screenshots/

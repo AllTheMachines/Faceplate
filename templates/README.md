@@ -6,7 +6,7 @@ Pre-built starter templates for common plugin types.
 
 ### Effect Starter (`effect-starter.json`)
 - **For:** Audio effects (EQ, compressor, reverb, distortion, etc.)
-- **VST3 Template:** [EFXvst3](https://github.com/yourusername/EFXvst3)
+- **VST3 Template:** [EFXvst](https://github.com/yourusername/EFXvst)
 - **Canvas:** 500x300px
 - **Includes:**
   - Volume knob (SVG arc style)
@@ -20,7 +20,7 @@ Pre-built starter templates for common plugin types.
 
 ### Instrument Starter (`instrument-starter.json`)
 - **For:** Synthesizers, samplers, drum machines
-- **VST3 Template:** [INSTvst3](https://github.com/yourusername/INSTvst3)
+- **VST3 Template:** [INSTvst](https://github.com/yourusername/INSTvst)
 - **Canvas:** 600x400px
 - **Includes:**
   - Gain knob
