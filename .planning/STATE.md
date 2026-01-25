@@ -39,11 +39,12 @@ Progress: [████████████░] 98% (48/49 plans complete)
 | 10-uat-bug-fixes | 3/3 | 6.18 min | 2.06 min |
 | 11-element-consolidation | 4/4 | 6 min | 1.5 min |
 | 12-export-roundtrip-testing | 1/1 | 15 min | 15 min |
-| 13-extended-elements | 2/4 | ~9.5 min | ~4.75 min |
+| 13-extended-elements | 3/4 | ~15 min | ~5 min |
 
 **Phase 13 Execution:**
 - 13-01: ~2 min (Form controls - dropdown, checkbox, radio group)
 - 13-02: 6.45 min (Container elements - panel, frame, group box)
+- 13-10: 5.4 min (Modulation matrix placeholder)
 
 *Updated after each plan completion*
 
@@ -79,6 +80,7 @@ Key decisions affecting the completed milestone:
 - **Image file picker with base64 embedding** (11-03): Use browser-fs-access for native file picker, convert to base64 data URLs for self-contained designs, dual-input support (file picker + URL)
 - **Palette consolidation pattern** (11-04): Palette shows element types (Slider, Button), not variants. Variant properties (orientation, mode) configured via property panel after dropping
 - **Visual-only containers in Phase 13** (13-02): Container elements (Panel, Frame, GroupBox) are decorative only - no parent-child nesting support. True element hierarchy deferred to future phase due to store architecture limitations (flat array vs tree structure).
+- **Modulation matrix as placeholder** (13-10): Modulation Matrix is a design-time placeholder showing static preview connections. Actual modulation routing logic implemented in JUCE backend. Export includes data attributes for JUCE integration.
 
 ### All Phases Complete
 
