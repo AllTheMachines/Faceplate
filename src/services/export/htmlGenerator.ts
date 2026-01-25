@@ -442,3 +442,43 @@ function generateGainReductionMeterHTML(id: string, baseClass: string, positionS
       ${valueDisplay}
     </div>`
 }
+
+function generateDropdownHTML(id: string, baseClass: string, positionStyle: string, config: DropdownElementConfig): string {
+  const options = config.options
+    .map((option, index) => {
+      const selected = index === config.selectedIndex ? ' selected' : ''
+      return `<option value="${index}"${selected}>${escapeHTML(option)}</option>`
+    })
+    .join('')
+
+  return `<select id="${id}" class="${baseClass} dropdown-element" data-type="dropdown" style="${positionStyle}">
+      ${options}
+    </select>`
+}
+
+function generateCheckboxHTML(id: string, baseClass: string, positionStyle: string, config: CheckboxElementConfig): string {
+  const checked = config.checked ? ' checked' : ''
+  const labelId = `${id}-label`
+
+  return `<div id="${id}" class="${baseClass} checkbox-element" data-type="checkbox" data-label-position="${config.labelPosition}" style="${positionStyle}">
+      <input type="checkbox" id="${id}-input"${checked} />
+      <label id="${labelId}" for="${id}-input">${escapeHTML(config.label)}</label>
+    </div>`
+}
+
+function generateRadioGroupHTML(id: string, baseClass: string, positionStyle: string, config: RadioGroupElementConfig): string {
+  const radios = config.options
+    .map((option, index) => {
+      const radioId = `${id}-option-${index}`
+      const checked = index === config.selectedIndex ? ' checked' : ''
+      return `<div class="radio-option">
+        <input type="radio" id="${radioId}" name="${id}" value="${index}"${checked} />
+        <label for="${radioId}">${escapeHTML(option)}</label>
+      </div>`
+    })
+    .join('')
+
+  return `<div id="${id}" class="${baseClass} radiogroup-element" data-type="radiogroup" data-orientation="${config.orientation}" style="${positionStyle}">
+      ${radios}
+    </div>`
+}
