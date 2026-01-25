@@ -277,7 +277,18 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
     ? `bottom: ${normalizedValue * 100}%`
     : `left: ${normalizedValue * 100}%`
 
+  // Label and value display
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
   return `<div id="${id}" class="${baseClass} slider slider-element ${orientationClass}" data-type="slider" data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
       <div class="slider-track" style="background: ${config.trackColor};"></div>
       <div class="slider-fill" style="background: ${config.trackFillColor}; ${fillStyle}"></div>
       <div class="slider-thumb" style="background: ${config.thumbColor}; ${thumbStyle}"></div>
@@ -384,5 +395,50 @@ function generateModulationMatrixHTML(id: string, baseClass: string, positionSty
           ${rows}
         </tbody>
       </table>
+    </div>`
+}
+
+/**
+ * Generate dB Display HTML
+ */
+function generateDbDisplayHTML(id: string, baseClass: string, positionStyle: string, config: DbDisplayElementConfig): string {
+  const formattedValue = config.value.toFixed(config.decimalPlaces)
+  const displayText = config.showUnit ? `${formattedValue} dB` : formattedValue
+
+  return `<div id="${id}" class="${baseClass} dbdisplay-element" data-type="dbdisplay" data-value="${config.value}" data-min="${config.minDb}" data-max="${config.maxDb}" style="${positionStyle}">${escapeHTML(displayText)}</div>`
+}
+
+/**
+ * Generate Frequency Display HTML
+ */
+function generateFrequencyDisplayHTML(id: string, baseClass: string, positionStyle: string, config: FrequencyDisplayElementConfig): string {
+  const useKHz = config.autoSwitchKHz && config.value >= 1000
+  const displayValue = useKHz ? config.value / 1000 : config.value
+  const unit = useKHz ? 'kHz' : 'Hz'
+  const formattedValue = displayValue.toFixed(config.decimalPlaces)
+  const displayText = config.showUnit ? `${formattedValue} ${unit}` : formattedValue
+
+  return `<div id="${id}" class="${baseClass} frequencydisplay-element" data-type="frequencydisplay" data-value="${config.value}" data-auto-khz="${config.autoSwitchKHz}" style="${positionStyle}">${escapeHTML(displayText)}</div>`
+}
+
+/**
+ * Generate Gain Reduction Meter HTML
+ */
+function generateGainReductionMeterHTML(id: string, baseClass: string, positionStyle: string, config: GainReductionMeterElementConfig): string {
+  const fillPercent = config.value * 100
+  const dbValue = config.value * config.maxReduction
+  const isVertical = config.orientation === 'vertical'
+
+  const fillStyle = isVertical
+    ? `top: 0; left: 0; right: 0; height: ${fillPercent}%;`
+    : `top: 0; right: 0; bottom: 0; width: ${fillPercent}%;`
+
+  const valueDisplay = config.showValue
+    ? `<div class="gr-value">${dbValue.toFixed(1)}</div>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} gainreductionmeter-element" data-type="gainreductionmeter" data-value="${config.value}" data-max-reduction="${config.maxReduction}" data-orientation="${config.orientation}" style="${positionStyle}">
+      <div class="gr-fill" style="${fillStyle}"></div>
+      ${valueDisplay}
     </div>`
 }
