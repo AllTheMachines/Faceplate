@@ -68,6 +68,8 @@ function ElementComponent({ element }: ElementProps) {
         return <CheckboxRenderer config={element} />
       case 'radiogroup':
         return <RadioGroupRenderer config={element} />
+      case 'modulationmatrix':
+        return <ModulationMatrixRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
