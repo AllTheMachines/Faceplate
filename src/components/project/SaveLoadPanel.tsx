@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useStore } from '../../store'
 import { serializeProject, deserializeProject } from '../../services/serialization'
 import { saveProjectFile, loadProjectFile } from '../../services/fileSystem'
+import { BUILT_IN_TEMPLATES, loadBuiltInTemplate } from '../../services/templateLoader'
 
 function SaveIcon() {
   return (
@@ -38,6 +39,19 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
       stroke="currentColor"
     >
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  )
+}
+
+function TemplateIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+      />
     </svg>
   )
 }
@@ -154,6 +168,32 @@ export function SaveLoadPanel() {
     }
   }
 
+  const handleLoadTemplate = async (templateId: string) => {
+    if (!templateId) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const template = await loadBuiltInTemplate(templateId)
+
+      // Update canvas settings from template metadata
+      setCanvasDimensions(template.metadata.canvasWidth, template.metadata.canvasHeight)
+      setBackgroundColor(template.metadata.backgroundColor)
+      setBackgroundType('solid')
+
+      // Clear selection and load elements
+      selectMultiple([])
+      setElements(template.elements)
+
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load template')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="border-b border-gray-700">
       <button
@@ -183,6 +223,26 @@ export function SaveLoadPanel() {
               <LoadIcon />
               <span>Load Project</span>
             </button>
+          </div>
+
+          {/* Load Template Dropdown */}
+          <div className="flex items-center gap-2">
+            <TemplateIcon />
+            <select
+              onChange={(e) => handleLoadTemplate(e.target.value)}
+              disabled={loading}
+              value=""
+              className="flex-1 bg-gray-700 text-gray-200 px-3 py-2 rounded text-sm border border-gray-600 hover:border-gray-500 disabled:opacity-50 cursor-pointer"
+            >
+              <option value="" disabled>
+                Load Template...
+              </option>
+              {BUILT_IN_TEMPLATES.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Error Display */}
