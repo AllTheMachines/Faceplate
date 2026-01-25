@@ -1,296 +1,628 @@
-# Feature Landscape
+# Feature Landscape: SVG Import System (v1.1)
 
-**Domain:** Visual Design Tools / Canvas-Based UI Editors (Audio Plugin Context)
-**Researched:** 2026-01-23
-**Overall confidence:** MEDIUM
+**Domain:** Visual design tools — SVG import and asset management
+**Researched:** 2026-01-25
+**Project:** VST3 WebView UI Designer v1.1 Milestone
+**Confidence:** HIGH (based on design tool patterns + existing v1.0 codebase analysis)
+
+---
+
+## Context: Building on v1.0
+
+This research extends the v1.0 feature landscape (see below for original research) with **specific focus on SVG Import System features** for the v1.1 milestone.
+
+**v1.0 Shipped Features:**
+- Basic SVG import with layer detection (naming conventions)
+- "Design Mode" dialog for layer assignment
+- Image element with base64 embedding
+- Save/load JSON projects
+- Export to JUCE WebView2
+
+**v1.1 Focus:**
+- Interactive SVG knobs (rotation mapping)
+- Static SVG graphics (logos, decorative elements)
+- Asset library management
+- Resizable UI support for SVG elements
+
+---
 
 ## Executive Summary
 
-Visual design tools in 2026 combine traditional canvas manipulation with AI-powered generation, real-time collaboration, and production-ready code export. However, for a specialized single-user tool targeting audio plugin developers, not all modern features are relevant. This research identifies table stakes (what users expect from any canvas editor), differentiators (what makes this better than hand-coding for plugin UIs), and anti-features (what NOT to build for v1).
+SVG import in design tools falls into two distinct feature categories:
 
-The audio plugin domain has unique constraints: developers value precise control, minimal dependencies, and code that integrates cleanly with JUCE projects. While tools like Figma prioritize collaboration and Canva emphasizes AI generation, this tool should prioritize **instant visual feedback**, **clean code export**, and **audio-specific components**.
+1. **Static SVG Graphics** — Import any SVG as a decorative/visual element (logos, icons, dividers)
+2. **Interactive SVG Controls** — Import SVG with layered structure for UI controls (knobs, sliders)
 
-## Table Stakes
+The v1.0 system already handles basic SVG import with layer detection (naming conventions: indicator, thumb, track, fill, glow) and "Design Mode" for layer assignment. v1.1 needs to expand this foundation with asset management and proper rendering of interactive controls.
 
-Features users expect from any canvas editor. Missing these = product feels incomplete or broken.
+**Key Finding:** Audio plugin developers expect **filmstrip-style rotation for knobs** (pre-rendered frames), but SVG rotation is superior for perfect scaling. The challenge is mapping SVG layers to interactive states.
 
-| Feature | Why Expected | Complexity | Notes |
-|---------|--------------|------------|-------|
-| **Canvas Pan & Zoom** | Every visual tool has this since the 1990s | Low | Hold spacebar+drag to pan. Scroll/pinch to zoom. Critical for working with different canvas sizes. |
-| **Selection** | Can't edit what you can't select | Low | Click to select, Shift+click for multi-select, drag marquee for area selection. |
-| **Drag & Drop from Palette** | Core interaction model for component-based design | Medium | Drag SVG components (knobs, sliders, buttons) onto canvas. Must feel instant, not laggy. |
-| **Move / Resize / Rotate** | Basic transformations for any object | Medium | Drag to move, corner handles to resize, rotation handle. Arrow keys for pixel nudging. |
-| **Delete** | Can't build without ability to remove | Low | Delete/Backspace key or context menu. |
-| **Undo / Redo** | Users expect to experiment without fear | Medium | Ctrl+Z / Ctrl+Y. Command pattern recommended (see research). Not image-based (memory intensive). |
-| **Properties Panel** | Need to configure component properties somewhere | Medium | Right panel showing selected element's properties. Audio plugins need precise numeric input, not just sliders. |
-| **Save Project** | Can't lose work | Medium | JSON format for version control. Auto-save recommended but explicit save/load critical. |
-| **Load Project** | Need to reopen saved work | Medium | Load JSON project file. Handle errors gracefully (corrupt files, version mismatches). |
-| **Export** | The whole point - generate usable code | High | Export HTML/CSS/JS that works in JUCE WebView2. This is THE critical feature. |
+---
 
-### Why These Are Table Stakes
+## Table Stakes Features
 
-Research shows users abandon tools that lack basic canvas manipulation. From [Figma's interface design](https://verticalinstitute.com/blog/understanding-figma-for-design/) and [canvas editor patterns](https://konvajs.org/docs/react/Undo-Redo.html), these are non-negotiable for a visual design tool. Users trained on Figma, Sketch, or even PowerPoint expect these interactions.
+Features users expect from any SVG import system. Missing these = incomplete feature.
 
-For audio plugin developers specifically, **precise numeric input** and **clean code export** are table stakes because plugins require exact positioning and integration with existing JUCE projects.
+| Feature | Why Expected | Complexity | Notes | Existing in v1.0? |
+|---------|--------------|------------|-------|-------------------|
+| **Drag-drop SVG files** | Standard file import UX in all design tools | Low | v1.0 uses react-dropzone | ✓ YES (CustomSVGUpload) |
+| **Preview before import** | Users need to see what they're importing | Low | Shows thumbnail + dimensions | ✓ YES (CustomSVGUpload) |
+| **Preserve aspect ratio** | SVGs must not distort on resize | Medium | viewBox + preserveAspectRatio handling required | ⚠ PARTIAL (needs viewBox validation) |
+| **Scale to any size** | Core benefit of vector graphics | Medium | Must handle viewBox, fixed units, missing dimensions | ⚠ PARTIAL (basic scaling works) |
+| **Import as static image** | Simplest use case for decorative graphics | Low | Convert to data URL, place on canvas | ✓ YES (image element) |
+| **Duplicate imported assets** | Reuse same graphic multiple times | Low | Standard copy/paste works | ✓ YES (general copy/paste) |
+| **Export SVG in output** | Maintain vector quality in final code | Medium | Embed as data URL or inline SVG | ✓ YES (data URL in images) |
+| **Undo/redo import actions** | Integration with history system | Medium | Must work with existing undo stack | ✓ YES (integrated) |
+
+### Dependency on Existing v1.0 Features
+
+All table stakes build on v1.0 foundation:
+- Drag-drop system uses `react-dropzone` (already integrated)
+- Preview uses `svgson` parser (already integrated)
+- Import creates Image elements (already supported)
+- Undo/redo uses existing history system (already complete)
+
+**v1.1 Gaps:**
+- ViewBox validation and normalization (NEW)
+- preserveAspectRatio edge case handling (NEW)
+
+---
 
 ## Differentiators
 
-Features that make this better than hand-coding. Not expected, but HIGH value for target users.
+Features that make SVG import better than using raster images. These justify using SVG over PNG.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| **Live Preview** | See exactly what the UI looks like while designing | High | Real preview of audio controls (knobs spin, sliders slide). Differentiates from static mockups. Requires simulating control behavior. |
-| **Snap to Grid** | Audio UIs often use grid layouts for control banks | Low | Shift+drag to snap to grid. [Common in design tools](https://www.drawio.com/blog/snap-to-grid). Critical for professional-looking aligned controls. |
-| **Smart Guides / Alignment** | Professional alignment without math | Medium | Dynamic guides appear when elements align with others. [Standard in modern tools](https://www.kittl.com/blogs/layout-tools/). |
-| **Component Library** | Predefined audio-specific controls | Medium | Palette with knobs, sliders, buttons, meters, labels. SVG-based for scalability. Pre-configured with sensible defaults. |
-| **Property Presets** | Common control configurations | Low | "Small knob", "Large slider", "VU meter" presets. Reduces repetitive property setting. |
-| **Copy/Paste** | Duplicate controls quickly | Low | Ctrl+C / Ctrl+V. Essential for creating control banks (8 identical knobs for EQ bands). |
-| **Duplicate** | Faster than copy/paste | Low | Ctrl+D or Alt+drag. Audio UIs often have repeated elements. |
-| **Direct Numeric Input** | Precise positioning required for audio UIs | Low | Click property value, type exact number. Essential for pixel-perfect alignment audio developers expect. |
-| **Keyboard Shortcuts** | Efficiency for power users | Low | Arrow keys for 1px nudge, Shift+arrow for 10px. Ctrl+Z/Y, Del, etc. Expected by developers. |
-| **Export with Sensible IDs** | Generated code needs readable identifiers | Medium | Export `<div id="gain-knob">` not `<div id="element-47">`. Use component name as ID basis. Critical for JUCE integration. |
+| Feature | Value Proposition | Complexity | Notes | Implementation Strategy |
+|---------|-------------------|------------|-------|-------------------------|
+| **Layer detection from naming** | Designers already name layers in Figma/Illustrator | Medium | v1.0 has naming conventions (indicator, thumb, track, fill, glow) | ENHANCE (expand conventions) |
+| **Interactive layer assignment** | Fix misdetected layers without re-exporting | Medium | v1.0 has "Design Mode" dialog | ENHANCE (better UX) |
+| **Asset library management** | Reuse custom knobs/graphics across projects | High | Central panel for browsing saved assets | ✱ NEW (core v1.1 feature) |
+| **Knob rotation mapping** | SVG layers animate on parameter change | High | Map indicator layer to rotation transform | ✱ NEW (core v1.1 feature) |
+| **Slider fill animation** | SVG fill layer grows with slider value | Medium | Map fill layer to clip-path or scale | DEFER to v1.2 |
+| **Multi-state button graphics** | Different SVG layers for normal/hover/active | Medium | Map layers to button states | DEFER to v1.2 |
+| **Optimization on import** | Auto-cleanup with SVGO (remove metadata, simplify paths) | Medium | Reduces file size, improves performance | ✱ NEW (optional preprocessing) |
+| **Stroke-to-path conversion** | Ensures consistent rendering across browsers | Medium | Convert strokes to fills for webfont compatibility | ✱ NEW (warning only, not auto-convert) |
+| **Asset categories** | Organize by type (knobs, sliders, decorative) | Low | Tag system + filtering in asset panel | ✱ NEW (library organization) |
+| **Asset preview thumbnails** | Quick visual browsing in library | Medium | Generate PNG previews for fast rendering | ✱ NEW (library UX) |
+| **Export asset library** | Share custom assets between projects | Low | Save library as separate JSON file | ✱ NEW (library portability) |
 
 ### Why These Differentiate
 
-These features address pain points of hand-coding audio plugin UIs:
+**vs. Figma/Sketch:** Those tools import SVG for design, but don't map layers to interactive behavior. We connect SVG layers directly to control properties (rotation, fill, state).
 
-1. **Visual feedback** - See the UI immediately instead of compile-test-adjust cycle
-2. **Speed** - Drag controls into place in seconds vs minutes of CSS positioning
-3. **Alignment** - Snap/guides produce professional results without manual math
-4. **Reuse** - Copy/paste controls faster than coding each one
+**vs. Hand-coding:** Developer imports knob once, uses it for all parameters. No manual CSS animation per knob.
 
-Research shows [modern UI builders](https://emergent.sh/learn/best-ai-tools-for-ui-design) prioritize **instant visual feedback** and **production-ready code export**. For audio developers, the killer feature is: **design a UI in 5 minutes that would take 30 minutes to hand-code**.
+**vs. Filmstrips:** SVG scales perfectly at any resolution. Filmstrips are memory-intensive and fixed-resolution.
+
+---
 
 ## Anti-Features
 
-Features to explicitly NOT build. Common in general-purpose design tools but wrong for this context.
+Features to deliberately NOT build in v1.1. Common mistakes or premature optimization.
 
-| Anti-Feature | Why Avoid | What to Do Instead |
-|--------------|-----------|-------------------|
-| **Real-time Collaboration** | Single-user tool, adds massive complexity | Save/load JSON files. Use git for version control. Plugin developers work solo. |
-| **Cloud Storage** | Local files + git is how developers work | Local filesystem only. Developers already have version control workflows. |
-| **AI Generation** | Audio UIs need precise control, not AI guessing | Manual design with presets. Audio controls have specific ergonomics AI doesn't understand. |
-| **Animation Timeline** | Overkill for static plugin UIs | Focus on layout/styling. Animations are code concern, not design concern for v1. |
-| **Comments/Annotations** | Solo developer tool, not design review | Skip for v1. If needed later, keep minimal (not full collaboration infrastructure). |
-| **Component Variants** | Over-engineering for v1 scope | Single version of each control type. Don't build design system tooling yet. |
-| **Auto Layout / Constraints** | Responsive design not relevant for fixed-size plugin UIs | Absolute positioning only. Plugin UIs are fixed resolution (e.g., 800x600px). |
-| **Design Tokens / Themes** | Premature for v1 | Hard-coded styling per control. Don't build theming infrastructure until proven need. |
-| **Plugin Marketplace** | Feature creep | Built-in component library only. Don't create ecosystem before core tool works. |
-| **Version History** | Git already does this | Single-file JSON save/load. Let developers use their existing VCS tools. |
-| **Cross-Platform Export** | JUCE WebView2 is the target | Export HTML/CSS/JS for WebView2 only. Don't try to support native JUCE components. |
+| Anti-Feature | Why Avoid | What to Do Instead | Priority |
+|--------------|-----------|-------------------|----------|
+| **SVG editing tools** | Out of scope — users have Figma/Illustrator | Keep import-only workflow, no in-app editing | CRITICAL |
+| **Automated stroke expansion** | Can break designs, should be user's choice | Warn if strokes detected, link to external tools | HIGH |
+| **SVG animation timeline** | Too complex for v1.1, niche use case | Focus on static + interactive controls only | HIGH |
+| **Gradient editor** | Design-time concern, handle in source tool | Import gradients as-is from SVG | MEDIUM |
+| **Path simplification UI** | Adds complexity, questionable value | Auto-simplify on import (SVGO), no manual controls | MEDIUM |
+| **Multi-page SVG support** | SVGs rarely have pages, adds complexity | Import first/root SVG only | LOW |
+| **Font subsetting** | Only relevant if text in SVG, rare for controls | Convert text to paths in source tool | LOW |
+| **Bitmap embedding** | Defeats purpose of vector import | Warn if bitmap detected, suggest pure vector | LOW |
+| **Real-time SVG rendering** | Performance risk for complex SVGs | Pre-render thumbnails, lazy-load in library | MEDIUM |
 
-### Why These Are Anti-Features
+### Critical Anti-Feature: No In-App SVG Editing
 
-These are common in **enterprise design tools** (Figma, Adobe XD) but wrong for this context:
+Research shows design tools have two models:
 
-1. **Single-user context** - Plugin developers work solo. Collaboration features add complexity with no user value.
-2. **Local-first workflow** - Developers use git, prefer local files. Cloud features add security concerns and failure modes.
-3. **Fixed-size canvases** - Plugin UIs are fixed resolution (unlike responsive web). No need for auto-layout complexity.
-4. **Narrow scope** - Audio plugin UIs, not general web design. Domain-specific simplicity beats general-purpose features.
+1. **Import-Edit Model** (Figma, Illustrator) — Import SVG, then edit paths/shapes in-app
+2. **Import-Only Model** (Asset libraries, design systems) — Import SVG, use as-is
 
-From [JUCE WebView research](https://juce.com/blog/juce-8-feature-overview-webview-uis/), developers value **simplicity** and **integration with existing workflows** over feature lists. Keep it focused.
+**Our Model:** Import-Only with Layer Mapping
+
+**Rationale:**
+- Users already have Figma/Illustrator for SVG creation
+- Editing tools are massive scope (path manipulation, bezier handles, boolean ops)
+- Our value is connecting SVG layers to control behavior, not SVG creation
+- Keep tool focused: design tool for layout, not vector editor
+
+**User Workflow:**
+1. Design SVG in Figma/Illustrator (export with named layers)
+2. Import to our tool
+3. Map layers to control parts (indicator, track, etc.)
+4. Use across multiple controls
+
+---
 
 ## Feature Dependencies
 
-Dependencies between features, informing phase structure:
+### Dependency Graph
 
 ```
-Core Canvas Manipulation
-├── Selection (required for everything)
-├── Pan/Zoom (independent)
-└── Drag & Drop (requires Selection)
-    ├── Move/Resize (requires Drag & Drop)
-    ├── Delete (requires Selection)
-    └── Properties Panel (requires Selection)
-        ├── Direct Numeric Input (extends Properties)
-        └── Property Presets (extends Properties)
+Static SVG Import (v1.0) ✓
+  └── Import as Image ✓
+  └── Drag-drop upload ✓
+  └── Preview + dimensions ✓
 
-History
-├── Undo/Redo (independent, but required before Save)
-└── Save/Load (requires Undo/Redo for UX sanity)
+Interactive SVG Controls (v1.1) — Core Focus
+  ├── Layer Detection (v1.0) ✓
+  │   └── Naming conventions ✓
+  │   └── Design Mode dialog ✓
+  ├── Layer-to-Property Mapping (NEW) ✱
+  │   ├── Knob rotation → indicator layer
+  │   ├── Slider value → fill layer (defer v1.2)
+  │   └── Button state → layer visibility (defer v1.2)
+  └── Rendering System (NEW) ✱
+      ├── CSS transform for rotation
+      ├── clip-path for fills (defer v1.2)
+      └── display:none for states (defer v1.2)
 
-Alignment
-├── Snap to Grid (independent)
-├── Smart Guides (independent)
-└── Keyboard Shortcuts (enhances Move)
+Asset Library (v1.1) — Core Focus ✱
+  ├── Storage (NEW) ✱
+  │   ├── Save assets to library
+  │   └── Load from library
+  ├── Organization (NEW) ✱
+  │   ├── Categories (knobs/sliders/decorative)
+  │   └── Search/filter
+  └── Export/Import (NEW) ✱
+      ├── Export library JSON
+      └── Import library JSON
 
-Output
-└── Export (requires complete property system)
+Optimization Pipeline (v1.1 - Optional)
+  ├── SVGO integration (NEW) ✱
+  ├── Stroke-to-path warning (NEW) ✱
+  └── ViewBox normalization (NEW) ✱
 ```
 
-**Critical path for MVP:**
-1. Canvas + Selection + Pan/Zoom (can see and select things)
-2. Drag & Drop from Palette (can add controls)
-3. Move/Resize + Properties (can position and configure)
-4. Save/Load (can preserve work)
-5. Export (can generate code)
+### Critical Path for v1.1
 
-**Enhancement path:**
-6. Undo/Redo (reduces frustration)
-7. Snap/Guides (improves alignment quality)
-8. Copy/Paste/Duplicate (speeds up workflow)
-9. Keyboard shortcuts (power user efficiency)
-10. Live Preview (nice-to-have visual feedback)
+Must have in order:
 
-## MVP Recommendation
+1. **Asset Library Storage** — Can't reuse assets without persistence
+2. **Knob Rotation Mapping** — Core use case for interactive SVG
+3. **Asset Library UI** — Access point for saved assets
+4. **Category System** — Organize knobs vs decorative graphics
 
-For v1, prioritize features that enable the core workflow: **design → export → paste into JUCE**.
+Can defer to v1.2:
 
-### Must Have (MVP Blockers)
+- Slider fill animation (less common than knobs)
+- Button multi-state (buttons usually simple)
+- Advanced optimization pipeline (nice-to-have)
 
-1. **Canvas with Pan/Zoom** - Can work with different UI sizes
-2. **Component Palette** - Drag knobs, sliders, buttons, meters onto canvas
-3. **Selection + Move/Resize** - Position controls precisely
-4. **Properties Panel** - Configure appearance (size, color, labels)
-5. **Direct Numeric Input** - Set exact pixel positions (developers expect this)
-6. **Save/Load JSON** - Don't lose work
-7. **Export HTML/CSS/JS** - Generate code that works in JUCE WebView2
-8. **Delete** - Remove unwanted controls
+---
 
-**Success criteria:** User can design a simple 3-knob plugin UI in 5 minutes and export working code.
+## Audio Plugin Domain Specifics
 
-### Should Have (High-Value, Lower Risk)
+### Knob Design Patterns
 
-9. **Undo/Redo** - Experimentation without fear (high value, medium complexity)
-10. **Snap to Grid** - Professional alignment (high value, low complexity)
-11. **Copy/Paste** - Speed up repetitive work (high value, low complexity)
-12. **Keyboard Shortcuts** - Arrow keys, Ctrl+Z/Y, Delete (medium value, low complexity)
+Based on audio plugin UI research:
 
-### Could Have (Nice-to-Have)
+**Traditional Approach: Filmstrips**
+- PNG sequence with 64-128 frames (0° to 280° rotation)
+- Large file sizes (250px × 128 frames = 32,000px tall image)
+- Memory-intensive, but proven workflow
+- Photoshop workflow: render 3D → composite frames
 
-13. **Smart Guides** - Dynamic alignment helpers (medium value, medium complexity)
-14. **Property Presets** - "Small knob", "Large slider" templates (medium value, low complexity)
-15. **Duplicate (Ctrl+D)** - Convenience over copy/paste (low value, low complexity)
-16. **Live Preview** - Animated control preview (high value, high complexity)
+**Modern Approach: SVG Rotation**
+- Single SVG with layers (track, arc, indicator)
+- CSS transform: rotate(θdeg) on indicator layer
+- Perfect scaling at any resolution
+- Smaller file size, but requires layer structure
 
-### Defer to Post-MVP
+**User Expectation:** Audio developers expect filmstrip workflow BUT prefer SVG if tool makes it easy.
 
-17. **Component variants** - Multiple knob styles (wait for user demand)
-18. **Themes** - Color scheme templates (premature optimization)
-19. **Animation support** - Not critical for static UI design
-20. **Multi-page projects** - Most plugins have single UI (wait for user request)
+**Our Value Proposition:** Make SVG rotation as easy as filmstrips used to be.
 
-## Feature Complexity Assessment
+### Common SVG Layer Structures
 
-| Feature | Complexity | Reasoning |
-|---------|-----------|-----------|
-| Canvas Pan/Zoom | Low | Well-established patterns, libraries like Konva handle this |
-| Selection | Low | Click/marquee selection is standard DOM manipulation |
-| Drag from Palette | Medium | Need to handle component instantiation, cursor feedback |
-| Move/Resize | Medium | Drag handles, bounds checking, aspect ratio locking |
-| Properties Panel | Medium | Form generation based on component type, value binding |
-| Undo/Redo | Medium | Command pattern recommended (not image-based for memory reasons) |
-| Save/Load JSON | Medium | Serialization straightforward, error handling critical |
-| Export Code | High | Template generation, mapping visual properties to HTML/CSS/JS |
-| Snap to Grid | Low | Rounding position to grid interval |
-| Smart Guides | Medium | Collision detection, dynamic guide rendering |
-| Live Preview | High | Simulating control behavior, event handling, visual updates |
+From ecosystem research and existing v1.0 naming conventions:
 
-## Domain-Specific Considerations
+| Element Type | Expected Layers | Purpose | v1.1 Support |
+|-------------|-----------------|---------|--------------|
+| **Knob** | track, arc, indicator, glow | track = background circle, arc = value arc, indicator = pointer/dot, glow = highlight | ✓ YES (core feature) |
+| **Slider** | track, thumb, fill | track = rail, thumb = handle, fill = progress bar | DEFER v1.2 |
+| **Button** | normal, hover, active, disabled | State-based layer visibility | DEFER v1.2 |
+| **Meter** | background, fill, peak-hold, clip | fill = current level, peak-hold = max indicator | DEFER v1.2 |
+| **Logo/Icon** | (single layer or none) | Static decorative graphic | ✓ YES (image element) |
 
-### Audio Plugin UI Constraints
+### Naming Convention Extensions
 
-Research on [audio plugin design tools](https://www.mathworks.com/help/audio/ug/plugin-gui-design.html) and [JUCE WebView](https://juce.com/blog/juce-8-feature-overview-webview-uis/) reveals:
+**v1.0 detects:** indicator, thumb, track, fill, glow, background, pointer, needle, handle, grip, progress, value, highlight, hover
 
-1. **Fixed canvas size** - Plugin UIs are typically fixed resolution (800x600, 1200x800, etc.). No responsive design needed.
-2. **Precise positioning** - Audio developers expect pixel-perfect control. Direct numeric input is table stakes.
-3. **Grid-based layouts** - Control banks (8 knobs for EQ, 4 sliders for envelope) are common. Snap to grid is essential.
-4. **SVG over raster** - Scalability for high-DPI displays. All components should be SVG-based.
-5. **Clean code export** - Code needs readable IDs for JUCE integration. `gain-knob` not `element-47`.
-6. **Minimal dependencies** - Developers value lightweight output. Don't export bloated CSS frameworks.
+**v1.1 additions:**
+- `arc` — value arc on knobs (common in audio UIs)
+- `normal` / `hover` / `active` / `disabled` — button states (defer v1.2)
+- `peak` / `clip` — meter states (defer v1.2)
+- `decoration` / `ornament` — non-interactive layers
 
-### User Workflow Pattern
+---
 
-Based on [audio plugin UI examples](https://dribbble.com/tags/audio-plugin) and [VST design patterns](https://vogerdesign.com/):
+## MVP Recommendation for v1.1
 
-1. **Start with blank canvas** - Set size (e.g., 800x600)
-2. **Add background** - Solid color or image
-3. **Drag controls onto canvas** - Knobs, sliders, buttons from palette
-4. **Arrange in grid** - Use snap to grid for alignment
-5. **Configure properties** - Labels, colors, ranges
-6. **Duplicate for banks** - Copy/paste for repeated controls
-7. **Export code** - Generate HTML/CSS/JS
-8. **Paste into JUCE project** - Integrate with WebView2
+Focus: **Asset Library + Interactive Knobs**
 
-**Critical path optimization:** Every step should feel instant. No compile-test cycles. That's the whole value proposition.
+### Must Have (Core Value)
 
-## Competitive Analysis (Confidence: LOW)
+1. **Asset Library Panel** (new UI component)
+   - Save imported SVG assets with names/categories
+   - Browse saved assets with thumbnails
+   - Drag from library to canvas
+   - Delete assets from library
+   - **Complexity:** High (new system)
+   - **Value:** Core v1.1 feature
 
-Research found limited direct competitors for audio plugin UI design:
+2. **Interactive Knob Rendering** (extends existing knob renderer)
+   - Map indicator layer to rotation transform
+   - CSS: `transform: rotate(calc(value * 280deg - 140deg))`
+   - Preview rotation in property panel
+   - **Complexity:** High (new rendering mode)
+   - **Value:** Core v1.1 feature
 
-| Tool | Approach | Strengths | Gaps |
-|------|----------|-----------|------|
-| **MATLAB audioPluginInterface** | Code-based with GUI builder | Official support, grid layout | Not visual WYSIWYG |
-| **Figma** | General-purpose design tool | Powerful, familiar | No audio component library, no JUCE export |
-| **SynthEdit / FL SynthMaker** | Visual circuit design | Drag-and-drop DSP components | Circuit design, not UI design |
-| **Hand-coding HTML/CSS** | Full control | Precise, no tool dependency | Slow, no visual feedback |
+3. **Asset Categories** (organization)
+   - Tag assets as: Knobs, Sliders, Buttons, Decorative
+   - Filter library by category
+   - Auto-suggest category from detected layers
+   - **Complexity:** Low (metadata system)
+   - **Value:** Essential for usability
 
-**Opportunity:** No tool specifically targets "visual design for JUCE WebView2 UIs". This tool fills that gap.
+4. **Library Persistence** (storage)
+   - Save library to localStorage
+   - Export library as JSON file
+   - Import library from JSON file
+   - **Complexity:** Medium (file I/O)
+   - **Value:** Essential for asset reuse
+
+### Should Have (Better UX)
+
+5. **Improved Layer Detection** (enhance v1.0)
+   - Add `arc`, `normal`, `hover`, `active` to conventions
+   - Show confidence score for auto-detection
+   - Quick-assign buttons in Design Mode
+   - **Complexity:** Low (extend existing system)
+   - **Value:** Reduces manual layer assignment
+
+6. **ViewBox Validation** (quality)
+   - Warn if SVG has no viewBox
+   - Auto-add viewBox from width/height
+   - Handle preserveAspectRatio edge cases
+   - **Complexity:** Medium (SVG parsing edge cases)
+   - **Value:** Prevents scaling issues
+
+7. **Asset Duplication** (workflow)
+   - Duplicate asset in library (create variant)
+   - Rename asset in library
+   - Update all instances when asset modified
+   - **Complexity:** Medium (reference tracking)
+   - **Value:** Variant management
+
+### Could Have (Polish)
+
+8. **SVGO Optimization** (performance)
+   - Run on import (optional toggle)
+   - Show before/after file size
+   - Preserve critical IDs for layer detection
+   - **Complexity:** Low (library integration)
+   - **Value:** Nice-to-have optimization
+
+9. **Stroke Detection Warning** (quality)
+   - Detect if SVG uses strokes
+   - Warn that strokes may render inconsistently
+   - Link to stroke-to-path conversion tools
+   - **Complexity:** Low (SVG analysis)
+   - **Value:** Prevents rendering issues
+
+10. **Asset Search** (large libraries)
+    - Text search by asset name
+    - Filter by multiple categories
+    - Sort by date added / name
+    - **Complexity:** Low (string filtering)
+    - **Value:** Useful for large libraries (50+ assets)
+
+### Won't Have (v1.2+)
+
+- Slider fill animation (defer to v1.2)
+- Button multi-state graphics (defer to v1.2)
+- Meter animation system (defer to v1.2)
+- In-app SVG editing (out of scope forever)
+- Gradient editor (out of scope)
+- SVG animation timeline (out of scope)
+
+---
+
+## Feature Comparison Matrix
+
+How does our v1.1 system compare to design tool SVG import?
+
+| Feature | Figma | Sketch | Illustrator | Our v1.1 | Notes |
+|---------|-------|--------|-------------|----------|-------|
+| Drag-drop SVG import | ✓ | ✓ | ✓ | ✓ | Table stakes |
+| Preserve layers/groups | ✓ | ✓ | ✓ | ✓ | Via naming conventions |
+| Flatten on import | ✓ | ✓ | ✓ | ✓ | "Add as Image" option |
+| Edit after import | ✓ | ✓ | ✓ | ✗ | Anti-feature (out of scope) |
+| Asset library | ✓ | ✓ | ✓ | ✓ | New in v1.1 |
+| Interactive controls | ✗ | ✗ | ✗ | ✓ | **Differentiator** |
+| Rotation mapping | ✗ | ✗ | ✗ | ✓ | **Differentiator** |
+| Audio plugin export | ✗ | ✗ | ✗ | ✓ | **Differentiator** |
+| SVGO optimization | Plugin | Plugin | ✗ | ✓ | Planned |
+| Stroke-to-path convert | ✓ | ✓ | ✓ | ✗ | External tools |
+
+---
+
+## User Stories
+
+### Static SVG Graphics
+
+**As a plugin developer**, I want to import my company logo as SVG so it scales perfectly at any plugin window size.
+
+**Workflow:**
+1. Drag logo.svg onto Import area
+2. Preview shows logo + dimensions
+3. Click "Add as Image"
+4. Logo appears on canvas, resize to fit header
+5. Export → logo embedded as data URL in HTML
+
+**Existing Support:** ✓ Full (v1.0)
+
+---
+
+**As a plugin developer**, I want to save decorative divider graphics to reuse across projects so I maintain consistent branding.
+
+**Workflow:**
+1. Import divider.svg
+2. Click "Save to Library"
+3. Name it "Brand Divider", tag as "Decorative"
+4. In future projects, open Asset Library → drag "Brand Divider" to canvas
+
+**Existing Support:** ✱ NEW (v1.1 feature)
+
+---
+
+### Interactive SVG Knobs
+
+**As a plugin developer**, I want to import a custom knob design from my designer so my plugin UI matches my brand.
+
+**Workflow:**
+1. Designer exports knob.svg from Figma with layers: "track", "arc", "indicator"
+2. Drag knob.svg onto Import area
+3. Design Mode opens, shows detected layers with correct types
+4. Click "Save as Knob"
+5. Name it "Brand Knob", saved to library under "Knobs" category
+6. Drag from library to canvas → creates interactive knob element
+7. Indicator layer rotates on parameter value change
+
+**Existing Support:** ⚠ PARTIAL (layer detection exists, rotation mapping missing)
+
+---
+
+**As a plugin developer**, I want to use the same custom knob for multiple parameters so my UI has consistent styling.
+
+**Workflow:**
+1. Import + save "Brand Knob" (see above)
+2. Drag from library to canvas 5 times
+3. Configure each instance with different parameter ID
+4. All knobs use same SVG, different values
+
+**Existing Support:** ⚠ PARTIAL (can duplicate image elements, but not interactive knobs)
+
+---
+
+### Asset Library Management
+
+**As a plugin developer**, I want to organize my custom UI assets by type so I can quickly find the right graphic.
+
+**Workflow:**
+1. Import 10 SVG files (knobs, sliders, logos)
+2. Each gets tagged: 3 "Knobs", 2 "Sliders", 5 "Decorative"
+3. Open Asset Library panel
+4. Filter to "Knobs" → see only knob designs
+5. Click thumbnail to preview full size
+
+**Existing Support:** ✱ NEW (v1.1 feature)
+
+---
+
+**As a plugin developer**, I want to export my asset library so I can share it with other developers on my team.
+
+**Workflow:**
+1. Build library with 15 custom assets
+2. Click "Export Library" → saves assets.json
+3. Teammate imports assets.json → instantly has all 15 assets
+4. Can use in their own projects
+
+**Existing Support:** ✱ NEW (v1.1 feature)
+
+---
+
+## Technical Considerations
+
+### SVG Rendering Challenges
+
+| Challenge | Solution | Complexity | v1.1 Priority |
+|-----------|----------|------------|---------------|
+| **Missing viewBox** | Auto-generate from width/height attrs | Low | Must Have |
+| **Fixed units (px, pt)** | Strip units, use viewBox for scaling | Medium | Should Have |
+| **Embedded bitmaps** | Warn user, support but discourage | Low | Could Have |
+| **Strokes vs fills** | Warn if strokes detected, import as-is | Low | Could Have |
+| **Complex paths** | SVGO simplification (optional) | Medium | Could Have |
+| **Nested transforms** | Flatten on import (preserve visual) | High | Defer v1.2 |
+| **CSS in `<style>`** | Extract to inline styles | Medium | Defer v1.2 |
+| **External resources** | Warn, require self-contained SVG | Low | Should Have |
+
+### Performance Considerations
+
+| Concern | At 10 assets | At 100 assets | At 1000 assets |
+|---------|--------------|---------------|----------------|
+| **Library load time** | Instant | <100ms | <500ms (lazy load) |
+| **Thumbnail generation** | Real-time | Real-time | Pre-generate + cache |
+| **Canvas rendering** | No impact | No impact | No impact (only active elements) |
+| **Export size** | Negligible | +50KB | +500KB (acceptable for desktop) |
+
+### Storage Strategy
+
+**localStorage** for library persistence:
+
+- Key: `vst3-designer-asset-library`
+- Value: JSON array of assets
+- Structure:
+  ```json
+  {
+    "id": "uuid",
+    "name": "Brand Knob",
+    "category": "knobs",
+    "svg": "<svg>...</svg>",
+    "layers": { "indicator": "<g>...</g>", "track": "<circle>..." },
+    "thumbnail": "data:image/png;base64,...",
+    "width": 100,
+    "height": 100,
+    "created": "2026-01-25T12:00:00Z"
+  }
+  ```
+
+**Limits:**
+- localStorage typically 5-10MB
+- 1 SVG asset ≈ 5-50KB
+- Safe limit: ~100 assets (5MB)
+- Warn at 50 assets, block at 100
+
+**Export/Import:**
+- JSON file for portability
+- No size limit (user's file system)
+- Can share across team
+
+### Integration with v1.0 Codebase
+
+**Existing strengths to leverage:**
+
+1. **SVG layer detection** (`svgLayerExtractor.ts`)
+   - Already detects: indicator, thumb, track, fill, glow
+   - ✱ Extend with: arc, normal, hover, active, peak, clip
+
+2. **Design Mode dialog** (`SVGDesignMode.tsx`)
+   - Already has layer assignment UI
+   - ✱ Enhance with: category selection, save-to-library button
+
+3. **Element renderers** (`KnobRenderer.tsx`, `SliderRenderer.tsx`)
+   - Already render SVG arcs procedurally
+   - ✱ Extend with: render imported SVG layers with transforms
+
+4. **Zustand store** (state management)
+   - ✱ Add `assetLibrary` slice with actions: add, remove, update, import, export
+
+5. **@dnd-kit** (drag-drop)
+   - ✱ Extend palette to include library panel
+   - ✱ Drag from library → canvas uses existing drop logic
+
+**Gaps to fill:**
+
+1. ✱ Asset library UI component (new)
+2. ✱ Layer-to-property mapping system (new)
+3. ✱ SVG layer rendering in element components (extend existing)
+4. ✱ Library persistence (localStorage + JSON export) (new)
+5. ✱ Thumbnail generation (new — use canvas API)
+
+---
+
+## Implementation Complexity
+
+### Low Complexity (1-2 days)
+
+- Asset library storage (Zustand slice + localStorage)
+- Category tagging system
+- Export/import library JSON
+- Extend naming conventions (add arc, normal, hover, active)
+- ViewBox validation + auto-generation
+
+### Medium Complexity (3-5 days)
+
+- Asset library UI panel (list, thumbnails, filter, search)
+- Thumbnail generation (render SVG to canvas, extract PNG data URL)
+- Drag from library to canvas (integrate with @dnd-kit)
+- Enhanced Design Mode UX (quick-assign buttons, category select)
+- SVGO integration (optional optimization toggle)
+
+### High Complexity (5-10 days)
+
+- Knob rotation mapping (transform indicator layer based on value)
+- SVG layer rendering in KnobRenderer (replace procedural arc with imported SVG)
+- Multi-layer element system (generalize beyond knobs to sliders/buttons)
+- Nested transform flattening (handle complex SVG structures)
+- Real-time rotation preview in property panel
+
+---
 
 ## Sources
 
-### Design Tool Feature Research
-- [Canva Software Overview 2026](https://www.softwareadvice.com/graphic-design/canva-profile/)
-- [Canva's Creative Operating System](https://www.canva.com/newsroom/news/creative-operating-system/)
-- [Figma product news & release notes](https://www.figma.com/release-notes/)
-- [Canvas, Meet Code: Building Figma's Code Layers](https://www.figma.com/blog/building-figmas-code-layers/)
-- [What Is Figma? A 2026 Guide for UI/UX Designers](https://verticalinstitute.com/blog/understanding-figma-for-design/)
+### Design Tool Patterns
+- [Improved SVG Import: Compound Paths](https://www.shapertools.com/en-us/blog/compound-paths) — SVG fill-rule handling
+- [Tips for Creating and Exporting Better SVGs for the Web](https://www.sarasoueidan.com/blog/svg-tips-for-designers/) — Best practices
+- [Best Practices for Working with SVGs](https://www.bitovi.com/blog/best-practices-for-working-with-svgs) — Optimization techniques
+- [A Practical Guide To SVG And Design Tools — Smashing Magazine](https://www.smashingmagazine.com/2019/05/svg-design-tools-practical-guide/) — Design tool comparison
 
-### UI Builder Research
-- [The 11 Best UI Design Tools to Try in 2026](https://www.uxdesigninstitute.com/blog/user-interface-ui-design-tools/)
-- [6 Best AI Tools for UI Design That Actually Work in 2026](https://emergent.sh/learn/best-ai-tools-for-ui-design)
-- [The 12 best internal tool builders in 2026](https://www.agentui.ai/en/blog/best-internal-tool-builders-2026/)
+### Figma/Sketch SVG Import
+- [How to import optimized SVG files to Figma with one click using Convertify](https://www.hypermatic.com/tutorials/how-to-import-optimized-svg-files-to-figma-with-one-click-using-convertify/) — Plugin-based optimization
+- [Copy assets between design tools – Figma Learn](https://help.figma.com/hc/en-us/articles/360040030374-Copy-assets-between-design-tools) — Cross-tool workflows
+- [How to Import Files Into Figma](https://www.oreateai.com/blog/how-to-import-files-into-figma/6e5990bc69d69e8458489c9b821c1807) — Import patterns
 
-### Code Export Research
-- [Google Stitch: Complete Guide to AI UI Design Tool (2026)](https://almcorp.com/blog/google-stitch-complete-guide-ai-ui-design-tool-2026/)
-- [Top 10 Vibe Coding Tools Designers Will Love in 2026](https://www.toools.design/blog-posts/top-10-vibe-coding-tools-designers-will-love-in-2026)
+### Audio Plugin UI Design
+- [AudioKnobs — Beautiful SVG audio knobs with mouse and touch control](https://github.com/Megaemce/AudioKnobs) — SVG knob library
+- [Vector graphics gui's and knob/slider design - JUCE Forum](https://forum.juce.com/t/vector-graphics-guis-and-knob-slider-design/13524) — Community discussion
+- [Ui Design Tutorials? - KVR Audio](https://www.kvraudio.com/forum/viewtopic.php?t=541318) — Design approaches (flat vs skeuomorphic)
+- [Free HISE Filmstrips! Analog Knob-Kit 01](https://forum.hise.audio/topic/6427/free-hise-filmstrips-analog-knob-kit-01-by-noisehead) — Filmstrip workflow
+- [Procedural User Interface Design – Audio Damage](https://www.audiodamage.com/blogs/news/procedures) — Procedural vs image-based
 
-### Canvas Manipulation Research
-- [How to implement undo/redo on canvas with React? | Konva](https://konvajs.org/docs/react/Undo-Redo.html)
-- [Canvas undo and redo functionality](https://codepen.io/abidibo/pen/kdRZjV)
-- [Snap to grid and other helpful alignment tools in draw.io](https://www.drawio.com/blog/snap-to-grid)
-- [Layout tools: rulers and guides, grids, and margins for precise layouts - Kittl Blog](https://www.kittl.com/blogs/layout-tools/)
+### SVG Technical Details
+- [SVG viewBox Explained: The Complete Guide](https://www.svggenie.com/blog/svg-viewbox-guide) — Scaling behavior
+- [Understanding SVG Coordinate Systems and Transformations](https://www.sarasoueidan.com/blog/svg-coordinate-systems/) — viewport, viewBox, preserveAspectRatio
+- [preserveAspectRatio - SVG | MDN](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/preserveAspectRatio) — Official docs
+- [How to Scale SVG | CSS-Tricks](https://css-tricks.com/scale-svg/) — Practical scaling techniques
 
-### Property Panel Research
-- [Studio Editor: Using the Inspector Panel | Wix.com](https://support.wix.com/en/article/studio-editor-using-the-inspector-panel)
-- [Inspector Panel Video Tutorial | Editor X](https://www.wix.com/studio-tech-design/academyx3/lessons/inspector-panel)
+### SVG Layer Management
+- [Preserve Layers When Opening an SVG File](https://alpha.inkscape.org/vectors/www.inkscapeforum.com/viewtopic5a60.html?t=1272) — Layer preservation challenges
+- [GitHub: svg-flatten](https://github.com/stadline/svg-flatten) — Convert shapes to paths, merge groups
+- [The Illustrator-to-Figma Pipeline: A Guide to Clean, Editable SVGs](https://medium.com/@King_Marquant/the-illustrator-to-figma-pipeline-a-guide-to-clean-editable-svgs-cb71ba3d31d9) — Workflow optimization
 
-### Audio Plugin UI Research
-- [Design User Interface for Audio Plugin - MATLAB & Simulink](https://www.mathworks.com/help/audio/ug/plugin-gui-design.html)
-- [JUCE 8 Feature Overview: WebView UIs](https://juce.com/blog/juce-8-feature-overview-webview-uis/)
-- [Home Page - Voger Design](https://vogerdesign.com/)
-- [Audio Plugin designs on Dribbble](https://dribbble.com/tags/audio-plugin)
+### SVG Optimization
+- [SVGO - Node.js tool for optimizing SVG files](https://github.com/svg/svgo) — Industry-standard optimizer
+- [SVGOMG - SVGO's Missing GUI](https://jakearchibald.github.io/svgomg/) — Online tool with visual preview
+- [Three Ways of Decreasing SVG File Size with SVGO](https://www.sitepoint.com/three-ways-decreasing-svg-file-size-svgo/) — Optimization strategies
+- [A Developer's Guide to SVG Optimization | Cloudinary](https://cloudinary.com/guides/image-formats/a-developers-guide-to-svg-optimization) — Comprehensive guide
 
-### Project File Format Research
-- [Save Project | Next Design User's Manual](https://www.nextdesign.app/support/documents/2.0/manual/en/docs/modeling-guide/new-project/save-a-project/)
-- [Export project as JSON | Frontitude Guides](https://www.frontitude.com/guides/export-project-content-as-json)
+### Asset Management Patterns
+- [SVG Asset Library for Building Automation](https://watkinswebdesign.co.uk/case-studies/svg-asset-library-for-building-automation) — Award-winning library (1,857 assets)
+- [Creating your custom SVG Icon library in React](https://medium.com/@mateuszpalka/creating-your-custom-svg-icon-library-in-react-a5ff1c4c704a) — Component patterns
+- [Transform SVGs into React Components with SVGR](https://www.ivstudio.com/blog/svg-icon-library-in-react) — Build-time optimization
+- [9 New Design System Examples to Scale Brands in 2026](https://www.superside.com/blog/design-systems-examples) — Enterprise asset management
 
-### Domain-Specific Research
-- [What Are The Best Tools To Develop VST Plugins & How Are They Made?](https://integraudio.com/best-tools-to-develop-vst-plugins/)
-- [3D UI for Audio or VST Plugins - Voger Design](https://vogerdesign.com/blog/3d-ui-for-audio-or-vst-plugins/)
+### SVG Path Conversion
+- [Convert SVGs from Stroke to Path](https://dev.to/saulodias/convert-svgs-from-stroke-to-path-420j) — Stroke conversion techniques
+- [SVG Stroke to Fill Converter Online](https://10015.io/tools/svg-stroke-to-fill-converter) — Online conversion tool
+- [GitHub: svg-stroke-to-path](https://github.com/leifgehrmann/svg-stroke-to-path) — Inkscape CLI automation
+
+---
 
 ## Confidence Assessment
 
 | Category | Confidence | Notes |
 |----------|-----------|-------|
-| Table Stakes | HIGH | Multiple sources confirm canvas manipulation, selection, save/load, export are universal expectations |
-| Differentiators | MEDIUM | Based on developer workflows and audio plugin patterns, but limited direct competitor analysis |
-| Anti-Features | MEDIUM | Strong evidence for local-first workflow and single-user context, but some assumptions about developer preferences |
-| Domain Constraints | MEDIUM | JUCE WebView documentation is authoritative, but audio plugin UI patterns based on limited examples |
-| Feature Complexity | MEDIUM | Complexity estimates based on web development knowledge and library availability, not implementation experience |
+| **Table stakes features** | HIGH | Validated against Figma, Sketch, Illustrator patterns + v1.0 codebase |
+| **Differentiators** | HIGH | Audio plugin domain research + v1.0 SVG system analysis |
+| **Anti-features** | HIGH | Based on design tool scope boundaries + v1.0 lessons |
+| **Implementation complexity** | HIGH | Direct analysis of existing v1.0 code + library ecosystem |
+| **Storage strategy** | HIGH | localStorage limits well-documented, JSON export standard |
+| **Audio plugin patterns** | MEDIUM | Based on forum discussions and example projects, not user interviews |
 
-## Research Gaps
+---
 
-- **Limited audio plugin UI builder analysis** - Few tools specifically target this domain. Extrapolated from general design tool patterns.
-- **No user interviews** - Feature priorities based on workflow analysis, not actual developer feedback.
-- **JUCE WebView2 integration details** - Assumed HTML/CSS/JS export works, but haven't verified JUCE API specifics.
-- **Component library scope** - 108-element taxonomy exists, but research didn't determine which subset is "MVP-critical".
+## Next Steps
 
-## Next Steps for Phase-Specific Research
+This research informs:
+1. **REQUIREMENTS.md** — Convert features to testable requirements
+2. **ROADMAP.md** — Phase structure for v1.1 implementation
+3. **ARCHITECTURE.md** — Component design for asset library + rotation system
+4. **PITFALLS.md** — SVG import gotchas and edge cases
 
-Future research needed:
+---
 
-1. **Export format research** - Deep dive into JUCE WebView2 API, communication patterns, optimal HTML/CSS/JS structure
-2. **Component library prioritization** - Which controls are most common in audio plugins? Survey existing plugin UIs.
-3. **Property schema** - What properties does each control type need? Knobs need min/max/default, sliders need orientation, etc.
-4. **Canvas rendering libraries** - Compare Konva, Fabric.js, plain HTML5 Canvas for performance/features
+*Research completed: 2026-01-25*
+*Ready for requirements definition phase*

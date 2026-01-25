@@ -1,975 +1,1088 @@
-# Architecture Patterns: Canvas-Based Visual Design Tools
+# Architecture: SVG Import System Integration
 
-**Domain:** Visual Design Tool (Figma-like Canvas Editor)
-**Researched:** 2026-01-23
-**Confidence:** MEDIUM (based on web search findings, community patterns, and technical documentation)
+**Domain:** SVG Asset Management in React/Zustand Design Tool
+**Researched:** 2026-01-25
+**Confidence:** HIGH
 
 ## Executive Summary
 
-Canvas-based design tools like Figma follow a **layered architecture** with clear separation between document model (business logic), rendering layer (canvas), and UI controls (React components). The core pattern is a **scene graph/document model** that represents the design as a hierarchical tree, with unidirectional data flow from state updates to canvas rendering.
+The SVG Import System extends an existing React/Zustand design tool to manage reusable SVG assets and apply them to interactive knob controls. The architecture must balance **normalized asset storage** (assets as first-class entities), **reference-based element styling** (elements reference assets by ID), and **backward compatibility** (existing knobs continue working).
 
-For your VST3 WebView UI Designer, the recommended architecture uses:
-- **Zustand** for centralized state management (document, selection, history)
-- **React-Konva** for declarative canvas rendering with React integration
-- **@dnd-kit** for drag-and-drop with custom collision detection
-- **Command Pattern** for undo/redo via zundo middleware
-- **Scene Graph** for element hierarchy and transformations
-
-## Recommended Architecture
-
-### High-Level Structure
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     React Application                        │
-├─────────────────┬─────────────────────┬─────────────────────┤
-│  Element        │   Canvas            │   Property          │
-│  Palette        │   Editor            │   Panel             │
-│  (UI Layer)     │   (Rendering)       │   (UI Layer)        │
-└────────┬────────┴──────────┬──────────┴──────────┬──────────┘
-         │                   │                      │
-         └───────────────────┼──────────────────────┘
-                             ▼
-                  ┌──────────────────────┐
-                  │   Zustand Store      │
-                  │  (Single Source of   │
-                  │   Truth)             │
-                  ├──────────────────────┤
-                  │ • Document Model     │
-                  │ • Selection State    │
-                  │ • Canvas State       │
-                  │ • History (undo)     │
-                  └──────────────────────┘
-                             ▼
-                  ┌──────────────────────┐
-                  │   Scene Graph        │
-                  │  (Element Tree)      │
-                  ├──────────────────────┤
-                  │ Root                 │
-                  │  └─ Group            │
-                  │      ├─ Slider       │
-                  │      └─ Knob         │
-                  └──────────────────────┘
-```
-
-### Component Boundaries
-
-| Component | Responsibility | Communicates With | State Access |
-|-----------|---------------|-------------------|--------------|
-| **ElementPalette** | Display draggable component templates | @dnd-kit DragOverlay, Zustand (read) | None (presentational) |
-| **CanvasEditor** | Render design surface, handle interactions | React-Konva Stage/Layer, Zustand (read/write) | Document, Selection, Canvas |
-| **PropertyPanel** | Display/edit selected element properties | Zustand (read/write) | Selection, Document (via commands) |
-| **DocumentStore** | Manage element tree, properties | Command handlers | Document state slice |
-| **SelectionStore** | Track selected elements, multi-select | Event handlers | Selection state slice |
-| **CanvasStore** | Track zoom, pan, grid settings | Canvas event handlers | Canvas state slice |
-| **HistoryStore** | Undo/redo via temporal middleware | Command pattern | Past/future states |
-| **CommandProcessor** | Execute undoable operations | All stores | Dispatches state updates |
-| **ExportEngine** | Generate HTML/CSS/JS + C++ code | Document model (read-only) | Snapshot of document |
-
-### Data Flow
-
-#### Property Change → Canvas Update Flow
-
-```
-User edits property in PropertyPanel
-        ↓
-Dispatch command (e.g., UpdatePropertyCommand)
-        ↓
-CommandProcessor executes command
-        ↓
-Zustand store updates document model
-        ↓
-React-Konva components re-render (reactive)
-        ↓
-Canvas displays updated element
-```
-
-#### Drag from Palette Flow
-
-```
-User drags element from ElementPalette
-        ↓
-@dnd-kit DragOverlay shows preview
-        ↓
-Drop on canvas (collision detection)
-        ↓
-Dispatch AddElementCommand with canvas coordinates
-        ↓
-CommandProcessor adds element to document tree
-        ↓
-Zustand updates document state
-        ↓
-Canvas renders new element
-        ↓
-Auto-select new element
-```
-
-#### Selection State Flow
-
-```
-User clicks element on canvas
-        ↓
-Canvas onClick handler captures event
-        ↓
-Check modifier keys (Shift/Cmd for multi-select)
-        ↓
-Dispatch SelectionCommand
-        ↓
-SelectionStore updates selected IDs
-        ↓
-Canvas re-renders with selection indicators
-        ↓
-PropertyPanel updates to show selected properties
-```
-
-## Patterns to Follow
-
-### Pattern 1: Scene Graph / Document Model
-**What:** Hierarchical tree structure representing all design elements, similar to DOM but optimized for canvas rendering.
-
-**Why:** Provides natural parent-child relationships for grouping, transformations cascade down the tree (move group → children move), and supports efficient tree traversal for rendering and hit detection.
-
-**Structure:**
-```typescript
-interface Element {
-  id: string;
-  type: 'slider' | 'knob' | 'label' | 'group';
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  properties: Record<string, unknown>;
-  children?: Element[];
-}
-
-interface DocumentModel {
-  root: Element; // Root container
-  version: string;
-  metadata: {
-    name: string;
-    createdAt: string;
-    modifiedAt: string;
-  };
-}
-```
-
-**When:** Use for all element storage. Every element lives in the tree.
-
-**Sources:**
-- [Scene graph architecture in Konva](https://medium.com/@www.blog4j.com/konva-js-vs-fabric-js-in-depth-technical-comparison-and-use-case-analysis-9c247968dd0f)
-- [Paper.js Document Object Model](https://sourceforge.net/projects/paper-js.mirror/)
-
-### Pattern 2: Command Pattern for Undo/Redo
-**What:** Encapsulate each operation (add element, delete, move, property change) as a command object with `execute()` and `undo()` methods.
-
-**Why:** Enables reliable undo/redo without complex state snapshots, groups related operations into transactions, and provides clear audit trail of user actions.
-
-**Implementation:**
-```typescript
-interface Command {
-  execute: () => void;
-  undo: () => void;
-}
-
-class UpdatePropertyCommand implements Command {
-  constructor(
-    private elementId: string,
-    private propertyPath: string,
-    private newValue: unknown,
-    private oldValue: unknown
-  ) {}
-
-  execute() {
-    // Update element property in store
-    documentStore.updateProperty(
-      this.elementId,
-      this.propertyPath,
-      this.newValue
-    );
-  }
-
-  undo() {
-    // Revert to old value
-    documentStore.updateProperty(
-      this.elementId,
-      this.propertyPath,
-      this.oldValue
-    );
-  }
-}
-```
-
-**With Zustand + Zundo:**
-```typescript
-import { temporal } from 'zundo';
-
-const useDocumentStore = create(
-  temporal(
-    (set) => ({
-      elements: [],
-      updateProperty: (id, path, value) =>
-        set((state) => {
-          // Use immer middleware for immutable updates
-          state.elements.find(e => e.id === id)[path] = value;
-        })
-    }),
-    {
-      limit: 50, // Keep 50 history states
-      equality: (a, b) => a === b,
-    }
-  )
-);
-
-// Usage
-const { undo, redo } = useDocumentStore.temporal.getState();
-```
-
-**When:** For all user-initiated state changes. Read-only operations (zoom, pan) don't need commands.
-
-**Sources:**
-- [Command Pattern for Undo/Redo](https://www.esveo.com/en/blog/undo-redo-and-the-command-pattern/)
-- [Zundo: Zustand temporal middleware](https://github.com/charkour/zundo)
-
-### Pattern 3: Separation of Concerns (Presentation-Domain-Data)
-**What:** Split application into distinct layers: View (React components), Domain (business logic), Data (state management).
-
-**Why:** Enables testing business logic without UI, allows reuse of domain logic across different views, and makes it easier to replace rendering layer (e.g., switch from Konva to Fabric).
-
-**Example Structure:**
-```typescript
-// Domain Layer - Pure business logic
-class ElementTransformer {
-  static resize(element: Element, width: number, height: number): Element {
-    return { ...element, width, height };
-  }
-
-  static move(element: Element, dx: number, dy: number): Element {
-    return { ...element, x: element.x + dx, y: element.y + dy };
-  }
-}
-
-// View Layer - Pure presentation
-const KnobElement: React.FC<{ element: Element }> = ({ element }) => {
-  const updateProperty = useDocumentStore(state => state.updateProperty);
-
-  return (
-    <Circle
-      x={element.x}
-      y={element.y}
-      radius={element.properties.size / 2}
-      fill={element.properties.color}
-      onClick={() => /* Selection logic */}
-    />
-  );
-};
-
-// Data Layer - State management
-const useDocumentStore = create((set) => ({
-  elements: [],
-  resizeElement: (id, width, height) =>
-    set((state) => ({
-      elements: state.elements.map(el =>
-        el.id === id ? ElementTransformer.resize(el, width, height) : el
-      )
-    }))
-}));
-```
-
-**When:** Always. Every feature should think: "Where does this logic belong?"
-
-**Sources:**
-- [Modularizing React Applications](https://martinfowler.com/articles/modularizing-react-apps.html)
-- [React separation of concerns patterns](https://www.carmatec.com/blog/the-best-react-design-patterns-to-know-about/)
-
-### Pattern 4: Atomic State Management with Zustand
-**What:** Use fine-grained state slices instead of monolithic store. Separate document, selection, canvas, and history concerns.
-
-**Why:** Components only re-render when their specific state slice changes, prevents unnecessary canvas re-renders on unrelated state changes, and easier to reason about state dependencies.
-
-**Implementation:**
-```typescript
-// Separate stores for different concerns
-const useDocumentStore = create<DocumentState>()(
-  immer(
-    temporal(
-      (set) => ({
-        elements: [],
-        addElement: (element) => set((state) => {
-          state.elements.push(element);
-        }),
-        updateElement: (id, updates) => set((state) => {
-          const el = state.elements.find(e => e.id === id);
-          Object.assign(el, updates);
-        })
-      })
-    )
-  )
-);
-
-const useSelectionStore = create<SelectionState>((set) => ({
-  selectedIds: [],
-  select: (id, multi = false) => set((state) => ({
-    selectedIds: multi
-      ? [...state.selectedIds, id]
-      : [id]
-  })),
-  clearSelection: () => set({ selectedIds: [] })
-}));
-
-const useCanvasStore = create<CanvasState>((set) => ({
-  zoom: 1,
-  panX: 0,
-  panY: 0,
-  gridSize: 10,
-  showGrid: true,
-  setZoom: (zoom) => set({ zoom }),
-  pan: (dx, dy) => set((state) => ({
-    panX: state.panX + dx,
-    panY: state.panY + dy
-  }))
-}));
-```
-
-**When:** From the start. Define stores by concern, not by component.
-
-**Sources:**
-- [Zustand atomic state patterns](https://www.nucamp.co/blog/state-management-in-2026-redux-context-api-and-modern-patterns)
-- [Jotai vs Zustand comparison](https://www.nucamp.co/blog/state-management-in-2026-redux-context-api-and-modern-patterns)
-
-### Pattern 5: Declarative Canvas with React-Konva
-**What:** Treat canvas elements as React components. Props drive rendering, no imperative canvas API calls.
-
-**Why:** Leverages React's reconciliation for efficient updates, easier to reason about (props in → pixels out), and integrates naturally with React DevTools.
-
-**Implementation:**
-```typescript
-const CanvasEditor: React.FC = () => {
-  const elements = useDocumentStore(state => state.elements);
-  const selectedIds = useSelectionStore(state => state.selectedIds);
-  const { zoom, panX, panY } = useCanvasStore();
-
-  return (
-    <Stage width={800} height={600}>
-      <Layer
-        scaleX={zoom}
-        scaleY={zoom}
-        x={panX}
-        y={panY}
-      >
-        {elements.map(element => (
-          <ElementRenderer
-            key={element.id}
-            element={element}
-            selected={selectedIds.includes(element.id)}
-          />
-        ))}
-        {selectedIds.length > 0 && (
-          <SelectionOverlay elementIds={selectedIds} />
-        )}
-      </Layer>
-    </Stage>
-  );
-};
-```
-
-**Key Principle:** Konva is to react-konva what DOM is to React. Don't mix imperative Konva API with React-Konva components.
-
-**When:** Always for rendering. Use refs only for reading canvas pixels or advanced features.
-
-**Sources:**
-- [React-Konva getting started](https://konvajs.org/docs/react/index.html)
-- [Declarative canvas patterns](https://www.turing.com/kb/canvas-components-in-react)
-
-### Pattern 6: Custom Collision Detection for Canvas Drop
-**What:** Extend @dnd-kit's collision detection to convert screen coordinates to canvas coordinates, accounting for zoom/pan.
-
-**Why:** Default collision detection doesn't understand canvas transformations. Need to project mouse position into canvas space.
-
-**Implementation:**
-```typescript
-import { pointerWithin } from '@dnd-kit/core';
-
-const canvasCollisionDetection = (args) => {
-  const canvasStore = useCanvasStore.getState();
-  const { zoom, panX, panY } = canvasStore;
-
-  // Transform pointer coordinates to canvas space
-  const canvasX = (args.pointerCoordinates.x - panX) / zoom;
-  const canvasY = (args.pointerCoordinates.y - panY) / zoom;
-
-  // Check if within canvas bounds
-  return pointerWithin({
-    ...args,
-    pointerCoordinates: { x: canvasX, y: canvasY }
-  });
-};
-
-<DndContext
-  collisionDetection={canvasCollisionDetection}
-  onDragEnd={handleDragEnd}
->
-  {/* ... */}
-</DndContext>
-```
-
-**When:** Required for drag-from-palette feature. Canvas transformations break default collision detection.
-
-**Sources:**
-- [@dnd-kit collision detection algorithms](https://docs.dndkit.com/api-documentation/context-provider/collision-detection-algorithms)
-- [@dnd-kit custom strategies](https://docs.dndkit.com/api-documentation/context-provider)
-
-## Anti-Patterns to Avoid
-
-### Anti-Pattern 1: Prop Drilling Through Component Tree
-**What:** Passing callbacks and state through 5+ layers of components to reach canvas elements.
-
-**Why bad:** Creates tight coupling, makes refactoring difficult, causes unnecessary re-renders of intermediate components, and obscures data flow.
-
-**Instead:** Use Zustand stores directly in leaf components. Zustand provides direct store access without context drilling.
-
-```typescript
-// BAD - Prop drilling
-<Canvas
-  onElementClick={handleElementClick}
-  onElementDrag={handleElementDrag}
-  selectedIds={selectedIds}
-/>
-
-// GOOD - Direct store access
-const KnobElement = ({ element }) => {
-  const select = useSelectionStore(state => state.select);
-  const updatePosition = useDocumentStore(state => state.updatePosition);
-
-  return <Circle onClick={() => select(element.id)} />;
-};
-```
-
-### Anti-Pattern 2: Storing Canvas-Specific State in Document Model
-**What:** Adding zoom, pan, grid visibility to the document JSON that gets saved.
-
-**Why bad:** Pollutes document format with UI concerns, makes export harder (need to strip UI state), and different users may want different zoom levels for same document.
-
-**Instead:** Separate document state (what gets saved) from canvas state (ephemeral UI).
-
-```typescript
-// BAD - Mixed concerns
-interface Document {
-  elements: Element[];
-  zoom: number; // UI state!
-  gridVisible: boolean; // UI state!
-}
-
-// GOOD - Clear separation
-interface Document {
-  elements: Element[];
-  version: string;
-  metadata: { name: string };
-}
-
-interface CanvasState {
-  zoom: number;
-  panX: number;
-  panY: number;
-  gridVisible: boolean;
-}
-```
-
-### Anti-Pattern 3: Imperative Canvas Updates
-**What:** Calling Konva imperative API (`node.setAttr()`, `layer.draw()`) instead of using React state.
-
-**Why bad:** Bypasses React's reconciliation, creates out-of-sync state between React and canvas, makes debugging impossible (React DevTools don't see changes), and undo/redo won't work.
-
-**Instead:** Always update via state. React-Konva handles rendering.
-
-```typescript
-// BAD - Imperative
-const circleRef = useRef();
-circleRef.current.setAttr('x', 100);
-circleRef.current.getLayer().draw();
-
-// GOOD - Declarative
-const updatePosition = useDocumentStore(state => state.updatePosition);
-updatePosition(elementId, 100, 50);
-```
-
-### Anti-Pattern 4: Over-Rendering Canvas on Every State Change
-**What:** Re-rendering entire canvas when only one element's property changes.
-
-**Why bad:** Canvas rendering is expensive, causes jank and dropped frames, and makes tool feel sluggish.
-
-**Instead:** Use Zustand selectors to subscribe only to specific state slices, memoize element renderers, and leverage Konva's layer caching.
-
-```typescript
-// BAD - Re-renders everything
-const CanvasEditor = () => {
-  const store = useDocumentStore(); // Subscribes to all changes!
-
-  return (
-    <Stage>
-      <Layer>
-        {store.elements.map(el => <Element {...el} />)}
-      </Layer>
-    </Stage>
-  );
-};
-
-// GOOD - Selective subscriptions
-const CanvasEditor = () => {
-  const elements = useDocumentStore(state => state.elements); // Only elements
-
-  return (
-    <Stage>
-      <Layer>
-        {elements.map(el => <MemoizedElement key={el.id} element={el} />)}
-      </Layer>
-    </Stage>
-  );
-};
-
-const MemoizedElement = React.memo(({ element }) => {
-  const isSelected = useSelectionStore(
-    state => state.selectedIds.includes(element.id)
-  );
-
-  return <ElementRenderer element={element} selected={isSelected} />;
-});
-```
-
-### Anti-Pattern 5: Monolithic Command Objects
-**What:** Creating one massive `UpdateElementCommand` that handles all property changes with complex conditional logic.
-
-**Why bad:** Hard to test specific operations, undo/redo becomes brittle, and violates single responsibility principle.
-
-**Instead:** Create specific command classes for each operation type.
-
-```typescript
-// BAD - God object
-class UpdateElementCommand {
-  execute() {
-    if (this.type === 'move') { /* ... */ }
-    else if (this.type === 'resize') { /* ... */ }
-    else if (this.type === 'color') { /* ... */ }
-    // 50 more conditions...
-  }
-}
-
-// GOOD - Focused commands
-class MoveElementCommand { /* ... */ }
-class ResizeElementCommand { /* ... */ }
-class UpdateColorCommand { /* ... */ }
-```
-
-## State Management Deep Dive
-
-### Store Architecture
-
-```typescript
-// Document Store - Source of truth for design
-interface DocumentState {
-  elements: Element[];
-  metadata: DocumentMetadata;
-  // Actions
-  addElement: (element: Element) => void;
-  removeElement: (id: string) => void;
-  updateElement: (id: string, updates: Partial<Element>) => void;
-  moveElement: (id: string, x: number, y: number) => void;
-}
-
-// Selection Store - Tracks what's selected
-interface SelectionState {
-  selectedIds: string[];
-  hoveredId: string | null;
-  // Actions
-  select: (id: string, multi?: boolean) => void;
-  selectMultiple: (ids: string[]) => void;
-  clearSelection: () => void;
-  setHovered: (id: string | null) => void;
-}
-
-// Canvas Store - Viewport settings
-interface CanvasState {
-  zoom: number;
-  panX: number;
-  panY: number;
-  gridSize: number;
-  showGrid: boolean;
-  snapToGrid: boolean;
-  // Actions
-  setZoom: (zoom: number) => void;
-  pan: (dx: number, dy: number) => void;
-  toggleGrid: () => void;
-}
-
-// History managed by temporal middleware
-const useDocumentStore = create(
-  temporal(
-    immer((set) => ({ /* ... */ })),
-    { limit: 50 }
-  )
-);
-```
-
-### State Update Patterns
-
-**Optimistic Updates (for smooth UX):**
-```typescript
-const handleDrag = (elementId: string, x: number, y: number) => {
-  // Update immediately without waiting
-  useDocumentStore.getState().moveElement(elementId, x, y);
-};
-```
-
-**Batched Updates (for multi-select operations):**
-```typescript
-const deleteSelected = () => {
-  const selectedIds = useSelectionStore.getState().selectedIds;
-
-  // Batch into single history entry
-  useDocumentStore.setState((state) => {
-    selectedIds.forEach(id => {
-      state.elements = state.elements.filter(el => el.id !== id);
-    });
-  });
-};
-```
-
-**Derived State (computed values):**
-```typescript
-// Don't store selection bounds, compute from elements
-const useSelectionBounds = () => {
-  return useDocumentStore(state => {
-    const selectedIds = useSelectionStore.getState().selectedIds;
-    const selected = state.elements.filter(el =>
-      selectedIds.includes(el.id)
-    );
-
-    return calculateBounds(selected);
-  });
-};
-```
-
-## Rendering Strategy
-
-### Layer Organization
-
-```typescript
-<Stage width={width} height={height}>
-  {/* Background layer - rarely changes */}
-  <Layer>
-    <Grid />
-    <Guides />
-  </Layer>
-
-  {/* Content layer - elements */}
-  <Layer>
-    {elements.map(el => <ElementRenderer key={el.id} {...el} />)}
-  </Layer>
-
-  {/* Interaction layer - selection, handles */}
-  <Layer>
-    <SelectionBox />
-    <ResizeHandles />
-    <AlignmentGuides />
-  </Layer>
-</Stage>
-```
-
-**Why layered:** Konva caches layers. Background rarely re-renders, interaction layer updates frequently without redrawing elements.
-
-### Performance Optimizations
-
-**1. Virtualization (for large documents):**
-Only render elements in viewport.
-
-```typescript
-const visibleElements = elements.filter(el => {
-  return isInViewport(el, canvasState);
-});
-```
-
-**2. Memoization:**
-```typescript
-const ElementRenderer = React.memo(({ element, selected }) => {
-  // Only re-renders when element or selected changes
-}, (prev, next) => {
-  return prev.element === next.element && prev.selected === next.selected;
-});
-```
-
-**3. Debounce expensive operations:**
-```typescript
-const debouncedAutoSave = useMemo(
-  () => debounce((doc) => saveToLocalStorage(doc), 1000),
-  []
-);
-
-useEffect(() => {
-  debouncedAutoSave(document);
-}, [document]);
-```
-
-## Export Architecture
-
-### Code Generation Strategy
-
-**Template-Based Generation:**
-```typescript
-interface ExportEngine {
-  toHTML: (document: Document) => string;
-  toCSS: (document: Document) => string;
-  toJavaScript: (document: Document) => string;
-  toCPP: (document: Document) => string; // VST3-specific
-}
-
-class HTMLExporter implements ExportEngine {
-  toHTML(document: Document): string {
-    const template = `
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  ${this.renderElements(document.elements)}
-</body>
-</html>
-    `;
-    return template;
-  }
-
-  private renderElements(elements: Element[]): string {
-    return elements.map(el => {
-      const Component = elementTemplates[el.type];
-      return Component.toHTML(el);
-    }).join('\n');
-  }
-}
-```
-
-**VST3 C++ Generation:**
-```typescript
-class VST3Exporter {
-  toCPP(document: Document): string {
-    return `
-// Auto-generated VST3 UI code
-namespace Steinberg {
-namespace Vst {
-
-class PluginUI : public VSTGUIEditor {
-  bool open(void* parent) override {
-    ${this.generateUICode(document.elements)}
-    return true;
-  }
-};
-
-}} // namespaces
-    `;
-  }
-}
-```
-
-### Serialization Format
-
-**JSON Document Format:**
-```json
-{
-  "version": "1.0.0",
-  "metadata": {
-    "name": "My Plugin UI",
-    "createdAt": "2026-01-23T10:00:00Z",
-    "modifiedAt": "2026-01-23T10:30:00Z"
-  },
-  "elements": [
-    {
-      "id": "knob-1",
-      "type": "knob",
-      "x": 100,
-      "y": 100,
-      "width": 60,
-      "height": 60,
-      "properties": {
-        "min": 0,
-        "max": 100,
-        "value": 50,
-        "color": "#3498db",
-        "label": "Gain"
-      },
-      "children": []
-    }
-  ]
-}
-```
-
-**Migration Strategy:**
-```typescript
-const migrations = {
-  '1.0.0': (doc) => doc,
-  '1.1.0': (doc) => {
-    // Add new properties with defaults
-    return {
-      ...doc,
-      elements: doc.elements.map(el => ({
-        ...el,
-        properties: {
-          ...el.properties,
-          snapToGrid: el.properties.snapToGrid ?? true
-        }
-      }))
-    };
-  }
-};
-```
-
-## Build Order Recommendations
-
-Based on dependencies, build in this order:
-
-### Phase 1: Foundation (Week 1-2)
-**Goal:** Establish core architecture and state management.
-
-1. **Setup Zustand stores** (document, selection, canvas)
-2. **Define document model types** (Element interface, scene graph structure)
-3. **Create basic React-Konva canvas** (Stage, Layer, simple shapes)
-4. **Implement serialization** (save/load JSON)
-
-**Why first:** Everything depends on state management and document model. Get this right before building features.
-
-### Phase 2: Canvas Basics (Week 2-3)
-**Goal:** Functional canvas with selection.
-
-1. **Element rendering** (map document elements to Konva shapes)
-2. **Click to select** (single selection)
-3. **Visual selection indicators** (highlight selected element)
-4. **Property panel scaffolding** (show selected element properties)
-
-**Why next:** Establishes render loop and interaction foundation. Need working canvas before advanced features.
-
-### Phase 3: Palette & Drag-Drop (Week 3-4)
-**Goal:** Add elements to canvas.
-
-1. **Element palette UI** (categorized component list)
-2. **@dnd-kit integration** (draggable palette items)
-3. **Custom collision detection** (canvas coordinate transformation)
-4. **Drop to create element** (AddElementCommand)
-
-**Why third:** Depends on canvas rendering. Need selection working to auto-select newly added elements.
-
-### Phase 4: Property Editing (Week 4-5)
-**Goal:** Edit element properties.
-
-1. **Dynamic property forms** (type-aware inputs: color picker, number slider)
-2. **Property update commands** (UpdatePropertyCommand)
-3. **Real-time canvas updates** (property change → immediate render)
-
-**Why fourth:** Requires working document model and canvas. Complex because property panel must adapt to selected element type.
-
-### Phase 5: Transform Controls (Week 5-6)
-**Goal:** Move and resize elements.
-
-1. **Drag to move** (on-canvas dragging)
-2. **Resize handles** (corner/edge handles)
-3. **Multi-select** (Shift/Cmd click)
-4. **Group transforms** (move/resize multiple elements)
-
-**Why fifth:** Builds on selection. Multi-select adds significant complexity.
-
-### Phase 6: Undo/Redo (Week 6-7)
-**Goal:** History management.
-
-1. **Integrate zundo middleware** (temporal wrapper on document store)
-2. **Command pattern refinement** (ensure all operations are undoable)
-3. **History UI** (undo/redo buttons, keyboard shortcuts)
-
-**Why sixth:** Requires all commands to be defined. Easier to add after core features work.
-
-### Phase 7: Canvas Controls (Week 7-8)
-**Goal:** Navigation and snapping.
-
-1. **Zoom (wheel, pinch)** and pan (space+drag)
-2. **Grid rendering and snap-to-grid**
-3. **Alignment guides** (snap to element edges)
-
-**Why seventh:** Nice-to-have features. Core tool works without these.
-
-### Phase 8: Export (Week 8-9)
-**Goal:** Code generation.
-
-1. **HTML/CSS export** (template-based generation)
-2. **VST3 C++ export** (framework-specific templates)
-3. **Export UI and preview**
-
-**Why last:** Depends on stable document format. Export is read-only operation, doesn't affect core architecture.
-
-## Scalability Considerations
-
-| Concern | Small Projects (< 50 elements) | Medium Projects (50-500 elements) | Large Projects (500+ elements) |
-|---------|-------------------------------|----------------------------------|-------------------------------|
-| **Rendering** | Render all elements | Render all, memoize components | Viewport virtualization required |
-| **Undo History** | 50 states in memory | 100 states, consider serializing old states | Use command pattern with minimal snapshots |
-| **Selection** | Array of IDs | Set for O(1) lookup | Spatial index (quadtree) for click detection |
-| **Serialization** | JSON.stringify | Incremental saves (only changed elements) | Stream-based serialization |
-| **Search** | Linear scan | Linear scan with caching | Build search index on document load |
-
-## Performance Targets
-
-**Critical metrics for responsive feel:**
-- Click to select: < 16ms (60fps)
-- Property update to canvas render: < 16ms
-- Undo/redo: < 50ms
-- Drag feedback: < 16ms (60fps)
-- Canvas pan/zoom: < 8ms (120fps on capable displays)
-- Save document: < 200ms
-- Load document: < 500ms
-
-**Profiling points:**
-- Zustand re-render subscriptions (use React DevTools Profiler)
-- Canvas layer draw calls (Konva performance mode)
-- Command execution time (console.time for complex operations)
-
-## Technology Verification
-
-**Stack Verification:**
-- React 18: HIGH confidence (industry standard, documented)
-- Zustand: HIGH confidence (30%+ YoY growth, 40%+ adoption in 2026 per web search)
-- React-Konva: MEDIUM confidence (active development, scene graph architecture verified)
-- @dnd-kit: HIGH confidence (official docs confirm modular architecture)
-- Zundo: MEDIUM confidence (active project, <700B, temporal middleware for Zustand)
-
-**Architecture Pattern Verification:**
-- Scene graph: HIGH confidence (Konva's documented approach, game engine pattern)
-- Command pattern for undo: HIGH confidence (classic pattern, verified in multiple sources)
-- Separation of concerns: HIGH confidence (Martin Fowler article, industry best practice)
-- Atomic state: MEDIUM confidence (Zustand/Jotai patterns from 2026 web search)
-
-## Open Questions & Research Flags
-
-**Low confidence areas needing phase-specific research:**
-
-1. **VST3 C++ code generation specifics** - Need to research VST3 UI framework APIs during export phase
-2. **Optimal grid snapping algorithm** - May need experimentation during canvas controls phase
-3. **Keyboard shortcut handling** - Research best library (react-hotkeys-hook?) during UX polish phase
-4. **Collaboration features** - If multi-user editing is future requirement, research CRDT libraries (Yjs, Automerge)
-
-## Sources
-
-### High Confidence (Official Documentation & Established Patterns)
-- [React-Konva Official Docs](https://konvajs.org/docs/react/index.html) - Declarative canvas patterns
-- [@dnd-kit Official Docs](https://docs.dndkit.com) - Modular drag-and-drop architecture
-- [Zustand Official Docs](https://zustand.docs.pmnd.rs/integrations/third-party-libraries) - Third-party integrations
-- [Martin Fowler: Modularizing React Apps](https://martinfowler.com/articles/modularizing-react-apps.html) - Separation of concerns
-
-### Medium Confidence (Community Patterns & Technical Comparisons)
-- [Konva.js vs Fabric.js Technical Comparison](https://medium.com/@www.blog4j.com/konva-js-vs-fabric-js-in-depth-technical-comparison-and-use-case-analysis-9c247968dd0f) - Scene graph architecture
-- [State Management in 2026](https://www.nucamp.co/blog/state-management-in-2026-redux-context-api-and-modern-patterns) - Zustand adoption trends
-- [Command Pattern for Undo/Redo](https://www.esveo.com/en/blog/undo-redo-and-the-command-pattern/) - Pattern explanation
-- [Zundo GitHub](https://github.com/charkour/zundo) - Temporal middleware implementation
-- [Design Tool Canvas Architecture Guide](https://eleopardsolutions.com/develop-canvas-ui-like-figma/) - Figma-like patterns
-
-### Low Confidence (Industry Trends, Require Verification)
-- [React Design Patterns 2026](https://www.carmatec.com/blog/the-best-react-design-patterns-to-know-about/) - Modern React patterns
-- [Design-to-Code Tools 2026](https://research.aimultiple.com/design-to-code/) - Code generation approaches
-- [Sketch Canvas Tech Blog](https://www.sketch.com/blog/canvas-tech/) - Scene graph implementation (LIMITED - page content not fully extracted)
+The recommended approach uses **Zustand slice pattern** for asset management, **ID-based references** for element-to-asset relationships, and **progressive enhancement** for rendering (fallback to built-in styles when no asset referenced).
 
 ---
 
-**Confidence Assessment:** MEDIUM overall. Core architectural patterns (scene graph, command pattern, separation of concerns) are HIGH confidence based on established best practices and official documentation. State management and rendering strategies are MEDIUM confidence based on community patterns and web search findings. VST3-specific export details are LOW confidence and flagged for phase-specific research.
+## Current Architecture (v1.0)
+
+### Zustand Store Structure
+
+**Slices:**
+- `CanvasSlice` - Canvas dimensions, background, grid settings
+- `ElementsSlice` - Elements array, selection state, CRUD operations
+- `ViewportSlice` - Pan/zoom camera state (excluded from undo)
+- `TemplateSlice` - Load/clear operations
+
+**Store composition:**
+```typescript
+Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice
+```
+
+**Middleware:**
+- `temporal` (zundo) - 50-action undo/redo history
+- `partialize` - Excludes viewport from history
+
+### Element Pattern
+
+**Type system:**
+```typescript
+interface BaseElementConfig {
+  id: string           // UUID
+  name: string        // User-friendly, becomes export ID
+  type: string        // Discriminator
+  x, y, width, height // Position/size
+  // ... base properties
+}
+
+type ElementConfig = KnobElementConfig | SliderElementConfig | ...
+```
+
+**Storage:** Flat array `elements: ElementConfig[]`
+
+**Rendering:** Switch-based renderer per type
+```typescript
+{element.type === 'knob' && <KnobRenderer config={element} />}
+```
+
+**Properties:** Dedicated panel per type
+```typescript
+{element.type === 'knob' && <KnobProperties element={element} onUpdate={...} />}
+```
+
+### Component Organization
+
+```
+src/components/
+├── elements/
+│   ├── renderers/      # KnobRenderer, SliderRenderer, etc.
+│   └── BaseElement.tsx # Wrapper with selection/drag
+├── Properties/         # KnobProperties, SliderProperties, etc.
+├── Palette/           # Element palette + CustomSVGUpload
+├── DesignMode/        # SVGDesignMode, LayerAssignment
+└── Canvas/            # Main canvas rendering
+```
+
+---
+
+## Integration Points
+
+### 1. New Zustand Slice: AssetsSlice
+
+**Purpose:** Store SVG assets and knob styles as normalized data
+
+```typescript
+interface SVGAsset {
+  id: string                    // UUID
+  name: string                  // User-defined
+  type: 'knob' | 'graphic'     // Asset category
+  svgContent: string           // Original SVG markup
+  width: number
+  height: number
+
+  // For knob assets only
+  layers?: {
+    track?: string             // Static background arc/ring
+    indicator?: string         // Rotates with value
+    thumb?: string            // Alternative to indicator
+    fill?: string             // Fills arc based on value
+    glow?: string             // Reactive highlight
+    background?: string       // Static backdrop
+  }
+
+  // Metadata
+  createdAt: number
+  tags?: string[]
+}
+
+interface KnobStyle {
+  id: string                    // UUID
+  name: string                  // "Blue Glow", "Vintage", etc.
+  assetId: string              // References SVGAsset
+
+  // Customization overrides
+  colorOverrides?: {
+    track?: string
+    indicator?: string
+    fill?: string
+    glow?: string
+  }
+
+  // Behavior configuration
+  rotationRange?: { start: number; end: number }  // Default: -135 to 135
+
+  createdAt: number
+}
+
+interface AssetsSlice {
+  // State
+  svgAssets: Record<string, SVGAsset>          // Normalized by ID
+  knobStyles: Record<string, KnobStyle>        // Normalized by ID
+  assetCategories: string[]                    // User-defined tags
+
+  // Asset CRUD
+  addAsset: (asset: SVGAsset) => void
+  removeAsset: (id: string) => void
+  updateAsset: (id: string, updates: Partial<SVGAsset>) => void
+  getAsset: (id: string) => SVGAsset | undefined
+
+  // Knob Style CRUD
+  addKnobStyle: (style: KnobStyle) => void
+  removeKnobStyle: (id: string) => void
+  updateKnobStyle: (id: string, updates: Partial<KnobStyle>) => void
+  getKnobStyle: (id: string) => KnobStyle | undefined
+
+  // Queries
+  getAssetsByType: (type: 'knob' | 'graphic') => SVGAsset[]
+  getKnobStylesForAsset: (assetId: string) => KnobStyle[]
+}
+```
+
+**Integration:** Add to store composition
+```typescript
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice
+```
+
+**Rationale:**
+- **Normalized storage** - Assets are reusable entities, not duplicated per element
+- **Record<string, T>** - Fast O(1) lookups by ID (better than array search)
+- **Separation of concerns** - Assets (raw SVG) separate from styles (configurations)
+
+---
+
+### 2. Modified Element Types
+
+**Option A: Extend KnobElementConfig (Recommended)**
+
+```typescript
+interface KnobElementConfig extends BaseElementConfig {
+  type: 'knob'
+
+  // Existing built-in rendering properties
+  diameter: number
+  value: number
+  min: number
+  max: number
+  startAngle: number
+  endAngle: number
+  style: 'arc' | 'filled' | 'dot' | 'line'
+  trackColor: string
+  fillColor: string
+  indicatorColor: string
+  trackWidth: number
+  // ... label/value display properties
+
+  // NEW: SVG knob style reference
+  svgKnobStyleId?: string       // Optional reference to KnobStyle
+
+  // NEW: Rendering mode
+  renderMode?: 'builtin' | 'svg'  // Default: 'builtin'
+}
+```
+
+**Option B: New SVGKnobElementConfig (Alternative)**
+
+```typescript
+interface SVGKnobElementConfig extends BaseElementConfig {
+  type: 'svgknob'  // New element type
+
+  svgKnobStyleId: string  // Required
+  value: number
+  min: number
+  max: number
+
+  // Inherited size from BaseElementConfig
+  // Visual overrides can be separate properties
+}
+```
+
+**Recommendation:** **Option A** for backward compatibility and unified UX
+- Existing knobs continue working (no svgKnobStyleId = built-in rendering)
+- Users can toggle between built-in and SVG modes
+- Property panel shows relevant sections based on renderMode
+
+---
+
+### 3. New Element Type: SVGGraphicElement
+
+For static SVG graphics (logos, icons, dividers):
+
+```typescript
+interface SVGGraphicElementConfig extends BaseElementConfig {
+  type: 'svggraphic'
+
+  svgAssetId: string    // References SVGAsset (type: 'graphic')
+
+  // Appearance overrides
+  colorOverride?: string    // Tint/recolor if SVG supports it
+  opacity?: number          // 0-1
+
+  // Already has x, y, width, height from BaseElementConfig
+}
+```
+
+**Alternative:** Extend existing `ImageElementConfig` instead of new type
+```typescript
+interface ImageElementConfig extends BaseElementConfig {
+  type: 'image'
+  src: string               // Existing: base64 data URL or external URL
+  svgAssetId?: string      // NEW: Alternative to src for managed assets
+  fit: 'contain' | 'cover' | 'fill' | 'none'
+}
+```
+
+**Recommendation:** Extend `ImageElementConfig` - simpler, reuses existing renderer infrastructure
+
+---
+
+## Component Architecture
+
+### New Components
+
+#### 1. AssetLibraryPanel
+
+**Location:** `src/components/Assets/AssetLibraryPanel.tsx`
+
+**Purpose:** Unified UI for managing SVG assets and knob styles
+
+```typescript
+interface AssetLibraryPanelProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+// Features:
+// - Tabbed interface: "Knob Styles" | "Graphics" | "Import"
+// - Grid view with thumbnails
+// - Search/filter by name or tag
+// - Right-click context menu: Rename, Duplicate, Delete
+// - Drag-to-canvas for graphics
+// - Click-to-apply for knob styles (to selected knob element)
+```
+
+**State:**
+```typescript
+const svgAssets = useStore(state => state.svgAssets)
+const knobStyles = useStore(state => state.knobStyles)
+const addAsset = useStore(state => state.addAsset)
+const addKnobStyle = useStore(state => state.addKnobStyle)
+```
+
+#### 2. SVGKnobRenderer
+
+**Location:** `src/components/elements/renderers/SVGKnobRenderer.tsx`
+
+**Purpose:** Render knob using SVG layers instead of programmatic drawing
+
+```typescript
+interface SVGKnobRendererProps {
+  config: KnobElementConfig  // Has svgKnobStyleId
+}
+
+// Rendering logic:
+// 1. Resolve knobStyle = getKnobStyle(config.svgKnobStyleId)
+// 2. Resolve asset = getAsset(knobStyle.assetId)
+// 3. Extract layers from asset.layers
+// 4. Compose SVG:
+//    - Render track (static)
+//    - Render fill (clip/mask based on config.value)
+//    - Render indicator (rotated by valueAngle)
+//    - Apply color overrides from knobStyle
+```
+
+**Key challenge:** Animating SVG layers
+- **Track:** Static, render as-is
+- **Indicator:** Apply CSS transform: `rotate(${valueAngle}deg)`
+- **Fill:** Use SVG `<clipPath>` or `<mask>` to show partial arc
+- **Transform origin:** Must be center of knob (requires layer bounds calculation)
+
+#### 3. SVGAssetThumbnail
+
+**Location:** `src/components/Assets/SVGAssetThumbnail.tsx`
+
+**Purpose:** Render asset preview in library grid
+
+```typescript
+interface SVGAssetThumbnailProps {
+  asset: SVGAsset
+  selected?: boolean
+  onClick?: () => void
+  onContextMenu?: (e: React.MouseEvent) => void
+}
+
+// Renders:
+// - SVG preview (constrained to 80x80px)
+// - Asset name
+// - Type badge ("Knob" | "Graphic")
+```
+
+#### 4. AssetImportWizard
+
+**Location:** `src/components/Assets/AssetImportWizard.tsx`
+
+**Purpose:** Multi-step import flow
+
+**Steps:**
+1. **Upload** - Drag-drop or file picker for .svg
+2. **Type Selection** - "Knob" or "Graphic"
+3. **Layer Assignment** (if Knob) - Reuse existing `SVGDesignMode` component
+4. **Metadata** - Name, tags
+5. **Confirmation** - Preview + save
+
+**Integration with existing code:**
+- Reuses `parseSVGFile()` from `src/utils/svgImport.ts`
+- Reuses `SVGDesignMode` component (already exists in v1.0)
+- Saves to `AssetsSlice` instead of directly creating element
+
+---
+
+### Modified Components
+
+#### 1. KnobProperties (Enhanced)
+
+**Changes:**
+```typescript
+// Add section for SVG mode
+<PropertySection title="Rendering">
+  <RadioGroup
+    value={element.renderMode || 'builtin'}
+    onChange={(mode) => onUpdate({ renderMode: mode })}
+    options={[
+      { label: 'Built-in', value: 'builtin' },
+      { label: 'SVG Style', value: 'svg' }
+    ]}
+  />
+
+  {element.renderMode === 'svg' && (
+    <KnobStyleSelector
+      selectedId={element.svgKnobStyleId}
+      onChange={(id) => onUpdate({ svgKnobStyleId: id })}
+    />
+  )}
+</PropertySection>
+
+// Conditionally show built-in style properties only when renderMode === 'builtin'
+{element.renderMode !== 'svg' && (
+  <>
+    <PropertySection title="Arc Geometry">...</PropertySection>
+    <PropertySection title="Style">...</PropertySection>
+  </>
+)}
+```
+
+#### 2. KnobRenderer (Modified)
+
+**Changes:**
+```typescript
+export function KnobRenderer({ config }: KnobRendererProps) {
+  // NEW: Check for SVG mode
+  if (config.renderMode === 'svg' && config.svgKnobStyleId) {
+    return <SVGKnobRenderer config={config} />
+  }
+
+  // EXISTING: Built-in rendering (unchanged)
+  // ... existing arc/filled/dot/line rendering
+}
+```
+
+#### 3. Palette (Enhanced)
+
+**Changes:**
+```typescript
+// Add button to open Asset Library
+<button onClick={() => setAssetLibraryOpen(true)}>
+  📚 Asset Library
+</button>
+
+// Existing CustomSVGUpload changes behavior:
+// - Instead of directly creating element, opens AssetImportWizard
+// - Wizard saves to AssetsSlice
+// - User then applies asset from library
+```
+
+**Alternative:** Keep `CustomSVGUpload` for quick "add to canvas" workflow, add separate library access
+
+---
+
+## Data Flow Patterns
+
+### Asset Import Flow
+
+```
+User uploads SVG
+    ↓
+parseSVGFile() extracts dimensions + layers
+    ↓
+AssetImportWizard shows layer assignment (if knob)
+    ↓
+User assigns layers (track, indicator, fill, etc.)
+    ↓
+AssetsSlice.addAsset() stores SVGAsset
+    ↓
+(Optional) AssetsSlice.addKnobStyle() creates default style
+    ↓
+Asset appears in AssetLibraryPanel
+```
+
+### Apply Knob Style Flow
+
+```
+User selects knob element on canvas
+    ↓
+User opens Asset Library
+    ↓
+User clicks knob style thumbnail
+    ↓
+ElementsSlice.updateElement(id, {
+  svgKnobStyleId: styleId,
+  renderMode: 'svg'
+})
+    ↓
+KnobRenderer re-renders with SVGKnobRenderer
+    ↓
+SVGKnobRenderer resolves style → asset → layers
+    ↓
+Renders composed SVG with value rotation
+```
+
+### Add Graphic Flow
+
+```
+User clicks "Add Graphic" in Asset Library
+    ↓
+Selects SVG asset (type: 'graphic')
+    ↓
+ElementsSlice.addElement(createImage({
+  svgAssetId: asset.id,
+  width: asset.width,
+  height: asset.height,
+  x: canvasCenterX,
+  y: canvasCenterY
+}))
+    ↓
+ImageRenderer checks for svgAssetId
+    ↓
+If svgAssetId exists, resolves asset and renders SVG
+    ↓
+Otherwise, renders src as usual
+```
+
+---
+
+## State Management Patterns
+
+### Normalized vs Denormalized
+
+**Normalized (Recommended):**
+```typescript
+// Assets stored once by ID
+svgAssets: {
+  'asset-123': { id: 'asset-123', name: 'Blue Knob', ... }
+}
+
+// Elements reference by ID
+elements: [
+  { type: 'knob', svgKnobStyleId: 'style-456', ... }
+]
+
+// Styles reference assets by ID
+knobStyles: {
+  'style-456': { id: 'style-456', assetId: 'asset-123', ... }
+}
+```
+
+**Benefits:**
+- Single source of truth for asset data
+- Updates to asset propagate to all elements automatically
+- Efficient memory usage (no duplication)
+- Supports shared styles across multiple elements
+
+**Tradeoffs:**
+- Requires ID resolution during rendering (3 lookups: element → style → asset)
+- More complex selectors
+
+### Selector Strategy
+
+**Pattern 1: Component-level resolution (Recommended for v1.1)**
+```typescript
+// In SVGKnobRenderer
+const getKnobStyle = useStore(state => state.getKnobStyle)
+const getAsset = useStore(state => state.getAsset)
+
+const knobStyle = getKnobStyle(config.svgKnobStyleId)
+const asset = knobStyle ? getAsset(knobStyle.assetId) : undefined
+```
+
+**Pattern 2: Computed selectors (Future optimization)**
+```typescript
+// In AssetsSlice
+getResolvedKnobStyle: (styleId: string) => {
+  const style = get().knobStyles[styleId]
+  const asset = style ? get().svgAssets[style.assetId] : undefined
+  return { style, asset }
+}
+```
+
+**Pattern 3: Zustand subscriptions (Advanced)**
+```typescript
+// Memoize resolved data to avoid re-renders
+const resolvedStyle = useStore(
+  useCallback(
+    state => {
+      const style = state.knobStyles[styleId]
+      const asset = style ? state.svgAssets[style.assetId] : undefined
+      return { style, asset }
+    },
+    [styleId]
+  ),
+  shallow  // Compare by reference
+)
+```
+
+**Recommendation for v1.1:** Pattern 1 (simple, readable, sufficient performance)
+
+### Undo/Redo Considerations
+
+**What should be undoable:**
+- ✅ Adding/removing assets (user created them)
+- ✅ Adding/removing knob styles
+- ✅ Applying knob style to element
+- ✅ Creating SVG graphic element
+
+**What should NOT be undoable:**
+- ❌ Opening/closing Asset Library panel
+- ❌ Filtering/searching assets
+- ❌ Changing active tab in library
+
+**Implementation:**
+```typescript
+// AssetsSlice is included in temporal store (default behavior)
+// UI state for library panel should be local component state
+
+function AssetLibraryPanel() {
+  const [searchQuery, setSearchQuery] = useState('')  // Local, not in store
+  const [activeTab, setActiveTab] = useState('knob')  // Local, not in store
+
+  const svgAssets = useStore(state => state.svgAssets)  // Global, undoable
+  const addAsset = useStore(state => state.addAsset)    // Global, undoable
+}
+```
+
+---
+
+## Rendering Architecture
+
+### SVG Layer Composition
+
+**Challenge:** Combine separate SVG layer strings into single interactive knob
+
+**Approach: Inline SVG with transformations**
+
+```typescript
+function SVGKnobRenderer({ config }: SVGKnobRendererProps) {
+  const getKnobStyle = useStore(state => state.getKnobStyle)
+  const getAsset = useStore(state => state.getAsset)
+
+  const style = getKnobStyle(config.svgKnobStyleId!)
+  const asset = style ? getAsset(style.assetId) : null
+
+  if (!asset || !asset.layers) return null
+
+  // Calculate rotation angle based on value
+  const valueAngle = calculateValueAngle(
+    config.value,
+    config.min,
+    config.max,
+    style.rotationRange || { start: -135, end: 135 }
+  )
+
+  return (
+    <svg
+      width={config.width}
+      height={config.height}
+      viewBox={`0 0 ${asset.width} ${asset.height}`}
+      style={{ overflow: 'visible' }}
+    >
+      {/* Static background layer */}
+      {asset.layers.background && (
+        <g dangerouslySetInnerHTML={{ __html: asset.layers.background }} />
+      )}
+
+      {/* Static track layer */}
+      {asset.layers.track && (
+        <g dangerouslySetInnerHTML={{ __html: asset.layers.track }} />
+      )}
+
+      {/* Value-based fill layer (uses mask) */}
+      {asset.layers.fill && (
+        <g
+          dangerouslySetInnerHTML={{ __html: asset.layers.fill }}
+          style={{
+            clipPath: `url(#fillMask-${config.id})`
+          }}
+        />
+      )}
+      <defs>
+        <clipPath id={`fillMask-${config.id}`}>
+          {/* Generate arc path based on config.value */}
+          <path d={generateArcPath(valueAngle)} />
+        </clipPath>
+      </defs>
+
+      {/* Rotating indicator layer */}
+      {asset.layers.indicator && (
+        <g
+          dangerouslySetInnerHTML={{ __html: asset.layers.indicator }}
+          style={{
+            transform: `rotate(${valueAngle}deg)`,
+            transformOrigin: 'center'
+          }}
+        />
+      )}
+
+      {/* Optional glow layer (could animate with value) */}
+      {asset.layers.glow && (
+        <g
+          dangerouslySetInnerHTML={{ __html: asset.layers.glow }}
+          style={{
+            opacity: config.value  // Fade in as value increases
+          }}
+        />
+      )}
+    </svg>
+  )
+}
+```
+
+**Security consideration:** `dangerouslySetInnerHTML` with user-uploaded SVGs
+- **Mitigation:** Sanitize SVG on upload using library like DOMPurify
+- **When:** In `parseSVGFile()` utility before storing in AssetsSlice
+- **What to strip:** `<script>` tags, event handlers (onclick, onload), external references
+
+### Color Override System
+
+**Challenge:** Allow users to customize colors without modifying base asset
+
+**Approach: CSS custom properties + SVG fill/stroke**
+
+```typescript
+// In asset layer SVG, use placeholders:
+// <path fill="var(--knob-track-color, #333333)" />
+
+// In SVGKnobRenderer, inject CSS variables:
+<svg style={{
+  '--knob-track-color': style.colorOverrides?.track || asset.defaultTrackColor,
+  '--knob-indicator-color': style.colorOverrides?.indicator || asset.defaultIndicatorColor,
+  // ...
+}}>
+  {/* Layers inherit CSS variables */}
+</svg>
+```
+
+**Alternative:** Parse SVG, find fill/stroke attributes, replace values
+- More complex, but works with any SVG
+- Use DOMParser to parse SVG string, modify attributes, serialize back
+
+---
+
+## Build Order Recommendations
+
+### Phase Structure
+
+**Phase 1: Foundation (Week 1)**
+- AssetsSlice implementation
+- Asset CRUD actions
+- Store composition update
+- Unit tests for asset operations
+
+**Phase 2: Import Pipeline (Week 1-2)**
+- AssetImportWizard component
+- Reuse/refactor SVGDesignMode for layer assignment
+- SVG sanitization with DOMPurify
+- Asset thumbnail generation
+
+**Phase 3: Asset Library UI (Week 2)**
+- AssetLibraryPanel layout
+- Grid view with thumbnails
+- Search/filter
+- Context menu actions
+
+**Phase 4: Graphic Elements (Week 2-3)**
+- Extend ImageElementConfig
+- Modify ImageRenderer with asset resolution
+- Add "Add to Canvas" for graphics
+- Test with various SVG files
+
+**Phase 5: Knob Styles Storage (Week 3)**
+- KnobStyle type and CRUD
+- Default style generation from asset
+- Style management in Asset Library
+
+**Phase 6: SVG Knob Rendering (Week 3-4)**
+- SVGKnobRenderer implementation
+- Layer composition and rotation
+- Color override system
+- Performance testing
+
+**Phase 7: Property Panel Integration (Week 4)**
+- Rendering mode toggle in KnobProperties
+- KnobStyleSelector component
+- Conditional property visibility
+
+**Phase 8: Export & Polish (Week 4-5)**
+- JUCE export for SVG knobs
+- Asset embedding in export bundle
+- Documentation and examples
+
+**Total estimate:** 4-5 weeks for complete SVG Import System
+
+---
+
+## Architecture Patterns to Follow
+
+### Pattern 1: Slice Separation
+
+**Principle:** Each Zustand slice owns a distinct domain
+
+```typescript
+// ✅ Good: Clear boundaries
+CanvasSlice → Canvas properties only
+ElementsSlice → Element CRUD only
+AssetsSlice → Asset management only
+
+// ❌ Bad: Mixed concerns
+ElementsSlice → addElement() AND addAsset()  // Wrong slice
+```
+
+### Pattern 2: Normalized References
+
+**Principle:** Store complex entities once, reference by ID
+
+```typescript
+// ✅ Good: Normalized
+svgAssets: Record<string, SVGAsset>
+elements: [{ svgKnobStyleId: 'style-123' }]
+
+// ❌ Bad: Denormalized (duplicates asset data in each element)
+elements: [{ svgKnobStyle: { /* full style object */ } }]
+```
+
+### Pattern 3: Progressive Enhancement
+
+**Principle:** New features don't break existing functionality
+
+```typescript
+// ✅ Good: Optional SVG mode
+interface KnobElementConfig {
+  style: 'arc' | 'filled'  // Existing built-in styles
+  svgKnobStyleId?: string  // Optional SVG style (NEW)
+  renderMode?: 'builtin' | 'svg'  // Optional mode selector (NEW)
+}
+
+// ❌ Bad: Breaking change
+interface KnobElementConfig {
+  svgKnobStyleId: string  // Required, breaks existing knobs
+}
+```
+
+### Pattern 4: Selector Encapsulation
+
+**Principle:** Complex queries belong in slice, not components
+
+```typescript
+// ✅ Good: Query logic in slice
+interface AssetsSlice {
+  getAssetsByType: (type: 'knob' | 'graphic') => SVGAsset[]
+  getKnobStylesForAsset: (assetId: string) => KnobStyle[]
+}
+
+// In component:
+const knobAssets = useStore(state => state.getAssetsByType('knob'))
+
+// ❌ Bad: Query logic in component
+const knobAssets = useStore(state =>
+  Object.values(state.svgAssets).filter(a => a.type === 'knob')
+)
+```
+
+### Pattern 5: Renderer Composition
+
+**Principle:** Delegate to specialized renderers, don't bloat existing ones
+
+```typescript
+// ✅ Good: Composition
+function KnobRenderer({ config }) {
+  if (config.renderMode === 'svg') return <SVGKnobRenderer config={config} />
+  return <BuiltinKnobRenderer config={config} />  // Extract built-in logic
+}
+
+// ❌ Bad: Monolithic
+function KnobRenderer({ config }) {
+  if (config.renderMode === 'svg') {
+    // ... 200 lines of SVG rendering
+  } else {
+    // ... 300 lines of built-in rendering
+  }
+}
+```
+
+---
+
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Inline Asset Data
+
+**Problem:** Storing full SVG content in element config
+
+```typescript
+// ❌ Bad
+interface KnobElementConfig {
+  svgLayers: {
+    track: string  // Full SVG markup (1000+ chars)
+    indicator: string
+  }
+}
+```
+
+**Why bad:**
+- Duplicates data across multiple elements using same asset
+- Bloats project JSON file size
+- Changes to asset don't propagate to elements
+- Undo/redo stores massive SVG strings in history
+
+**Solution:** Use ID references (Pattern 2)
+
+### Anti-Pattern 2: Eager Rendering
+
+**Problem:** Rendering all SVG layers upfront
+
+```typescript
+// ❌ Bad
+useEffect(() => {
+  Object.values(svgAssets).forEach(asset => {
+    preRenderAsset(asset)  // Blocks UI
+  })
+}, [svgAssets])
+```
+
+**Why bad:**
+- Blocks main thread during asset import
+- Unnecessary work for assets not currently visible
+- Memory overhead for cached renders
+
+**Solution:** Lazy render on-demand when element is visible on canvas
+
+### Anti-Pattern 3: Direct DOM Manipulation
+
+**Problem:** Bypassing React for SVG updates
+
+```typescript
+// ❌ Bad
+useEffect(() => {
+  const indicatorEl = document.getElementById(`indicator-${config.id}`)
+  indicatorEl.style.transform = `rotate(${valueAngle}deg)`
+}, [valueAngle])
+```
+
+**Why bad:**
+- Breaks React reconciliation
+- Harder to debug
+- Doesn't work with server-side rendering (future consideration)
+
+**Solution:** Use React state/props for all DOM updates
+
+### Anti-Pattern 4: Circular Dependencies
+
+**Problem:** Asset references element that references asset
+
+```typescript
+// ❌ Bad
+interface SVGAsset {
+  usedByElements: string[]  // Array of element IDs
+}
+
+interface KnobElementConfig {
+  svgAssetId: string  // Asset ID
+}
+```
+
+**Why bad:**
+- Creates circular update loop
+- Complicates undo/redo logic
+- Hard to maintain consistency
+
+**Solution:** One-way references only (elements → assets, never assets → elements)
+
+### Anti-Pattern 5: Magic Strings
+
+**Problem:** Hard-coded layer type strings
+
+```typescript
+// ❌ Bad
+if (asset.layers['indicator']) { ... }
+if (layer.assignedType === 'track') { ... }
+```
+
+**Why bad:**
+- Typos cause silent failures
+- No autocomplete
+- Hard to refactor
+
+**Solution:** Use TypeScript enums or union types
+
+```typescript
+// ✅ Good
+type SVGLayerType = 'indicator' | 'track' | 'thumb' | 'fill' | 'glow' | 'background'
+
+if (asset.layers.indicator) { ... }
+if (layer.assignedType === 'track') { ... }  // Type-safe
+```
+
+---
+
+## Performance Considerations
+
+### Asset Thumbnail Generation
+
+**Challenge:** Rendering hundreds of SVG thumbnails in library
+
+**Solutions:**
+1. **Virtual scrolling** - Only render visible thumbnails (react-window)
+2. **Memoization** - Cache rendered thumbnails with React.memo()
+3. **Lazy loading** - Load thumbnails on-demand as user scrolls
+4. **Web Workers** - Generate thumbnails off main thread (future)
+
+### SVG Sanitization
+
+**Challenge:** DOMPurify is CPU-intensive for large SVGs
+
+**Solutions:**
+1. **Async sanitization** - Use setTimeout to avoid blocking UI
+2. **Progress indicator** - Show loading state during import
+3. **Size limits** - Reject SVGs >500KB before parsing
+
+### Canvas Re-renders
+
+**Challenge:** Updating one knob value triggers re-render of all elements
+
+**Current mitigation:** Zustand's selector pattern already prevents this
+```typescript
+// In BaseElement wrapper
+const element = useStore(
+  useCallback(state => state.elements.find(e => e.id === id), [id])
+)
+// Only re-renders when this specific element changes
+```
+
+**Additional optimization:** React.memo() on renderers
+```typescript
+export const SVGKnobRenderer = React.memo(({ config }: Props) => {
+  // ...
+})
+```
+
+---
+
+## Open Questions & Future Research
+
+### Question 1: SVG Animation Performance
+
+**Context:** Rotating SVG layers via CSS transforms for interactive knobs
+
+**Unknown:** Performance with 50+ animated knobs on canvas simultaneously
+
+**Research needed:**
+- Benchmark CSS transform vs Canvas2D vs WebGL rendering
+- Test on lower-end hardware (integrated graphics)
+- Profile Chrome DevTools during interaction
+
+**Mitigation if slow:**
+- Render static snapshot when not interacting
+- Use Canvas2D for knobs, SVG for static graphics
+- Implement "quality" setting (high/low detail)
+
+### Question 2: Layer Transform Origin
+
+**Context:** SVG indicator must rotate around knob center
+
+**Unknown:** Reliable way to calculate transform-origin for arbitrary SVG layers
+
+**Research needed:**
+- Parse SVG viewBox to determine center
+- Handle layers with transforms already applied
+- Support off-center rotation (e.g., pivot at bottom of indicator)
+
+**Current approach:** Assume center = (width/2, height/2)
+**Fallback:** Manual adjustment in layer assignment step
+
+### Question 3: Export Bundle Size
+
+**Context:** Embedding multiple SVG assets in JUCE export
+
+**Unknown:** Impact on plugin binary size with 20+ embedded SVGs
+
+**Research needed:**
+- Test export size with realistic asset library (10-30 items)
+- Compare base64 embedding vs external SVG files
+- Investigate JUCE resource compression
+
+**Mitigation if too large:**
+- SVG minification/optimization (SVGO)
+- Option to exclude unused assets from export
+- External asset loading from plugin resources
+
+### Question 4: Color Override Limitations
+
+**Context:** CSS custom properties approach requires SVG to use `var(--color)`
+
+**Unknown:** How to handle SVGs exported from Figma/Illustrator (use hex colors)
+
+**Research needed:**
+- Survey real-world SVG exports from design tools
+- Automated color replacement strategies (regex? AST parsing?)
+- User education vs technical solution
+
+**Current approach:** Document requirement in import wizard
+**Fallback:** Parse and replace colors (complex but doable)
+
+---
+
+## References & Sources
+
+### Zustand Patterns
+- [Zustand Documentation - Slice Pattern](https://zustand.docs.pmnd.rs/guides/slices-pattern)
+- [Zustand Architecture Patterns at Scale (Brainhub)](https://brainhub.eu/library/zustand-architecture-patterns-at-scale)
+- [State Management in 2026: Redux, Context API, and Modern Patterns (Nucamp)](https://www.nucamp.co/blog/state-management-in-2026-redux-context-api-and-modern-patterns)
+
+### SVG Asset Management
+- [A Guide to Using SVGs in React (LogRocket)](https://blog.logrocket.com/how-to-use-svgs-react/)
+- [Transform SVGs into React Components with SVGR (IV Studio)](https://www.ivstudio.com/blog/svg-icon-library-in-react)
+- [react-svg-assets (GitHub)](https://github.com/zauberware/react-svg-assets)
+
+### React SVG Knob Components
+- [rc-knob (GitHub)](https://github.com/eskimoblood/rc-knob)
+- [react-dial-knob (GitHub)](https://github.com/pavelkukov/react-dial-knob)
+- [React: Create a turnable knob component (DEV Community)](https://dev.to/syeo66/react-create-a-turnable-knob-component-5c85)
+
+### Design System Asset Management
+- [Components, styles, and shared library best practices (Figma)](https://www.figma.com/best-practices/components-styles-and-shared-libraries/)
+- [The Complete Guide to Design Systems in Figma (2026 Edition)](https://medium.com/@EmiliaBiblioKit/the-world-of-design-systems-is-no-longer-just-about-components-and-libraries-its-about-5beecc0d21cb)
+- [Guide to libraries in Figma (Figma Help Center)](https://help.figma.com/hc/en-us/articles/360041051154-Guide-to-libraries-in-Figma)
+
+### Normalized State Patterns
+- [Normalizing State Shape (Redux Docs)](https://redux.js.org/usage/structuring-reducers/normalizing-state-shape)
+- [Large-Scale React (Zustand) & Nest.js Project Structure (Medium)](https://medium.com/@itsspss/large-scale-react-zustand-nest-js-project-structure-and-best-practices-93397fb473f4)
+
+---
+
+**Document confidence:** HIGH
+**Primary research methods:** WebSearch (verified patterns), existing codebase analysis, Zustand documentation
+**Validation status:** Patterns are battle-tested in production apps (per Brainhub article), compatible with existing v1.0 architecture
