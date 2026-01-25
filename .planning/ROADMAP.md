@@ -24,6 +24,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
 - [x] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
 - [x] **Phase 12: Export & Round-Trip Testing** - Verify templates load, exports work, round-trip preserves state
+- [ ] **Phase 13: Extended Elements** - Containers, form controls, audio displays, control labels/values
 
 ## Phase Details
 
@@ -313,10 +314,42 @@ Plans:
 Plans:
 - [x] 12-01-PLAN.md — Template loading, JUCE export verification, HTML preview, round-trip integrity
 
+### Phase 13: Extended Elements
+**Goal**: Expand the element library with container elements, form controls, specialized audio displays, and enhanced control labels/values to support complex professional plugin UIs.
+
+**Depends on**: Phase 12
+
+**Requirements**: ELEM-07, ELEM-08, ELEM-09, ELEM-10, ELEM-11, ELEM-12
+
+**Success Criteria** (what must be TRUE):
+  1. User can add knobs/sliders with integrated label and value display
+  2. User can create visual sections using Panel, Frame, or Group Box containers
+  3. User can add interactive form controls (dropdown, checkbox, radio, text field)
+  4. User can draw rectangles and lines for visual organization
+  5. User can add specialized audio readouts (dB, frequency, gain reduction)
+  6. User can add waveform and oscilloscope display placeholders
+  7. User can add modulation matrix and preset browser placeholders
+  8. All new elements export correctly to HTML/CSS/JS
+
+**Plans**: TBD
+
+Proposed breakdown:
+- 13-01: Control label/value fields for Knob and Slider
+- 13-02: Container elements (Panel, Frame, Group Box)
+- 13-03: Collapsible Container with scrollbars
+- 13-04: Form controls (Dropdown, Checkbox, Radio Buttons)
+- 13-05: Text Field element
+- 13-06: Decorative elements (Rectangle, Line, Label with Background)
+- 13-07: Range Slider element
+- 13-08: Audio displays (dB Display, Frequency Display, Gain Reduction Meter)
+- 13-09: Waveform and Oscilloscope displays
+- 13-10: Modulation Matrix widget
+- 13-11: Preset Browser widget
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -332,3 +365,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
 | 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
 | 12. Export & Round-Trip Testing | 1/1 | Complete | 2026-01-25 |
+| 13. Extended Elements | 0/11 | Pending | - |

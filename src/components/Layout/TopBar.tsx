@@ -6,8 +6,8 @@ export const TopBar = () => {
   
   return (
     <div className="top-bar flex items-center gap-4 p-4">
-      {/* Existing buttons */}
-      
+      <span className="text-xl font-bold text-white tracking-tight mr-4">Facet</span>
+
       <button
         onClick={() => setShowNewProjectDialog(true)}
         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-medium"

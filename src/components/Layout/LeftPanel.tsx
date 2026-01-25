@@ -7,6 +7,10 @@ export function LeftPanel() {
 
   return (
     <div className="bg-gray-800 border-r border-gray-700 overflow-y-auto flex flex-col">
+      <div className="p-4 border-b border-gray-700">
+        <h1 className="text-xl font-bold text-white tracking-tight">Facet</h1>
+        <span className="text-xs text-gray-500">VST3 UI Designer</span>
+      </div>
       <div className="p-3 border-b border-gray-700">
         <h2 className="text-sm font-semibold text-gray-100">Components</h2>
       </div>
