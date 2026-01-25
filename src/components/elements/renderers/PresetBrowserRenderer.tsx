@@ -99,7 +99,7 @@ export function PresetBrowserRenderer({ config }: PresetBrowserRendererProps) {
             style={{
               backgroundColor: '#111827',
               border: `1px solid ${config.borderColor}`,
-              borderRadius: '4px',
+              borderRadius: 0,
               padding: '6px 10px',
               fontSize: '12px',
               color: '#6b7280',

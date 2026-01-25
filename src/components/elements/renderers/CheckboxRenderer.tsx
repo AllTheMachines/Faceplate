@@ -14,7 +14,7 @@ export function CheckboxRenderer({ config }: CheckboxRendererProps) {
         minHeight: '18px',
         backgroundColor: config.backgroundColor,
         border: `2px solid ${config.borderColor}`,
-        borderRadius: '3px',
+        borderRadius: 0,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

@@ -19,7 +19,7 @@ export function OscilloscopeRenderer({ config }: OscilloscopeRendererProps) {
         height: '100%',
         backgroundColor: config.backgroundColor,
         border: `${config.borderWidth}px solid ${config.borderColor}`,
-        borderRadius: '4px',
+        borderRadius: 0,
         position: 'relative',
         overflow: 'hidden',
       }}

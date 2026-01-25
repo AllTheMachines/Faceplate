@@ -22,7 +22,7 @@ export function DbDisplayRenderer({ config }: DbDisplayRendererProps) {
         fontFamily: config.fontFamily,
         fontSize: `${config.fontSize}px`,
         color: config.textColor,
-        borderRadius: '4px',
+        borderRadius: 0,
         boxSizing: 'border-box',
       }}
     >

@@ -20,7 +20,7 @@ export function GainReductionMeterRenderer({ config }: GainReductionMeterRendere
         height: '100%',
         backgroundColor: config.backgroundColor,
         position: 'relative',
-        borderRadius: '2px',
+        borderRadius: 0,
         overflow: 'hidden',
       }}
     >
@@ -30,7 +30,7 @@ export function GainReductionMeterRenderer({ config }: GainReductionMeterRendere
         style={{
           position: 'absolute',
           backgroundColor: config.meterColor,
-          borderRadius: '2px',
+          borderRadius: 0,
           ...(isVertical
             ? {
                 top: 0,
