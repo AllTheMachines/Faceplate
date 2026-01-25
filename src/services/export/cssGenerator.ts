@@ -811,6 +811,63 @@ ${selector} .gr-value {
   user-select: none;
 }`
 
+    case 'waveform':
+      return `${selector} {
+  /* Waveform Display */
+  position: relative;
+  background-color: ${element.backgroundColor};
+  border: ${element.borderWidth}px solid ${element.borderColor};
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+${selector} .waveform-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${element.waveformColor};
+  opacity: 0.7;
+  font-size: 12px;
+  font-weight: 500;
+  user-select: none;
+}`
+
+    case 'oscilloscope':
+      const divPercent = 100 / element.gridDivisions
+      return `${selector} {
+  /* Oscilloscope Display */
+  position: relative;
+  background-color: ${element.backgroundColor};
+  border: ${element.borderWidth}px solid ${element.borderColor};
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+${selector} .oscilloscope-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(${element.gridColor} 1px, transparent 1px),
+    linear-gradient(90deg, ${element.gridColor} 1px, transparent 1px);
+  background-size: ${divPercent}% ${divPercent}%;
+  opacity: ${element.showGrid ? 1 : 0};
+}
+
+${selector} .oscilloscope-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${element.traceColor};
+  opacity: 0.7;
+  font-size: 12px;
+  font-weight: 500;
+  user-select: none;
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

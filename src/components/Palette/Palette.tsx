@@ -71,6 +71,7 @@ const paletteCategories = [
     name: 'Complex Widgets',
     items: [
       { id: 'modulationmatrix', type: 'modulationmatrix', name: 'Mod Matrix' },
+      { id: 'presetbrowser', type: 'presetbrowser', name: 'Preset Browser' },
     ],
   },
 ]

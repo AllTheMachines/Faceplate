@@ -206,6 +206,14 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'gainreductionmeter':
       return generateGainReductionMeterHTML(id, baseClass, positionStyle, element)
 
+    case 'presetbrowser': {
+      const presetsData = element.presets.map(p => escapeHTML(p)).join('|')
+      return `<div id="${id}" class="${baseClass} presetbrowser-element" data-type="presetbrowser" data-presets="${presetsData}" data-selected="${element.selectedIndex}" style="${positionStyle}">
+    ${element.showSearch ? '<div class="preset-search"><input type="text" placeholder="Search presets..." /></div>' : ''}
+    <div class="preset-list"></div>
+  </div>`
+    }
+
     case 'waveform':
       return `<div id="${id}" class="${baseClass} waveform-element" data-type="waveform" data-zoom-level="${element.zoomLevel}" style="${positionStyle}">
     <div class="waveform-placeholder">Waveform Display</div>
