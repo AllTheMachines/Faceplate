@@ -401,6 +401,32 @@ export interface GainReductionMeterElementConfig extends BaseElementConfig {
   textColor: string
 }
 
+export interface PresetBrowserElementConfig extends BaseElementConfig {
+  type: 'presetbrowser'
+
+  // Sample presets for placeholder display
+  // Format: "Folder/Preset Name" or just "Preset Name"
+  presets: string[]
+
+  // Currently selected preset index
+  selectedIndex: number
+
+  // Display
+  showFolders: boolean  // Show folder hierarchy
+  showSearch: boolean  // Show search bar placeholder
+
+  // Styling
+  backgroundColor: string
+  itemColor: string
+  selectedColor: string
+  textColor: string
+  selectedTextColor: string
+  fontSize: number
+  itemHeight: number
+  borderColor: string
+  borderRadius: number
+}
+
 export interface TextFieldElementConfig extends BaseElementConfig {
   type: 'textfield'
 
@@ -483,6 +509,7 @@ export type ElementConfig =
   | DbDisplayElementConfig
   | FrequencyDisplayElementConfig
   | GainReductionMeterElementConfig
+  | PresetBrowserElementConfig
   | TextFieldElementConfig
   | WaveformElementConfig
   | OscilloscopeElementConfig
@@ -557,6 +584,10 @@ export function isFrequencyDisplay(element: ElementConfig): element is Frequency
 
 export function isGainReductionMeter(element: ElementConfig): element is GainReductionMeterElementConfig {
   return element.type === 'gainreductionmeter'
+}
+
+export function isPresetBrowser(element: ElementConfig): element is PresetBrowserElementConfig {
+  return element.type === 'presetbrowser'
 }
 
 export function isPanel(element: ElementConfig): element is PanelElementConfig {
@@ -1104,6 +1135,43 @@ export function createGainReductionMeter(overrides?: Partial<GainReductionMeterE
     showValue: true,
     fontSize: 10,
     textColor: '#9ca3af',
+    ...overrides,
+  }
+}
+
+export function createPresetBrowser(overrides?: Partial<PresetBrowserElementConfig>): PresetBrowserElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'presetbrowser',
+    name: 'Preset Browser',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 250,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    presets: [
+      'Factory/Init',
+      'Factory/Bass',
+      'Factory/Lead',
+      'Factory/Pad',
+      'User/My Preset 1',
+      'User/My Preset 2',
+    ],
+    selectedIndex: 0,
+    showFolders: true,
+    showSearch: true,
+    backgroundColor: '#1f2937',
+    itemColor: 'transparent',
+    selectedColor: '#3b82f6',
+    textColor: '#e5e7eb',
+    selectedTextColor: '#ffffff',
+    fontSize: 13,
+    itemHeight: 28,
+    borderColor: '#374151',
+    borderRadius: 4,
     ...overrides,
   }
 }
