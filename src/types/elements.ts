@@ -245,6 +245,36 @@ export interface RectangleElementConfig extends BaseElementConfig {
   borderRadius: number
 }
 
+export interface PanelElementConfig extends BaseElementConfig {
+  type: 'panel'
+  backgroundColor: string
+  borderRadius: number
+  borderWidth: number
+  borderColor: string
+  padding: number
+}
+
+export interface FrameElementConfig extends BaseElementConfig {
+  type: 'frame'
+  borderStyle: 'solid' | 'dashed' | 'dotted' | 'double' | 'groove' | 'ridge'
+  borderWidth: number
+  borderColor: string
+  borderRadius: number
+  padding: number
+}
+
+export interface GroupBoxElementConfig extends BaseElementConfig {
+  type: 'groupbox'
+  headerText: string
+  headerFontSize: number
+  headerColor: string
+  headerBackground: string  // Background behind header text
+  borderWidth: number
+  borderColor: string
+  borderRadius: number
+  padding: number
+}
+
 export interface LineElementConfig extends BaseElementConfig {
   type: 'line'
 
@@ -274,6 +304,9 @@ export type ElementConfig =
   | ModulationMatrixElementConfig
   | RectangleElementConfig
   | LineElementConfig
+  | PanelElementConfig
+  | FrameElementConfig
+  | GroupBoxElementConfig
 
 // ============================================================================
 // Type Guards
@@ -648,6 +681,118 @@ export function createLine(overrides?: Partial<LineElementConfig>): LineElementC
     strokeWidth: 2,
     strokeColor: '#374151',
     strokeStyle: 'solid',
+    ...overrides,
+  }
+}
+
+export function createRectangle(overrides?: Partial<RectangleElementConfig>): RectangleElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rectangle',
+    name: 'Rectangle',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 100,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    fillColor: '#3b82f6',
+    fillOpacity: 1,
+    borderWidth: 2,
+    borderColor: '#2563eb',
+    borderStyle: 'solid',
+    borderRadius: 4,
+    ...overrides,
+  }
+}
+
+export function createLine(overrides?: Partial<LineElementConfig>): LineElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'line',
+    name: 'Line',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 2,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    strokeWidth: 2,
+    strokeColor: '#ffffff',
+    strokeStyle: 'solid',
+    ...overrides,
+  }
+}
+
+export function createPanel(overrides?: Partial<PanelElementConfig>): PanelElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'panel',
+    name: 'Panel',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 150,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    backgroundColor: '#1f2937',
+    borderRadius: 4,
+    borderWidth: 0,
+    borderColor: '#374151',
+    padding: 12,
+    ...overrides,
+  }
+}
+
+export function createFrame(overrides?: Partial<FrameElementConfig>): FrameElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'frame',
+    name: 'Frame',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 150,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    borderStyle: 'solid',
+    borderWidth: 2,
+    borderColor: '#374151',
+    borderRadius: 4,
+    padding: 12,
+    ...overrides,
+  }
+}
+
+export function createGroupBox(overrides?: Partial<GroupBoxElementConfig>): GroupBoxElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'groupbox',
+    name: 'GroupBox',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 150,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    headerText: 'Group',
+    headerFontSize: 12,
+    headerColor: '#ffffff',
+    headerBackground: '#111827',
+    borderWidth: 2,
+    borderColor: '#374151',
+    borderRadius: 4,
+    padding: 12,
     ...overrides,
   }
 }
