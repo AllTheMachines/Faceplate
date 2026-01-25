@@ -186,6 +186,28 @@ export interface RadioGroupElementConfig extends BaseElementConfig {
   spacing: number
 }
 
+export interface ModulationMatrixElementConfig extends BaseElementConfig {
+  type: 'modulationmatrix'
+
+  // Matrix Configuration
+  sources: string[] // Row labels (e.g., 'LFO 1', 'ENV 1', 'Velocity')
+  destinations: string[] // Column labels (e.g., 'Pitch', 'Filter', 'Volume')
+
+  // Cell Styling
+  cellSize: number
+  cellColor: string
+  activeColor: string
+  borderColor: string
+
+  // Header Styling
+  headerBackground: string
+  headerColor: string
+  headerFontSize: number
+
+  // Design Preview (shows active connections for visualization)
+  previewActiveConnections: Array<[number, number]> // [sourceIndex, destinationIndex] pairs
+}
+
 // ============================================================================
 // Discriminated Union Type
 // ============================================================================
@@ -200,6 +222,7 @@ export type ElementConfig =
   | DropdownElementConfig
   | CheckboxElementConfig
   | RadioGroupElementConfig
+  | ModulationMatrixElementConfig
 
 // ============================================================================
 // Type Guards
@@ -239,6 +262,10 @@ export function isCheckbox(element: ElementConfig): element is CheckboxElementCo
 
 export function isRadioGroup(element: ElementConfig): element is RadioGroupElementConfig {
   return element.type === 'radiogroup'
+}
+
+export function isModulationMatrix(element: ElementConfig): element is ModulationMatrixElementConfig {
+  return element.type === 'modulationmatrix'
 }
 
 // ============================================================================
@@ -461,6 +488,33 @@ export function createRadioGroup(overrides?: Partial<RadioGroupElementConfig>): 
     backgroundColor: 'transparent',
     textColor: '#ffffff',
     spacing: 8,
+    ...overrides,
+  }
+}
+
+export function createModulationMatrix(overrides?: Partial<ModulationMatrixElementConfig>): ModulationMatrixElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'modulationmatrix',
+    name: 'ModMatrix',
+    x: 0,
+    y: 0,
+    width: 300,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    sources: ['LFO 1', 'LFO 2', 'ENV 1', 'Velocity'],
+    destinations: ['Pitch', 'Filter', 'Volume', 'Pan'],
+    cellSize: 24,
+    cellColor: '#374151',
+    activeColor: '#3b82f6',
+    borderColor: '#1f2937',
+    headerBackground: '#1f2937',
+    headerColor: '#ffffff',
+    headerFontSize: 11,
+    previewActiveConnections: [[0, 1], [2, 0]], // LFO 1 -> Filter, ENV 1 -> Pitch
     ...overrides,
   }
 }
