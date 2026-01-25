@@ -8,7 +8,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
@@ -86,6 +86,24 @@ function App() {
     elementType: string
     variant?: Record<string, unknown>
   } | null>(null)
+
+  // Track last pointer position for accurate drop placement using refs for real-time updates
+  const lastPointerPositionRef = useRef<{ x: number; y: number } | null>(null)
+
+  // Global mousemove listener to track actual pointer position during drag
+  useEffect(() => {
+    if (!activeDragData) {
+      lastPointerPositionRef.current = null
+      return
+    }
+
+    const handleMouseMove = (e: MouseEvent) => {
+      lastPointerPositionRef.current = { x: e.clientX, y: e.clientY }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [activeDragData])
 
   // Handle drag start - capture drag data for preview overlay
   const handleDragStart = (event: DragStartEvent) => {
@@ -185,11 +203,21 @@ function App() {
     if (!canvasViewport) return
     const viewportRect = canvasViewport.getBoundingClientRect()
 
-    // Get drop position from the pointer event
-    // Use delta to calculate final position from initial pointer position
-    const pointerEvent = event.activatorEvent as PointerEvent
-    const finalX = pointerEvent.clientX + (event.delta?.x || 0)
-    const finalY = pointerEvent.clientY + (event.delta?.y || 0)
+    // Get drop position from tracked mouse position (more accurate than activatorEvent + delta)
+    // The tracked position is the actual pointer location during drag
+    let finalX: number
+    let finalY: number
+
+    const trackedPosition = lastPointerPositionRef.current
+    if (trackedPosition) {
+      finalX = trackedPosition.x
+      finalY = trackedPosition.y
+    } else {
+      // Fallback to old method if no tracked position (shouldn't happen in normal use)
+      const pointerEvent = event.activatorEvent as PointerEvent
+      finalX = pointerEvent.clientX + (event.delta?.x || 0)
+      finalY = pointerEvent.clientY + (event.delta?.y || 0)
+    }
 
     // Transform screen coordinates to canvas coordinates:
     // 1. Subtract viewport offset to get relative position in viewport
