@@ -3,8 +3,37 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, ModulationMatrixElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
+
+// ============================================================================
+// Value Formatting Utility
+// ============================================================================
+
+function formatValue(
+  value: number,
+  min: number,
+  max: number,
+  format: string,
+  suffix: string,
+  decimals: number
+): string {
+  const actual = min + value * (max - min)
+  switch (format) {
+    case 'percentage':
+      return `${Math.round(value * 100)}%`
+    case 'db':
+      return `${actual.toFixed(decimals)} dB`
+    case 'hz':
+      return actual >= 1000
+        ? `${(actual / 1000).toFixed(decimals)} kHz`
+        : `${actual.toFixed(decimals)} Hz`
+    case 'custom':
+      return `${actual.toFixed(decimals)}${suffix}`
+    default:
+      return actual.toFixed(decimals)
+  }
+}
 
 // ============================================================================
 // SVG Arc Utilities (same as KnobRenderer)
@@ -162,6 +191,14 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'groupbox':
       return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle}"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div></div>`
 
+    case 'dbdisplay':
+      return generateDbDisplayHTML(id, baseClass, positionStyle, element)
+
+    case 'frequencydisplay':
+      return generateFrequencyDisplayHTML(id, baseClass, positionStyle, element)
+
+    case 'gainreductionmeter':
+      return generateGainReductionMeterHTML(id, baseClass, positionStyle, element)
 
     default:
       // TypeScript exhaustiveness check
@@ -204,7 +241,18 @@ function generateKnobHTML(id: string, baseClass: string, positionStyle: string, 
     ? `<path class="knob-arc-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
     : `<path class="knob-arc-fill" d="" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
 
+  // Label and value display
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
   return `<div id="${id}" class="${baseClass} knob knob-element" data-type="knob" data-value="${normalizedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
         <path class="knob-arc-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
         ${valueFillSVG}

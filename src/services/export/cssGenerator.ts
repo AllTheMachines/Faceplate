@@ -426,6 +426,140 @@ ${selector} .matrix-cell[data-active="true"] {
 ${selector} > div {
   /* Line inner element */
 }`
+
+    case 'dropdown':
+      return `${selector} {
+  /* Dropdown */
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: 1px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  padding: 0 32px 0 8px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+}`
+
+    case 'checkbox':
+      if (element.labelPosition === 'left') {
+        return `${selector} {
+  /* Checkbox with label on left */
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  cursor: pointer;
+}
+
+${selector} input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: 3px;
+  cursor: pointer;
+  accent-color: ${element.checkColor};
+}
+
+${selector} label {
+  color: ${element.textColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  margin-right: 8px;
+  user-select: none;
+}`
+      } else {
+        return `${selector} {
+  /* Checkbox with label on right */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+${selector} input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: 3px;
+  cursor: pointer;
+  accent-color: ${element.checkColor};
+}
+
+${selector} label {
+  color: ${element.textColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  margin-left: 8px;
+  user-select: none;
+}`
+      }
+
+    case 'radiogroup':
+      if (element.orientation === 'vertical') {
+        return `${selector} {
+  /* Radio group - vertical */
+  display: flex;
+  flex-direction: column;
+  gap: ${element.spacing}px;
+  background-color: ${element.backgroundColor};
+  padding: ${element.backgroundColor !== 'transparent' ? '4px' : '0'};
+}
+
+${selector} .radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+${selector} input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: ${element.radioColor};
+}
+
+${selector} label {
+  margin-left: 8px;
+  color: ${element.textColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+}`
+      } else {
+        return `${selector} {
+  /* Radio group - horizontal */
+  display: flex;
+  flex-direction: row;
+  gap: ${element.spacing}px;
+  background-color: ${element.backgroundColor};
+  padding: ${element.backgroundColor !== 'transparent' ? '4px' : '0'};
+}
+
+${selector} .radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+${selector} input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: ${element.radioColor};
+}
+
+${selector} label {
+  margin-left: 8px;
+  color: ${element.textColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+}`
+      }
+
     case 'panel':
       return `${selector} {
   /* Panel */

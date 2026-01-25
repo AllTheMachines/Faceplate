@@ -46,6 +46,7 @@ export function generateBindingsJS(
   // This allows preview/standalone mode to work even without parameter IDs
   const knobs = elements.filter((el) => el.type === 'knob')
   const sliders = elements.filter((el) => el.type === 'slider')
+  const rangesliders = elements.filter((el) => el.type === 'rangeslider')
   const buttons = elements.filter((el) => el.type === 'button')
 
   // Generate setup calls for each element type with default values
@@ -63,6 +64,15 @@ export function generateBindingsJS(
       const defaultValue = slider.type === 'slider' ? slider.value : 0.5
       const paramId = slider.parameterId || toKebabCase(slider.name)
       return `    setupSliderInteraction('${toKebabCase(slider.name)}', '${paramId}', ${defaultValue});`
+    })
+    .join('\n')
+
+  const rangeSliderSetups = rangesliders
+    .map((rangeslider) => {
+      const defaultMin = rangeslider.type === 'rangeslider' ? rangeslider.minValue : 0.25
+      const defaultMax = rangeslider.type === 'rangeslider' ? rangeslider.maxValue : 0.75
+      const paramId = rangeslider.parameterId || toKebabCase(rangeslider.name)
+      return `    setupRangeSliderInteraction('${toKebabCase(rangeslider.name)}', '${paramId}', ${defaultMin}, ${defaultMax});`
     })
     .join('\n')
 
@@ -334,6 +344,104 @@ function setupSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
 }
 
 /**
+ * Setup range slider interaction with dual-thumb parameter binding
+ * @param {string} rangeSliderId - HTML element ID
+ * @param {string} paramId - Parameter ID for JUCE binding (stores min-max as two params)
+ * @param {number} defaultMin - Default minimum normalized value (0-1)
+ * @param {number} defaultMax - Default maximum normalized value (0-1)
+ */
+function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, defaultMax = 0.75) {
+  const rangeSlider = document.getElementById(rangeSliderId);
+  if (!rangeSlider) {
+    console.error(`Range slider element not found: ${rangeSliderId}`);
+    return;
+  }
+
+  let isDragging = false;
+  let activeThumb = null; // 'min' or 'max'
+  let startPos = 0;
+  let startMinValue = defaultMin;
+  let startMaxValue = defaultMax;
+  let currentMinValue = defaultMin;
+  let currentMaxValue = defaultMax;
+  const isVertical = rangeSlider.classList.contains('vertical');
+
+  const minThumb = rangeSlider.querySelector('.rangeslider-thumb-min');
+  const maxThumb = rangeSlider.querySelector('.rangeslider-thumb-max');
+
+  if (!minThumb || !maxThumb) {
+    console.error(`Range slider thumbs not found for: ${rangeSliderId}`);
+    return;
+  }
+
+  // Initialize visual
+  updateRangeSliderVisual(rangeSliderId, defaultMin, defaultMax);
+
+  const startDrag = (e, thumb) => {
+    isDragging = true;
+    activeThumb = thumb;
+    startPos = isVertical ? e.clientY : e.clientX;
+    startMinValue = currentMinValue;
+    startMaxValue = currentMaxValue;
+
+    const minParamId = `${paramId}_min`;
+    const maxParamId = `${paramId}_max`;
+    bridge.beginGesture(thumb === 'min' ? minParamId : maxParamId).catch(() => {});
+    e.preventDefault();
+  };
+
+  minThumb.addEventListener('mousedown', (e) => startDrag(e, 'min'));
+  maxThumb.addEventListener('mousedown', (e) => startDrag(e, 'max'));
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging || !activeThumb) return;
+
+    const currentPos = isVertical ? e.clientY : e.clientX;
+    const delta = isVertical ? startPos - currentPos : currentPos - startPos;
+    const sensitivity = 0.005;
+
+    if (activeThumb === 'min') {
+      let newMin = startMinValue + delta * sensitivity;
+      newMin = Math.max(0, Math.min(newMin, currentMaxValue)); // Cannot exceed max
+      currentMinValue = newMin;
+      
+      const minParamId = `${paramId}_min`;
+      bridge.setParameter(minParamId, newMin).catch(() => {});
+    } else if (activeThumb === 'max') {
+      let newMax = startMaxValue + delta * sensitivity;
+      newMax = Math.min(1, Math.max(newMax, currentMinValue)); // Cannot go below min
+      currentMaxValue = newMax;
+      
+      const maxParamId = `${paramId}_max`;
+      bridge.setParameter(maxParamId, newMax).catch(() => {});
+    }
+
+    updateRangeSliderVisual(rangeSliderId, currentMinValue, currentMaxValue);
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging && activeThumb) {
+      const minParamId = `${paramId}_min`;
+      const maxParamId = `${paramId}_max`;
+      bridge.endGesture(activeThumb === 'min' ? minParamId : maxParamId).catch(() => {});
+      isDragging = false;
+      activeThumb = null;
+    }
+  });
+
+  // Double-click - reset to defaults
+  rangeSlider.addEventListener('dblclick', () => {
+    currentMinValue = defaultMin;
+    currentMaxValue = defaultMax;
+    const minParamId = `${paramId}_min`;
+    const maxParamId = `${paramId}_max`;
+    bridge.setParameter(minParamId, defaultMin).catch(() => {});
+    bridge.setParameter(maxParamId, defaultMax).catch(() => {});
+    updateRangeSliderVisual(rangeSliderId, defaultMin, defaultMax);
+  });
+}
+
+/**
  * Setup button interaction with parameter binding
  * @param {string} buttonId - HTML element ID
  * @param {string} paramId - Parameter ID for JUCE binding
@@ -494,6 +602,42 @@ function updateSliderVisual(sliderId, value) {
 
   // Update data attribute
   element.setAttribute('data-value', value);
+}
+
+/**
+ * Update range slider visual representation
+ * @param {string} rangeSliderId - HTML element ID
+ * @param {number} minValue - Normalized minimum value (0-1)
+ * @param {number} maxValue - Normalized maximum value (0-1)
+ */
+function updateRangeSliderVisual(rangeSliderId, minValue, maxValue) {
+  const element = document.getElementById(rangeSliderId);
+  if (!element) return;
+
+  const isVertical = element.classList.contains('vertical');
+  const minThumb = element.querySelector('.rangeslider-thumb-min');
+  const maxThumb = element.querySelector('.rangeslider-thumb-max');
+  const fill = element.querySelector('.rangeslider-fill');
+
+  if (isVertical) {
+    if (minThumb) minThumb.style.bottom = `${minValue * 100}%`;
+    if (maxThumb) maxThumb.style.bottom = `${maxValue * 100}%`;
+    if (fill) {
+      fill.style.bottom = `${minValue * 100}%`;
+      fill.style.height = `${(maxValue - minValue) * 100}%`;
+    }
+  } else {
+    if (minThumb) minThumb.style.left = `${minValue * 100}%`;
+    if (maxThumb) maxThumb.style.left = `${maxValue * 100}%`;
+    if (fill) {
+      fill.style.left = `${minValue * 100}%`;
+      fill.style.width = `${(maxValue - minValue) * 100}%`;
+    }
+  }
+
+  // Update data attributes
+  element.setAttribute('data-min-value', minValue);
+  element.setAttribute('data-max-value', maxValue);
 }
 
 // ============================================================================
