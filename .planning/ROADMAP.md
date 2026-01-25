@@ -331,20 +331,20 @@ Plans:
   7. User can add modulation matrix and preset browser placeholders
   8. All new elements export correctly to HTML/CSS/JS
 
-**Plans**: TBD
+**Plans**: 11 plans in 1 wave
 
-Proposed breakdown:
-- 13-01: Control label/value fields for Knob and Slider
-- 13-02: Container elements (Panel, Frame, Group Box)
-- 13-03: Collapsible Container with scrollbars
-- 13-04: Form controls (Dropdown, Checkbox, Radio Buttons)
-- 13-05: Text Field element
-- 13-06: Decorative elements (Rectangle, Line, Label with Background)
-- 13-07: Range Slider element
-- 13-08: Audio displays (dB Display, Frequency Display, Gain Reduction Meter)
-- 13-09: Waveform and Oscilloscope displays
-- 13-10: Modulation Matrix widget
-- 13-11: Preset Browser widget
+Plans:
+- [ ] 13-01-PLAN.md — Knob/Slider label and value display fields
+- [ ] 13-02-PLAN.md — Container elements (Panel, Frame, Group Box)
+- [ ] 13-03-PLAN.md — Collapsible Container with scrollbars
+- [ ] 13-04-PLAN.md — Form controls (Dropdown, Checkbox, Radio Group)
+- [ ] 13-05-PLAN.md — Text Field element
+- [ ] 13-06-PLAN.md — Decorative elements (Rectangle, Line)
+- [ ] 13-07-PLAN.md — Range Slider element
+- [ ] 13-08-PLAN.md — Audio displays (dB Display, Frequency Display, GR Meter)
+- [ ] 13-09-PLAN.md — Waveform and Oscilloscope display placeholders
+- [ ] 13-10-PLAN.md — Modulation Matrix placeholder widget
+- [ ] 13-11-PLAN.md — Preset Browser placeholder widget
 
 ## Progress
 
@@ -365,4 +365,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
 | 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
 | 12. Export & Round-Trip Testing | 1/1 | Complete | 2026-01-25 |
-| 13. Extended Elements | 0/11 | Pending | - |
+| 13. Extended Elements | 0/11 | Planned | - |
