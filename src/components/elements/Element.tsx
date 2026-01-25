@@ -8,6 +8,10 @@ import { ButtonRenderer } from './renderers/ButtonRenderer'
 import { LabelRenderer } from './renderers/LabelRenderer'
 import { MeterRenderer } from './renderers/MeterRenderer'
 import { ImageRenderer } from './renderers/ImageRenderer'
+import { DropdownRenderer } from './renderers/DropdownRenderer'
+import { CheckboxRenderer } from './renderers/CheckboxRenderer'
+import { RadioGroupRenderer } from './renderers/RadioGroupRenderer'
+import { ModulationMatrixRenderer } from './renderers/ModulationMatrixRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -58,6 +62,12 @@ function ElementComponent({ element }: ElementProps) {
         return <MeterRenderer config={element} />
       case 'image':
         return <ImageRenderer config={element} />
+      case 'dropdown':
+        return <DropdownRenderer config={element} />
+      case 'checkbox':
+        return <CheckboxRenderer config={element} />
+      case 'radiogroup':
+        return <RadioGroupRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
