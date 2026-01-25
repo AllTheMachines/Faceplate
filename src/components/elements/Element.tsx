@@ -21,6 +21,7 @@ import { GroupBoxRenderer } from './renderers/GroupBoxRenderer'
 import { DbDisplayRenderer } from './renderers/DbDisplayRenderer'
 import { FrequencyDisplayRenderer } from './renderers/FrequencyDisplayRenderer'
 import { GainReductionMeterRenderer } from './renderers/GainReductionMeterRenderer'
+import { PresetBrowserRenderer } from './renderers/PresetBrowserRenderer'
 import { WaveformRenderer } from './renderers/WaveformRenderer'
 import { OscilloscopeRenderer } from './renderers/OscilloscopeRenderer'
 import { TextFieldRenderer } from './renderers/TextFieldRenderer'
@@ -101,6 +102,8 @@ function ElementComponent({ element }: ElementProps) {
         return <FrequencyDisplayRenderer config={element} />
       case 'gainreductionmeter':
         return <GainReductionMeterRenderer config={element} />
+      case 'presetbrowser':
+        return <PresetBrowserRenderer config={element} />
       case 'waveform':
         return <WaveformRenderer config={element} />
       case 'oscilloscope':
