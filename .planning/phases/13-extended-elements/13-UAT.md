@@ -1,9 +1,9 @@
 ---
-status: complete
+status: diagnosed
 phase: 13-extended-elements
 source: 13-01-SUMMARY.md, 13-02-SUMMARY.md, 13-03-SUMMARY.md, 13-04-SUMMARY.md, 13-05-SUMMARY.md, 13-06-SUMMARY.md, 13-07-SUMMARY.md, 13-08-SUMMARY.md, 13-09-SUMMARY.md, 13-10-SUMMARY.md, 13-11-SUMMARY.md
 started: 2026-01-25T17:30:00Z
-updated: 2026-01-25T18:15:00Z
+updated: 2026-01-25T18:25:00Z
 ---
 
 ## Current Test
@@ -128,77 +128,110 @@ skipped: 1
   reason: "User reported: dropdown works but i cant add an option. the textfield doesnt let me edit it"
   severity: major
   test: 8
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "onChange handler immediately filters empty lines on every keystroke, removing newlines as user types them. Filter at line 19 prevents adding new options."
+  artifacts:
+    - path: "src/components/Properties/DropdownProperties.tsx"
+      issue: "line 19 - .filter((line) => line.trim() !== '') removes newlines immediately"
+  missing:
+    - "Store raw text in local state during editing, only filter on blur"
+  debug_session: ".planning/debug/dropdown-textarea-uneditable.md"
 
 - truth: "Radio Group options textarea is editable"
   status: failed
   reason: "User reported: radio group works but i cant add more options. the textbox cant be edited"
   severity: major
   test: 10
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Same issue as Dropdown - onChange handler filters empty lines immediately, preventing newline entry."
+  artifacts:
+    - path: "src/components/Properties/RadioGroupProperties.tsx"
+      issue: "line 19 - .filter((line) => line.trim() !== '') removes newlines immediately"
+  missing:
+    - "Store raw text in local state during editing, only filter on blur"
+  debug_session: ".planning/debug/dropdown-textarea-uneditable.md"
 
 - truth: "Text Field element can be dragged to canvas"
   status: failed
   reason: "User reported: cant drag textfield to the canvas"
   severity: major
   test: 11
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Missing switch case for 'textfield' in App.tsx handleDragEnd function. Element type defined in Palette but not handled in drop handler."
+  artifacts:
+    - path: "src/App.tsx"
+      issue: "Missing case 'textfield' in handleDragEnd switch (lines 156-218)"
+  missing:
+    - "Add import for createTextField"
+    - "Add case 'textfield': newElement = createTextField({ x: canvasX, y: canvasY, ...variant })"
+  debug_session: ".planning/debug/elements-not-draggable.md"
 
 - truth: "Waveform Display element can be added to canvas"
   status: failed
   reason: "User reported: cant add waveform display to the canvas"
   severity: major
   test: 18
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Missing switch case for 'waveform' in App.tsx handleDragEnd function."
+  artifacts:
+    - path: "src/App.tsx"
+      issue: "Missing case 'waveform' in handleDragEnd switch (lines 156-218)"
+  missing:
+    - "Add import for createWaveform"
+    - "Add case 'waveform': newElement = createWaveform({ x: canvasX, y: canvasY, ...variant })"
+  debug_session: ".planning/debug/elements-not-draggable.md"
 
 - truth: "Oscilloscope Display element can be added to canvas"
   status: failed
   reason: "User reported: cant add Oscilloscope Display to the canvas"
   severity: major
   test: 19
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Missing switch case for 'oscilloscope' in App.tsx handleDragEnd function."
+  artifacts:
+    - path: "src/App.tsx"
+      issue: "Missing case 'oscilloscope' in handleDragEnd switch (lines 156-218)"
+  missing:
+    - "Add import for createOscilloscope"
+    - "Add case 'oscilloscope': newElement = createOscilloscope({ x: canvasX, y: canvasY, ...variant })"
+  debug_session: ".planning/debug/elements-not-draggable.md"
 
 - truth: "Preset Browser element can be added to canvas with preview"
   status: failed
   reason: "User reported: cant add preset browser to the canvas. also preview is empty"
   severity: major
   test: 21
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Missing switch case for 'presetbrowser' in App.tsx handleDragEnd function. Also missing preview case in PaletteItem.tsx."
+  artifacts:
+    - path: "src/App.tsx"
+      issue: "Missing case 'presetbrowser' in handleDragEnd switch (lines 156-218)"
+    - path: "src/components/Palette/PaletteItem.tsx"
+      issue: "Missing preview case for presetbrowser"
+  missing:
+    - "Add import for createPresetBrowser"
+    - "Add case 'presetbrowser': newElement = createPresetBrowser({ x: canvasX, y: canvasY, ...variant })"
+    - "Add preview case in PaletteItem.tsx"
+  debug_session: ".planning/debug/elements-not-draggable.md"
 
 - truth: "New elements are placed at mouse drop position on canvas"
   status: failed
   reason: "User reported: some elements dont get placed at mouse position. they get positioned out of the canvas"
   severity: major
   test: general
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Same as above - elements weren't being created at all due to missing switch cases, not positioned incorrectly. User initially misinterpreted silent failure as off-canvas positioning."
+  artifacts:
+    - path: "src/App.tsx"
+      issue: "Missing switch cases cause silent failure (default: return)"
+  missing:
+    - "Add all missing switch cases for element types"
+  debug_session: ".planning/debug/element-drop-position.md"
 
 - truth: "New elements have preview thumbnails in sidebar palette"
   status: failed
   reason: "User reported: a lot of the new elements have no preview in the sidebar"
   severity: minor
   test: general
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "PaletteItem.tsx missing switch cases for 8 element types in createPreviewElement() and renderPreview() functions. Unhandled types show gray box with '?' placeholder."
+  artifacts:
+    - path: "src/components/Palette/PaletteItem.tsx"
+      issue: "Missing cases for: rangeslider, dropdown, checkbox, radiogroup, textfield, waveform, oscilloscope, presetbrowser"
+  missing:
+    - "Add imports for 8 factory functions and 8 renderer components"
+    - "Add 8 cases to createPreviewElement() switch"
+    - "Add 8 cases to renderPreview() switch"
+  debug_session: ".planning/debug/missing-palette-previews.md"
