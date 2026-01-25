@@ -24,7 +24,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 10: UAT Bug Fixes** - User acceptance testing feedback: marquee offset, lock UX, template import
 - [x] **Phase 11: Element Consolidation & Property Fixes** - Merge slider/button variants, fix property panel issues, image picker
 - [x] **Phase 12: Export & Round-Trip Testing** - Verify templates load, exports work, round-trip preserves state
-- [ ] **Phase 13: Extended Elements** - Containers, form controls, audio displays, control labels/values
+- [x] **Phase 13: Extended Elements** - Containers, form controls, audio displays, control labels/values
 
 ## Phase Details
 
@@ -345,9 +345,9 @@ Plans:
 - [x] 13-09-PLAN.md — Waveform and Oscilloscope display placeholders
 - [x] 13-10-PLAN.md — Modulation Matrix placeholder widget
 - [x] 13-11-PLAN.md — Preset Browser placeholder widget
-- [ ] 13-12-PLAN.md — Gap closure: Fix textarea editing in Dropdown/RadioGroup properties
-- [ ] 13-13-PLAN.md — Gap closure: Add missing App.tsx switch cases for element creation
-- [ ] 13-14-PLAN.md — Gap closure: Add missing PaletteItem.tsx preview cases
+- [x] 13-12-PLAN.md — Gap closure: Fix textarea editing in Dropdown/RadioGroup properties
+- [x] 13-13-PLAN.md — Gap closure: Add missing App.tsx switch cases for element creation
+- [x] 13-14-PLAN.md — Gap closure: Add missing PaletteItem.tsx preview cases
 
 ## Progress
 
@@ -368,4 +368,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
 | 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
 | 12. Export & Round-Trip Testing | 1/1 | Complete | 2026-01-25 |
-| 13. Extended Elements | 11/14 | In Progress | - |
+| 13. Extended Elements | 14/14 | Complete | 2026-01-25 |
