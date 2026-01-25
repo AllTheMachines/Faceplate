@@ -53,6 +53,22 @@ export interface KnobElementConfig extends BaseElementConfig {
   fillColor: string
   indicatorColor: string
   trackWidth: number
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string  // For custom format
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
 }
 
 export interface SliderElementConfig extends BaseElementConfig {
@@ -75,6 +91,22 @@ export interface SliderElementConfig extends BaseElementConfig {
   thumbWidth: number
   thumbHeight: number
 }
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string  // For custom format
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
 
 export interface ButtonElementConfig extends BaseElementConfig {
   type: 'button'
@@ -361,6 +393,18 @@ export function isRectangle(element: ElementConfig): element is RectangleElement
 }
 
 export function isLine(element: ElementConfig): element is LineElementConfig {
+
+export function isPanel(element: ElementConfig): element is PanelElementConfig {
+  return element.type === 'panel'
+}
+
+export function isFrame(element: ElementConfig): element is FrameElementConfig {
+  return element.type === 'frame'
+}
+
+export function isGroupBox(element: ElementConfig): element is GroupBoxElementConfig {
+  return element.type === 'groupbox'
+}
   return element.type === 'line'
 }
 
