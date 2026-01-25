@@ -90,7 +90,6 @@ export interface SliderElementConfig extends BaseElementConfig {
   thumbColor: string
   thumbWidth: number
   thumbHeight: number
-}
 
   // Label Display
   showLabel: boolean
@@ -107,6 +106,7 @@ export interface SliderElementConfig extends BaseElementConfig {
   valueDecimalPlaces: number
   valueFontSize: number
   valueColor: string
+}
 
 export interface ButtonElementConfig extends BaseElementConfig {
   type: 'button'
@@ -491,18 +491,6 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     id: crypto.randomUUID(),
     type: 'knob',
     name: 'Knob',
-    showLabel: false,
-    labelText: 'Slider',
-    labelPosition: 'bottom',
-    labelFontSize: 12,
-    labelColor: '#ffffff',
-    showValue: false,
-    valuePosition: 'top',
-    valueFormat: 'numeric',
-    valueSuffix: '',
-    valueDecimalPlaces: 2,
-    valueFontSize: 12,
-    valueColor: '#a0a0a0',
     x: 0,
     y: 0,
     width: 60,
@@ -521,6 +509,7 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     trackColor: '#374151',
     fillColor: '#3b82f6',
     indicatorColor: '#ffffff',
+    trackWidth: 4,
     showLabel: false,
     labelText: 'Knob',
     labelPosition: 'bottom',
@@ -533,7 +522,6 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     valueDecimalPlaces: 2,
     valueFontSize: 12,
     valueColor: '#a0a0a0',
-    trackWidth: 4,
     ...overrides,
   }
 }
@@ -560,6 +548,18 @@ export function createSlider(overrides?: Partial<SliderElementConfig>): SliderEl
     thumbColor: '#ffffff',
     thumbWidth: 20,
     thumbHeight: 20,
+    showLabel: false,
+    labelText: 'Slider',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
     ...overrides,
   }
 }
