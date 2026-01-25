@@ -6,6 +6,7 @@ import {
   createLabel,
   createMeter,
   createImage,
+  createModulationMatrix,
   ElementConfig,
 } from '../../types/elements'
 import { KnobRenderer } from '../elements/renderers/KnobRenderer'
@@ -13,6 +14,7 @@ import { SliderRenderer } from '../elements/renderers/SliderRenderer'
 import { ButtonRenderer } from '../elements/renderers/ButtonRenderer'
 import { LabelRenderer } from '../elements/renderers/LabelRenderer'
 import { MeterRenderer } from '../elements/renderers/MeterRenderer'
+import { ModulationMatrixRenderer } from '../elements/renderers/ModulationMatrixRenderer'
 
 interface PaletteItemProps {
   id: string
@@ -83,6 +85,17 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           ...baseOverrides,
           width: 50,
           height: 50,
+          ...variant,
+        })
+      case 'modulationmatrix':
+        return createModulationMatrix({
+          ...baseOverrides,
+          width: 60,
+          height: 50,
+          cellSize: 8,
+          headerFontSize: 6,
+          sources: ['S1', 'S2', 'S3'],
+          destinations: ['D1', 'D2', 'D3'],
           ...variant,
         })
       default:
@@ -157,6 +170,12 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
                 <polyline points="21 15 16 10 5 21" strokeWidth="2" />
               </svg>
             </div>
+          </div>
+        )
+      case 'modulationmatrix':
+        return (
+          <div style={containerStyle}>
+            <ModulationMatrixRenderer config={previewElement} />
           </div>
         )
       default:
