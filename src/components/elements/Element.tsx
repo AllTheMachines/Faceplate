@@ -21,6 +21,7 @@ import { GroupBoxRenderer } from './renderers/GroupBoxRenderer'
 import { DbDisplayRenderer } from './renderers/DbDisplayRenderer'
 import { FrequencyDisplayRenderer } from './renderers/FrequencyDisplayRenderer'
 import { GainReductionMeterRenderer } from './renderers/GainReductionMeterRenderer'
+import { CollapsibleRenderer } from './renderers/CollapsibleRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -97,6 +98,8 @@ function ElementComponent({ element }: ElementProps) {
         return <FrequencyDisplayRenderer config={element} />
       case 'gainreductionmeter':
         return <GainReductionMeterRenderer config={element} />
+      case 'collapsible':
+        return <CollapsibleRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
