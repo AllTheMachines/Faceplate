@@ -19,7 +19,26 @@ const DANGEROUS_TAGS = [
   'animateTransform',
   'animateMotion',
   'set',
-];
+] as const;
+
+/**
+ * Checks for dangerous elements in parsed SVG document
+ * @returns Array of found dangerous elements with counts
+ */
+function checkDangerousElements(
+  doc: Document
+): Array<{ tag: string; count: number }> {
+  const foundDangerous: Array<{ tag: string; count: number }> = [];
+
+  DANGEROUS_TAGS.forEach((tag) => {
+    const tagElements = doc.getElementsByTagName(tag);
+    if (tagElements.length > 0) {
+      foundDangerous.push({ tag, count: tagElements.length });
+    }
+  });
+
+  return foundDangerous;
+}
 
 /**
  * Validates SVG file size (SEC-06)
@@ -75,14 +94,7 @@ export function validateSVGContent(content: string): SVGValidationResult {
   }
 
   // Check for dangerous elements
-  const foundDangerous: Array<{ tag: string; count: number }> = [];
-
-  DANGEROUS_TAGS.forEach((tag) => {
-    const tagElements = doc.getElementsByTagName(tag);
-    if (tagElements.length > 0) {
-      foundDangerous.push({ tag, count: tagElements.length });
-    }
-  });
+  const foundDangerous = checkDangerousElements(doc);
 
   if (foundDangerous.length > 0) {
     const dangerousList = foundDangerous
