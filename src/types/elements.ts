@@ -401,6 +401,67 @@ export interface GainReductionMeterElementConfig extends BaseElementConfig {
   textColor: string
 }
 
+export interface TextFieldElementConfig extends BaseElementConfig {
+  type: 'textfield'
+
+  // Content
+  value: string
+  placeholder: string
+  maxLength: number // 0 = unlimited
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  textAlign: 'left' | 'center' | 'right'
+
+  // Appearance
+  backgroundColor: string
+  padding: number
+
+  // Border
+  borderColor: string
+  borderWidth: number
+  borderRadius: number
+}
+
+export interface WaveformElementConfig extends BaseElementConfig {
+  type: 'waveform'
+
+  // Visual
+  backgroundColor: string
+  waveformColor: string
+  borderColor: string
+  borderWidth: number
+
+  // Grid (optional visual guide)
+  showGrid: boolean
+  gridColor: string
+
+  // JUCE integration hints
+  zoomLevel: number  // 1 = default, 2 = 2x zoom, etc.
+}
+
+export interface OscilloscopeElementConfig extends BaseElementConfig {
+  type: 'oscilloscope'
+
+  // Visual
+  backgroundColor: string
+  traceColor: string
+  borderColor: string
+  borderWidth: number
+
+  // Grid
+  showGrid: boolean
+  gridColor: string
+  gridDivisions: number  // Number of horizontal/vertical divisions
+
+  // Scope settings (hints for JUCE)
+  timeDiv: number  // Time per division in ms
+  amplitudeScale: number  // 0-1 normalized
+  triggerLevel: number  // 0-1 normalized
+}
+
 // ============================================================================
 // Discriminated Union Type
 // ============================================================================
@@ -422,6 +483,9 @@ export type ElementConfig =
   | DbDisplayElementConfig
   | FrequencyDisplayElementConfig
   | GainReductionMeterElementConfig
+  | TextFieldElementConfig
+  | WaveformElementConfig
+  | OscilloscopeElementConfig
   | PanelElementConfig
   | FrameElementConfig
   | GroupBoxElementConfig
@@ -509,6 +573,18 @@ export function isGroupBox(element: ElementConfig): element is GroupBoxElementCo
 
 export function isCollapsible(element: ElementConfig): element is CollapsibleContainerElementConfig {
   return element.type === 'collapsible'
+}
+
+export function isTextField(element: ElementConfig): element is TextFieldElementConfig {
+  return element.type === 'textfield'
+}
+
+export function isWaveform(element: ElementConfig): element is WaveformElementConfig {
+  return element.type === 'waveform'
+}
+
+export function isOscilloscope(element: ElementConfig): element is OscilloscopeElementConfig {
+  return element.type === 'oscilloscope'
 }
 
 // ============================================================================
@@ -1028,6 +1104,57 @@ export function createGainReductionMeter(overrides?: Partial<GainReductionMeterE
     showValue: true,
     fontSize: 10,
     textColor: '#9ca3af',
+    ...overrides,
+  }
+}
+
+export function createWaveform(overrides?: Partial<WaveformElementConfig>): WaveformElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'waveform',
+    name: 'Waveform',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 80,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    backgroundColor: '#1f2937',
+    waveformColor: '#3b82f6',
+    borderColor: '#374151',
+    borderWidth: 1,
+    showGrid: false,
+    gridColor: '#374151',
+    zoomLevel: 1,
+    ...overrides,
+  }
+}
+
+export function createOscilloscope(overrides?: Partial<OscilloscopeElementConfig>): OscilloscopeElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'oscilloscope',
+    name: 'Oscilloscope',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 150,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    backgroundColor: '#0f172a',
+    traceColor: '#22c55e',
+    borderColor: '#374151',
+    borderWidth: 1,
+    showGrid: true,
+    gridColor: '#1e3a5f',
+    gridDivisions: 8,
+    timeDiv: 10,
+    amplitudeScale: 1,
+    triggerLevel: 0.5,
     ...overrides,
   }
 }
