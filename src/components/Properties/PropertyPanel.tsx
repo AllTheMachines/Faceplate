@@ -11,6 +11,9 @@ import {
   isGroupBox,
   isRectangle,
   isLine,
+  isDbDisplay,
+  isFrequencyDisplay,
+  isGainReductionMeter,
   ElementConfig,
 } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection } from './'
@@ -25,6 +28,9 @@ import { FrameProperties } from './FrameProperties'
 import { GroupBoxProperties } from './GroupBoxProperties'
 import { RectangleProperties } from './RectangleProperties'
 import { LineProperties } from './LineProperties'
+import { DbDisplayProperties } from './DbDisplayProperties'
+import { FrequencyDisplayProperties } from './FrequencyDisplayProperties'
+import { GainReductionMeterProperties } from './GainReductionMeterProperties'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -154,6 +160,13 @@ export function PropertyPanel() {
       {isGroupBox(element) && <GroupBoxProperties element={element} onUpdate={update} />}
       {isRectangle(element) && <RectangleProperties element={element} onUpdate={update} />}
       {isLine(element) && <LineProperties element={element} onUpdate={update} />}
+      {isDbDisplay(element) && <DbDisplayProperties element={element} onUpdate={update} />}
+      {isFrequencyDisplay(element) && (
+        <FrequencyDisplayProperties element={element} onUpdate={update} />
+      )}
+      {isGainReductionMeter(element) && (
+        <GainReductionMeterProperties element={element} onUpdate={update} />
+      )}
     </div>
   )
 }

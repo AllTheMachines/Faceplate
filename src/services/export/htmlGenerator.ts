@@ -130,6 +130,39 @@ export function generateElementHTML(element: ElementConfig): string {
       return `<img id="${id}" class="${baseClass} image-element" data-type="image" src="${src}" alt="${escapeHTML(element.name)}" style="${positionStyle}" />`
     }
 
+    case 'dropdown':
+      return generateDropdownHTML(id, baseClass, positionStyle, element)
+
+    case 'checkbox':
+      return generateCheckboxHTML(id, baseClass, positionStyle, element)
+
+    case 'radiogroup':
+      return generateRadioGroupHTML(id, baseClass, positionStyle, element)
+
+    case 'rectangle': {
+      const fillColorWithOpacity = element.fillOpacity < 1
+        ? `${element.fillColor}${Math.round(element.fillOpacity * 255).toString(16).padStart(2, '0')}`
+        : element.fillColor
+      return `<div id="${id}" class="${baseClass} rectangle-element" data-type="rectangle" style="${positionStyle}; background-color: ${fillColorWithOpacity}; border: ${element.borderWidth}px ${element.borderStyle} ${element.borderColor}; border-radius: ${element.borderRadius}px;"></div>`
+    }
+
+    case 'line': {
+      const isHorizontal = element.width > element.height
+      const lineStyle = isHorizontal
+        ? `width: 100%; height: ${element.strokeWidth}px; background-color: ${element.strokeStyle === 'solid' ? element.strokeColor : 'transparent'}; border-top: ${element.strokeWidth}px ${element.strokeStyle} ${element.strokeColor};`
+        : `width: ${element.strokeWidth}px; height: 100%; background-color: ${element.strokeStyle === 'solid' ? element.strokeColor : 'transparent'}; border-left: ${element.strokeWidth}px ${element.strokeStyle} ${element.strokeColor};`
+      return `<div id="${id}" class="${baseClass} line-element" data-type="line" style="${positionStyle}"><div style="${lineStyle}"></div></div>`
+    }
+    case 'panel':
+      return `<div id="${id}" class="${baseClass} panel-element" data-type="panel" style="${positionStyle}"></div>`
+
+    case 'frame':
+      return `<div id="${id}" class="${baseClass} frame-element" data-type="frame" style="${positionStyle}"></div>`
+
+    case 'groupbox':
+      return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle}"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div></div>`
+
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
@@ -206,6 +239,38 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
 /**
  * Generate meter HTML with fill and optional peak hold
  */
+
+/**
+ * Generate range slider HTML with two thumbs
+ */
+function generateRangeSliderHTML(id: string, baseClass: string, positionStyle: string, config: RangeSliderElementConfig): string {
+  const isVertical = config.orientation === 'vertical'
+  const range = config.max - config.min
+  const normalizedMin = (config.minValue - config.min) / range
+  const normalizedMax = (config.maxValue - config.min) / range
+  const orientationClass = isVertical ? 'vertical' : 'horizontal'
+
+  // Calculate fill position and size (between min and max thumbs)
+  const fillStyle = isVertical
+    ? `bottom: ${normalizedMin * 100}%; height: ${(normalizedMax - normalizedMin) * 100}%`
+    : `left: ${normalizedMin * 100}%; width: ${(normalizedMax - normalizedMin) * 100}%`
+
+  // Calculate thumb positions
+  const minThumbStyle = isVertical
+    ? `bottom: ${normalizedMin * 100}%`
+    : `left: ${normalizedMin * 100}%`
+  const maxThumbStyle = isVertical
+    ? `bottom: ${normalizedMax * 100}%`
+    : `left: ${normalizedMax * 100}%`
+
+  return `<div id="${id}" class="${baseClass} rangeslider rangeslider-element ${orientationClass}" data-type="rangeslider" data-orientation="${config.orientation}" data-min-value="${normalizedMin}" data-max-value="${normalizedMax}" style="${positionStyle}">
+      <div class="rangeslider-track" style="background: ${config.trackColor};"></div>
+      <div class="rangeslider-fill" style="background: ${config.fillColor}; ${fillStyle}"></div>
+      <div class="rangeslider-thumb rangeslider-thumb-min" data-thumb="min" style="background: ${config.thumbColor}; ${minThumbStyle}"></div>
+      <div class="rangeslider-thumb rangeslider-thumb-max" data-thumb="max" style="background: ${config.thumbColor}; ${maxThumbStyle}"></div>
+    </div>`
+}
+
 function generateMeterHTML(id: string, baseClass: string, positionStyle: string, config: MeterElementConfig): string {
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)

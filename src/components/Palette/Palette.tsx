@@ -32,8 +32,20 @@ const paletteCategories = [
     items: [{ id: 'meter-vertical', type: 'meter', name: 'Meter', variant: { orientation: 'vertical' } }],
   },
   {
+    name: 'Audio Displays',
+    items: [
+      { id: 'dbdisplay', type: 'dbdisplay', name: 'dB Display' },
+      { id: 'frequencydisplay', type: 'frequencydisplay', name: 'Frequency Display' },
+      { id: 'gainreductionmeter', type: 'gainreductionmeter', name: 'GR Meter' },
+    ],
+  },
+  {
     name: 'Images & Decorative',
-    items: [{ id: 'image', type: 'image', name: 'Image' }],
+    items: [
+      { id: 'image', type: 'image', name: 'Image' },
+      { id: 'rectangle', type: 'rectangle', name: 'Rectangle' },
+      { id: 'line', type: 'line', name: 'Line' },
+    ],
   },
   {
     name: 'Containers',
@@ -41,6 +53,12 @@ const paletteCategories = [
       { id: 'panel', type: 'panel', name: 'Panel' },
       { id: 'frame', type: 'frame', name: 'Frame' },
       { id: 'groupbox', type: 'groupbox', name: 'Group Box' },
+    ],
+  },
+  {
+    name: 'Complex Widgets',
+    items: [
+      { id: 'modulationmatrix', type: 'modulationmatrix', name: 'Mod Matrix' },
     ],
   },
 ]

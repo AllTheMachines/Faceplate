@@ -202,6 +202,87 @@ ${selector} .slider-thumb {
 }`
       }
 
+    case 'rangeslider':
+      if (element.orientation === 'vertical') {
+        return `${selector} {
+  /* Vertical range slider */
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+${selector} .rangeslider-track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 6px;
+  transform: translateX(-50%);
+  border-radius: 3px;
+}
+
+${selector} .rangeslider-fill {
+  position: absolute;
+  left: 50%;
+  width: 6px;
+  transform: translateX(-50%);
+  border-radius: 3px;
+}
+
+${selector} .rangeslider-thumb {
+  position: absolute;
+  left: 50%;
+  width: ${element.thumbWidth}px;
+  height: ${element.thumbHeight}px;
+  transform: translate(-50%, 50%);
+  border-radius: 4px;
+  cursor: grab;
+}
+
+${selector} .rangeslider-thumb:active {
+  cursor: grabbing;
+}`
+      } else {
+        return `${selector} {
+  /* Horizontal range slider */
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+${selector} .rangeslider-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 3px;
+}
+
+${selector} .rangeslider-fill {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 3px;
+}
+
+${selector} .rangeslider-thumb {
+  position: absolute;
+  top: 50%;
+  width: ${element.thumbWidth}px;
+  height: ${element.thumbHeight}px;
+  transform: translate(-50%, -50%);
+  border-radius: 4px;
+  cursor: grab;
+}
+
+${selector} .rangeslider-thumb:active {
+  cursor: grabbing;
+}`
+      }
+
     case 'button':
       return `${selector} {
   /* Button */
@@ -327,6 +408,73 @@ ${selector} .matrix-cell {
 ${selector} .matrix-cell[data-active="true"] {
   background: ${element.activeColor};
 }`
+
+    case 'rectangle':
+      return `${selector} {
+  /* Rectangle */
+  /* Styling handled via inline styles in HTML */
+}`
+
+    case 'line':
+      return `${selector} {
+  /* Line */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+${selector} > div {
+  /* Line inner element */
+}`
+    case 'panel':
+      return `${selector} {
+  /* Panel */
+  background-color: ${element.backgroundColor};
+  border-radius: ${element.borderRadius}px;
+  padding: ${element.padding}px;
+${element.borderWidth > 0 ? `  border: ${element.borderWidth}px solid ${element.borderColor};` : ''}
+}`
+
+    case 'frame':
+      return `${selector} {
+  /* Frame */
+  border: ${element.borderWidth}px ${element.borderStyle} ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  padding: ${element.padding}px;
+}`
+
+    case 'groupbox':
+      return `${selector} {
+  /* Group Box container */
+  position: relative;
+  padding: ${element.padding}px;
+  padding-top: ${element.padding + element.headerFontSize / 2}px;
+}
+
+${selector} .groupbox-border {
+  position: absolute;
+  top: ${element.headerFontSize / 2}px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: ${element.borderWidth}px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  pointer-events: none;
+}
+
+${selector} .groupbox-header {
+  position: absolute;
+  top: 0;
+  left: ${element.padding + 4}px;
+  font-size: ${element.headerFontSize}px;
+  color: ${element.headerColor};
+  background-color: ${element.headerBackground};
+  padding: 0 4px;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 500;
+  user-select: none;
+}`
+
 
     default:
       // TypeScript exhaustiveness check
