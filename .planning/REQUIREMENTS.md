@@ -9,14 +9,14 @@ Requirements for SVG Import System milestone. Each maps to roadmap phases.
 
 ### Security & Upload
 
-- [ ] **SEC-01**: SVG files are sanitized with DOMPurify at upload time
-- [ ] **SEC-02**: SVG files are re-sanitized when loading project JSON (tampering protection)
-- [ ] **SEC-03**: SVG files are re-sanitized before canvas rendering
-- [ ] **SEC-04**: SVG files are re-sanitized before export generation
-- [ ] **SEC-05**: DOCTYPE declarations in SVG files are rejected (XML bomb prevention)
-- [ ] **SEC-06**: SVG file size is limited to 1MB maximum
-- [ ] **SEC-07**: SVG element count is limited to 5000 maximum (performance protection)
-- [ ] **SEC-08**: SafeSVG React component encapsulates all SVG rendering with sanitization
+- [x] **SEC-01**: SVG files are sanitized with DOMPurify at upload time
+- [x] **SEC-02**: SVG files are re-sanitized when loading project JSON (tampering protection)
+- [x] **SEC-03**: SVG files are re-sanitized before canvas rendering (SafeSVG prepared, integration in Phase 16)
+- [x] **SEC-04**: SVG files are re-sanitized before export generation
+- [x] **SEC-05**: DOCTYPE declarations in SVG files are rejected (XML bomb prevention)
+- [x] **SEC-06**: SVG file size is limited to 1MB maximum
+- [x] **SEC-07**: SVG element count is limited to 5000 maximum (performance protection)
+- [x] **SEC-08**: SafeSVG React component encapsulates all SVG rendering with sanitization
 
 ### Asset Library
 
@@ -93,14 +93,14 @@ Requirements for SVG Import System milestone. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEC-01 | Phase 14 | Pending |
-| SEC-02 | Phase 14 | Pending |
-| SEC-03 | Phase 14 | Pending |
-| SEC-04 | Phase 14 | Pending |
-| SEC-05 | Phase 14 | Pending |
-| SEC-06 | Phase 14 | Pending |
-| SEC-07 | Phase 14 | Pending |
-| SEC-08 | Phase 14 | Pending |
+| SEC-01 | Phase 14 | Complete |
+| SEC-02 | Phase 14 | Complete |
+| SEC-03 | Phase 14 | Complete |
+| SEC-04 | Phase 14 | Complete |
+| SEC-05 | Phase 14 | Complete |
+| SEC-06 | Phase 14 | Complete |
+| SEC-07 | Phase 14 | Complete |
+| SEC-08 | Phase 14 | Complete |
 | ASSET-01 | Phase 15 | Pending |
 | ASSET-02 | Phase 15 | Pending |
 | ASSET-03 | Phase 15 | Pending |
