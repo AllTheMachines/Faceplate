@@ -1108,6 +1108,35 @@ export function createGainReductionMeter(overrides?: Partial<GainReductionMeterE
   }
 }
 
+export function createTextField(overrides?: Partial<TextFieldElementConfig>): TextFieldElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'textfield',
+    name: 'TextField',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: '',
+    placeholder: 'Enter text...',
+    maxLength: 0,
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    textColor: '#ffffff',
+    textAlign: 'left',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    borderColor: '#374151',
+    borderWidth: 1,
+    borderRadius: 4,
+    ...overrides,
+  }
+}
+
 export function createWaveform(overrides?: Partial<WaveformElementConfig>): WaveformElementConfig {
   return {
     id: crypto.randomUUID(),
