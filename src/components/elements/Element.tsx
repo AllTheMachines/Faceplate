@@ -21,6 +21,9 @@ import { GroupBoxRenderer } from './renderers/GroupBoxRenderer'
 import { DbDisplayRenderer } from './renderers/DbDisplayRenderer'
 import { FrequencyDisplayRenderer } from './renderers/FrequencyDisplayRenderer'
 import { GainReductionMeterRenderer } from './renderers/GainReductionMeterRenderer'
+import { WaveformRenderer } from './renderers/WaveformRenderer'
+import { OscilloscopeRenderer } from './renderers/OscilloscopeRenderer'
+import { TextFieldRenderer } from './renderers/TextFieldRenderer'
 import { CollapsibleRenderer } from './renderers/CollapsibleRenderer'
 
 interface ElementProps {
@@ -98,6 +101,8 @@ function ElementComponent({ element }: ElementProps) {
         return <FrequencyDisplayRenderer config={element} />
       case 'gainreductionmeter':
         return <GainReductionMeterRenderer config={element} />
+      case 'textfield':
+        return <TextFieldRenderer config={element} />
       case 'collapsible':
         return <CollapsibleRenderer config={element} />
       default:
