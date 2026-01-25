@@ -308,10 +308,10 @@ Plans:
   6. Standalone preview works in browser (mock mode)
   7. Round-trip: export → reimport project JSON → identical canvas state
 
-**Plans**: 1 plan (streamlined)
+**Plans**: 1 plan in 1 wave
 
 Plans:
-- [ ] 12-01-PLAN.md — Template loading, export verification, round-trip test
+- [ ] 12-01-PLAN.md — Template loading, JUCE export verification, HTML preview, round-trip integrity
 
 ## Progress
 
