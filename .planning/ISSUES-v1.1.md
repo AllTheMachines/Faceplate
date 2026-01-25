@@ -67,6 +67,14 @@ Users start fresh with this designer's templates and export clean code.
 
 ---
 
+### BUG-10: Slider line glitches in VST3/WebView2 — OPEN (v1.1+)
+**Issue:** Sliders show small visual line glitches when moving knobs in VST3 WebView2 environment.
+**Severity:** Minor (cosmetic)
+**Environment:** VST3/WebView2 only (not visible in HTML preview)
+**Status:** Pre-existing issue, needs investigation. Likely a WebView2 rendering artifact or CSS repaint issue.
+
+---
+
 ## Summary
 
 **v1.0 Status:** All Priority 1 bugs fixed. Core functionality complete.

@@ -3,7 +3,7 @@ status: complete
 phase: 13-extended-elements
 source: 13-12-SUMMARY.md, 13-13-SUMMARY.md, 13-14-SUMMARY.md (gap closure verification)
 started: 2026-01-25T19:00:00Z
-updated: 2026-01-25T21:00:00Z
+updated: 2026-01-25T21:15:00Z
 ---
 
 ## Current Test
@@ -45,23 +45,23 @@ expected: Check palette sidebar - Range Slider, Dropdown, Checkbox, Radio Group,
 result: pass
 
 ### 8. Export All New Elements
-expected: Add one of each previously failing element type. Export to JUCE bundle. Open exported index.html - all elements present with correct structure.
-result: skipped
-reason: Positioning issues resolved - export functionality already verified in Phase 12
+expected: Add one of each Phase 13 element type. Export to HTML preview and test in VST3. All elements render correctly.
+result: pass
+note: All elements render correctly. Collapsible Container is interactive (can collapse/expand) in both HTML preview and VST3.
 
 ## Summary
 
 total: 8
-passed: 7
+passed: 8
 issues: 0
 pending: 0
-skipped: 1
+skipped: 0
 
 ## Gaps
 
 [none - all issues resolved]
 
-## Fix Applied
+## Fix Applied (13-17)
 
 **Root cause:** The original drop position calculation used `activatorEvent.clientX + delta.x/y` which combined the initial click position (in the palette) with the drag delta. When dragging from palette items far down the screen (like Waveform at y=594) up to the canvas, this produced negative Y coordinates.
 
@@ -71,3 +71,7 @@ skipped: 1
 - Added `lastPointerPositionRef` to track pointer position
 - Added `useEffect` with mousemove listener active during palette drags
 - Updated `handleDragEnd` to use tracked position for accurate drop placement
+
+## Known Issues (Pre-existing, not Phase 13)
+
+- Slider elements show small line glitches in VST3/WebView2 when moving knobs (rendering artifact, existed before Phase 13)
