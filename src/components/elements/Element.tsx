@@ -13,6 +13,11 @@ import { CheckboxRenderer } from './renderers/CheckboxRenderer'
 import { RadioGroupRenderer } from './renderers/RadioGroupRenderer'
 import { ModulationMatrixRenderer } from './renderers/ModulationMatrixRenderer'
 import { RangeSliderRenderer } from './renderers/RangeSliderRenderer'
+import { RectangleRenderer } from './renderers/RectangleRenderer'
+import { LineRenderer } from './renderers/LineRenderer'
+import { PanelRenderer } from './renderers/PanelRenderer'
+import { FrameRenderer } from './renderers/FrameRenderer'
+import { GroupBoxRenderer } from './renderers/GroupBoxRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -73,6 +78,16 @@ function ElementComponent({ element }: ElementProps) {
         return <ModulationMatrixRenderer config={element} />
       case 'rangeslider':
         return <RangeSliderRenderer config={element} />
+      case 'rectangle':
+        return <RectangleRenderer config={element} />
+      case 'line':
+        return <LineRenderer config={element} />
+      case 'panel':
+        return <PanelRenderer config={element} />
+      case 'frame':
+        return <FrameRenderer config={element} />
+      case 'groupbox':
+        return <GroupBoxRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
