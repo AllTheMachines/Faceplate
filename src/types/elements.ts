@@ -316,6 +316,65 @@ export interface LineElementConfig extends BaseElementConfig {
   strokeStyle: 'solid' | 'dashed' | 'dotted'
   // Note: orientation determined by width/height aspect ratio
   // horizontal: width > height, vertical: height > width
+
+}
+export interface DbDisplayElementConfig extends BaseElementConfig {
+  type: 'dbdisplay'
+
+  // Value
+  value: number // Actual dB value (can be negative)
+  minDb: number // Display range minimum (e.g., -60)
+  maxDb: number // Display range maximum (e.g., 0)
+
+  // Display
+  decimalPlaces: number
+  showUnit: boolean // Show "dB" suffix
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+}
+
+export interface FrequencyDisplayElementConfig extends BaseElementConfig {
+  type: 'frequencydisplay'
+
+  // Value (always stored as Hz)
+  value: number // Frequency in Hz
+
+  // Display
+  decimalPlaces: number
+  autoSwitchKHz: boolean // Auto-switch to kHz at >= 1000Hz
+  showUnit: boolean
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+}
+
+export interface GainReductionMeterElementConfig extends BaseElementConfig {
+  type: 'gainreductionmeter'
+
+  // Orientation (typically vertical for GR meters)
+  orientation: 'vertical' | 'horizontal'
+
+  // Value (0-1 normalized, but displayed inverted - grows from top/right)
+  value: number
+  maxReduction: number // Maximum dB reduction to display (e.g., -24)
+
+  // Colors
+  meterColor: string
+  backgroundColor: string
+
+  // Display
+  showValue: boolean
+  fontSize: number
+  textColor: string
 }
 
 // ============================================================================
@@ -336,6 +395,9 @@ export type ElementConfig =
   | ModulationMatrixElementConfig
   | RectangleElementConfig
   | LineElementConfig
+  | DbDisplayElementConfig
+  | FrequencyDisplayElementConfig
+  | GainReductionMeterElementConfig
   | PanelElementConfig
   | FrameElementConfig
   | GroupBoxElementConfig
@@ -393,6 +455,20 @@ export function isRectangle(element: ElementConfig): element is RectangleElement
 }
 
 export function isLine(element: ElementConfig): element is LineElementConfig {
+  return element.type === 'line'
+}
+
+export function isDbDisplay(element: ElementConfig): element is DbDisplayElementConfig {
+  return element.type === 'dbdisplay'
+}
+
+export function isFrequencyDisplay(element: ElementConfig): element is FrequencyDisplayElementConfig {
+  return element.type === 'frequencydisplay'
+}
+
+export function isGainReductionMeter(element: ElementConfig): element is GainReductionMeterElementConfig {
+  return element.type === 'gainreductionmeter'
+}
 
 export function isPanel(element: ElementConfig): element is PanelElementConfig {
   return element.type === 'panel'
@@ -405,8 +481,6 @@ export function isFrame(element: ElementConfig): element is FrameElementConfig {
 export function isGroupBox(element: ElementConfig): element is GroupBoxElementConfig {
   return element.type === 'groupbox'
 }
-  return element.type === 'line'
-}
 
 // ============================================================================
 // Factory Functions (with sensible defaults)
@@ -417,6 +491,18 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     id: crypto.randomUUID(),
     type: 'knob',
     name: 'Knob',
+    showLabel: false,
+    labelText: 'Slider',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
     x: 0,
     y: 0,
     width: 60,
@@ -435,6 +521,18 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     trackColor: '#374151',
     fillColor: '#3b82f6',
     indicatorColor: '#ffffff',
+    showLabel: false,
+    labelText: 'Knob',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
     trackWidth: 4,
     ...overrides,
   }
@@ -837,6 +935,84 @@ export function createGroupBox(overrides?: Partial<GroupBoxElementConfig>): Grou
     borderColor: '#374151',
     borderRadius: 4,
     padding: 12,
+    ...overrides,
+  }
+}
+
+export function createDbDisplay(overrides?: Partial<DbDisplayElementConfig>): DbDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'dbdisplay',
+    name: 'dB Display',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 30,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: -12,
+    minDb: -60,
+    maxDb: 0,
+    decimalPlaces: 1,
+    showUnit: true,
+    fontSize: 16,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    ...overrides,
+  }
+}
+
+export function createFrequencyDisplay(overrides?: Partial<FrequencyDisplayElementConfig>): FrequencyDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'frequencydisplay',
+    name: 'Frequency Display',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 30,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 1000,
+    decimalPlaces: 1,
+    autoSwitchKHz: true,
+    showUnit: true,
+    fontSize: 16,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#3b82f6',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    ...overrides,
+  }
+}
+
+export function createGainReductionMeter(overrides?: Partial<GainReductionMeterElementConfig>): GainReductionMeterElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'gainreductionmeter',
+    name: 'GR Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 120,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    orientation: 'vertical',
+    value: 0.25,
+    maxReduction: -24,
+    meterColor: '#f59e0b',
+    backgroundColor: '#1f2937',
+    showValue: true,
+    fontSize: 10,
+    textColor: '#9ca3af',
     ...overrides,
   }
 }
