@@ -135,6 +135,57 @@ export interface ImageElementConfig extends BaseElementConfig {
   fit: 'contain' | 'cover' | 'fill' | 'none'
 }
 
+export interface DropdownElementConfig extends BaseElementConfig {
+  type: 'dropdown'
+
+  // Options
+  options: string[] // List of dropdown options
+
+  // State
+  selectedIndex: number
+
+  // Style
+  backgroundColor: string
+  textColor: string
+  borderColor: string
+  borderRadius: number
+}
+
+export interface CheckboxElementConfig extends BaseElementConfig {
+  type: 'checkbox'
+
+  // State
+  checked: boolean
+  label: string
+
+  // Layout
+  labelPosition: 'left' | 'right'
+
+  // Style
+  checkColor: string
+  borderColor: string
+  backgroundColor: string
+  textColor: string
+}
+
+export interface RadioGroupElementConfig extends BaseElementConfig {
+  type: 'radiogroup'
+
+  // Options
+  options: string[] // List of radio options
+  selectedIndex: number
+
+  // Layout
+  orientation: 'vertical' | 'horizontal'
+
+  // Style
+  radioColor: string
+  borderColor: string
+  backgroundColor: string
+  textColor: string
+  spacing: number
+}
+
 // ============================================================================
 // Discriminated Union Type
 // ============================================================================
@@ -146,6 +197,9 @@ export type ElementConfig =
   | LabelElementConfig
   | MeterElementConfig
   | ImageElementConfig
+  | DropdownElementConfig
+  | CheckboxElementConfig
+  | RadioGroupElementConfig
 
 // ============================================================================
 // Type Guards
@@ -173,6 +227,18 @@ export function isMeter(element: ElementConfig): element is MeterElementConfig {
 
 export function isImage(element: ElementConfig): element is ImageElementConfig {
   return element.type === 'image'
+}
+
+export function isDropdown(element: ElementConfig): element is DropdownElementConfig {
+  return element.type === 'dropdown'
+}
+
+export function isCheckbox(element: ElementConfig): element is CheckboxElementConfig {
+  return element.type === 'checkbox'
+}
+
+export function isRadioGroup(element: ElementConfig): element is RadioGroupElementConfig {
+  return element.type === 'radiogroup'
 }
 
 // ============================================================================
@@ -323,6 +389,78 @@ export function createImage(overrides?: Partial<ImageElementConfig>): ImageEleme
     visible: true,
     src: '',
     fit: 'contain',
+    ...overrides,
+  }
+}
+
+export function createDropdown(overrides?: Partial<DropdownElementConfig>): DropdownElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'dropdown',
+    name: 'Dropdown',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    options: ['Option 1', 'Option 2', 'Option 3'],
+    selectedIndex: 0,
+    backgroundColor: '#1f2937',
+    textColor: '#ffffff',
+    borderColor: '#374151',
+    borderRadius: 4,
+    ...overrides,
+  }
+}
+
+export function createCheckbox(overrides?: Partial<CheckboxElementConfig>): CheckboxElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'checkbox',
+    name: 'Checkbox',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 24,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    checked: false,
+    label: 'Checkbox',
+    labelPosition: 'right',
+    checkColor: '#3b82f6',
+    borderColor: '#374151',
+    backgroundColor: '#1f2937',
+    textColor: '#ffffff',
+    ...overrides,
+  }
+}
+
+export function createRadioGroup(overrides?: Partial<RadioGroupElementConfig>): RadioGroupElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'radiogroup',
+    name: 'RadioGroup',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 80,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    options: ['Option 1', 'Option 2', 'Option 3'],
+    selectedIndex: 0,
+    orientation: 'vertical',
+    radioColor: '#3b82f6',
+    borderColor: '#374151',
+    backgroundColor: 'transparent',
+    textColor: '#ffffff',
+    spacing: 8,
     ...overrides,
   }
 }
