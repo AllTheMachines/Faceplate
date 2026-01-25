@@ -15,20 +15,18 @@ export function LineRenderer({ config }: LineRendererProps) {
     ? {
         width: '100%',
         height: `${config.strokeWidth}px`,
-        backgroundColor: config.strokeColor,
+        backgroundColor: config.strokeStyle === 'solid' ? config.strokeColor : 'transparent',
         borderTop: config.strokeStyle !== 'solid'
           ? `${config.strokeWidth}px ${config.strokeStyle} ${config.strokeColor}`
           : 'none',
-        backgroundColor: config.strokeStyle === 'solid' ? config.strokeColor : 'transparent',
       }
     : {
         width: `${config.strokeWidth}px`,
         height: '100%',
-        backgroundColor: config.strokeColor,
+        backgroundColor: config.strokeStyle === 'solid' ? config.strokeColor : 'transparent',
         borderLeft: config.strokeStyle !== 'solid'
           ? `${config.strokeWidth}px ${config.strokeStyle} ${config.strokeColor}`
           : 'none',
-        backgroundColor: config.strokeStyle === 'solid' ? config.strokeColor : 'transparent',
       }
 
   return <div className="w-full h-full flex items-center justify-center">
