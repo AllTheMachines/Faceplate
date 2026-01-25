@@ -39,7 +39,12 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-(None - fresh requirements needed for v1.1)
+**v1.1 Focus: SVG Import System**
+
+- [ ] Interactive SVG Knobs — Import custom knob designs with element mapping (track, arc, indicator)
+- [ ] Static SVG Graphics — Import any SVG as decorative elements (logos, icons, dividers)
+- [ ] Asset Library — Manage knob styles and graphic assets in unified panel
+- [ ] Resizable UI Support — Export with responsive scaling for SVG elements
 
 ### Out of Scope
 
@@ -118,4 +123,4 @@ Pattern discovered and refined January 24-25, 2026 through extensive debugging.
 | Visual-only containers | Avoids store architecture complexity for v1 | Acceptable - noted as tech debt |
 
 ---
-*Last updated: 2026-01-25 after v1.0 milestone*
+*Last updated: 2026-01-25 after v1.1 milestone start*

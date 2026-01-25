@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Planning next milestone (v1.1)
+**Current focus:** SVG Import System (v1.1)
 
 ## Current Position
 
-Phase: Not started (v1.0 complete, v1.1 not planned)
-Plan: Not started
-Status: Ready for next milestone
-Last activity: 2026-01-25 — v1.0 milestone complete
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v1.1
+Last activity: 2026-01-25 — Milestone v1.1 started
 
-Progress: v1.0 SHIPPED (13 phases, 62 plans)
+Progress: v1.0 SHIPPED (13 phases, 62 plans) | v1.1 planning
 
 ## Performance Metrics
 
@@ -44,6 +44,6 @@ None - ready for next milestone planning.
 ## Session Continuity
 
 Last session: 2026-01-25
-Stopped at: v1.0 milestone complete
+Stopped at: Defining v1.1 requirements
 Resume file: None
-Next: `/gsd:new-milestone` for v1.1 planning
+Next: Complete requirements → roadmap
