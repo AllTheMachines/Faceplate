@@ -18,6 +18,9 @@ import { LineRenderer } from './renderers/LineRenderer'
 import { PanelRenderer } from './renderers/PanelRenderer'
 import { FrameRenderer } from './renderers/FrameRenderer'
 import { GroupBoxRenderer } from './renderers/GroupBoxRenderer'
+import { DbDisplayRenderer } from './renderers/DbDisplayRenderer'
+import { FrequencyDisplayRenderer } from './renderers/FrequencyDisplayRenderer'
+import { GainReductionMeterRenderer } from './renderers/GainReductionMeterRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -88,6 +91,12 @@ function ElementComponent({ element }: ElementProps) {
         return <FrameRenderer config={element} />
       case 'groupbox':
         return <GroupBoxRenderer config={element} />
+      case 'dbdisplay':
+        return <DbDisplayRenderer config={element} />
+      case 'frequencydisplay':
+        return <FrequencyDisplayRenderer config={element} />
+      case 'gainreductionmeter':
+        return <GainReductionMeterRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
