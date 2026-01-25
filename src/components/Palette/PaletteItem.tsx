@@ -7,6 +7,8 @@ import {
   createMeter,
   createImage,
   createModulationMatrix,
+  createRectangle,
+  createLine,
   ElementConfig,
 } from '../../types/elements'
 import { KnobRenderer } from '../elements/renderers/KnobRenderer'
@@ -15,6 +17,8 @@ import { ButtonRenderer } from '../elements/renderers/ButtonRenderer'
 import { LabelRenderer } from '../elements/renderers/LabelRenderer'
 import { MeterRenderer } from '../elements/renderers/MeterRenderer'
 import { ModulationMatrixRenderer } from '../elements/renderers/ModulationMatrixRenderer'
+import { RectangleRenderer } from '../elements/renderers/RectangleRenderer'
+import { LineRenderer } from '../elements/renderers/LineRenderer'
 
 interface PaletteItemProps {
   id: string
@@ -98,6 +102,20 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           destinations: ['D1', 'D2', 'D3'],
           ...variant,
         })
+      case 'rectangle':
+        return createRectangle({
+          ...baseOverrides,
+          width: 50,
+          height: 30,
+          ...variant,
+        })
+      case 'line':
+        return createLine({
+          ...baseOverrides,
+          width: 50,
+          height: 2,
+          ...variant,
+        })
       default:
         return null
     }
@@ -176,6 +194,18 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <ModulationMatrixRenderer config={previewElement} />
+          </div>
+        )
+      case 'rectangle':
+        return (
+          <div style={containerStyle}>
+            <RectangleRenderer config={previewElement} />
+          </div>
+        )
+      case 'line':
+        return (
+          <div style={containerStyle}>
+            <LineRenderer config={previewElement} />
           </div>
         )
       default:
