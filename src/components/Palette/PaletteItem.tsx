@@ -9,6 +9,9 @@ import {
   createModulationMatrix,
   createRectangle,
   createLine,
+  createDbDisplay,
+  createFrequencyDisplay,
+  createGainReductionMeter,
   ElementConfig,
 } from '../../types/elements'
 import { KnobRenderer } from '../elements/renderers/KnobRenderer'
@@ -19,6 +22,9 @@ import { MeterRenderer } from '../elements/renderers/MeterRenderer'
 import { ModulationMatrixRenderer } from '../elements/renderers/ModulationMatrixRenderer'
 import { RectangleRenderer } from '../elements/renderers/RectangleRenderer'
 import { LineRenderer } from '../elements/renderers/LineRenderer'
+import { DbDisplayRenderer } from '../elements/renderers/DbDisplayRenderer'
+import { FrequencyDisplayRenderer } from '../elements/renderers/FrequencyDisplayRenderer'
+import { GainReductionMeterRenderer } from '../elements/renderers/GainReductionMeterRenderer'
 
 interface PaletteItemProps {
   id: string
@@ -116,6 +122,33 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           height: 2,
           ...variant,
         })
+      case 'dbdisplay':
+        return createDbDisplay({
+          ...baseOverrides,
+          width: 50,
+          height: 20,
+          fontSize: 10,
+          padding: 4,
+          ...variant,
+        })
+      case 'frequencydisplay':
+        return createFrequencyDisplay({
+          ...baseOverrides,
+          width: 60,
+          height: 20,
+          fontSize: 10,
+          padding: 4,
+          ...variant,
+        })
+      case 'gainreductionmeter':
+        return createGainReductionMeter({
+          ...baseOverrides,
+          width: 16,
+          height: 60,
+          fontSize: 8,
+          showValue: false,
+          ...variant,
+        })
       default:
         return null
     }
@@ -206,6 +239,24 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <LineRenderer config={previewElement} />
+          </div>
+        )
+      case 'dbdisplay':
+        return (
+          <div style={containerStyle}>
+            <DbDisplayRenderer config={previewElement} />
+          </div>
+        )
+      case 'frequencydisplay':
+        return (
+          <div style={containerStyle}>
+            <FrequencyDisplayRenderer config={previewElement} />
+          </div>
+        )
+      case 'gainreductionmeter':
+        return (
+          <div style={containerStyle}>
+            <GainReductionMeterRenderer config={previewElement} />
           </div>
         )
       default:

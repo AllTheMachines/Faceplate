@@ -681,6 +681,64 @@ ${selector} .groupbox-header {
   user-select: none;
 }`
 
+    case 'dbdisplay':
+      return `${selector} {
+  /* dB Display */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ${element.fontFamily};
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  background-color: ${element.backgroundColor};
+  padding: 0 ${element.padding}px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  user-select: none;
+}`
+
+    case 'frequencydisplay':
+      return `${selector} {
+  /* Frequency Display */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ${element.fontFamily};
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  background-color: ${element.backgroundColor};
+  padding: 0 ${element.padding}px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  user-select: none;
+}`
+
+    case 'gainreductionmeter':
+      return `${selector} {
+  /* Gain Reduction Meter */
+  position: relative;
+  background-color: ${element.backgroundColor};
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+${selector} .gr-fill {
+  position: absolute;
+  background-color: ${element.meterColor};
+  border-radius: 2px;
+}
+
+${selector} .gr-value {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  font-family: 'Roboto Mono', monospace;
+  user-select: none;
+}`
 
     default:
       // TypeScript exhaustiveness check
