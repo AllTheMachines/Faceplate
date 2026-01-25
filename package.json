@@ -21,6 +21,7 @@
     "react-colorful": "^5.6.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.3.8",
+    "react-hot-toast": "^2.6.0",
     "react-hotkeys-hook": "^5.2.3",
     "react-konva": "^18.2.14",
     "svgson": "^5.3.1",
