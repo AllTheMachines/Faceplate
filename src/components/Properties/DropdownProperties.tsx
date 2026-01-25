@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { DropdownElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
 
@@ -7,6 +8,13 @@ interface DropdownPropertiesProps {
 }
 
 export function DropdownProperties({ element, onUpdate }: DropdownPropertiesProps) {
+  const [localOptions, setLocalOptions] = useState(element.options.join('\n'))
+
+  // Sync when element changes (different element selected)
+  useEffect(() => {
+    setLocalOptions(element.options.join('\n'))
+  }, [element.id, element.options])
+
   return (
     <>
       {/* Options */}
@@ -14,9 +22,10 @@ export function DropdownProperties({ element, onUpdate }: DropdownPropertiesProp
         <div>
           <label className="block text-xs text-gray-400 mb-1">Options (one per line)</label>
           <textarea
-            value={element.options.join('\n')}
-            onChange={(e) => {
-              const options = e.target.value.split('\n').filter((line) => line.trim() !== '')
+            value={localOptions}
+            onChange={(e) => setLocalOptions(e.target.value)}
+            onBlur={() => {
+              const options = localOptions.split('\n').filter((line) => line.trim() !== '')
               if (options.length === 0) options.push('Option 1')
               onUpdate({ options })
             }}
