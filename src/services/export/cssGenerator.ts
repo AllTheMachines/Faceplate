@@ -811,6 +811,56 @@ ${selector} .gr-value {
   user-select: none;
 }`
 
+    case 'presetbrowser':
+      return `${selector} {
+  /* Preset Browser */
+  overflow: hidden;
+}
+
+${selector} .preset-search {
+  padding: 8px;
+  border-bottom: 1px solid ${element.borderColor};
+}
+
+${selector} .preset-search input {
+  width: 100%;
+  background-color: #111827;
+  border: 1px solid ${element.borderColor};
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #6b7280;
+  outline: none;
+}
+
+${selector} .preset-list {
+  overflow-y: auto;
+  height: ${element.showSearch ? 'calc(100% - 50px)' : '100%'};
+}
+
+${selector} .preset-item {
+  height: ${element.itemHeight}px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  padding-right: 8px;
+  background-color: ${element.itemColor};
+  color: ${element.textColor};
+  font-size: ${element.fontSize}px;
+  font-family: Inter, system-ui, sans-serif;
+  cursor: pointer;
+  user-select: none;
+}
+
+${selector} .preset-item.selected {
+  background-color: ${element.selectedColor};
+  color: ${element.selectedTextColor};
+}
+
+${selector} .preset-item:hover:not(.selected) {
+  background-color: rgba(59, 130, 246, 0.1);
+}`
+
     case 'waveform':
       return `${selector} {
   /* Waveform Display */
