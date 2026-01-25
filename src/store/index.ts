@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { create, StateCreator } from 'zustand'
 import { temporal } from 'zundo'
 import { createCanvasSlice, CanvasSlice } from './canvasSlice'
 import { createViewportSlice, ViewportSlice } from './viewportSlice'
@@ -11,7 +11,8 @@ export interface TemplateSlice {
   clearCanvas: () => void
 }
 
-const createTemplateSlice = (set: any): TemplateSlice => ({
+// Use Store type for createTemplateSlice since it sets properties from multiple slices
+const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) => ({
   loadFromTemplate: (template: Template) => {
     set({
       elements: template.elements,
@@ -21,7 +22,7 @@ const createTemplateSlice = (set: any): TemplateSlice => ({
       backgroundColor: template.metadata.backgroundColor,
     })
   },
-  
+
   clearCanvas: () => {
     set({
       elements: [],

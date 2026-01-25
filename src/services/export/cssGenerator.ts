@@ -140,16 +140,21 @@ export function generateElementCSS(element: ElementConfig): string {
 
 ${selector} .slider-track {
   position: absolute;
-  inset: 0;
-  border-radius: 4px;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 6px;
+  transform: translateX(-50%);
+  border-radius: 3px;
 }
 
 ${selector} .slider-fill {
   position: absolute;
   bottom: 0;
-  left: 0;
-  right: 0;
-  border-radius: 4px;
+  left: 50%;
+  width: 6px;
+  transform: translateX(-50%);
+  border-radius: 3px;
 }
 
 ${selector} .slider-thumb {
@@ -158,7 +163,7 @@ ${selector} .slider-thumb {
   width: ${element.thumbWidth}px;
   height: ${element.thumbHeight}px;
   transform: translate(-50%, 50%);
-  border-radius: 2px;
+  border-radius: 4px;
 }`
       } else {
         return `${selector} {
@@ -170,16 +175,21 @@ ${selector} .slider-thumb {
 
 ${selector} .slider-track {
   position: absolute;
-  inset: 0;
-  border-radius: 4px;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 3px;
 }
 
 ${selector} .slider-fill {
   position: absolute;
-  top: 0;
   left: 0;
-  bottom: 0;
-  border-radius: 4px;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 3px;
 }
 
 ${selector} .slider-thumb {
@@ -188,7 +198,7 @@ ${selector} .slider-thumb {
   width: ${element.thumbWidth}px;
   height: ${element.thumbHeight}px;
   transform: translate(-50%, -50%);
-  border-radius: 2px;
+  border-radius: 4px;
 }`
       }
 

@@ -180,7 +180,7 @@ export function SaveLoadPanel() {
       // Update canvas settings from template metadata
       setCanvasDimensions(template.metadata.canvasWidth, template.metadata.canvasHeight)
       setBackgroundColor(template.metadata.backgroundColor)
-      setBackgroundType('solid')
+      setBackgroundType('color')
 
       // Clear selection and load elements
       selectMultiple([])

@@ -8,6 +8,11 @@ interface ImageRendererProps {
 export function ImageRenderer({ config }: ImageRendererProps) {
   const [hasError, setHasError] = React.useState(false)
 
+  // Reset error state when src changes
+  React.useEffect(() => {
+    setHasError(false)
+  }, [config.src])
+
   if (!config.src || hasError) {
     return (
       <div

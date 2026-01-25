@@ -13,7 +13,7 @@ interface DocumentationOptions {
 }
 
 export function generateReadme(options: DocumentationOptions): string {
-  const { projectName, elements, includeHtmlPreview, includeJuceBundle } = options
+  const { projectName, elements, includeHtmlPreview } = options
 
   const controlCount = {
     knobs: elements.filter(e => e.type === 'knob').length,

@@ -24,6 +24,66 @@ export interface ExportOptions {
   projectName?: string // Used for ZIP filename
 }
 
+interface ImageAsset {
+  path: string    // Path in ZIP (e.g., "assets/image.png")
+  srcUrl: string  // URL to fetch from (e.g., "/assets/image.png")
+}
+
+// ============================================================================
+// Image Asset Collection
+// ============================================================================
+
+/**
+ * Collect image assets that need to be bundled
+ * Only collects images with relative paths (starting with /assets/)
+ * Base64 embedded and external URLs don't need bundling
+ */
+function collectImageAssets(elements: ElementConfig[]): ImageAsset[] {
+  const assets: ImageAsset[] = []
+  const seen = new Set<string>()
+
+  for (const element of elements) {
+    if (element.type === 'image' && element.src) {
+      const src = element.src.trim()
+      // Only bundle relative paths from /assets/
+      if (src.startsWith('/assets/')) {
+        if (!seen.has(src)) {
+          seen.add(src)
+          assets.push({
+            path: src.slice(1), // Remove leading slash: "/assets/img.png" -> "assets/img.png"
+            srcUrl: src,
+          })
+        }
+      }
+    }
+  }
+
+  return assets
+}
+
+/**
+ * Fetch image assets and add them to ZIP
+ */
+async function bundleImageAssets(zip: JSZip, assets: ImageAsset[]): Promise<void> {
+  console.log('[Export] Bundling images:', assets.map(a => a.path))
+
+  for (const asset of assets) {
+    try {
+      console.log(`[Export] Fetching: ${asset.srcUrl}`)
+      const response = await fetch(asset.srcUrl)
+      if (response.ok) {
+        const blob = await response.blob()
+        console.log(`[Export] Adding to ZIP: ${asset.path} (${blob.size} bytes)`)
+        zip.file(asset.path, blob)
+      } else {
+        console.error(`[Export] Failed to fetch image: ${asset.srcUrl} (${response.status})`)
+      }
+    } catch (error) {
+      console.error(`[Export] Failed to fetch image: ${asset.srcUrl}`, error)
+    }
+  }
+}
+
 export type ExportResult =
   | { success: true }
   | { success: false; error: string }
@@ -97,13 +157,17 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
       includeJuceBundle: true,
     })
 
-    // Create ZIP bundle (4 web files + README, no C++)
+    // Create ZIP bundle (4 web files + README + assets, no C++)
     const zip = new JSZip()
     zip.file('index.html', htmlContent)
     zip.file('style.css', cssContent)
     zip.file('components.js', componentsJS)
     zip.file('bindings.js', bindingsJS)
     zip.file('README.md', readme)
+
+    // Bundle image assets
+    const imageAssets = collectImageAssets(options.elements)
+    await bundleImageAssets(zip, imageAssets)
 
     // Generate ZIP blob
     const blob = await zip.generateAsync({ type: 'blob' })
@@ -198,13 +262,17 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
       includeJuceBundle: false,
     })
 
-    // Create ZIP bundle (4 web files + README)
+    // Create ZIP bundle (4 web files + README + assets)
     const zip = new JSZip()
     zip.file('index.html', htmlContent)
     zip.file('style.css', cssContent)
     zip.file('components.js', componentsJS)
     zip.file('bindings.js', bindingsWithMock)
     zip.file('README.md', readme)
+
+    // Bundle image assets
+    const imageAssets = collectImageAssets(options.elements)
+    await bundleImageAssets(zip, imageAssets)
 
     // Generate ZIP blob
     const blob = await zip.generateAsync({ type: 'blob' })

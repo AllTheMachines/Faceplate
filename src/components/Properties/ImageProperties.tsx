@@ -51,6 +51,9 @@ export function ImageProperties({ element, onUpdate }: ImagePropertiesProps) {
         >
           Select Image File...
         </button>
+        <p className="mt-2 text-xs text-gray-500">
+          Embeds image as base64 directly in HTML. Works in JUCE plugins without extra setup.
+        </p>
 
         {element.src ? (
           <div className="mt-3 text-xs text-gray-400">
@@ -96,11 +99,11 @@ export function ImageProperties({ element, onUpdate }: ImagePropertiesProps) {
           <TextInput
             label="Or enter path/URL"
             value={sourceType === 'embedded' ? '' : element.src}
-            onChange={(src) => onUpdate({ src })}
+            onChange={(src) => onUpdate({ src: src.trim() })}
             placeholder="/assets/image.png"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Use /assets/... for images in public/assets/
+            Path works for HTML preview only. Use embedded for JUCE plugins.
           </p>
         </div>
       </PropertySection>

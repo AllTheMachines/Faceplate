@@ -117,8 +117,15 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'meter':
       return generateMeterHTML(id, baseClass, positionStyle, element)
 
-    case 'image':
-      return `<img id="${id}" class="${baseClass} image-element" data-type="image" src="${element.src}" alt="${escapeHTML(element.name)}" style="${positionStyle}" />`
+    case 'image': {
+      // Convert absolute paths to relative for export
+      // /assets/image.png -> assets/image.png
+      let src = element.src.trim()
+      if (src.startsWith('/assets/')) {
+        src = src.slice(1) // Remove leading slash
+      }
+      return `<img id="${id}" class="${baseClass} image-element" data-type="image" src="${src}" alt="${escapeHTML(element.name)}" style="${positionStyle}" />`
+    }
 
     default:
       // TypeScript exhaustiveness check
@@ -188,7 +195,7 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
 
   return `<div id="${id}" class="${baseClass} slider slider-element ${orientationClass}" data-type="slider" data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}">
       <div class="slider-track" style="background: ${config.trackColor};"></div>
-      <div class="slider-fill" style="background: ${config.fillColor}; ${fillStyle}"></div>
+      <div class="slider-fill" style="background: ${config.trackFillColor}; ${fillStyle}"></div>
       <div class="slider-thumb" style="background: ${config.thumbColor}; ${thumbStyle}"></div>
     </div>`
 }
