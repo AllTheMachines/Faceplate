@@ -378,48 +378,86 @@ function updateKnobVisual(knobId, value) {
   const element = document.getElementById(knobId);
   if (!element) return;
 
-  // Get stored config or use defaults
-  const config = element._knobConfig || {
-    startAngle: -135,
-    endAngle: 135
-  };
+  // Read angles from data attributes (set by HTML generator)
+  const startAngle = parseFloat(element.dataset.startAngle) || -135;
+  const endAngle = parseFloat(element.dataset.endAngle) || 135;
+
+  // Get SVG dimensions from viewBox
+  const svg = element.querySelector('svg');
+  if (!svg) return;
+  const viewBox = svg.getAttribute('viewBox');
+  const [, , vbWidth] = viewBox ? viewBox.split(' ').map(Number) : [0, 0, 100];
+  const diameter = vbWidth || 100;
+
+  // Get track width from the track path stroke-width
+  const trackPath = element.querySelector('.knob-arc-track');
+  const trackWidth = trackPath ? parseFloat(trackPath.getAttribute('stroke-width')) || 4 : 4;
+
+  // Calculate dimensions (same as HTML generator)
+  const cx = diameter / 2;
+  const cy = diameter / 2;
+  const r = (diameter - trackWidth) / 2;
+
+  // Calculate value angle
+  const valueAngle = startAngle + (value * (endAngle - startAngle));
 
   // Update arc fill for arc-style knobs
   const arcFill = element.querySelector('.knob-arc-fill');
   if (arcFill) {
-    const startAngle = config.startAngle || -135;
-    const endAngle = config.endAngle || 135;
-    const angleRange = endAngle - startAngle;
-    const currentAngle = startAngle + (value * angleRange);
-
-    // Calculate arc path
-    const cx = 50, cy = 50, r = 40;
-    const startRad = (startAngle - 90) * Math.PI / 180;
-    const endRad = (currentAngle - 90) * Math.PI / 180;
-    const x1 = cx + r * Math.cos(startRad);
-    const y1 = cy + r * Math.sin(startRad);
-    const x2 = cx + r * Math.cos(endRad);
-    const y2 = cy + r * Math.sin(endRad);
-    const largeArc = (currentAngle - startAngle) > 180 ? 1 : 0;
-
     if (value > 0.001) {
-      arcFill.setAttribute('d', \`M \${x1} \${y1} A \${r} \${r} 0 \${largeArc} 1 \${x2} \${y2}\`);
+      // Use same describeArc logic as HTML generator (counterclockwise, swap start/end)
+      const path = describeArcPath(cx, cy, r, startAngle, valueAngle);
+      arcFill.setAttribute('d', path);
     } else {
       arcFill.setAttribute('d', '');
     }
   }
 
-  // Update indicator rotation
+  // Update indicator position (for line/dot style knobs)
   const indicator = element.querySelector('.knob-indicator');
   if (indicator) {
-    const startAngle = config.startAngle || -135;
-    const endAngle = config.endAngle || 135;
-    const angle = startAngle + (value * (endAngle - startAngle));
-    indicator.style.transform = \`rotate(\${angle}deg)\`;
+    if (indicator.tagName === 'line') {
+      // Line indicator - update endpoints
+      const innerR = r * 0.4;
+      const outerR = r * 0.9;
+      const rad = (valueAngle - 90) * Math.PI / 180;
+      indicator.setAttribute('x1', cx + innerR * Math.cos(rad));
+      indicator.setAttribute('y1', cy + innerR * Math.sin(rad));
+      indicator.setAttribute('x2', cx + outerR * Math.cos(rad));
+      indicator.setAttribute('y2', cy + outerR * Math.sin(rad));
+    } else if (indicator.tagName === 'circle') {
+      // Dot indicator - update position
+      const outerR = r * 0.9;
+      const rad = (valueAngle - 90) * Math.PI / 180;
+      indicator.setAttribute('cx', cx + outerR * Math.cos(rad));
+      indicator.setAttribute('cy', cy + outerR * Math.sin(rad));
+    }
   }
 
   // Update data attribute
   element.setAttribute('data-value', value);
+}
+
+/**
+ * Calculate arc path (same algorithm as HTML generator)
+ * Uses counterclockwise sweep, swaps start/end for proper direction
+ */
+function describeArcPath(cx, cy, r, startAngle, endAngle) {
+  // Convert to radians, offset by -90 to make 0° = top
+  const startRad = (endAngle - 90) * Math.PI / 180;
+  const endRad = (startAngle - 90) * Math.PI / 180;
+
+  // Calculate start and end points (note: swapped for counterclockwise)
+  const x1 = cx + r * Math.cos(startRad);
+  const y1 = cy + r * Math.sin(startRad);
+  const x2 = cx + r * Math.cos(endRad);
+  const y2 = cy + r * Math.sin(endRad);
+
+  // Large arc flag: 1 if angle span > 180°
+  const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
+
+  // Sweep flag 0 = counterclockwise (matches HTML generator)
+  return \`M \${x1} \${y1} A \${r} \${r} 0 \${largeArc} 0 \${x2} \${y2}\`;
 }
 
 /**
@@ -557,46 +595,72 @@ function updateKnobVisualById(id, value) {
   const element = document.getElementById(id);
   if (!element) return;
 
-  // Get stored config or use defaults
-  const config = element._knobConfig || {
-    startAngle: -135,
-    endAngle: 135
-  };
+  // Read angles from data attributes (set by HTML generator)
+  const startAngle = parseFloat(element.dataset.startAngle) || -135;
+  const endAngle = parseFloat(element.dataset.endAngle) || 135;
+
+  // Get SVG dimensions from viewBox
+  const svg = element.querySelector('svg');
+  if (!svg) return;
+  const viewBox = svg.getAttribute('viewBox');
+  const [, , vbWidth] = viewBox ? viewBox.split(' ').map(Number) : [0, 0, 100];
+  const diameter = vbWidth || 100;
+
+  // Get track width from the track path stroke-width
+  const trackPath = element.querySelector('.knob-arc-track');
+  const trackWidth = trackPath ? parseFloat(trackPath.getAttribute('stroke-width')) || 4 : 4;
+
+  // Calculate dimensions (same as HTML generator)
+  const cx = diameter / 2;
+  const cy = diameter / 2;
+  const r = (diameter - trackWidth) / 2;
+
+  // Calculate value angle
+  const valueAngle = startAngle + (value * (endAngle - startAngle));
 
   // Update arc fill for arc-style knobs
   const arcFill = element.querySelector('.knob-arc-fill');
   if (arcFill) {
-    const startAngle = config.startAngle || -135;
-    const endAngle = config.endAngle || 135;
-    const angleRange = endAngle - startAngle;
-    const currentAngle = startAngle + (value * angleRange);
-
-    const cx = 50, cy = 50, r = 40;
-    const startRad = (startAngle - 90) * Math.PI / 180;
-    const endRad = (currentAngle - 90) * Math.PI / 180;
-    const x1 = cx + r * Math.cos(startRad);
-    const y1 = cy + r * Math.sin(startRad);
-    const x2 = cx + r * Math.cos(endRad);
-    const y2 = cy + r * Math.sin(endRad);
-    const largeArc = (currentAngle - startAngle) > 180 ? 1 : 0;
-
     if (value > 0.001) {
-      arcFill.setAttribute('d', \`M \${x1} \${y1} A \${r} \${r} 0 \${largeArc} 1 \${x2} \${y2}\`);
+      // Use same describeArc logic as HTML generator (counterclockwise, swap start/end)
+      const path = describeArcPathById(cx, cy, r, startAngle, valueAngle);
+      arcFill.setAttribute('d', path);
     } else {
       arcFill.setAttribute('d', '');
     }
   }
 
-  // Update indicator rotation
+  // Update indicator position (for line/dot style knobs)
   const indicator = element.querySelector('.knob-indicator');
   if (indicator) {
-    const startAngle = config.startAngle || -135;
-    const endAngle = config.endAngle || 135;
-    const angle = startAngle + (value * (endAngle - startAngle));
-    indicator.style.transform = \`rotate(\${angle}deg)\`;
+    if (indicator.tagName === 'line') {
+      const innerR = r * 0.4;
+      const outerR = r * 0.9;
+      const rad = (valueAngle - 90) * Math.PI / 180;
+      indicator.setAttribute('x1', cx + innerR * Math.cos(rad));
+      indicator.setAttribute('y1', cy + innerR * Math.sin(rad));
+      indicator.setAttribute('x2', cx + outerR * Math.cos(rad));
+      indicator.setAttribute('y2', cy + outerR * Math.sin(rad));
+    } else if (indicator.tagName === 'circle') {
+      const outerR = r * 0.9;
+      const rad = (valueAngle - 90) * Math.PI / 180;
+      indicator.setAttribute('cx', cx + outerR * Math.cos(rad));
+      indicator.setAttribute('cy', cy + outerR * Math.sin(rad));
+    }
   }
 
   element.setAttribute('data-value', value);
+}
+
+function describeArcPathById(cx, cy, r, startAngle, endAngle) {
+  const startRad = (endAngle - 90) * Math.PI / 180;
+  const endRad = (startAngle - 90) * Math.PI / 180;
+  const x1 = cx + r * Math.cos(startRad);
+  const y1 = cy + r * Math.sin(startRad);
+  const x2 = cx + r * Math.cos(endRad);
+  const y2 = cy + r * Math.sin(endRad);
+  const largeArc = Math.abs(endAngle - startAngle) > 180 ? 1 : 0;
+  return \`M \${x1} \${y1} A \${r} \${r} 0 \${largeArc} 0 \${x2} \${y2}\`;
 }
 
 function updateSliderVisualById(id, value) {
