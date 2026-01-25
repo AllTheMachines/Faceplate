@@ -2,10 +2,13 @@ import {
   DndContext,
   DragEndEvent,
   DragMoveEvent,
+  DragOverlay,
+  DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
+import { useState } from 'react'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
@@ -37,6 +40,26 @@ import {
   createPresetBrowser,
 } from './types/elements'
 
+function DragPreview({
+  elementType,
+  variant: _variant
+}: {
+  elementType: string
+  variant?: Record<string, unknown>
+}) {
+  return (
+    <div
+      className="bg-gray-700 border border-blue-500 rounded px-3 py-2 shadow-lg"
+      style={{
+        opacity: 0.9,
+        pointerEvents: 'none',
+      }}
+    >
+      <span className="text-sm text-white capitalize">{elementType}</span>
+    </div>
+  )
+}
+
 function App() {
   // Configure sensors with activation constraint to prevent accidental drags
   const sensors = useSensors(
@@ -57,6 +80,26 @@ function App() {
   const gridSize = useStore((state) => state.gridSize)
   const setLiveDragValues = useStore((state) => state.setLiveDragValues)
   const getElement = useStore((state) => state.getElement)
+
+  // Track active drag data for preview overlay
+  const [activeDragData, setActiveDragData] = useState<{
+    elementType: string
+    variant?: Record<string, unknown>
+  } | null>(null)
+
+  // Handle drag start - capture drag data for preview overlay
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    const sourceType = active.data.current?.sourceType
+
+    // Only show overlay for palette drags, not element moves
+    if (sourceType !== 'element') {
+      const { elementType, variant } = active.data.current || {}
+      if (elementType) {
+        setActiveDragData({ elementType, variant })
+      }
+    }
+  }
 
   // Handle drag move - broadcast live position values for all selected elements
   const handleDragMove = (event: DragMoveEvent) => {
@@ -241,15 +284,31 @@ function App() {
     }
 
     addElement(newElement)
+
+    // Clear drag state
+    setActiveDragData(null)
   }
 
   // Demo elements removed - users add elements via palette drag-drop
 
   return (
-    <DndContext sensors={sensors} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      onDragStart={handleDragStart}
+      onDragMove={handleDragMove}
+      onDragEnd={handleDragEnd}
+    >
       <ThreePanelLayout>
         <CanvasStage />
       </ThreePanelLayout>
+      <DragOverlay dropAnimation={null}>
+        {activeDragData && (
+          <DragPreview
+            elementType={activeDragData.elementType}
+            variant={activeDragData.variant}
+          />
+        )}
+      </DragOverlay>
     </DndContext>
   )
 }
