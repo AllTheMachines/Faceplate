@@ -307,6 +307,30 @@ export interface GroupBoxElementConfig extends BaseElementConfig {
   padding: number
 }
 
+export interface CollapsibleContainerElementConfig extends BaseElementConfig {
+  type: 'collapsible'
+
+  // Header
+  headerText: string
+  headerFontSize: number
+  headerColor: string
+  headerBackground: string
+  headerHeight: number
+
+  // Content
+  contentBackground: string
+  maxContentHeight: number
+  scrollBehavior: 'auto' | 'hidden' | 'scroll'
+
+  // State
+  collapsed: boolean
+
+  // Border
+  borderWidth: number
+  borderColor: string
+  borderRadius: number
+}
+
 export interface LineElementConfig extends BaseElementConfig {
   type: 'line'
 
@@ -401,6 +425,7 @@ export type ElementConfig =
   | PanelElementConfig
   | FrameElementConfig
   | GroupBoxElementConfig
+  | CollapsibleContainerElementConfig
 
 // ============================================================================
 // Type Guards
@@ -480,6 +505,10 @@ export function isFrame(element: ElementConfig): element is FrameElementConfig {
 
 export function isGroupBox(element: ElementConfig): element is GroupBoxElementConfig {
   return element.type === 'groupbox'
+}
+
+export function isCollapsible(element: ElementConfig): element is CollapsibleContainerElementConfig {
+  return element.type === 'collapsible'
 }
 
 // ============================================================================
@@ -827,49 +856,6 @@ export function createLine(overrides?: Partial<LineElementConfig>): LineElementC
   }
 }
 
-export function createRectangle(overrides?: Partial<RectangleElementConfig>): RectangleElementConfig {
-  return {
-    id: crypto.randomUUID(),
-    type: 'rectangle',
-    name: 'Rectangle',
-    x: 0,
-    y: 0,
-    width: 150,
-    height: 100,
-    rotation: 0,
-    zIndex: 0,
-    locked: false,
-    visible: true,
-    fillColor: '#3b82f6',
-    fillOpacity: 1,
-    borderWidth: 2,
-    borderColor: '#2563eb',
-    borderStyle: 'solid',
-    borderRadius: 4,
-    ...overrides,
-  }
-}
-
-export function createLine(overrides?: Partial<LineElementConfig>): LineElementConfig {
-  return {
-    id: crypto.randomUUID(),
-    type: 'line',
-    name: 'Line',
-    x: 0,
-    y: 0,
-    width: 150,
-    height: 2,
-    rotation: 0,
-    zIndex: 0,
-    locked: false,
-    visible: true,
-    strokeWidth: 2,
-    strokeColor: '#ffffff',
-    strokeStyle: 'solid',
-    ...overrides,
-  }
-}
-
 export function createPanel(overrides?: Partial<PanelElementConfig>): PanelElementConfig {
   return {
     id: crypto.randomUUID(),
@@ -935,6 +921,35 @@ export function createGroupBox(overrides?: Partial<GroupBoxElementConfig>): Grou
     borderColor: '#374151',
     borderRadius: 4,
     padding: 12,
+    ...overrides,
+  }
+}
+
+export function createCollapsible(overrides?: Partial<CollapsibleContainerElementConfig>): CollapsibleContainerElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'collapsible',
+    name: 'Collapsible',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    headerText: 'Collapsible',
+    headerFontSize: 12,
+    headerColor: '#ffffff',
+    headerBackground: '#1f2937',
+    headerHeight: 32,
+    contentBackground: 'transparent',
+    maxContentHeight: 150,
+    scrollBehavior: 'auto',
+    collapsed: false,
+    borderWidth: 1,
+    borderColor: '#374151',
+    borderRadius: 4,
     ...overrides,
   }
 }
