@@ -31,6 +31,10 @@ import {
   createFrame,
   createGroupBox,
   createCollapsible,
+  createTextField,
+  createWaveform,
+  createOscilloscope,
+  createPresetBrowser,
 } from './types/elements'
 
 function App() {
@@ -213,6 +217,18 @@ function App() {
         break
       case 'collapsible':
         newElement = createCollapsible({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'textfield':
+        newElement = createTextField({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'waveform':
+        newElement = createWaveform({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'oscilloscope':
+        newElement = createOscilloscope({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'presetbrowser':
+        newElement = createPresetBrowser({ x: canvasX, y: canvasY, ...variant })
         break
       default:
         return
