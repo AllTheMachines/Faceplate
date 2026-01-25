@@ -58,6 +58,9 @@ Recent decisions affecting current work:
 - **v1.1 (14-03)**: SafeSVG component as single SVG rendering point (SEC-08)
 - **v1.1 (14-03)**: Defense-in-depth re-sanitization before every render
 - **v1.1 (14-03)**: react-hot-toast with dark theme for validation messages
+- **v1.1 (14-04)**: Re-sanitization is silent with console.warn for tampering (non-disruptive)
+- **v1.1 (14-04)**: CSP allows inline scripts/styles (needed for JUCE bridge and element styling)
+- **v1.1 (14-04)**: Assets array is optional with default empty array (backward compatibility)
 
 ### Pending Todos
 
@@ -70,6 +73,8 @@ None yet.
 - ✓ Core sanitization logic implemented and tested
 - ✓ SafeSVG React component wrapping sanitizeSVG (14-03)
 - ✓ Toast notification infrastructure ready (14-03)
+- ✓ Re-sanitization on load and CSP on export (14-04)
+- ✓ Phase 14 complete - all security boundaries covered
 - TODO: ESLint rules needed to enforce SafeSVG component usage
 
 **Phase 17 considerations (from research):**
@@ -79,10 +84,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-25 23:06:24 UTC
-Stopped at: Completed 14-03-PLAN.md (SafeSVG Component & Toast Infrastructure)
+Last session: 2026-01-25 20:23:35 UTC
+Stopped at: Completed 14-04-PLAN.md (Serialization & Export Integration)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-25 after plan 14-03 completion*
+*Last updated: 2026-01-25 after plan 14-04 completion*
