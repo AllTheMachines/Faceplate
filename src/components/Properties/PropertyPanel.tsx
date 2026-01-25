@@ -22,6 +22,8 @@ import {
   isOscilloscope,
   isTextField,
   isCollapsible,
+  isRangeSlider,
+  isModulationMatrix,
   ElementConfig,
 } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection } from './'
@@ -47,6 +49,8 @@ import { CheckboxProperties } from './CheckboxProperties'
 import { RadioGroupProperties } from './RadioGroupProperties'
 import { TextFieldProperties } from './TextFieldProperties'
 import { CollapsibleProperties } from './CollapsibleProperties'
+import { RangeSliderProperties } from './RangeSliderProperties'
+import { ModulationMatrixProperties } from './ModulationMatrixProperties'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -193,6 +197,8 @@ export function PropertyPanel() {
       {isRadioGroup(element) && <RadioGroupProperties element={element} onUpdate={update} />}
       {isTextField(element) && <TextFieldProperties element={element} onUpdate={update} />}
       {isCollapsible(element) && <CollapsibleProperties element={element} onUpdate={update} />}
+      {isRangeSlider(element) && <RangeSliderProperties element={element} onUpdate={update} />}
+      {isModulationMatrix(element) && <ModulationMatrixProperties element={element} onUpdate={update} />}
     </div>
   )
 }
