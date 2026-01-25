@@ -173,6 +173,7 @@ async function initializeJUCEBridge() {
         // NOW initialize all UI elements
 ${knobSetups || '        // No knobs with parameter bindings'}
 ${sliderSetups || '        // No sliders with parameter bindings'}
+${rangeSliderSetups || '        // No range sliders with parameter bindings'}
 ${buttonSetups || '        // No buttons with parameter bindings'}
 
         console.log('[JUCEBridge] Initialization complete');
@@ -353,7 +354,7 @@ function setupSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
 function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, defaultMax = 0.75) {
   const rangeSlider = document.getElementById(rangeSliderId);
   if (!rangeSlider) {
-    console.error(`Range slider element not found: ${rangeSliderId}`);
+    console.error(\`Range slider element not found: \${rangeSliderId}\`);
     return;
   }
 
@@ -370,7 +371,7 @@ function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, 
   const maxThumb = rangeSlider.querySelector('.rangeslider-thumb-max');
 
   if (!minThumb || !maxThumb) {
-    console.error(`Range slider thumbs not found for: ${rangeSliderId}`);
+    console.error(\`Range slider thumbs not found for: \${rangeSliderId}\`);
     return;
   }
 
@@ -384,8 +385,8 @@ function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, 
     startMinValue = currentMinValue;
     startMaxValue = currentMaxValue;
 
-    const minParamId = `${paramId}_min`;
-    const maxParamId = `${paramId}_max`;
+    const minParamId = \`\${paramId}_min\`;
+    const maxParamId = \`\${paramId}_max\`;
     bridge.beginGesture(thumb === 'min' ? minParamId : maxParamId).catch(() => {});
     e.preventDefault();
   };
@@ -405,14 +406,14 @@ function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, 
       newMin = Math.max(0, Math.min(newMin, currentMaxValue)); // Cannot exceed max
       currentMinValue = newMin;
       
-      const minParamId = `${paramId}_min`;
+      const minParamId = \`\${paramId}_min\`;
       bridge.setParameter(minParamId, newMin).catch(() => {});
     } else if (activeThumb === 'max') {
       let newMax = startMaxValue + delta * sensitivity;
       newMax = Math.min(1, Math.max(newMax, currentMinValue)); // Cannot go below min
       currentMaxValue = newMax;
       
-      const maxParamId = `${paramId}_max`;
+      const maxParamId = \`\${paramId}_max\`;
       bridge.setParameter(maxParamId, newMax).catch(() => {});
     }
 
@@ -421,8 +422,8 @@ function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, 
 
   document.addEventListener('mouseup', () => {
     if (isDragging && activeThumb) {
-      const minParamId = `${paramId}_min`;
-      const maxParamId = `${paramId}_max`;
+      const minParamId = \`\${paramId}_min\`;
+      const maxParamId = \`\${paramId}_max\`;
       bridge.endGesture(activeThumb === 'min' ? minParamId : maxParamId).catch(() => {});
       isDragging = false;
       activeThumb = null;
@@ -433,8 +434,8 @@ function setupRangeSliderInteraction(rangeSliderId, paramId, defaultMin = 0.25, 
   rangeSlider.addEventListener('dblclick', () => {
     currentMinValue = defaultMin;
     currentMaxValue = defaultMax;
-    const minParamId = `${paramId}_min`;
-    const maxParamId = `${paramId}_max`;
+    const minParamId = \`\${paramId}_min\`;
+    const maxParamId = \`\${paramId}_max\`;
     bridge.setParameter(minParamId, defaultMin).catch(() => {});
     bridge.setParameter(maxParamId, defaultMax).catch(() => {});
     updateRangeSliderVisual(rangeSliderId, defaultMin, defaultMax);
@@ -620,18 +621,18 @@ function updateRangeSliderVisual(rangeSliderId, minValue, maxValue) {
   const fill = element.querySelector('.rangeslider-fill');
 
   if (isVertical) {
-    if (minThumb) minThumb.style.bottom = `${minValue * 100}%`;
-    if (maxThumb) maxThumb.style.bottom = `${maxValue * 100}%`;
+    if (minThumb) minThumb.style.bottom = \`\${minValue * 100}%\`;
+    if (maxThumb) maxThumb.style.bottom = \`\${maxValue * 100}%\`;
     if (fill) {
-      fill.style.bottom = `${minValue * 100}%`;
-      fill.style.height = `${(maxValue - minValue) * 100}%`;
+      fill.style.bottom = \`\${minValue * 100}%\`;
+      fill.style.height = \`\${(maxValue - minValue) * 100}%\`;
     }
   } else {
-    if (minThumb) minThumb.style.left = `${minValue * 100}%`;
-    if (maxThumb) maxThumb.style.left = `${maxValue * 100}%`;
+    if (minThumb) minThumb.style.left = \`\${minValue * 100}%\`;
+    if (maxThumb) maxThumb.style.left = \`\${maxValue * 100}%\`;
     if (fill) {
-      fill.style.left = `${minValue * 100}%`;
-      fill.style.width = `${(maxValue - minValue) * 100}%`;
+      fill.style.left = \`\${minValue * 100}%\`;
+      fill.style.width = \`\${(maxValue - minValue) * 100}%\`;
     }
   }
 

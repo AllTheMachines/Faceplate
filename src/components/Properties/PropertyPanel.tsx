@@ -21,6 +21,7 @@ import {
   isWaveform,
   isOscilloscope,
   isTextField,
+  isCollapsible,
   ElementConfig,
 } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection } from './'

@@ -41,7 +41,8 @@ export function serializeProject(state: SerializationInput): string {
       snapToGrid: state.snapToGrid,
       gridSize: state.gridSize,
     },
-    elements: state.elements,
+    // Cast needed: TypeScript ElementConfig is wider than Zod ProjectData schema
+    elements: state.elements as ProjectData['elements'],
     selectedIds: state.selectedIds,
   }
 

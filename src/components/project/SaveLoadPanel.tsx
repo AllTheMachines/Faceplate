@@ -152,7 +152,8 @@ export function SaveLoadPanel() {
       }
 
       // Replace all elements (setElements replaces, doesn't append)
-      setElements(data.elements)
+      // Cast needed: Zod schema type != TypeScript type due to Phase 13 extended elements
+      setElements(data.elements as import('../../types/elements').ElementConfig[])
 
       // Restore selection if present
       if (data.selectedIds) {

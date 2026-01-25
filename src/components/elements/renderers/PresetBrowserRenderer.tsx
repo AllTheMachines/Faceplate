@@ -29,11 +29,12 @@ export function PresetBrowserRenderer({ config }: PresetBrowserRendererProps) {
 
     config.presets.forEach(preset => {
       if (preset.includes('/')) {
-        const [folder, name] = preset.split('/')
-        if (!folders.has(folder)) {
+        const [folder, ...rest] = preset.split('/')
+        const name = rest.join('/') || preset
+        if (folder && !folders.has(folder)) {
           folders.set(folder, [])
         }
-        folders.get(folder)!.push(name)
+        if (folder) folders.get(folder)!.push(name)
       } else {
         rootPresets.push(preset)
       }

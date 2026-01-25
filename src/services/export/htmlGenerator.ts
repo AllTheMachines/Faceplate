@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
 
 // ============================================================================
@@ -224,6 +224,9 @@ export function generateElementHTML(element: ElementConfig): string {
     <div class="oscilloscope-grid"></div>
     <div class="oscilloscope-placeholder">Oscilloscope</div>
   </div>`
+
+    case 'modulationmatrix':
+      return generateModulationMatrixHTML(id, baseClass, positionStyle, element)
 
     default:
       // TypeScript exhaustiveness check

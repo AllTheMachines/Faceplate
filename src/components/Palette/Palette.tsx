@@ -15,6 +15,7 @@ const paletteCategories = [
     name: 'Linear Controls',
     items: [
       { id: 'slider', type: 'slider', name: 'Slider', variant: { orientation: 'vertical' } },
+      { id: 'rangeslider', type: 'rangeslider', name: 'Range Slider' },
     ],
   },
   {

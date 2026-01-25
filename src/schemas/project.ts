@@ -144,13 +144,26 @@ const ImageElementSchema = BaseElementSchema.extend({
 // ============================================================================
 
 // Using z.discriminatedUnion for O(1) lookup performance
-export const ElementConfigSchema = z.discriminatedUnion('type', [
+// Phase 13 adds many new element types - use passthrough for extensibility
+// Core elements still validated strictly, new elements pass through
+const CoreElementSchema = z.discriminatedUnion('type', [
   KnobElementSchema,
   SliderElementSchema,
   ButtonElementSchema,
   LabelElementSchema,
   MeterElementSchema,
   ImageElementSchema,
+])
+
+// Allow any element with required base fields (type, id, name, x, y, width, height)
+const ExtendedElementSchema = BaseElementSchema.extend({
+  type: z.string(),
+}).passthrough()
+
+// Accept core elements strictly, or any element with base fields
+export const ElementConfigSchema = z.union([
+  CoreElementSchema,
+  ExtendedElementSchema,
 ])
 
 // ============================================================================
