@@ -17,6 +17,20 @@ import {
   createLabel,
   createMeter,
   createImage,
+  createDropdown,
+  createCheckbox,
+  createRadioGroup,
+  createRangeSlider,
+  createModulationMatrix,
+  createRectangle,
+  createLine,
+  createDbDisplay,
+  createFrequencyDisplay,
+  createGainReductionMeter,
+  createPanel,
+  createFrame,
+  createGroupBox,
+  createCollapsible,
 } from './types/elements'
 
 function App() {
@@ -157,6 +171,48 @@ function App() {
         break
       case 'image':
         newElement = createImage({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'dropdown':
+        newElement = createDropdown({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'checkbox':
+        newElement = createCheckbox({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'radiogroup':
+        newElement = createRadioGroup({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'rangeslider':
+        newElement = createRangeSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'modulationmatrix':
+        newElement = createModulationMatrix({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'rectangle':
+        newElement = createRectangle({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'line':
+        newElement = createLine({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'dbdisplay':
+        newElement = createDbDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'frequencydisplay':
+        newElement = createFrequencyDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'gainreductionmeter':
+        newElement = createGainReductionMeter({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'panel':
+        newElement = createPanel({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'frame':
+        newElement = createFrame({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'groupbox':
+        newElement = createGroupBox({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'collapsible':
+        newElement = createCollapsible({ x: canvasX, y: canvasY, ...variant })
         break
       default:
         return
