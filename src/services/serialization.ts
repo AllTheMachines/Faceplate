@@ -7,6 +7,7 @@ import { generateErrorMessage } from 'zod-error'
 import { ProjectSchema, type ProjectData } from '../schemas/project'
 import type { ElementConfig } from '../types/elements'
 import type { GradientConfig } from '../store/canvasSlice'
+import { sanitizeSVG } from '../lib/svg-sanitizer'
 
 // ============================================================================
 // Serialization
@@ -113,9 +114,26 @@ export function deserializeProject(json: string): DeserializeResult {
     }
   }
 
+  const data = result.data
+
+  // Re-sanitize all SVG assets (SEC-02: tampering protection)
+  if (data.assets && data.assets.length > 0) {
+    data.assets = data.assets.map(asset => {
+      const resanitized = sanitizeSVG(asset.content)
+      // Log if content changed during re-sanitization (possible tampering)
+      if (resanitized !== asset.content) {
+        console.warn(`Asset "${asset.name}" was modified during re-sanitization (possible tampering)`)
+      }
+      return {
+        ...asset,
+        content: resanitized
+      }
+    })
+  }
+
   return {
     success: true,
-    data: result.data,
+    data,
   }
 }
 
