@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 13-extended-elements
 source: 13-12-SUMMARY.md, 13-13-SUMMARY.md, 13-14-SUMMARY.md (gap closure verification)
 started: 2026-01-25T19:00:00Z
@@ -63,42 +63,28 @@ skipped: 1
 
 ## Gaps
 
-- truth: "Text Field element appears at drop position on canvas"
+- truth: "All palette elements appear at drop position on canvas"
   status: failed
-  reason: "User reported: Text Field doesnt appear on mouseposition where its dragged"
+  reason: "User reported: Elements appear a few hundred pixels higher than mouse position. Only knobs and sliders work correctly - all other elements are offset."
   severity: major
-  test: 3
-  root_cause: ""
-  artifacts: []
-  missing: []
+  test: 3,4,5,6
+  root_cause: "Systemic positioning bug affecting all elements EXCEPT original Phase 2 elements (knob, slider). Elements appear offset by ~hundreds of pixels in Y direction (higher = lower Y). Same coordinate calculation code used for all elements, so issue likely in how drop coordinates are captured or how element dimensions affect placement."
+  artifacts:
+    - path: "src/App.tsx"
+      issue: "handleDragEnd coordinate calculation (lines 145-156) works for knob/slider but not others"
+  missing:
+    - "Debug why knob/slider work but others don't"
+    - "Check if element default dimensions or origin point affects placement"
+    - "May need to center element on drop point rather than top-left corner"
   debug_session: ""
 
-- truth: "Waveform Display element appears at drop position on canvas"
-  status: failed
-  reason: "User reported: Waveform Display doesnt appear on mouseposition where its dragged"
-  severity: major
-  test: 4
-  root_cause: ""
+- truth: "Drag preview shown at mouse cursor while dragging from palette"
+  status: feature_request
+  reason: "User requested: would be great if a preview is shown at the mouse while dragging"
+  severity: minor
+  test: general
+  root_cause: "Feature not implemented - @dnd-kit supports DragOverlay for drag previews"
   artifacts: []
-  missing: []
-  debug_session: ""
-
-- truth: "Oscilloscope element appears at drop position on canvas"
-  status: failed
-  reason: "User reported: Oscilloscope doesnt appear on mouseposition where its dragged"
-  severity: major
-  test: 5
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
-
-- truth: "Preset Browser element appears at drop position on canvas"
-  status: failed
-  reason: "User reported: Preset Browser doesnt appear on mouseposition where its dragged"
-  severity: major
-  test: 6
-  root_cause: ""
-  artifacts: []
-  missing: []
+  missing:
+    - "Add DragOverlay component with element preview during drag"
   debug_session: ""
