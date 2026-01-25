@@ -242,9 +242,6 @@ export const SANITIZE_CONFIG = {
 
     // Style attribute (CSS content sanitized by DOMPurify)
     'style',
-
-    // Use element
-    'xlink:href',
   ],
 
   /**
