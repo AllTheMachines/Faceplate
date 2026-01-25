@@ -279,6 +279,55 @@ ${selector} .meter-fill {
   display: block;
 }`
 
+    case 'modulationmatrix':
+      return `${selector} {
+  /* Modulation Matrix */
+  overflow: hidden;
+}
+
+${selector} .modulation-matrix {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+${selector} .matrix-corner {
+  background: ${element.headerBackground};
+  border: 1px solid ${element.borderColor};
+}
+
+${selector} .matrix-header,
+${selector} .matrix-row-header {
+  background: ${element.headerBackground};
+  color: ${element.headerColor};
+  font-size: ${element.headerFontSize}px;
+  font-weight: 600;
+  padding: 2px 4px;
+  text-align: center;
+  border: 1px solid ${element.borderColor};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+${selector} .matrix-row-header {
+  text-align: right;
+}
+
+${selector} .matrix-cell {
+  background: ${element.cellColor};
+  border: 1px solid ${element.borderColor};
+  width: ${element.cellSize}px;
+  height: ${element.cellSize}px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+${selector} .matrix-cell[data-active="true"] {
+  background: ${element.activeColor};
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

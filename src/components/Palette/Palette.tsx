@@ -35,6 +35,14 @@ const paletteCategories = [
     name: 'Images & Decorative',
     items: [{ id: 'image', type: 'image', name: 'Image' }],
   },
+  {
+    name: 'Containers',
+    items: [
+      { id: 'panel', type: 'panel', name: 'Panel' },
+      { id: 'frame', type: 'frame', name: 'Frame' },
+      { id: 'groupbox', type: 'groupbox', name: 'Group Box' },
+    ],
+  },
 ]
 
 export function Palette() {

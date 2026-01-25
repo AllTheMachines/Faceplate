@@ -6,6 +6,11 @@ import {
   isLabel,
   isMeter,
   isImage,
+  isPanel,
+  isFrame,
+  isGroupBox,
+  isRectangle,
+  isLine,
   ElementConfig,
 } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection } from './'
@@ -15,6 +20,11 @@ import { ButtonProperties } from './ButtonProperties'
 import { LabelProperties } from './LabelProperties'
 import { MeterProperties } from './MeterProperties'
 import { ImageProperties } from './ImageProperties'
+import { PanelProperties } from './PanelProperties'
+import { FrameProperties } from './FrameProperties'
+import { GroupBoxProperties } from './GroupBoxProperties'
+import { RectangleProperties } from './RectangleProperties'
+import { LineProperties } from './LineProperties'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -139,6 +149,11 @@ export function PropertyPanel() {
       {isLabel(element) && <LabelProperties element={element} onUpdate={update} />}
       {isMeter(element) && <MeterProperties element={element} onUpdate={update} />}
       {isImage(element) && <ImageProperties element={element} onUpdate={update} />}
+      {isPanel(element) && <PanelProperties element={element} onUpdate={update} />}
+      {isFrame(element) && <FrameProperties element={element} onUpdate={update} />}
+      {isGroupBox(element) && <GroupBoxProperties element={element} onUpdate={update} />}
+      {isRectangle(element) && <RectangleProperties element={element} onUpdate={update} />}
+      {isLine(element) && <LineProperties element={element} onUpdate={update} />}
     </div>
   )
 }

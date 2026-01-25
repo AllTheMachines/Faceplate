@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
 
 // ============================================================================
@@ -107,6 +107,9 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'slider':
       return generateSliderHTML(id, baseClass, positionStyle, element)
+
+    case 'rangeslider':
+      return generateRangeSliderHTML(id, baseClass, positionStyle, element)
 
     case 'button':
       return `<button id="${id}" class="${baseClass} button-element" data-type="button" data-mode="${element.mode}" style="${positionStyle}">${escapeHTML(element.label)}</button>`
@@ -222,5 +225,51 @@ function generateMeterHTML(id: string, baseClass: string, positionStyle: string,
 
   return `<div id="${id}" class="${baseClass} meter meter-element ${orientationClass}" data-type="meter" data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}; background: ${config.backgroundColor};">
       <div class="meter-fill" style="background: ${fillGradient}; ${fillStyle}"></div>
+    </div>`
+}
+
+/**
+ * Generate modulation matrix HTML with table structure for JUCE integration
+ */
+function generateModulationMatrixHTML(id: string, baseClass: string, positionStyle: string, config: ModulationMatrixElementConfig): string {
+  const { sources, destinations, previewActiveConnections } = config
+
+  // Generate header row with destination labels
+  const headerCells = destinations
+    .map((dest) => `<th class="matrix-header">${escapeHTML(dest)}</th>`)
+    .join('')
+
+  // Generate matrix rows
+  const rows = sources
+    .map((source, sourceIdx) => {
+      const cells = destinations
+        .map((_, destIdx) => {
+          const isActive = previewActiveConnections.some(
+            ([sIdx, dIdx]) => sIdx === sourceIdx && dIdx === destIdx
+          )
+          const activeAttr = isActive ? ' data-active="true"' : ''
+          return `<td class="matrix-cell"${activeAttr}></td>`
+        })
+        .join('')
+
+      return `<tr>
+        <th class="matrix-row-header">${escapeHTML(source)}</th>
+        ${cells}
+      </tr>`
+    })
+    .join('')
+
+  return `<div id="${id}" class="${baseClass} modulationmatrix-element" data-type="modulationmatrix" data-sources="${escapeHTML(JSON.stringify(sources))}" data-destinations="${escapeHTML(JSON.stringify(destinations))}" style="${positionStyle}">
+      <table class="modulation-matrix">
+        <thead>
+          <tr>
+            <th class="matrix-corner"></th>
+            ${headerCells}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
     </div>`
 }
