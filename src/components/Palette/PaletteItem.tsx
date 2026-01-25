@@ -12,6 +12,10 @@ import {
   createDbDisplay,
   createFrequencyDisplay,
   createGainReductionMeter,
+  createPanel,
+  createFrame,
+  createGroupBox,
+  createCollapsible,
   ElementConfig,
 } from '../../types/elements'
 import { KnobRenderer } from '../elements/renderers/KnobRenderer'
@@ -25,6 +29,10 @@ import { LineRenderer } from '../elements/renderers/LineRenderer'
 import { DbDisplayRenderer } from '../elements/renderers/DbDisplayRenderer'
 import { FrequencyDisplayRenderer } from '../elements/renderers/FrequencyDisplayRenderer'
 import { GainReductionMeterRenderer } from '../elements/renderers/GainReductionMeterRenderer'
+import { PanelRenderer } from '../elements/renderers/PanelRenderer'
+import { FrameRenderer } from '../elements/renderers/FrameRenderer'
+import { GroupBoxRenderer } from '../elements/renderers/GroupBoxRenderer'
+import { CollapsibleRenderer } from '../elements/renderers/CollapsibleRenderer'
 
 interface PaletteItemProps {
   id: string
@@ -149,6 +157,40 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           showValue: false,
           ...variant,
         })
+      case 'panel':
+        return createPanel({
+          ...baseOverrides,
+          width: 50,
+          height: 40,
+          ...variant,
+        })
+      case 'frame':
+        return createFrame({
+          ...baseOverrides,
+          width: 50,
+          height: 40,
+          ...variant,
+        })
+      case 'groupbox':
+        return createGroupBox({
+          ...baseOverrides,
+          width: 50,
+          height: 40,
+          headerFontSize: 8,
+          headerText: 'Group',
+          ...variant,
+        })
+      case 'collapsible':
+        return createCollapsible({
+          ...baseOverrides,
+          width: 50,
+          height: 50,
+          headerFontSize: 8,
+          headerHeight: 16,
+          headerText: 'Collapsible',
+          maxContentHeight: 30,
+          ...variant,
+        })
       default:
         return null
     }
@@ -257,6 +299,30 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <GainReductionMeterRenderer config={previewElement} />
+          </div>
+        )
+      case 'panel':
+        return (
+          <div style={containerStyle}>
+            <PanelRenderer config={previewElement} />
+          </div>
+        )
+      case 'frame':
+        return (
+          <div style={containerStyle}>
+            <FrameRenderer config={previewElement} />
+          </div>
+        )
+      case 'groupbox':
+        return (
+          <div style={containerStyle}>
+            <GroupBoxRenderer config={previewElement} />
+          </div>
+        )
+      case 'collapsible':
+        return (
+          <div style={containerStyle}>
+            <CollapsibleRenderer config={previewElement} />
           </div>
         )
       default:

@@ -17,6 +17,7 @@ import {
   isDbDisplay,
   isFrequencyDisplay,
   isGainReductionMeter,
+  isPresetBrowser,
   isWaveform,
   isOscilloscope,
   isTextField,
@@ -37,6 +38,7 @@ import { LineProperties } from './LineProperties'
 import { DbDisplayProperties } from './DbDisplayProperties'
 import { FrequencyDisplayProperties } from './FrequencyDisplayProperties'
 import { GainReductionMeterProperties } from './GainReductionMeterProperties'
+import { PresetBrowserProperties } from './PresetBrowserProperties'
 import { WaveformProperties } from './WaveformProperties'
 import { OscilloscopeProperties } from './OscilloscopeProperties'
 import { DropdownProperties } from './DropdownProperties'
@@ -180,6 +182,11 @@ export function PropertyPanel() {
       {isGainReductionMeter(element) && (
         <GainReductionMeterProperties element={element} onUpdate={update} />
       )}
+      {isPresetBrowser(element) && (
+        <PresetBrowserProperties element={element} onUpdate={update} />
+      )}
+      {isWaveform(element) && <WaveformProperties element={element} onUpdate={update} />}
+      {isOscilloscope(element) && <OscilloscopeProperties element={element} onUpdate={update} />}
       {isDropdown(element) && <DropdownProperties element={element} onUpdate={update} />}
       {isCheckbox(element) && <CheckboxProperties element={element} onUpdate={update} />}
       {isRadioGroup(element) && <RadioGroupProperties element={element} onUpdate={update} />}

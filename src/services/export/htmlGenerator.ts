@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
 
 // ============================================================================
@@ -168,6 +168,9 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'radiogroup':
       return generateRadioGroupHTML(id, baseClass, positionStyle, element)
 
+    case 'textfield':
+      return generateTextFieldHTML(id, baseClass, positionStyle, element)
+
     case 'rectangle': {
       const fillColorWithOpacity = element.fillOpacity < 1
         ? `${element.fillColor}${Math.round(element.fillOpacity * 255).toString(16).padStart(2, '0')}`
@@ -202,6 +205,17 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'gainreductionmeter':
       return generateGainReductionMeterHTML(id, baseClass, positionStyle, element)
+
+    case 'waveform':
+      return `<div id="${id}" class="${baseClass} waveform-element" data-type="waveform" data-zoom-level="${element.zoomLevel}" style="${positionStyle}">
+    <div class="waveform-placeholder">Waveform Display</div>
+  </div>`
+
+    case 'oscilloscope':
+      return `<div id="${id}" class="${baseClass} oscilloscope-element" data-type="oscilloscope" data-time-div="${element.timeDiv}" data-amplitude-scale="${element.amplitudeScale}" data-trigger-level="${element.triggerLevel}" data-grid-divisions="${element.gridDivisions}" style="${positionStyle}">
+    <div class="oscilloscope-grid"></div>
+    <div class="oscilloscope-placeholder">Oscilloscope</div>
+  </div>`
 
     default:
       // TypeScript exhaustiveness check
@@ -484,4 +498,12 @@ function generateRadioGroupHTML(id: string, baseClass: string, positionStyle: st
   return `<div id="${id}" class="${baseClass} radiogroup-element" data-type="radiogroup" data-orientation="${config.orientation}" style="${positionStyle}">
       ${radios}
     </div>`
+}
+
+function generateTextFieldHTML(id: string, baseClass: string, positionStyle: string, config: TextFieldElementConfig): string {
+  const maxLengthAttr = config.maxLength > 0 ? ` maxlength="${config.maxLength}"` : ''
+  const value = config.value ? ` value="${escapeHTML(config.value)}"` : ''
+  const placeholder = config.placeholder ? ` placeholder="${escapeHTML(config.placeholder)}"` : ''
+
+  return `<input type="text" id="${id}" class="${baseClass} textfield-element" data-type="textfield"${value}${placeholder}${maxLengthAttr} style="${positionStyle}" />`
 }

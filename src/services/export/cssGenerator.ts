@@ -632,6 +632,34 @@ ${selector} label {
 }`
       }
 
+    case 'textfield':
+      return `${selector} {
+  /* Text field */
+  width: 100%;
+  height: 100%;
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: ${element.borderWidth}px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  padding: ${element.padding}px;
+  font-family: ${element.fontFamily};
+  font-size: ${element.fontSize}px;
+  text-align: ${element.textAlign};
+  outline: none;
+  box-sizing: border-box;
+}
+
+${selector}::placeholder {
+  color: ${element.textColor}80; /* 50% opacity */
+  opacity: 1;
+}
+
+${selector}:focus {
+  border-color: ${element.borderColor};
+  outline: 2px solid ${element.borderColor}40; /* 25% opacity */
+  outline-offset: -1px;
+}`
+
     case 'panel':
       return `${selector} {
   /* Panel */

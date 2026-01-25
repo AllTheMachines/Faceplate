@@ -37,6 +37,8 @@ const paletteCategories = [
       { id: 'dbdisplay', type: 'dbdisplay', name: 'dB Display' },
       { id: 'frequencydisplay', type: 'frequencydisplay', name: 'Frequency Display' },
       { id: 'gainreductionmeter', type: 'gainreductionmeter', name: 'GR Meter' },
+      { id: 'waveform', type: 'waveform', name: 'Waveform' },
+      { id: 'oscilloscope', type: 'oscilloscope', name: 'Oscilloscope' },
     ],
   },
   {
