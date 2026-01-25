@@ -186,6 +186,29 @@ export interface RadioGroupElementConfig extends BaseElementConfig {
   spacing: number
 }
 
+
+export interface RangeSliderElementConfig extends BaseElementConfig {
+  type: 'rangeslider'
+
+  // Orientation
+  orientation: 'vertical' | 'horizontal'
+
+  // Value Range
+  min: number // Absolute minimum bound
+  max: number // Absolute maximum bound
+  minValue: number // Current minimum selection
+  maxValue: number // Current maximum selection
+
+  // Track
+  trackColor: string
+  fillColor: string // Fill between min and max thumbs
+
+  // Thumbs
+  thumbColor: string
+  thumbWidth: number
+  thumbHeight: number
+}
+
 export interface ModulationMatrixElementConfig extends BaseElementConfig {
   type: 'modulationmatrix'
 
@@ -208,6 +231,31 @@ export interface ModulationMatrixElementConfig extends BaseElementConfig {
   previewActiveConnections: Array<[number, number]> // [sourceIndex, destinationIndex] pairs
 }
 
+export interface RectangleElementConfig extends BaseElementConfig {
+  type: 'rectangle'
+
+  // Fill
+  fillColor: string
+  fillOpacity: number // 0-1
+
+  // Border
+  borderWidth: number
+  borderColor: string
+  borderStyle: 'solid' | 'dashed' | 'dotted'
+  borderRadius: number
+}
+
+export interface LineElementConfig extends BaseElementConfig {
+  type: 'line'
+
+  // Stroke
+  strokeWidth: number
+  strokeColor: string
+  strokeStyle: 'solid' | 'dashed' | 'dotted'
+  // Note: orientation determined by width/height aspect ratio
+  // horizontal: width > height, vertical: height > width
+}
+
 // ============================================================================
 // Discriminated Union Type
 // ============================================================================
@@ -222,7 +270,10 @@ export type ElementConfig =
   | DropdownElementConfig
   | CheckboxElementConfig
   | RadioGroupElementConfig
+  | RangeSliderElementConfig
   | ModulationMatrixElementConfig
+  | RectangleElementConfig
+  | LineElementConfig
 
 // ============================================================================
 // Type Guards
@@ -264,8 +315,20 @@ export function isRadioGroup(element: ElementConfig): element is RadioGroupEleme
   return element.type === 'radiogroup'
 }
 
+export function isRangeSlider(element: ElementConfig): element is RangeSliderElementConfig {
+  return element.type === 'rangeslider'
+}
+
 export function isModulationMatrix(element: ElementConfig): element is ModulationMatrixElementConfig {
   return element.type === 'modulationmatrix'
+}
+
+export function isRectangle(element: ElementConfig): element is RectangleElementConfig {
+  return element.type === 'rectangle'
+}
+
+export function isLine(element: ElementConfig): element is LineElementConfig {
+  return element.type === 'line'
 }
 
 // ============================================================================
@@ -492,6 +555,33 @@ export function createRadioGroup(overrides?: Partial<RadioGroupElementConfig>): 
   }
 }
 
+export function createRangeSlider(overrides?: Partial<RangeSliderElementConfig>): RangeSliderElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rangeslider',
+    name: 'RangeSlider',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    orientation: 'horizontal',
+    min: 0,
+    max: 1,
+    minValue: 0.25,
+    maxValue: 0.75,
+    trackColor: '#374151',
+    fillColor: '#3b82f6',
+    thumbColor: '#ffffff',
+    thumbWidth: 20,
+    thumbHeight: 20,
+    ...overrides,
+  }
+}
+
 export function createModulationMatrix(overrides?: Partial<ModulationMatrixElementConfig>): ModulationMatrixElementConfig {
   return {
     id: crypto.randomUUID(),
@@ -515,6 +605,49 @@ export function createModulationMatrix(overrides?: Partial<ModulationMatrixEleme
     headerColor: '#ffffff',
     headerFontSize: 11,
     previewActiveConnections: [[0, 1], [2, 0]], // LFO 1 -> Filter, ENV 1 -> Pitch
+    ...overrides,
+  }
+}
+
+export function createRectangle(overrides?: Partial<RectangleElementConfig>): RectangleElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rectangle',
+    name: 'Rectangle',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 100,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    fillColor: '#374151',
+    fillOpacity: 1,
+    borderWidth: 2,
+    borderColor: '#1f2937',
+    borderStyle: 'solid',
+    borderRadius: 4,
+    ...overrides,
+  }
+}
+
+export function createLine(overrides?: Partial<LineElementConfig>): LineElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'line',
+    name: 'Line',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 2,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    strokeWidth: 2,
+    strokeColor: '#374151',
+    strokeStyle: 'solid',
     ...overrides,
   }
 }
