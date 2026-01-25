@@ -331,7 +331,7 @@ Plans:
   7. User can add modulation matrix and preset browser placeholders
   8. All new elements export correctly to HTML/CSS/JS
 
-**Plans**: 11 plans in 1 wave
+**Plans**: 14 plans (11 core + 3 gap closure)
 
 Plans:
 - [x] 13-01-PLAN.md — Knob/Slider label and value display fields
@@ -345,6 +345,9 @@ Plans:
 - [x] 13-09-PLAN.md — Waveform and Oscilloscope display placeholders
 - [x] 13-10-PLAN.md — Modulation Matrix placeholder widget
 - [x] 13-11-PLAN.md — Preset Browser placeholder widget
+- [ ] 13-12-PLAN.md — Gap closure: Fix textarea editing in Dropdown/RadioGroup properties
+- [ ] 13-13-PLAN.md — Gap closure: Add missing App.tsx switch cases for element creation
+- [ ] 13-14-PLAN.md — Gap closure: Add missing PaletteItem.tsx preview cases
 
 ## Progress
 
@@ -365,4 +368,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 10. UAT Bug Fixes | 3/3 | Complete | 2026-01-24 |
 | 11. Element Consolidation & Property Fixes | 4/4 | Complete | 2026-01-24 |
 | 12. Export & Round-Trip Testing | 1/1 | Complete | 2026-01-25 |
-| 13. Extended Elements | 11/11 | Complete | 2026-01-25 |
+| 13. Extended Elements | 11/14 | In Progress | - |
