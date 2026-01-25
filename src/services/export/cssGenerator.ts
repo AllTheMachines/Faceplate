@@ -681,6 +681,49 @@ ${selector} .groupbox-header {
   user-select: none;
 }`
 
+    case 'collapsible':
+      return `${selector} {
+  /* Collapsible Container */
+  position: relative;
+  border: ${element.borderWidth}px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+${selector} .collapsible-header {
+  height: ${element.headerHeight}px;
+  min-height: ${element.headerHeight}px;
+  background-color: ${element.headerBackground};
+  color: ${element.headerColor};
+  font-size: ${element.headerFontSize}px;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  user-select: none;
+  cursor: pointer;
+  border-bottom: ${element.collapsed ? 'none' : `${element.borderWidth}px solid ${element.borderColor}`};
+}
+
+${selector} .collapsible-arrow {
+  margin-right: 8px;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  transform: ${element.collapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};
+}
+
+${selector} .collapsible-content {
+  flex: 1;
+  background-color: ${element.contentBackground};
+  overflow: ${element.scrollBehavior};
+  max-height: ${element.collapsed ? '0px' : `${element.maxContentHeight}px`};
+  opacity: ${element.collapsed ? 0 : 1};
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}`
+
     case 'dbdisplay':
       return `${selector} {
   /* dB Display */

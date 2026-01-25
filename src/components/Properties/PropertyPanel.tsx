@@ -6,6 +6,9 @@ import {
   isLabel,
   isMeter,
   isImage,
+  isDropdown,
+  isCheckbox,
+  isRadioGroup,
   isPanel,
   isFrame,
   isGroupBox,
@@ -14,6 +17,9 @@ import {
   isDbDisplay,
   isFrequencyDisplay,
   isGainReductionMeter,
+  isWaveform,
+  isOscilloscope,
+  isTextField,
   ElementConfig,
 } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection } from './'
@@ -31,6 +37,13 @@ import { LineProperties } from './LineProperties'
 import { DbDisplayProperties } from './DbDisplayProperties'
 import { FrequencyDisplayProperties } from './FrequencyDisplayProperties'
 import { GainReductionMeterProperties } from './GainReductionMeterProperties'
+import { WaveformProperties } from './WaveformProperties'
+import { OscilloscopeProperties } from './OscilloscopeProperties'
+import { DropdownProperties } from './DropdownProperties'
+import { CheckboxProperties } from './CheckboxProperties'
+import { RadioGroupProperties } from './RadioGroupProperties'
+import { TextFieldProperties } from './TextFieldProperties'
+import { CollapsibleProperties } from './CollapsibleProperties'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -167,6 +180,11 @@ export function PropertyPanel() {
       {isGainReductionMeter(element) && (
         <GainReductionMeterProperties element={element} onUpdate={update} />
       )}
+      {isDropdown(element) && <DropdownProperties element={element} onUpdate={update} />}
+      {isCheckbox(element) && <CheckboxProperties element={element} onUpdate={update} />}
+      {isRadioGroup(element) && <RadioGroupProperties element={element} onUpdate={update} />}
+      {isTextField(element) && <TextFieldProperties element={element} onUpdate={update} />}
+      {isCollapsible(element) && <CollapsibleProperties element={element} onUpdate={update} />}
     </div>
   )
 }

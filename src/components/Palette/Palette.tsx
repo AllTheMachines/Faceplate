@@ -40,6 +40,15 @@ const paletteCategories = [
     ],
   },
   {
+    name: 'Form Controls',
+    items: [
+      { id: 'dropdown', type: 'dropdown', name: 'Dropdown' },
+      { id: 'checkbox', type: 'checkbox', name: 'Checkbox' },
+      { id: 'radiogroup', type: 'radiogroup', name: 'Radio Group' },
+      { id: 'textfield', type: 'textfield', name: 'Text Field' },
+    ],
+  },
+  {
     name: 'Images & Decorative',
     items: [
       { id: 'image', type: 'image', name: 'Image' },
@@ -53,6 +62,7 @@ const paletteCategories = [
       { id: 'panel', type: 'panel', name: 'Panel' },
       { id: 'frame', type: 'frame', name: 'Frame' },
       { id: 'groupbox', type: 'groupbox', name: 'Group Box' },
+      { id: 'collapsible', type: 'collapsible', name: 'Collapsible' },
     ],
   },
   {
