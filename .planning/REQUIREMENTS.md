@@ -101,42 +101,42 @@ Requirements for SVG Import System milestone. Each maps to roadmap phases.
 | SEC-06 | Phase 14 | Pending |
 | SEC-07 | Phase 14 | Pending |
 | SEC-08 | Phase 14 | Pending |
-| ASSET-01 | Phase 14 | Pending |
-| ASSET-02 | Phase 14 | Pending |
-| ASSET-03 | Phase 14 | Pending |
-| ASSET-04 | Phase 14 | Pending |
-| ASSET-05 | Phase 14 | Pending |
-| ASSET-06 | Phase 14 | Pending |
-| ASSET-07 | Phase 14 | Pending |
-| ASSET-08 | Phase 14 | Pending |
-| GFX-01 | Phase 14 | Pending |
-| GFX-02 | Phase 14 | Pending |
-| GFX-03 | Phase 14 | Pending |
-| GFX-04 | Phase 14 | Pending |
-| GFX-05 | Phase 14 | Pending |
-| GFX-06 | Phase 14 | Pending |
-| GFX-07 | Phase 14 | Pending |
-| GFX-08 | Phase 14 | Pending |
-| KNOB-01 | Phase 14 | Pending |
-| KNOB-02 | Phase 14 | Pending |
-| KNOB-03 | Phase 14 | Pending |
-| KNOB-04 | Phase 14 | Pending |
-| KNOB-05 | Phase 14 | Pending |
-| KNOB-06 | Phase 14 | Pending |
-| KNOB-07 | Phase 14 | Pending |
-| KNOB-08 | Phase 14 | Pending |
-| KNOB-09 | Phase 14 | Pending |
-| EXP-01 | Phase 14 | Pending |
-| EXP-02 | Phase 14 | Pending |
-| EXP-03 | Phase 14 | Pending |
-| EXP-04 | Phase 14 | Pending |
-| EXP-05 | Phase 14 | Pending |
+| ASSET-01 | Phase 15 | Pending |
+| ASSET-02 | Phase 15 | Pending |
+| ASSET-03 | Phase 15 | Pending |
+| ASSET-04 | Phase 15 | Pending |
+| ASSET-05 | Phase 15 | Pending |
+| ASSET-06 | Phase 15 | Pending |
+| ASSET-07 | Phase 15 | Pending |
+| ASSET-08 | Phase 15 | Pending |
+| GFX-01 | Phase 16 | Pending |
+| GFX-02 | Phase 16 | Pending |
+| GFX-03 | Phase 16 | Pending |
+| GFX-04 | Phase 16 | Pending |
+| GFX-05 | Phase 16 | Pending |
+| GFX-06 | Phase 16 | Pending |
+| GFX-07 | Phase 16 | Pending |
+| GFX-08 | Phase 16 | Pending |
+| KNOB-01 | Phase 17 | Pending |
+| KNOB-02 | Phase 17 | Pending |
+| KNOB-03 | Phase 17 | Pending |
+| KNOB-04 | Phase 17 | Pending |
+| KNOB-05 | Phase 17 | Pending |
+| KNOB-06 | Phase 17 | Pending |
+| KNOB-07 | Phase 17 | Pending |
+| KNOB-08 | Phase 17 | Pending |
+| KNOB-09 | Phase 17 | Pending |
+| EXP-01 | Phase 18 | Pending |
+| EXP-02 | Phase 18 | Pending |
+| EXP-03 | Phase 18 | Pending |
+| EXP-04 | Phase 18 | Pending |
+| EXP-05 | Phase 18 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 30 total
-- Mapped to phases: 30 (pending roadmap creation)
+- v1.1 requirements: 38 total
+- Mapped to phases: 38/38 ✓
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-25*
-*Last updated: 2026-01-25 after initial definition*
+*Last updated: 2026-01-25 after roadmap creation*
