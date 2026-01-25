@@ -12,6 +12,7 @@ import { DropdownRenderer } from './renderers/DropdownRenderer'
 import { CheckboxRenderer } from './renderers/CheckboxRenderer'
 import { RadioGroupRenderer } from './renderers/RadioGroupRenderer'
 import { ModulationMatrixRenderer } from './renderers/ModulationMatrixRenderer'
+import { RangeSliderRenderer } from './renderers/RangeSliderRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -70,6 +71,8 @@ function ElementComponent({ element }: ElementProps) {
         return <RadioGroupRenderer config={element} />
       case 'modulationmatrix':
         return <ModulationMatrixRenderer config={element} />
+      case 'rangeslider':
+        return <RangeSliderRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
