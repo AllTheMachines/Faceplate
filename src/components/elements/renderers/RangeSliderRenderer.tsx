@@ -38,7 +38,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={trackWidth}
           height={config.height}
           fill={config.trackColor}
-          rx={trackWidth / 2}
+          rx={0}
         />
 
         {/* Range fill (between min and max thumbs) */}
@@ -48,7 +48,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={trackWidth}
           height={fillHeight}
           fill={config.fillColor}
-          rx={trackWidth / 2}
+          rx={0}
         />
 
         {/* Min thumb */}
@@ -58,7 +58,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={config.thumbWidth}
           height={config.thumbHeight}
           fill={config.thumbColor}
-          rx={4}
+          rx={0}
         />
 
         {/* Max thumb */}
@@ -68,7 +68,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={config.thumbWidth}
           height={config.thumbHeight}
           fill={config.thumbColor}
-          rx={4}
+          rx={0}
         />
       </svg>
     )
@@ -96,7 +96,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={config.width}
           height={trackWidth}
           fill={config.trackColor}
-          rx={trackWidth / 2}
+          rx={0}
         />
 
         {/* Range fill (between min and max thumbs) */}
@@ -106,7 +106,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={fillWidth}
           height={trackWidth}
           fill={config.fillColor}
-          rx={trackWidth / 2}
+          rx={0}
         />
 
         {/* Min thumb */}
@@ -116,7 +116,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={config.thumbWidth}
           height={config.thumbHeight}
           fill={config.thumbColor}
-          rx={4}
+          rx={0}
         />
 
         {/* Max thumb */}
@@ -126,7 +126,7 @@ export function RangeSliderRenderer({ config }: RangeSliderRendererProps) {
           width={config.thumbWidth}
           height={config.thumbHeight}
           fill={config.thumbColor}
-          rx={4}
+          rx={0}
         />
       </svg>
     )

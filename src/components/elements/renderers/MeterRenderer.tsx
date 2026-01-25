@@ -46,7 +46,7 @@ export function MeterRenderer({ config }: MeterRendererProps) {
         width={config.width}
         height={config.height}
         fill={config.backgroundColor}
-        rx={2}
+        rx={0}
       />
 
       {/* Fill based on value */}
@@ -57,7 +57,7 @@ export function MeterRenderer({ config }: MeterRendererProps) {
           width={isVertical ? config.width - 2 : (config.width - 2) * clampedValue}
           height={isVertical ? config.height * clampedValue - 1 : config.height - 2}
           fill={`url(#${gradientId})`}
-          rx={1}
+          rx={0}
         />
       )}
 

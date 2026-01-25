@@ -131,7 +131,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
             width={trackWidth}
             height={config.height}
             fill={config.trackColor}
-            rx={trackWidth / 2}
+            rx={0}
           />
 
           {/* Track fill (from bottom to value position) */}
@@ -141,7 +141,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
             width={trackWidth}
             height={fillHeight}
             fill={config.trackFillColor}
-            rx={trackWidth / 2}
+            rx={0}
           />
 
           {/* Thumb */}
@@ -151,7 +151,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
             width={config.thumbWidth}
             height={config.thumbHeight}
             fill={config.thumbColor}
-            rx={4}
+            rx={0}
           />
         </svg>
       </div>
@@ -192,7 +192,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
             width={config.width}
             height={trackWidth}
             fill={config.trackColor}
-            rx={trackWidth / 2}
+            rx={0}
           />
 
           {/* Track fill (from left to value position) */}
@@ -202,7 +202,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
             width={fillWidth}
             height={trackWidth}
             fill={config.trackFillColor}
-            rx={trackWidth / 2}
+            rx={0}
           />
 
           {/* Thumb */}
@@ -212,7 +212,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
             width={config.thumbWidth}
             height={config.thumbHeight}
             fill={config.thumbColor}
-            rx={4}
+            rx={0}
           />
         </svg>
       </div>
