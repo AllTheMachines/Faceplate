@@ -758,49 +758,97 @@ async function fetchSpectrumBinary() {
 
 ## JavaScript Integration
 
-### JUCE Bridge API
+### JUCE Bridge (Dynamic Pattern)
 
-The exported `bindings.js` includes a JUCEBridge module for parameter communication:
+The exported `bindings.js` uses a **dynamic bridge system** that creates wrappers for all registered JUCE native functions at runtime.
 
+**Initialization:**
 ```javascript
-JUCEBridge.setParameter(paramId, value)     // Fire-and-forget update
-JUCEBridge.getParameter(paramId)            // Async value query (returns Promise)
-JUCEBridge.beginGesture(paramId)            // Start automation gesture
-JUCEBridge.endGesture(paramId)              // End automation gesture
+// Polls until JUCE is ready with functions registered
+await initializeJUCEBridge();
 ```
 
-### Event-Based Pattern
+**Usage:**
+```javascript
+// All functions return Promises - use .catch() for fire-and-forget
+bridge.setParameter('paramId', 0.75).catch(() => {});
+bridge.beginGesture('paramId').catch(() => {});
 
-JUCE uses events, not direct function calls:
-- Functions invoked via `__juce__invoke` events
-- Results via `__juce__complete` events
-- Fire-and-forget for instant UI response (no blocking during knob drags)
+// For value retrieval (with timeout protection)
+const value = await bridge.getParameter('paramId');
+```
+
+**Custom Functions:**
+Any function registered in C++ is automatically available:
+
+```cpp
+// C++:
+.withNativeFunction("customFunc", [](auto& args, auto complete) {
+  // ... handle function
+  complete(result);
+})
+```
 
 ```javascript
-// How the bridge invokes native functions internally:
-window.__JUCE__.backend.emitEvent('__juce__invoke', {
-  name: 'setParameter',
-  params: [paramId, value],
-  resultId: Math.random()
-});
+// JavaScript (automatically available via dynamic wrappers):
+bridge.customFunc(arg1, arg2).catch(() => {});
+```
+
+### Pattern Features
+
+- **Dynamic wrapper creation** - Works with any registered functions
+- **Integer resultId** - Sequential integers (not Math.random()) for reliability
+- **Polling initialization** - Waits for `__juce__functions` to be populated
+- **Error suppression** - `.catch(() => {})` on all fire-and-forget calls
+- **Timeout protection** - 1 second timeout on all Promise-based calls
+
+### How It Works Internally
+
+```javascript
+// Dynamic wrapper creation
+function createJUCEFunctionWrappers() {
+  const functions = window.__JUCE__.initialisationData.__juce__functions || [];
+
+  for (const funcName of functions) {
+    wrappers[funcName] = function(...args) {
+      return new Promise((resolve) => {
+        const resultId = nextResultId++;  // Integer, not Math.random()
+        pendingResults.set(resultId, resolve);
+
+        window.__JUCE__.backend.emitEvent('__juce__invoke', {
+          name: funcName,
+          params: args,
+          resultId: resultId
+        });
+
+        setTimeout(() => { /* timeout handling */ }, 1000);
+      });
+    };
+  }
+}
 ```
 
 ### Automatic Setup Functions
 
-Bindings.js automatically generates interaction handlers for each bound element:
-- `setupKnobInteraction(knobId, paramId)` - Drag-to-rotate with gesture support
-- `setupSliderInteraction(sliderId, paramId)` - Linear drag with orientation detection
+Bindings.js generates interaction handlers for each bound element:
+- `setupKnobInteraction(knobId, paramId, defaultValue)` - Drag-to-rotate with gesture support
+- `setupSliderInteraction(sliderId, paramId, defaultValue)` - Linear drag with orientation detection
 - `setupButtonInteraction(buttonId, paramId)` - Momentary/toggle mode support
 
-All are initialized in DOMContentLoaded with automatic JUCE bridge detection.
+All are initialized inside `initializeJUCEBridge()` after confirming JUCE is ready.
 
 ### Standalone Mode
 
 When running outside JUCE (e.g., browser preview):
-- JUCEBridge detects missing `window.__JUCE__` object
-- Falls back to mock mode with console logging
+- Bridge detects missing `window.__JUCE__` after timeout
+- Creates mock bridge with console logging
 - UI controls remain interactive for design testing
 - Status indicator shows "Standalone Mode"
+
+### Pattern Discovery
+
+This pattern was discovered January 24-25, 2026 through debugging INSTvst3.
+The previous static pattern with `Math.random()` was unreliable due to event ID collisions.
 
 ---
 
@@ -906,6 +954,6 @@ WebSliderParameterAttachment slider_cutoff_attachment;
 
 ---
 
-*Document Version: 1.0*
-*Last Updated: January 2025*
+*Document Version: 1.1*
+*Last Updated: January 25, 2026*
 *For use with Claude Code / GSD Framework*

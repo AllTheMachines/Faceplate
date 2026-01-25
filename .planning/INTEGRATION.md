@@ -53,41 +53,95 @@ This document explains how `vst3-webview-ui-designer` integrates with related VS
 
 ## JUCE WebView2 Communication Pattern
 
-**CRITICAL:** JUCE native functions use an event-based invocation system.
+**Pattern Type:** Dynamic Function Wrappers
+**Updated:** January 25, 2026
+**Status:** Production-ready (tested in EFXvst3 and INSTvst3)
 
-### Event-Based Invocation
+### The Problem
 
-Native functions registered with `.withNativeFunction()` in C++ are NOT directly callable from JavaScript. They must be invoked via the `__juce__invoke` event system:
+JUCE native functions registered with `.withNativeFunction()` in C++ are NOT directly callable from JavaScript. They must be invoked via the `__juce__invoke` event system.
 
-**JavaScript (CORRECT):**
-```javascript
-window.__JUCE__.backend.emitEvent('__juce__invoke', {
-  name: 'setParameter',
-  params: ['volume', 0.5],
-  resultId: Math.random()
-});
+### The Solution: Dynamic Function Wrappers
+
+The Designer exports code that:
+
+1. **Discovers registered functions** from `__juce__functions` array
+2. **Creates wrappers dynamically** for each function
+3. **Uses integer resultId** for reliable event matching
+4. **Polls for initialization** (handles timing)
+5. **Suppresses errors** with `.catch()` on all calls
+
+### Why Dynamic?
+
+**Flexibility:**
+- Works with any JUCE native functions
+- Not limited to the 4 standard ones
+- Users can add custom functions
+
+**Reliability:**
+- Integer IDs more reliable than random numbers
+- Polling handles async initialization
+- Error suppression prevents UI blocking
+
+### Event Flow
+
+```
+JS: bridge.setParameter('volume', 0.5).catch(() => {})
+  ↓
+Emit: __juce__invoke { name: 'setParameter', params: ['volume', 0.5], resultId: 42 }
+  ↓
+C++: withNativeFunction("setParameter", [...]) receives call
+  ↓
+C++: param->setValueNotifyingHost(0.5)
+  ↓
+Emit: __juce__complete { resultId: 42, result: undefined }
+  ↓
+JS: Promise resolves (or timeout after 1s)
 ```
 
-**JavaScript (WRONG - doesn't work):**
+### Key Implementation Details
+
+**1. Integer Result IDs (not Math.random())**
 ```javascript
-window.setParameter('volume', 0.5);  // Will not work!
+let nextResultId = 1;
+resultId: nextResultId++  // Sequential integers
 ```
 
-### Fire-and-Forget Pattern
+**2. Polling Initialization (waits for functions)**
+```javascript
+async function initializeJUCEBridge() {
+  for (let i = 0; i < 100; i++) {
+    const functions = window.__JUCE__.initialisationData.__juce__functions || [];
+    if (functions.length > 0) {  // WAIT for functions
+      bridge = createJUCEFunctionWrappers();
+      return;
+    }
+    await new Promise(r => setTimeout(r, 50));
+  }
+}
+```
 
-For responsive UI (60fps knob dragging), use fire-and-forget:
-- Don't await parameter updates
-- Send value and immediately update visual
-- C++ processes updates via MessageManager queue
+**3. Fire-and-Forget with .catch()**
+```javascript
+bridge.setParameter('volume', 0.5).catch(() => {});
+bridge.beginGesture('volume').catch(() => {});
+```
 
-This pattern is now standard in our bindings.js export.
+### Exported Functions
+
+The Designer exports these helper functions:
+
+- `createJUCEFunctionWrappers()` - Dynamic wrapper creation
+- `initializeJUCEBridge()` - Polling initialization
+- `setupKnobInteraction()` - Mouse handlers with bridge calls
+- `updateKnobVisual()` - SVG rendering
 
 ### Standard Native Functions
 
-All exports include these four functions:
-1. **setParameter(paramId, value)** - Set parameter value (fire-and-forget)
-2. **getParameter(paramId)** - Get parameter value (async with promise)
-3. **beginGesture(paramId)** - Start automation gesture (for DAW recording)
+All exports expect these four C++ functions:
+1. **setParameter(paramId, value)** - Set parameter value
+2. **getParameter(paramId)** - Get parameter value
+3. **beginGesture(paramId)** - Start automation gesture
 4. **endGesture(paramId)** - End automation gesture
 
 ### C++ Registration Pattern
@@ -110,6 +164,11 @@ webView = std::make_unique<juce::WebBrowserComponent>(
 ```
 
 See exported bindings.cpp for complete implementation.
+
+### Discovery
+
+Pattern discovered January 24-25, 2026 through debugging INSTvst3.
+Previous static pattern with `Math.random()` was unreliable.
 
 ---
 

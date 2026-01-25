@@ -90,35 +90,72 @@ See `.planning/INTEGRATION.md` for detailed integration documentation.
 
 ### JavaScript Export - JUCE Event-Based Pattern
 
-**CRITICAL:** JUCE native functions use event-based invocation, not direct calls.
+**Last Updated:** January 25, 2026
+**Status:** Production-ready (tested in EFXvst3 and INSTvst3)
 
-**What We Export:**
-The designer exports `bindings.js` with a JUCEBridge module that wraps JUCE's event system:
+#### The Working Pattern
 
+The designer exports a **dynamic function wrapper system** for JUCE WebView2 communication:
+
+**1. Dynamic Function Wrappers**
 ```javascript
-// Exported pattern (simplified):
-window.__JUCE__.backend.emitEvent('__juce__invoke', {
-  name: 'setParameter',
-  params: [paramId, value],
-  resultId: Math.random()
-});
+function createJUCEFunctionWrappers() {
+  const functions = window.__JUCE__.initialisationData.__juce__functions || [];
+
+  for (const funcName of functions) {
+    wrappers[funcName] = function(...args) {
+      // Creates Promise-based wrapper dynamically
+    };
+  }
+}
 ```
 
-**Why This Pattern:**
-- JUCE functions registered with `.withNativeFunction()` are NOT directly callable
-- Must use `__juce__invoke` event system
-- Fire-and-forget for responsive 60fps UI
-- Promise pattern for value queries
+**2. Integer Result IDs**
+```javascript
+let nextResultId = 1;  // Sequential integer
+resultId: nextResultId++  // Not Math.random()
+```
 
-**Code Generation:**
-- `jsGenerator.ts` - Generates JUCEBridge module and UI handlers
-- `cppGenerator.ts` - Generates C++ native function registration snippets
-- Fire-and-forget `setParameter()` for knob/slider interactions
-- Async `getParameter()` for value retrieval
+**3. Polling Initialization**
+```javascript
+async function initializeJUCEBridge() {
+  for (let i = 0; i < 100; i++) {  // Up to 5 seconds
+    if (functions.length > 0) {
+      bridge = createJUCEFunctionWrappers();
+      return;
+    }
+    await new Promise(r => setTimeout(r, 50));
+  }
+}
+```
 
-**Discovery Date:** January 24, 2026
-**Status:** Production-ready pattern based on tested EFXvst3 implementation
-**Commit:** 877b7ad
+**4. Fire-and-Forget with Error Handling**
+```javascript
+bridge.setParameter('volume', 0.5).catch(() => {});
+bridge.beginGesture('volume').catch(() => {});
+```
+
+#### Why This Pattern?
+
+- **Dynamic** - Works with ANY JUCE native functions, not just the standard 4
+- **Reliable** - Integer IDs prevent event collision
+- **Robust** - Polling handles timing issues
+- **Production-ready** - Error suppression for smooth UI
+
+#### Code Generation
+
+- `jsGenerator.ts` - Exports dynamic bridge implementation
+- `cppGenerator.ts` - Exports C++ native function snippets
+- Pattern generates ~200 lines of tested, working code
+
+#### Discovery
+
+Pattern discovered January 24-25, 2026 through extensive debugging of INSTvst3.
+Refined from initial static implementation to this more robust dynamic version.
+
+**Tested in:**
+- EFXvst3 - Volume knob works perfectly
+- INSTvst3 - All 5 knobs (gain + ADSR) work perfectly
 
 See: `.planning/INTEGRATION.md` for complete pattern documentation.
 
@@ -133,4 +170,4 @@ See: `.planning/INTEGRATION.md` for complete pattern documentation.
 | @dnd-kit over react-dnd | Modern API, better touch support, active maintenance | — Pending |
 
 ---
-*Last updated: 2025-01-23 after initialization*
+*Last updated: 2026-01-25 - Dynamic JUCE bridge pattern documented*
