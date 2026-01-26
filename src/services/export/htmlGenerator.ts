@@ -3,8 +3,10 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
+import { useStore } from '../../store'
+import { sanitizeSVG } from '../../lib/svg-sanitizer'
 
 // ============================================================================
 // Value Formatting Utility
@@ -228,6 +230,9 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'modulationmatrix':
       return generateModulationMatrixHTML(id, baseClass, positionStyle, element)
+
+    case 'svggraphic':
+      return generateSvgGraphicHTML(id, baseClass, positionStyle, element)
 
     default:
       // TypeScript exhaustiveness check
@@ -518,4 +523,51 @@ function generateTextFieldHTML(id: string, baseClass: string, positionStyle: str
   const placeholder = config.placeholder ? ` placeholder="${escapeHTML(config.placeholder)}"` : ''
 
   return `<input type="text" id="${id}" class="${baseClass} textfield-element" data-type="textfield"${value}${placeholder}${maxLengthAttr} style="${positionStyle}" />`
+}
+
+/**
+ * Generate SVG Graphic HTML with inline sanitized SVG
+ */
+function generateSvgGraphicHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: SvgGraphicElementConfig
+): string {
+  const getAsset = useStore.getState().getAsset
+  const asset = element.assetId ? getAsset(element.assetId) : null
+
+  // Build transform with flip (rotation is in positionStyle already)
+  const transformParts: string[] = []
+  if (element.flipH) transformParts.push('scaleX(-1)')
+  if (element.flipV) transformParts.push('scaleY(-1)')
+  const flipTransform = transformParts.length > 0 ? transformParts.join(' ') : ''
+
+  // Combine position style with flip transform and opacity
+  // Note: rotation is already in positionStyle from generateElementHTML
+  let combinedStyle = positionStyle
+  if (flipTransform) {
+    // Append flip to existing transform
+    combinedStyle = combinedStyle.replace(
+      /transform: rotate\(([^)]+)\);/,
+      `transform: rotate($1) ${flipTransform}; transform-origin: center center;`
+    )
+  }
+  if (element.opacity !== 1) {
+    combinedStyle += ` opacity: ${element.opacity};`
+  }
+
+  if (!asset) {
+    // Placeholder or missing asset - export as empty div with comment
+    return `<div id="${id}" class="${baseClass} svggraphic-element" data-type="svggraphic" style="${combinedStyle}">
+  <!-- SVG Graphic: Asset not assigned or missing -->
+</div>`
+  }
+
+  // Export with re-sanitized SVG content inline (SEC-04: sanitize before export)
+  const sanitizedSVG = sanitizeSVG(asset.svgContent)
+
+  return `<div id="${id}" class="${baseClass} svggraphic-element" data-type="svggraphic" style="${combinedStyle}">
+  ${sanitizedSVG}
+</div>`
 }
