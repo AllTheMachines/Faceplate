@@ -9,6 +9,9 @@ const paletteCategories = [
     items: [
       { id: 'knob-standard', type: 'knob', name: 'Knob' },
       { id: 'knob-arc', type: 'knob', name: 'Arc Knob', variant: { style: 'arc' } },
+      { id: 'steppedknob', type: 'steppedknob', name: 'Stepped Knob' },
+      { id: 'centerdetentknob', type: 'centerdetentknob', name: 'Center Detent' },
+      { id: 'dotindicatorknob', type: 'dotindicatorknob', name: 'Dot Indicator' },
     ],
   },
   {
@@ -17,6 +20,8 @@ const paletteCategories = [
       { id: 'slider', type: 'slider', name: 'Slider', variant: { orientation: 'vertical' } },
       { id: 'rangeslider', type: 'rangeslider', name: 'Range Slider' },
       { id: 'multislider', type: 'multislider', name: 'Multi-Slider' },
+      { id: 'bipolarslider', type: 'bipolarslider', name: 'Bipolar Slider' },
+      { id: 'crossfadeslider', type: 'crossfadeslider', name: 'Crossfade' },
     ],
   },
   {

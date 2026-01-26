@@ -37,6 +37,8 @@ import { MultiSliderProperties } from './MultiSliderProperties'
 import { SteppedKnobProperties } from './SteppedKnobProperties'
 import { CenterDetentKnobProperties } from './CenterDetentKnobProperties'
 import { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
+import { BipolarSliderProperties } from './BipolarSliderProperties'
+import { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -68,6 +70,8 @@ export { MultiSliderProperties } from './MultiSliderProperties'
 export { SteppedKnobProperties } from './SteppedKnobProperties'
 export { CenterDetentKnobProperties } from './CenterDetentKnobProperties'
 export { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
+export { BipolarSliderProperties } from './BipolarSliderProperties'
+export { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -93,6 +97,8 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['steppedknob', SteppedKnobProperties],
   ['centerdetentknob', CenterDetentKnobProperties],
   ['dotindicatorknob', DotIndicatorKnobProperties],
+  ['bipolarslider', BipolarSliderProperties],
+  ['crossfadeslider', CrossfadeSliderProperties],
 
   // Displays
   ['label', LabelProperties],
