@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 15 of 18 (Asset Library Storage & UI)
-Plan: 3 of 4 in current phase (Wave 3 complete)
-Status: In progress
-Last activity: 2026-01-26 — Completed 15-03-PLAN.md (Asset Library UI Panel)
+Plan: 4 of 4 in current phase (Wave 4 complete - Phase complete)
+Status: Phase 15 complete
+Last activity: 2026-01-26 — Completed 15-04-PLAN.md (Asset Interactions)
 
-Progress: [█████████░] 80% (69/86 total plans estimated)
+Progress: [█████████░] 81% (70/86 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,9 +38,9 @@ Progress: [█████████░] 80% (69/86 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 7 (14-01 through 15-03)
+- Plans completed: 8 (14-01 through 15-04)
 - Phase 14: 4 plans, ~100 minutes total
-- Phase 15: 3 plans so far (~6.5 minutes total)
+- Phase 15: 4 plans, ~10.5 minutes total (Phase complete)
 
 ## Accumulated Context
 
@@ -76,6 +76,10 @@ Recent decisions affecting current work:
 - **v1.1 (15-03)**: All asset categories expanded by default (smaller library than palette)
 - **v1.1 (15-03)**: 96px square thumbnails (w-24 h-24) for grid display
 - **v1.1 (15-03)**: Default to Elements tab (primary use case is building UI)
+- **v1.1 (15-04)**: Click-to-edit with blur-to-save for inline rename (standard UX pattern)
+- **v1.1 (15-04)**: useAssetUsage hook co-located in DeleteAssetDialog (keeps logic close)
+- **v1.1 (15-04)**: 'library-asset' drag type distinct from palette (enables different drop handling)
+- **v1.1 (15-04)**: ImageElement.assetId for asset references (backward compatible with src)
 
 ### Pending Todos
 
@@ -102,7 +106,9 @@ None yet.
 - ✓ Asset browser UI with category filtering (15-03)
 - ✓ AssetLibraryPanel with search, categories, thumbnails (15-03)
 - ✓ Tab switching between Elements and Assets panels (15-03)
-- NEXT: Drag-from-library-to-canvas integration (15-04)
+- ✓ InlineEditName, DeleteAssetDialog, drag-to-canvas (15-04)
+- ✓ Phase 15 complete - Asset Library Storage & UI fully functional
+- NEXT: Phase 16 or 17 (Asset rendering or Export system)
 
 **Phase 17 considerations (from research):**
 - Performance with 50+ animated knobs may need optimization
@@ -112,9 +118,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Phase 15-03 executed - Asset Library UI Panel complete
+Stopped at: Phase 15-04 executed - Asset Interactions complete (Phase 15 complete)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 15-03 execution*
+*Last updated: 2026-01-26 after Phase 15-04 execution*
