@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 17 of 18 (Interactive SVG Knobs) — IN PROGRESS
-Plan: 4 of 6 in current phase
+Plan: 5 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-26 — Completed 17-04-PLAN.md (Knob Style Dialogs)
+Last activity: 2026-01-26 — Completed 17-05-PLAN.md (Knob Style Selection UI)
 
-Progress: [█████████░] 91% (79/87 total plans estimated)
+Progress: [█████████░] 92% (80/87 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,11 +38,11 @@ Progress: [█████████░] 91% (79/87 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 16 (14-01 through 17-04)
+- Plans completed: 17 (14-01 through 17-05)
 - Phase 14: 4 plans, ~100 minutes total (Security foundations)
 - Phase 15: 5 plans, ~12 minutes total (Asset library complete)
 - Phase 16: 5 plans, ~8 minutes total (SVG Graphics COMPLETE)
-- Phase 17: 4 plans so far, ~10 minutes total (Type system, layer utilities, knob renderer, dialogs)
+- Phase 17: 5 plans so far, ~12 minutes total (Type system, layer utilities, knob renderer, dialogs, properties)
 
 ## Accumulated Context
 
@@ -112,6 +112,10 @@ Recent decisions affecting current work:
 - **v1.1 (17-04)**: Auto-detect layers first, then allow manual adjustment (guided workflow)
 - **v1.1 (17-04)**: Nested dialogs pattern (ManageKnobStylesDialog opens LayerMappingDialog)
 - **v1.1 (17-04)**: Usage count warnings before delete (prevents accidental style removal)
+- **v1.1 (17-05)**: Style selector at top of property panel (most impactful setting first)
+- **v1.1 (17-05)**: Reset color overrides when changing style (prevents stale override confusion)
+- **v1.1 (17-05)**: Hide CSS properties when SVG style applied (context-aware clean UX)
+- **v1.1 (17-05)**: Show color inputs only for existing layers (avoid UI clutter)
 
 ### Pending Todos
 
@@ -146,17 +150,17 @@ None yet.
 - ✓ 17-02: SVG layer detection and manipulation utilities (with CSS.escape polyfill)
 - ✓ 17-03: SVG knob renderer with layer-based animation and color overrides
 - ✓ 17-04: Knob style library UI (LayerMappingDialog and ManageKnobStylesDialog)
-- TODO: 17-05: Interactive knob behavior (drag-to-rotate, value updates)
-- TODO: 17-06: Knob properties panel integration
+- ✓ 17-05: Knob style selection UI in property panel with color overrides
+- TODO: 17-06: Final integration (export, interactive behavior)
 - Note: Performance with 50+ animated knobs should be good (useMemo + hardware acceleration)
 - Note: Transform origin for non-circular SVGs may need adjustment (future enhancement)
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 17-04-PLAN.md (Knob Style Dialogs)
+Stopped at: Completed 17-05-PLAN.md (Knob Style Selection UI)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 17-04 completion*
+*Last updated: 2026-01-26 after 17-05 completion*
