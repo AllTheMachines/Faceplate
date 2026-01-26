@@ -3,6 +3,7 @@ import { useStore } from '../../store'
 import {
   exportJUCEBundle,
   exportHTMLPreview,
+  previewHTMLExport,
   validateForExport,
 } from '../../services/export'
 
@@ -62,6 +63,25 @@ export function ExportPanel() {
     }
   }
 
+  const handlePreview = async () => {
+    setIsExporting(true)
+    setError(null)
+
+    const result = await previewHTMLExport({
+      elements,
+      canvasWidth,
+      canvasHeight,
+      backgroundColor,
+      enableResponsiveScaling: true,
+    })
+
+    setIsExporting(false)
+
+    if (!result.success) {
+      setError(result.error || 'Preview failed')
+    }
+  }
+
   return (
     <div className="border-b border-gray-700">
       <div className="p-3">
@@ -95,6 +115,14 @@ export function ExportPanel() {
             className="w-full px-3 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-700 text-white text-sm font-medium rounded transition-colors"
           >
             {isExporting ? 'Exporting...' : 'Export HTML Preview'}
+          </button>
+
+          <button
+            onClick={handlePreview}
+            disabled={isExporting}
+            className="w-full px-3 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white text-sm font-medium rounded transition-colors"
+          >
+            {isExporting ? 'Loading...' : 'Preview in Browser'}
           </button>
         </div>
 

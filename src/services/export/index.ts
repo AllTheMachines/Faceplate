@@ -7,6 +7,10 @@
 export { exportJUCEBundle, exportHTMLPreview } from './codeGenerator'
 export type { ExportOptions, ExportResult } from './codeGenerator'
 
+// Browser preview
+export { previewHTMLExport } from './previewExport'
+export type { PreviewOptions } from './previewExport'
+
 // Validation
 export { validateForExport } from './validators'
 export type { ExportValidationResult, ExportError } from './validators'
