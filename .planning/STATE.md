@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 20 - Simple Controls (IN PROGRESS)
-Plan: 04 of 8 complete
+Plan: 02 of 8 complete
 Status: In progress
-Last activity: 2026-01-26 — Completed 20-04-PLAN.md (Multi-Slider)
+Last activity: 2026-01-26 — Completed 20-02-PLAN.md (Bipolar and Crossfade Sliders)
 
-Progress: [██████████░░░░░░░░░░] 10/94 plans complete (11%)
+Progress: [██████████░░░░░░░░░░] 11/94 plans complete (12%)
 
 ## Performance Metrics
 
@@ -39,7 +39,7 @@ Progress: [██████████░░░░░░░░░░] 10/94 p
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
 - Total plans: 94 (6 arch, 88 element implementations)
-- Completed: 10 plans (Phase 19 complete, Phase 20 in progress)
+- Completed: 11 plans (Phase 19 complete, Phase 20 plans 01-02 complete)
 
 ## Accumulated Context
 
@@ -58,10 +58,13 @@ All v1.1 decisions documented and outcomes verified.
 | Fixed band count presets (3,4,5,7,10,31) | 20-04 | Common EQ configurations in audio plugins | Easy selection with custom option for flexibility |
 | Frequency labels per band count | 20-04 | Standard frequency bands for graphic EQs | Professional appearance matching industry standards |
 | Link mode as runtime hint only | 20-04 | Linking is runtime behavior not design-time | Clear separation of concerns |
+| Bipolar fill from center to value | 20-02 | Center-zero controls should visually fill from center | Intuitive visualization of deviation from center position |
+| Crossfade horizontal-only | 20-02 | DJ crossfaders are always horizontal by convention | Follows industry standard layout |
+| A/B label opacity follows balance | 20-02 | Visual feedback of mix position | Labels fade/brighten based on crossfade position |
 
 ### Pending Todos
 
-Continue Phase 20 element implementation (plans 05-08 remaining).
+Continue Phase 20 element implementation (plans 03-08 remaining).
 
 ### Blockers/Concerns
 
@@ -77,18 +80,19 @@ None — Architecture foundation solid from Phase 19.
 
 **Phase 20 Progress:**
 - Plan 01: Rotary control variants - Stepped, Center Detent, Dot Indicator (COMPLETE)
-- Plan 02-03: Additional rotary variants
-- Plan 04: Multi-Slider (COMPLETE)
-- Plans 05-08: Additional linear controls (Bipolar, Crossfade, Notched, Arc)
+- Plan 02: Bipolar and Crossfade Sliders (COMPLETE)
+- Plan 03: Notched and Arc Sliders
+- Plan 04: Multi-Slider (COMPLETE - executed out of order)
+- Plans 05-08: Additional controls
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 20-01-PLAN.md (Rotary Control Variants)
+Stopped at: Completed 20-02-PLAN.md (Bipolar and Crossfade Sliders)
 Resume file: None
 
-**Next step:** Continue Phase 20 plans 02-03, 05-08
+**Next step:** Continue Phase 20 plan 03 (Notched and Arc Sliders)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing plan 20-01*
+*Last updated: 2026-01-26 after completing plan 20-02*
