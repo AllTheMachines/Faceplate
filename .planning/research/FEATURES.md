@@ -1,628 +1,973 @@
-# Feature Landscape: SVG Import System (v1.1)
+# Feature Landscape: 78 Remaining Audio Plugin UI Elements
 
-**Domain:** Visual design tools — SVG import and asset management
-**Researched:** 2026-01-25
-**Project:** VST3 WebView UI Designer v1.1 Milestone
-**Confidence:** HIGH (based on design tool patterns + existing v1.0 codebase analysis)
-
----
-
-## Context: Building on v1.0
-
-This research extends the v1.0 feature landscape (see below for original research) with **specific focus on SVG Import System features** for the v1.1 milestone.
-
-**v1.0 Shipped Features:**
-- Basic SVG import with layer detection (naming conventions)
-- "Design Mode" dialog for layer assignment
-- Image element with base64 embedding
-- Save/load JSON projects
-- Export to JUCE WebView2
-
-**v1.1 Focus:**
-- Interactive SVG knobs (rotation mapping)
-- Static SVG graphics (logos, decorative elements)
-- Asset library management
-- Resizable UI support for SVG elements
-
----
+**Domain:** Audio plugin UI designer for JUCE WebView2
+**Researched:** 2026-01-26
+**Overall confidence:** HIGH
 
 ## Executive Summary
 
-SVG import in design tools falls into two distinct feature categories:
+This research covers the 78 remaining UI elements needed to complete the VST3 WebView UI Designer taxonomy. These elements fall into 10 categories: rotary controls (5), linear controls (5), buttons/switches (7), value displays (8), LED indicators (6), meters (13), visualizations (10), selection/navigation (8), containers/decorative (3), and specialized audio controls (12).
 
-1. **Static SVG Graphics** — Import any SVG as a decorative/visual element (logos, icons, dividers)
-2. **Interactive SVG Controls** — Import SVG with layered structure for UI controls (knobs, sliders)
+**Key finding:** Professional audio plugins demand industry-standard meter ballistics and visualization behaviors. Users expect compliance with established standards (IEC 60268-10/18, EBU R128, ITU-R BS.1770, Bob Katz K-System). The designer must expose these as configurable properties while providing sensible defaults.
 
-The v1.0 system already handles basic SVG import with layer detection (naming conventions: indicator, thumb, track, fill, glow) and "Design Mode" for layer assignment. v1.1 needs to expand this foundation with asset management and proper rendering of interactive controls.
+**Critical success factor:** Distinguish between "table stakes" (standards compliance) and "differentiators" (visual customization, interaction patterns). The designer's value is making standards-compliant elements visually customizable and exportable to JUCE code.
 
-**Key Finding:** Audio plugin developers expect **filmstrip-style rotation for knobs** (pre-rendered frames), but SVG rotation is superior for perfect scaling. The challenge is mapping SVG layers to interactive states.
+## Feature Categories
 
----
-
-## Table Stakes Features
-
-Features users expect from any SVG import system. Missing these = incomplete feature.
-
-| Feature | Why Expected | Complexity | Notes | Existing in v1.0? |
-|---------|--------------|------------|-------|-------------------|
-| **Drag-drop SVG files** | Standard file import UX in all design tools | Low | v1.0 uses react-dropzone | ✓ YES (CustomSVGUpload) |
-| **Preview before import** | Users need to see what they're importing | Low | Shows thumbnail + dimensions | ✓ YES (CustomSVGUpload) |
-| **Preserve aspect ratio** | SVGs must not distort on resize | Medium | viewBox + preserveAspectRatio handling required | ⚠ PARTIAL (needs viewBox validation) |
-| **Scale to any size** | Core benefit of vector graphics | Medium | Must handle viewBox, fixed units, missing dimensions | ⚠ PARTIAL (basic scaling works) |
-| **Import as static image** | Simplest use case for decorative graphics | Low | Convert to data URL, place on canvas | ✓ YES (image element) |
-| **Duplicate imported assets** | Reuse same graphic multiple times | Low | Standard copy/paste works | ✓ YES (general copy/paste) |
-| **Export SVG in output** | Maintain vector quality in final code | Medium | Embed as data URL or inline SVG | ✓ YES (data URL in images) |
-| **Undo/redo import actions** | Integration with history system | Medium | Must work with existing undo stack | ✓ YES (integrated) |
-
-### Dependency on Existing v1.0 Features
-
-All table stakes build on v1.0 foundation:
-- Drag-drop system uses `react-dropzone` (already integrated)
-- Preview uses `svgson` parser (already integrated)
-- Import creates Image elements (already supported)
-- Undo/redo uses existing history system (already complete)
-
-**v1.1 Gaps:**
-- ViewBox validation and normalization (NEW)
-- preserveAspectRatio edge case handling (NEW)
+This document organizes features by element category, clearly marking:
+- **Table Stakes:** Must-have for professional credibility
+- **Differentiators:** Features that set this tool apart
+- **Anti-Features:** Things to deliberately NOT build
 
 ---
 
-## Differentiators
+## 1. Rotary Controls (5 remaining)
 
-Features that make SVG import better than using raster images. These justify using SVG over PNG.
+### Elements
+- Endless Encoder
+- Stepped Knob
+- Center-Detented Knob
+- Concentric Dual Knob
+- Dot Indicator Knob
 
-| Feature | Value Proposition | Complexity | Notes | Implementation Strategy |
-|---------|-------------------|------------|-------|-------------------------|
-| **Layer detection from naming** | Designers already name layers in Figma/Illustrator | Medium | v1.0 has naming conventions (indicator, thumb, track, fill, glow) | ENHANCE (expand conventions) |
-| **Interactive layer assignment** | Fix misdetected layers without re-exporting | Medium | v1.0 has "Design Mode" dialog | ENHANCE (better UX) |
-| **Asset library management** | Reuse custom knobs/graphics across projects | High | Central panel for browsing saved assets | ✱ NEW (core v1.1 feature) |
-| **Knob rotation mapping** | SVG layers animate on parameter change | High | Map indicator layer to rotation transform | ✱ NEW (core v1.1 feature) |
-| **Slider fill animation** | SVG fill layer grows with slider value | Medium | Map fill layer to clip-path or scale | DEFER to v1.2 |
-| **Multi-state button graphics** | Different SVG layers for normal/hover/active | Medium | Map layers to button states | DEFER to v1.2 |
-| **Optimization on import** | Auto-cleanup with SVGO (remove metadata, simplify paths) | Medium | Reduces file size, improves performance | ✱ NEW (optional preprocessing) |
-| **Stroke-to-path conversion** | Ensures consistent rendering across browsers | Medium | Convert strokes to fills for webfont compatibility | ✱ NEW (warning only, not auto-convert) |
-| **Asset categories** | Organize by type (knobs, sliders, decorative) | Low | Tag system + filtering in asset panel | ✱ NEW (library organization) |
-| **Asset preview thumbnails** | Quick visual browsing in library | Medium | Generate PNG previews for fast rendering | ✱ NEW (library UX) |
-| **Export asset library** | Share custom assets between projects | Low | Save library as separate JSON file | ✱ NEW (library portability) |
+### Table Stakes
 
-### Why These Differentiate
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| Discrete step positions (Stepped) | Standard for filter type, waveform selection | Medium | Store steps array, snap value to nearest |
+| Center detent snap (Center-Detented) | Expected for pan, bipolar EQ gain | Low | Snap zone around 0.5 normalized value |
+| Continuous 360° rotation (Endless) | Standard for encoders, scroll controls | Medium | No min/max, track delta only |
+| Dual-layer control (Concentric) | Standard for nested parameters (attack/release) | High | Two parameter bindings, layered rendering |
+| Minimal indicator style (Dot) | Modern flat UI aesthetic | Low | Single dot at value position vs full arc |
 
-**vs. Figma/Sketch:** Those tools import SVG for design, but don't map layers to interactive behavior. We connect SVG layers directly to control properties (rotation, fill, state).
+### Differentiators
 
-**vs. Hand-coding:** Developer imports knob once, uses it for all parameters. No manual CSS animation per knob.
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Visual detent markers | Shows discrete positions graphically | Medium | Render tick marks at step positions |
+| Configurable snap strength | Adjustable "magnetic" center | Low | Snap zone width property (0-20%) |
+| Independent concentric colors | Visual hierarchy for dual knobs | Medium | Separate color sets per layer |
+| Animation on snap | Satisfying feedback when hitting detent | Medium | CSS transition on value change |
 
-**vs. Filmstrips:** SVG scales perfectly at any resolution. Filmstrips are memory-intensive and fixed-resolution.
+### Anti-Features
 
----
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Auto-detection of parameter type | Too magical, error-prone | User explicitly selects knob type |
+| Physics-based momentum | Overcomplicated for design tool | Simple value snapping |
+| Custom detent positions | Scope creep | Use stepped knob with custom steps array |
 
-## Anti-Features
+### Dependencies on Existing Features
 
-Features to deliberately NOT build in v1.1. Common mistakes or premature optimization.
-
-| Anti-Feature | Why Avoid | What to Do Instead | Priority |
-|--------------|-----------|-------------------|----------|
-| **SVG editing tools** | Out of scope — users have Figma/Illustrator | Keep import-only workflow, no in-app editing | CRITICAL |
-| **Automated stroke expansion** | Can break designs, should be user's choice | Warn if strokes detected, link to external tools | HIGH |
-| **SVG animation timeline** | Too complex for v1.1, niche use case | Focus on static + interactive controls only | HIGH |
-| **Gradient editor** | Design-time concern, handle in source tool | Import gradients as-is from SVG | MEDIUM |
-| **Path simplification UI** | Adds complexity, questionable value | Auto-simplify on import (SVGO), no manual controls | MEDIUM |
-| **Multi-page SVG support** | SVGs rarely have pages, adds complexity | Import first/root SVG only | LOW |
-| **Font subsetting** | Only relevant if text in SVG, rare for controls | Convert text to paths in source tool | LOW |
-| **Bitmap embedding** | Defeats purpose of vector import | Warn if bitmap detected, suggest pure vector | LOW |
-| **Real-time SVG rendering** | Performance risk for complex SVGs | Pre-render thumbnails, lazy-load in library | MEDIUM |
-
-### Critical Anti-Feature: No In-App SVG Editing
-
-Research shows design tools have two models:
-
-1. **Import-Edit Model** (Figma, Illustrator) — Import SVG, then edit paths/shapes in-app
-2. **Import-Only Model** (Asset libraries, design systems) — Import SVG, use as-is
-
-**Our Model:** Import-Only with Layer Mapping
-
-**Rationale:**
-- Users already have Figma/Illustrator for SVG creation
-- Editing tools are massive scope (path manipulation, bezier handles, boolean ops)
-- Our value is connecting SVG layers to control behavior, not SVG creation
-- Keep tool focused: design tool for layout, not vector editor
-
-**User Workflow:**
-1. Design SVG in Figma/Illustrator (export with named layers)
-2. Import to our tool
-3. Map layers to control parts (indicator, track, etc.)
-4. Use across multiple controls
+- All rotary variants extend existing Knob element type
+- Reuse SVG rendering pipeline from v1.0
+- Leverage existing parameter binding system
+- Custom SVG import (v1.1) works for all rotary types
 
 ---
 
-## Feature Dependencies
+## 2. Linear Controls (5 remaining)
 
-### Dependency Graph
+### Elements
+- Bipolar Slider
+- Crossfade Slider
+- Notched Slider
+- Arc Slider
+- Multi-Slider
 
-```
-Static SVG Import (v1.0) ✓
-  └── Import as Image ✓
-  └── Drag-drop upload ✓
-  └── Preview + dimensions ✓
+### Table Stakes
 
-Interactive SVG Controls (v1.1) — Core Focus
-  ├── Layer Detection (v1.0) ✓
-  │   └── Naming conventions ✓
-  │   └── Design Mode dialog ✓
-  ├── Layer-to-Property Mapping (NEW) ✱
-  │   ├── Knob rotation → indicator layer
-  │   ├── Slider value → fill layer (defer v1.2)
-  │   └── Button state → layer visibility (defer v1.2)
-  └── Rendering System (NEW) ✱
-      ├── CSS transform for rotation
-      ├── clip-path for fills (defer v1.2)
-      └── display:none for states (defer v1.2)
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| Center-zero visual (Bipolar) | Standard for pan, stereo width | Low | Fill from center, not from min |
+| A/B crossfade behavior (Crossfade) | DJ mixer standard, dry/wet | Medium | Two-sided fill, center = 50/50 |
+| Discrete positions (Notched) | Standard for stepped parameters | Low | Reuse step logic from stepped knob |
+| Curved path (Arc) | Space-efficient circular layouts | High | SVG path calculations for arc |
+| Parallel sliders (Multi-Slider) | Standard for EQ bands, multi-band | High | Array of values, synchronized rendering |
 
-Asset Library (v1.1) — Core Focus ✱
-  ├── Storage (NEW) ✱
-  │   ├── Save assets to library
-  │   └── Load from library
-  ├── Organization (NEW) ✱
-  │   ├── Categories (knobs/sliders/decorative)
-  │   └── Search/filter
-  └── Export/Import (NEW) ✱
-      ├── Export library JSON
-      └── Import library JSON
+### Differentiators
 
-Optimization Pipeline (v1.1 - Optional)
-  ├── SVGO integration (NEW) ✱
-  ├── Stroke-to-path warning (NEW) ✱
-  └── ViewBox normalization (NEW) ✱
-```
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Customizable arc radius | Flexible layouts | Medium | Arc curvature property |
+| Independent multi-slider colors | Visual band identification | Low | Color array property |
+| Center notch indicator | Clear visual reference | Low | Render mark at center position |
+| Ganged multi-slider mode | Unified control option | Medium | Single value controls all sliders |
 
-### Critical Path for v1.1
+### Anti-Features
 
-Must have in order:
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Auto-layout multi-sliders | Too opinionated | User positions/sizes manually |
+| EQ frequency auto-spacing | Domain-specific logic | Provide template, not automation |
+| Gesture-based curve drawing | Touch-only, not universal | Click-drag interaction |
 
-1. **Asset Library Storage** — Can't reuse assets without persistence
-2. **Knob Rotation Mapping** — Core use case for interactive SVG
-3. **Asset Library UI** — Access point for saved assets
-4. **Category System** — Organize knobs vs decorative graphics
+### Dependencies on Existing Features
 
-Can defer to v1.2:
-
-- Slider fill animation (less common than knobs)
-- Button multi-state (buttons usually simple)
-- Advanced optimization pipeline (nice-to-have)
+- Extends existing Slider element types (Vertical, Horizontal, Fill)
+- Reuse fill rendering from Fill Slider (v1.0)
+- Property panel framework handles new properties
+- Export system generates appropriate HTML/CSS
 
 ---
 
-## Audio Plugin Domain Specifics
+## 3. Buttons & Switches (7 remaining)
 
-### Knob Design Patterns
+### Elements
+- Icon Button
+- Toggle Switch
+- Rocker Switch
+- Rotary Switch
+- Kick Button
+- Segment Button
+- Power Button
 
-Based on audio plugin UI research:
+### Table Stakes
 
-**Traditional Approach: Filmstrips**
-- PNG sequence with 64-128 frames (0° to 280° rotation)
-- Large file sizes (250px × 128 frames = 32,000px tall image)
-- Memory-intensive, but proven workflow
-- Photoshop workflow: render 3D → composite frames
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| iOS-style slide animation (Toggle) | Modern UI standard | Medium | CSS transition between states |
+| 3-position states (Rocker) | Up/center/down control | Medium | Tri-state value (-1, 0, 1) |
+| Rotary selection (Rotary Switch) | Vintage hardware style | Medium | Discrete angles, visual indicator |
+| Momentary press animation (Kick) | Drum trigger feedback | Low | Scale animation on press |
+| Segmented selection (Segment) | Mode switcher (FM, AM, PM) | Medium | Array of labels, exclusive selection |
+| On/off indicator LED (Power) | Bypass state visibility | Low | Bi-state with LED element |
+| SVG icon support (Icon) | Toolbar integration | Low | Reuse SVG import from v1.1 |
 
-**Modern Approach: SVG Rotation**
-- Single SVG with layers (track, arc, indicator)
-- CSS transform: rotate(θdeg) on indicator layer
-- Perfect scaling at any resolution
-- Smaller file size, but requires layer structure
+### Differentiators
 
-**User Expectation:** Audio developers expect filmstrip workflow BUT prefer SVG if tool makes it easy.
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Custom icon upload | Branding flexibility | Low | Leverage existing asset library |
+| Segment auto-sizing | Responsive layouts | Medium | Equal-width distribution |
+| Rocker animation | Satisfying physicality | Medium | Rotation animation on click |
+| Rotary switch notches | Clear position feedback | Low | Visual tick marks |
 
-**Our Value Proposition:** Make SVG rotation as easy as filmstrips used to be.
+### Anti-Features
 
-### Common SVG Layer Structures
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Icon library bundled | Bloats project | User imports needed icons only |
+| Auto-icon selection | AI overreach | Manual icon assignment |
+| Haptic feedback triggers | Platform-specific | Visual feedback only |
 
-From ecosystem research and existing v1.0 naming conventions:
+### Dependencies on Existing Features
 
-| Element Type | Expected Layers | Purpose | v1.1 Support |
-|-------------|-----------------|---------|--------------|
-| **Knob** | track, arc, indicator, glow | track = background circle, arc = value arc, indicator = pointer/dot, glow = highlight | ✓ YES (core feature) |
-| **Slider** | track, thumb, fill | track = rail, thumb = handle, fill = progress bar | DEFER v1.2 |
-| **Button** | normal, hover, active, disabled | State-based layer visibility | DEFER v1.2 |
-| **Meter** | background, fill, peak-hold, clip | fill = current level, peak-hold = max indicator | DEFER v1.2 |
-| **Logo/Icon** | (single layer or none) | Static decorative graphic | ✓ YES (image element) |
-
-### Naming Convention Extensions
-
-**v1.0 detects:** indicator, thumb, track, fill, glow, background, pointer, needle, handle, grip, progress, value, highlight, hover
-
-**v1.1 additions:**
-- `arc` — value arc on knobs (common in audio UIs)
-- `normal` / `hover` / `active` / `disabled` — button states (defer v1.2)
-- `peak` / `clip` — meter states (defer v1.2)
-- `decoration` / `ornament` — non-interactive layers
-
----
-
-## MVP Recommendation for v1.1
-
-Focus: **Asset Library + Interactive Knobs**
-
-### Must Have (Core Value)
-
-1. **Asset Library Panel** (new UI component)
-   - Save imported SVG assets with names/categories
-   - Browse saved assets with thumbnails
-   - Drag from library to canvas
-   - Delete assets from library
-   - **Complexity:** High (new system)
-   - **Value:** Core v1.1 feature
-
-2. **Interactive Knob Rendering** (extends existing knob renderer)
-   - Map indicator layer to rotation transform
-   - CSS: `transform: rotate(calc(value * 280deg - 140deg))`
-   - Preview rotation in property panel
-   - **Complexity:** High (new rendering mode)
-   - **Value:** Core v1.1 feature
-
-3. **Asset Categories** (organization)
-   - Tag assets as: Knobs, Sliders, Buttons, Decorative
-   - Filter library by category
-   - Auto-suggest category from detected layers
-   - **Complexity:** Low (metadata system)
-   - **Value:** Essential for usability
-
-4. **Library Persistence** (storage)
-   - Save library to localStorage
-   - Export library as JSON file
-   - Import library from JSON file
-   - **Complexity:** Medium (file I/O)
-   - **Value:** Essential for asset reuse
-
-### Should Have (Better UX)
-
-5. **Improved Layer Detection** (enhance v1.0)
-   - Add `arc`, `normal`, `hover`, `active` to conventions
-   - Show confidence score for auto-detection
-   - Quick-assign buttons in Design Mode
-   - **Complexity:** Low (extend existing system)
-   - **Value:** Reduces manual layer assignment
-
-6. **ViewBox Validation** (quality)
-   - Warn if SVG has no viewBox
-   - Auto-add viewBox from width/height
-   - Handle preserveAspectRatio edge cases
-   - **Complexity:** Medium (SVG parsing edge cases)
-   - **Value:** Prevents scaling issues
-
-7. **Asset Duplication** (workflow)
-   - Duplicate asset in library (create variant)
-   - Rename asset in library
-   - Update all instances when asset modified
-   - **Complexity:** Medium (reference tracking)
-   - **Value:** Variant management
-
-### Could Have (Polish)
-
-8. **SVGO Optimization** (performance)
-   - Run on import (optional toggle)
-   - Show before/after file size
-   - Preserve critical IDs for layer detection
-   - **Complexity:** Low (library integration)
-   - **Value:** Nice-to-have optimization
-
-9. **Stroke Detection Warning** (quality)
-   - Detect if SVG uses strokes
-   - Warn that strokes may render inconsistently
-   - Link to stroke-to-path conversion tools
-   - **Complexity:** Low (SVG analysis)
-   - **Value:** Prevents rendering issues
-
-10. **Asset Search** (large libraries)
-    - Text search by asset name
-    - Filter by multiple categories
-    - Sort by date added / name
-    - **Complexity:** Low (string filtering)
-    - **Value:** Useful for large libraries (50+ assets)
-
-### Won't Have (v1.2+)
-
-- Slider fill animation (defer to v1.2)
-- Button multi-state graphics (defer to v1.2)
-- Meter animation system (defer to v1.2)
-- In-app SVG editing (out of scope forever)
-- Gradient editor (out of scope)
-- SVG animation timeline (out of scope)
+- Extends Button element (Momentary, Toggle, Text)
+- Asset library for icons (v1.1)
+- Animation via CSS export
+- Parameter binding for multi-state controls
 
 ---
 
-## Feature Comparison Matrix
+## 4. Value Displays (8 remaining)
 
-How does our v1.1 system compare to design tool SVG import?
+### Elements
+- Numeric Display
+- Time Display
+- Percentage Display
+- Ratio Display
+- Note Display
+- BPM Display
+- Editable Display
+- Multi-Value Display
 
-| Feature | Figma | Sketch | Illustrator | Our v1.1 | Notes |
-|---------|-------|--------|-------------|----------|-------|
-| Drag-drop SVG import | ✓ | ✓ | ✓ | ✓ | Table stakes |
-| Preserve layers/groups | ✓ | ✓ | ✓ | ✓ | Via naming conventions |
-| Flatten on import | ✓ | ✓ | ✓ | ✓ | "Add as Image" option |
-| Edit after import | ✓ | ✓ | ✓ | ✗ | Anti-feature (out of scope) |
-| Asset library | ✓ | ✓ | ✓ | ✓ | New in v1.1 |
-| Interactive controls | ✗ | ✗ | ✗ | ✓ | **Differentiator** |
-| Rotation mapping | ✗ | ✗ | ✗ | ✓ | **Differentiator** |
-| Audio plugin export | ✗ | ✗ | ✗ | ✓ | **Differentiator** |
-| SVGO optimization | Plugin | Plugin | ✗ | ✓ | Planned |
-| Stroke-to-path convert | ✓ | ✓ | ✓ | ✗ | External tools |
+### Table Stakes
 
----
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| Unit formatting (ms/s/bars) | Domain standard | Low | Format string property |
+| Precision control | 0-3 decimal places | Low | Precision property |
+| Note name conversion | MIDI note → "C4" | Low | Lookup table (0-127 → note names) |
+| Ratio infinity symbol | ∞:1 for limiters | Low | Special case when ratio > 100 |
+| Double-click to edit (Editable) | DAW standard interaction | High | Input element overlay on double-click |
+| Stacked layout (Multi-Value) | Multiple readouts | Medium | Vertical stack of formatted values |
+| Auto-unit scaling | 1000Hz → 1.0kHz | Medium | Threshold-based formatting |
 
-## User Stories
+### Differentiators
 
-### Static SVG Graphics
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Custom format strings | Flexible display | Medium | Support "%.2f dB", "%d:%d" patterns |
+| Editable validation | Invalid input rejection | Medium | Min/max enforcement on edit |
+| Scientific notation option | Wide value ranges | Low | Format property option |
+| Monospace font option | Alignment consistency | Low | Font property |
 
-**As a plugin developer**, I want to import my company logo as SVG so it scales perfectly at any plugin window size.
+### Anti-Features
 
-**Workflow:**
-1. Drag logo.svg onto Import area
-2. Preview shows logo + dimensions
-3. Click "Add as Image"
-4. Logo appears on canvas, resize to fit header
-5. Export → logo embedded as data URL in HTML
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Calculator mode | Feature creep | Simple value display only |
+| Expression evaluation | Security risk in export | Fixed formatting only |
+| Localized number formatting | Complexity (1,000 vs 1.000) | Always use . decimal separator |
 
-**Existing Support:** ✓ Full (v1.0)
+### Dependencies on Existing Features
 
----
-
-**As a plugin developer**, I want to save decorative divider graphics to reuse across projects so I maintain consistent branding.
-
-**Workflow:**
-1. Import divider.svg
-2. Click "Save to Library"
-3. Name it "Brand Divider", tag as "Decorative"
-4. In future projects, open Asset Library → drag "Brand Divider" to canvas
-
-**Existing Support:** ✱ NEW (v1.1 feature)
-
----
-
-### Interactive SVG Knobs
-
-**As a plugin developer**, I want to import a custom knob design from my designer so my plugin UI matches my brand.
-
-**Workflow:**
-1. Designer exports knob.svg from Figma with layers: "track", "arc", "indicator"
-2. Drag knob.svg onto Import area
-3. Design Mode opens, shows detected layers with correct types
-4. Click "Save as Knob"
-5. Name it "Brand Knob", saved to library under "Knobs" category
-6. Drag from library to canvas → creates interactive knob element
-7. Indicator layer rotates on parameter value change
-
-**Existing Support:** ⚠ PARTIAL (layer detection exists, rotation mapping missing)
+- Extends existing dB Display, Frequency Display (v1.0)
+- Font selection system (Inter, Roboto Mono)
+- Parameter binding for value updates
+- Input validation in export JavaScript
 
 ---
 
-**As a plugin developer**, I want to use the same custom knob for multiple parameters so my UI has consistent styling.
+## 5. LED Indicators (6 new)
 
-**Workflow:**
-1. Import + save "Brand Knob" (see above)
-2. Drag from library to canvas 5 times
-3. Configure each instance with different parameter ID
-4. All knobs use same SVG, different values
+### Elements
+- Single LED
+- Bi-Color LED
+- Tri-Color LED
+- LED Array
+- LED Ring
+- LED Matrix
 
-**Existing Support:** ⚠ PARTIAL (can duplicate image elements, but not interactive knobs)
+### Table Stakes
 
----
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| On/off states (Single) | Basic indicator | Low | Boolean parameter binding |
+| Green/red states (Bi-Color) | Standard status indication | Low | State-based color switching |
+| Off/yellow/red (Tri-Color) | Three-level status | Low | Enum state (0, 1, 2) |
+| Segmented array (8-24 LEDs) | Level indication | Medium | Array rendering, threshold-based |
+| Circular ring (LED Ring) | Knob value indication | Medium | SVG circle segments |
+| Grid pattern (Matrix) | Sequencer step display | High | 2D array rendering |
 
-### Asset Library Management
+### Differentiators
 
-**As a plugin developer**, I want to organize my custom UI assets by type so I can quickly find the right graphic.
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Custom colors | Branding flexibility | Low | RGB properties per state |
+| Glow effects | Premium aesthetic | Low | CSS box-shadow, SVG filters |
+| Peak hold (Arrays) | Better metering | Medium | Hold logic in JavaScript |
+| Animation timing | Smooth transitions | Low | CSS transition duration property |
 
-**Workflow:**
-1. Import 10 SVG files (knobs, sliders, logos)
-2. Each gets tagged: 3 "Knobs", 2 "Sliders", 5 "Decorative"
-3. Open Asset Library panel
-4. Filter to "Knobs" → see only knob designs
-5. Click thumbnail to preview full size
+### Anti-Features
 
-**Existing Support:** ✱ NEW (v1.1 feature)
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Blinking animations | Distracting, accessibility | Solid state changes |
+| Auto-brightness | Environmental sensing N/A | Fixed brightness |
+| Sound triggers | Out of scope | Visual indication only |
 
----
+### Dependencies on Existing Features
 
-**As a plugin developer**, I want to export my asset library so I can share it with other developers on my team.
-
-**Workflow:**
-1. Build library with 15 custom assets
-2. Click "Export Library" → saves assets.json
-3. Teammate imports assets.json → instantly has all 15 assets
-4. Can use in their own projects
-
-**Existing Support:** ✱ NEW (v1.1 feature)
-
----
-
-## Technical Considerations
-
-### SVG Rendering Challenges
-
-| Challenge | Solution | Complexity | v1.1 Priority |
-|-----------|----------|------------|---------------|
-| **Missing viewBox** | Auto-generate from width/height attrs | Low | Must Have |
-| **Fixed units (px, pt)** | Strip units, use viewBox for scaling | Medium | Should Have |
-| **Embedded bitmaps** | Warn user, support but discourage | Low | Could Have |
-| **Strokes vs fills** | Warn if strokes detected, import as-is | Low | Could Have |
-| **Complex paths** | SVGO simplification (optional) | Medium | Could Have |
-| **Nested transforms** | Flatten on import (preserve visual) | High | Defer v1.2 |
-| **CSS in `<style>`** | Extract to inline styles | Medium | Defer v1.2 |
-| **External resources** | Warn, require self-contained SVG | Low | Should Have |
-
-### Performance Considerations
-
-| Concern | At 10 assets | At 100 assets | At 1000 assets |
-|---------|--------------|---------------|----------------|
-| **Library load time** | Instant | <100ms | <500ms (lazy load) |
-| **Thumbnail generation** | Real-time | Real-time | Pre-generate + cache |
-| **Canvas rendering** | No impact | No impact | No impact (only active elements) |
-| **Export size** | Negligible | +50KB | +500KB (acceptable for desktop) |
-
-### Storage Strategy
-
-**localStorage** for library persistence:
-
-- Key: `vst3-designer-asset-library`
-- Value: JSON array of assets
-- Structure:
-  ```json
-  {
-    "id": "uuid",
-    "name": "Brand Knob",
-    "category": "knobs",
-    "svg": "<svg>...</svg>",
-    "layers": { "indicator": "<g>...</g>", "track": "<circle>..." },
-    "thumbnail": "data:image/png;base64,...",
-    "width": 100,
-    "height": 100,
-    "created": "2026-01-25T12:00:00Z"
-  }
-  ```
-
-**Limits:**
-- localStorage typically 5-10MB
-- 1 SVG asset ≈ 5-50KB
-- Safe limit: ~100 assets (5MB)
-- Warn at 50 assets, block at 100
-
-**Export/Import:**
-- JSON file for portability
-- No size limit (user's file system)
-- Can share across team
-
-### Integration with v1.0 Codebase
-
-**Existing strengths to leverage:**
-
-1. **SVG layer detection** (`svgLayerExtractor.ts`)
-   - Already detects: indicator, thumb, track, fill, glow
-   - ✱ Extend with: arc, normal, hover, active, peak, clip
-
-2. **Design Mode dialog** (`SVGDesignMode.tsx`)
-   - Already has layer assignment UI
-   - ✱ Enhance with: category selection, save-to-library button
-
-3. **Element renderers** (`KnobRenderer.tsx`, `SliderRenderer.tsx`)
-   - Already render SVG arcs procedurally
-   - ✱ Extend with: render imported SVG layers with transforms
-
-4. **Zustand store** (state management)
-   - ✱ Add `assetLibrary` slice with actions: add, remove, update, import, export
-
-5. **@dnd-kit** (drag-drop)
-   - ✱ Extend palette to include library panel
-   - ✱ Drag from library → canvas uses existing drop logic
-
-**Gaps to fill:**
-
-1. ✱ Asset library UI component (new)
-2. ✱ Layer-to-property mapping system (new)
-3. ✱ SVG layer rendering in element components (extend existing)
-4. ✱ Library persistence (localStorage + JSON export) (new)
-5. ✱ Thumbnail generation (new — use canvas API)
+- SVG rendering system
+- Parameter binding (boolean, enum, float)
+- Color property system
+- Export CSS for glow effects
 
 ---
 
-## Implementation Complexity
+## 6. Meters (13 remaining)
 
-### Low Complexity (1-2 days)
+### Elements
+- RMS Meter
+- VU Meter
+- PPM Type I (IEC 60268-10)
+- PPM Type II (BBC standard)
+- True Peak Meter
+- LUFS Momentary
+- LUFS Short-term
+- LUFS Integrated
+- K-12 Meter
+- K-14 Meter
+- K-20 Meter
+- Correlation Meter
+- Stereo Width Meter
 
-- Asset library storage (Zustand slice + localStorage)
-- Category tagging system
-- Export/import library JSON
-- Extend naming conventions (add arc, normal, hover, active)
-- ViewBox validation + auto-generation
+### Table Stakes - Industry Standards
 
-### Medium Complexity (3-5 days)
+**CRITICAL:** Meter ballistics are standardized. Non-compliance makes plugin appear unprofessional.
 
-- Asset library UI panel (list, thumbnails, filter, search)
-- Thumbnail generation (render SVG to canvas, extract PNG data URL)
-- Drag from library to canvas (integrate with @dnd-kit)
-- Enhanced Design Mode UX (quick-assign buttons, category select)
-- SVGO integration (optional optimization toggle)
+| Meter Type | Standard | Attack Time | Release Time | Range | Complexity |
+|------------|----------|-------------|--------------|-------|------------|
+| **VU Meter** | ANSI C16.5-1942 | 300ms | 300ms | -20 to +3 VU | LOW |
+| **RMS Meter** | Industry practice | 300ms | 300ms | -60 to 0 dBFS | LOW |
+| **PPM Type I** | IEC 60268-10 | 10ms | 1.5s (20dB fall) | -60 to 0 dBFS | MEDIUM |
+| **PPM Type II** | IEC 60268-10 | 10ms | 2.8s (20dB fall) | -60 to 0 dBFS | MEDIUM |
+| **True Peak** | ITU-R BS.1770-5 | - | 1.7s | -60 to +6 dBTP | HIGH |
+| **LUFS Momentary** | EBU R128 | 400ms window | - | -60 to 0 LUFS | HIGH |
+| **LUFS Short-term** | EBU R128 | 3s window | - | -60 to 0 LUFS | HIGH |
+| **LUFS Integrated** | EBU R128 | Full program | - | -60 to 0 LUFS | HIGH |
+| **K-12 Meter** | Bob Katz | 600ms | 600ms | -60 to 0 dBFS | MEDIUM |
+| **K-14 Meter** | Bob Katz | 600ms | 600ms | -60 to 0 dBFS | MEDIUM |
+| **K-20 Meter** | Bob Katz | 600ms | 600ms | -60 to 0 dBFS | MEDIUM |
+| **Correlation** | Industry practice | Fast | Medium | -1 to +1 | MEDIUM |
+| **Stereo Width** | Industry practice | Medium | Medium | 0 to 200% | MEDIUM |
 
-### High Complexity (5-10 days)
+**Implementation notes:**
+- **VU Meter:** 300ms integration matches human perception, standard reference: -18 dBFS = 0 VU
+- **PPM Type I (DIN):** 5ms integration time per IEC 60268-10
+- **PPM Type II (BBC):** 10ms integration time per IEC 60268-10
+- **True Peak:** Requires 4x oversampling (48kHz → 192kHz) per ITU-R BS.1770, measures inter-sample peaks
+- **LUFS:** Implements K-weighting filter, gating at -10 LU per EBU R128, target -23 LUFS for broadcast
+- **K-System:** Integrated peak + RMS, monitor calibration to 83 dBSPL, K-12 (broadcast), K-14 (pop/rock), K-20 (film/classical)
 
-- Knob rotation mapping (transform indicator layer based on value)
-- SVG layer rendering in KnobRenderer (replace procedural arc with imported SVG)
-- Multi-layer element system (generalize beyond knobs to sliders/buttons)
-- Nested transform flattening (handle complex SVG structures)
-- Real-time rotation preview in property panel
+### Table Stakes - Visual Properties
+
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| dBFS scale markings | Industry standard | Low | -60, -50, -40, -30, -20, -10, -6, -3, 0 |
+| Color zones | Green/yellow/red zones | Low | Thresholds: green < -18, yellow < -6, red ≥ -6 |
+| Peak hold indicator | Standard for all meters | Medium | Hold peak for 1-3 seconds |
+| Clip indicator | Essential for digital audio | Low | Latches at 0 dBFS, manual reset |
+| Vertical/horizontal orientation | Layout flexibility | Low | Property: orientation |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Configurable ballistics | Advanced users can tweak | Medium | Expose attack/release as properties |
+| Custom color zones | Branding | Low | RGB properties for zones |
+| True Peak vs Sample Peak toggle | Educational value | Low | Property: truePeak (boolean) |
+| LUFS target overlay | Mix reference | Medium | Render -23 LUFS line |
+| K-System scale variants | Bob Katz compliance | Low | K-12/K-14/K-20 as separate types |
+| Correlation stereo display | Phase visualization | High | Polar plot or linear -1 to +1 |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Non-standard ballistics | Breaks expectations | Offer standard + "custom" mode |
+| Auto-scale adjustment | Confusing for mixing | Fixed scales per standard |
+| Integrated analyzer features | Scope creep | Separate visualization elements |
+| Meter "skins" library | Bloat | User imports custom SVGs |
+
+### Critical Implementation Requirements
+
+**True Peak Meter (HIGH complexity):**
+- Must implement 4x oversampling per ITU-R BS.1770-5
+- Oversampling filter: half-polyphase length 12, 80dB stopband
+- Higher ratios preferred (8x) for accuracy
+- Report in dBTP (decibels True Peak)
+- 4x oversampling has potential 0.5dB under-read
+
+**LUFS Meters (HIGH complexity):**
+- K-weighting filter per ITU-R BS.1770-4
+- Gating: relative gate at -10 LU
+- Momentary: 400ms sliding window
+- Short-term: 3s sliding window
+- Integrated: full program with gating
+- Target: -23 LUFS ±0.2 LU (±1 LU for live)
+
+**K-System Meters (MEDIUM complexity):**
+- Combined peak + RMS display
+- Peak follows sample peaks
+- RMS uses 600ms integration
+- Scale offset: K-12 = -12 dBFS, K-14 = -14 dBFS, K-20 = -20 dBFS
+- Monitor calibration assumption: 83 dBSPL
+
+### Dependencies on Existing Features
+
+- Peak Meter (v1.0) as reference implementation
+- Gain Reduction Meter (v1.0) for inverted display pattern
+- Color zone rendering from existing meters
+- JavaScript export must include ballistics calculations
+- JUCE C++ side provides actual audio analysis (designer shows mock values)
+
+---
+
+## 7. Visualizations (10 remaining)
+
+### Elements
+- Scrolling Waveform
+- Spectrum Analyzer
+- Spectrogram
+- Goniometer
+- Vectorscope
+- EQ Curve
+- Compressor Curve
+- Envelope Display
+- LFO Display
+- Filter Response
+
+### Table Stakes - Rendering & Performance
+
+| Element | Update Rate | Rendering Approach | Complexity | Notes |
+|---------|-------------|-------------------|------------|-------|
+| **Scrolling Waveform** | 30-60 FPS | Canvas 2D | HIGH | Circular buffer, scroll direction |
+| **Spectrum Analyzer** | 20-60 FPS | Canvas 2D or SVG | HIGH | FFT size, window function, smoothing |
+| **Spectrogram** | 20-30 FPS | Canvas 2D | HIGH | Waterfall display, color map |
+| **Goniometer** | 30-60 FPS | Canvas 2D | MEDIUM | Lissajous L/R, persistence trails |
+| **Vectorscope** | 30-60 FPS | Canvas 2D | MEDIUM | Polar stereo field, correlation |
+| **EQ Curve** | On-change | SVG | MEDIUM | Interactive handles, frequency response |
+| **Compressor Curve** | On-change | SVG | MEDIUM | Transfer function, knee visualization |
+| **Envelope Display** | On-change | SVG | LOW | ADSR handles, curve editing |
+| **LFO Display** | 30-60 FPS | Canvas 2D or SVG | LOW | Waveform shape, rate indicator |
+| **Filter Response** | On-change | SVG | MEDIUM | Frequency response curve |
+
+**Key findings:**
+- Modern plugins use GPU acceleration (WebGL) for spectrum/spectrogram
+- Canvas 2D acceptable for 30 FPS waveform/scope displays
+- SVG preferred for static curves (EQ, compressor, envelope)
+- Spectrogram "waterfall" style standard in 2026 plugins
+
+### Table Stakes - Interaction Patterns
+
+| Element | Interaction | Expected Behavior | Complexity |
+|---------|-------------|------------------|------------|
+| **EQ Curve** | Drag handles | Frequency, gain, Q adjustment | HIGH |
+| **Compressor Curve** | Drag knee | Threshold, ratio, knee shape | MEDIUM |
+| **Envelope Display** | Drag points | Time, level adjustment | MEDIUM |
+| **Spectrum Analyzer** | Click | Frequency readout | LOW |
+| **Waveform** | Drag | Zoom, pan | MEDIUM |
+
+### Table Stakes - Visual Properties
+
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| FFT size options | 512, 1024, 2048, 4096, 8192 | Low | Dropdown property |
+| Frequency scale | Linear, log, MEL | Medium | Scale transformation |
+| dB range | -60 to 0, -96 to 0 | Low | Property: dbRange |
+| Color gradients | Hot, cool, rainbow | Low | Color map property |
+| Persistence/trails | Ghost image fade | Medium | Frame buffer blending |
+| Grid overlay | Frequency/dB grid | Low | SVG overlay |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| 3D spectrogram | Premium aesthetic | HIGH | WebGL required, or fake 3D with CSS |
+| Custom color maps | Branding | LOW | Upload gradient image |
+| Freeze display | Analysis hold | LOW | Boolean property |
+| Peak frequency indicator | Mix reference | MEDIUM | Track & display peak bin |
+| Interactive EQ handles | Modern UI | HIGH | Draggable SVG elements |
+| Curve auto-smoothing | Professional look | MEDIUM | Bezier curve fitting |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Real-time audio processing | Designer is visual only | Mock data for preview |
+| Auto-EQ suggestions | AI overreach | Manual curve design |
+| Preset curve library | Bloat | User saves/loads project |
+| Multi-track visualization | Scope creep | Single channel focus |
+
+### Critical Implementation Requirements
+
+**Spectrum Analyzer:**
+- Window functions: Hanning, Hamming, Blackman-Harris
+- Smoothing: exponential or linear, configurable time constant
+- Scale: logarithmic frequency axis standard
+- Resolution vs speed tradeoff: FFT size property
+
+**Spectrogram/Waterfall:**
+- Color map: popular choices are "hot" (black→red→yellow→white), "cool" (blue→cyan→white)
+- Scroll direction: typically top-to-bottom (oldest at bottom)
+- Time resolution: balance between detail and performance
+- Modern trend: 3D perspective depth (Oscarizor Pro style)
+
+**Goniometer/Vectorscope:**
+- Correlation meter integration: goniometer shows L/R phase relationship
+- Vectorscope modes: Lissajous (L vs R), Polar (stereo field)
+- Persistence: fade trails over 0.5-2 seconds
+- Grid: concentric circles or box with correlation scale
+
+**EQ Curve:**
+- Interactive handles per band (frequency, gain, Q)
+- Collision detection: handles don't overlap
+- Real-time curve preview
+- Filter types: bell, shelf, high-pass, low-pass, notch
+- Visual curve: sum of all bands, displayed as smooth line
+
+### Dependencies on Existing Features
+
+- Waveform, Oscilloscope placeholders (v1.0) upgraded to functional
+- Canvas rendering system (new)
+- SVG path generation for curves
+- Interactive drag system for handles
+- Color property system
+- Export: Canvas API calls or static SVG
+
+---
+
+## 8. Selection & Navigation (8 remaining)
+
+### Elements
+- Multi-Select Dropdown
+- Combo Box
+- Tab Bar
+- Menu Button
+- Breadcrumb
+- Stepper
+- Tag Selector
+- Tree View
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| Checkbox list (Multi-Select) | Standard for routing, sends | MEDIUM | Array of selected indices |
+| Type-to-filter (Combo Box) | DAW standard (preset search) | MEDIUM | Text input + dropdown hybrid |
+| Active tab highlight (Tab Bar) | Visual state clarity | LOW | Selected index, active styles |
+| Dropdown menu (Menu Button) | Context actions standard | MEDIUM | Click reveals menu list |
+| Path separator (Breadcrumb) | Folder navigation clarity | LOW | " / " or " > " separators |
+| +/- buttons (Stepper) | Increment/decrement standard | LOW | Integer value control |
+| Multi-tag selection (Tag Selector) | Filter by category standard | MEDIUM | Checkboxes or pills |
+| Expand/collapse (Tree View) | File browser standard | HIGH | Nested data structure |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Keyboard navigation | Power user efficiency | MEDIUM | Arrow keys, Enter to select |
+| Search highlights | Find-as-you-type feedback | MEDIUM | Match highlighting |
+| Lazy loading (Tree View) | Performance for large trees | HIGH | Load children on expand |
+| Drag reorder (Tab Bar) | Customization | MEDIUM | Drag-drop tab order |
+| Recent items (Dropdown) | Quick access | LOW | Store last N selections |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Auto-complete predictions | Complex, locale-dependent | Simple filter matching |
+| Infinite scroll | UX complexity | Pagination or fixed list |
+| AI-powered search | Overkill | String matching sufficient |
+| Custom tree icons | Bloat | Standard folder/file icons |
+
+### Implementation Notes
+
+**Tab Bar:**
+- Common patterns: top tabs (page switcher), bottom tabs (mobile-style)
+- Active state: underline, background color, or bold text
+- Overflow: scroll or dropdown for many tabs
+
+**Tree View:**
+- Keyboard navigation: arrow keys expand/collapse, up/down navigate
+- State: expanded/collapsed per node
+- Lazy loading: fetch children on first expand
+- Common in preset browsers for folder hierarchies
+
+**Breadcrumb:**
+- Pattern: Home > Category > Subcategory > Current
+- Each segment clickable (navigates to that level)
+- Current item non-clickable or highlighted
+
+### Dependencies on Existing Features
+
+- Dropdown, Checkbox, Radio Group (v1.0) as foundation
+- Text input rendering
+- Click/keyboard event handling
+- Export JavaScript for interaction logic
+
+---
+
+## 9. Containers & Decorative (3 remaining)
+
+### Elements
+- Tooltip
+- Spacer
+- Window Chrome
+
+### Table Stakes
+
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| Hover trigger (Tooltip) | Standard help pattern | MEDIUM | CSS :hover or JS mouseover |
+| Delay before show | Prevent accidental tooltips | LOW | 500ms delay property |
+| Auto-positioning | Avoid viewport overflow | MEDIUM | Calculate position based on target |
+| Invisible layout (Spacer) | CSS standard | LOW | Transparent div with width/height |
+| Title bar (Window Chrome) | Standalone mode | MEDIUM | Drag to move, close button |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Rich content tooltips | Parameter details | MEDIUM | HTML content, not just text |
+| Smart positioning | Better UX | MEDIUM | Flip sides to stay in viewport |
+| Dark/light theme (Tooltip) | Consistency | LOW | Match plugin theme |
+| Custom chrome graphics | Branding | LOW | SVG import for title bar |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Auto-tooltips on all elements | Annoying | User explicitly adds tooltips |
+| Tooltip animations | Distracting | Simple fade-in |
+| Window minimize/maximize | Scope creep (DAW handles) | Close button only |
+
+### Implementation Notes
+
+**Tooltip:**
+- Positioning: top, bottom, left, right, auto
+- Arrow/pointer to target element
+- Max width to prevent long single line
+- Accessibility: screen reader support
+
+**Spacer:**
+- Invisible but occupies layout space
+- Use for alignment, spacing in groups
+- Width/height properties only
+
+**Window Chrome:**
+- Only relevant for standalone preview mode
+- DAW plugins don't need custom chrome (DAW provides window)
+- Designer exports with optional chrome for HTML preview
+
+### Dependencies on Existing Features
+
+- Panel, Frame, Group Box (v1.0) containers as reference
+- SVG import for chrome graphics
+- CSS positioning
+- Export HTML includes tooltip positioning logic
+
+---
+
+## 10. Specialized Audio Controls (12 remaining)
+
+### Elements
+- Piano Keyboard
+- Drum Pad
+- Pad Grid
+- Step Sequencer
+- XY Pad
+- Wavetable Display
+- Harmonic Editor
+- Envelope Editor
+- Sample Display
+- Loop Points
+- Patch Bay
+- Signal Flow
+
+### Table Stakes - Interaction Patterns
+
+| Element | Primary Interaction | Expected Behavior | Complexity |
+|---------|-------------------|------------------|------------|
+| **Piano Keyboard** | Click key | Send MIDI note on/off | HIGH |
+| **Drum Pad** | Click/press | Trigger sample, velocity-sensitive | MEDIUM |
+| **Pad Grid** | Click pad | Trigger clip/sample | MEDIUM |
+| **Step Sequencer** | Click cell | Toggle step on/off | HIGH |
+| **XY Pad** | Drag | Control 2 parameters simultaneously | MEDIUM |
+| **Wavetable Display** | Drag position | Morph between wavetables | HIGH |
+| **Harmonic Editor** | Drag bars | Adjust harmonic levels | MEDIUM |
+| **Envelope Editor** | Drag points | Shape ADSR envelope | HIGH |
+| **Sample Display** | Drag markers | Set loop/slice points | HIGH |
+| **Loop Points** | Drag handles | Define loop region | MEDIUM |
+| **Patch Bay** | Drag cable | Route signal sources | HIGH |
+| **Signal Flow** | Drag nodes | Connect processing blocks | HIGH |
+
+### Table Stakes - Visual Properties
+
+| Feature | Why Expected | Complexity | Implementation Notes |
+|---------|--------------|------------|---------------------|
+| Key highlighting (Piano) | Show played notes | MEDIUM | Active state per key |
+| Velocity sensitivity (Pads) | Performance expression | MEDIUM | Click position or pressure |
+| Grid snapping (Sequencer) | Quantization standard | MEDIUM | Steps align to subdivision |
+| Crosshair (XY Pad) | Position indicator | LOW | SVG lines at X/Y |
+| Waveform rendering (Wavetable) | Visual feedback | HIGH | Canvas rendering |
+| Harmonic bars (Harmonic Editor) | Frequency domain view | MEDIUM | Bar chart of partials |
+| Curve types (Envelope) | Attack/decay shapes | MEDIUM | Linear, exponential, logarithmic |
+| Waveform zoom (Sample Display) | Detail visibility | HIGH | Pinch/scroll to zoom |
+| Cable animation (Patch Bay) | Connection clarity | HIGH | Bezier curves, plug simulation |
+| Block icons (Signal Flow) | Module identification | MEDIUM | Icon per block type |
+
+### Differentiators
+
+| Feature | Value Proposition | Complexity | Notes |
+|---------|-------------------|------------|-------|
+| Octave range selector (Piano) | Compact layouts | LOW | Property: startOctave, octaveCount |
+| Color-coded pads (Pad Grid) | Visual organization | LOW | Color array property |
+| Euclidean rhythm generator (Sequencer) | Creative tool | MEDIUM | Algorithm for pattern distribution |
+| XY parameter mapping | Advanced modulation | HIGH | Map X/Y to any parameters |
+| Multi-layer wavetable | Professional synthesis | HIGH | 3D visualization |
+| Odd harmonic filter (Harmonic) | Sound design tool | LOW | Checkboxes for odd/even |
+| Envelope snapshots (Envelope) | A/B comparison | MEDIUM | Save/load states |
+| Slice detection (Sample Display) | Transient markers | HIGH | Audio analysis algorithm |
+| Snap-to-grid cables (Patch Bay) | Organized routing | MEDIUM | Align cable endpoints |
+| Auto-layout (Signal Flow) | Clean diagrams | HIGH | Graph layout algorithm |
+
+### Anti-Features
+
+| Anti-Feature | Why Avoid | What to Do Instead |
+|--------------|-----------|-------------------|
+| Built-in piano sounds | Out of scope | Visual element only, no audio |
+| Sample library browser | Bloat | External file selection |
+| Auto-rhythm generation | AI overreach | Manual step entry |
+| Real-time XY recording | Complex state management | Static design tool |
+| Wavetable synthesis engine | Out of scope | Visual display only |
+| Auto-harmonic tuning | Too musical | Manual adjustment |
+| Envelope presets library | Bloat | User saves templates |
+| Audio playback in designer | Scope creep | Mock display only |
+
+### Critical Implementation Requirements
+
+**Piano Keyboard:**
+- Range: configurable start note + octave count (1-8 octaves common)
+- Key sizes: white keys wider than black keys
+- MIDI note mapping: C4 = 60 (middle C)
+- Visual feedback: highlight on press, sustain indication
+- Velocity: optional velocity sensitivity via click position (vertical)
+
+**Step Sequencer:**
+- Grid: rows (tracks/notes) × columns (time steps)
+- Step state: off, on, accent, ghost note
+- Grid resolution: 16th, 8th, quarter notes
+- Modern features: step length, probability, ratcheting (multiple triggers per step)
+- UI pattern: click to toggle, drag to paint
+
+**XY Pad:**
+- Crosshair follows finger/mouse
+- Snap-to-grid option
+- Parameter labels: X axis (bottom), Y axis (left)
+- Center origin option (bipolar -1 to +1)
+- Boundary constraints: clamp to pad area
+- Touch support: single or multi-touch
+
+**Envelope Editor:**
+- ADSR standard: Attack, Decay, Sustain, Release
+- Extended: AHDSR (adds Hold), multi-segment
+- Interaction: drag time (horizontal), level (vertical)
+- Curve per segment: linear, exponential, logarithmic
+- Visual: connected line segments, handles at points
+- Grid: time divisions, level markings
+
+**Modulation Matrix (already placeholder in v1.0):**
+- Modern pattern: visual routing grid (sources × destinations)
+- Alternative: list of routes with dropdowns
+- Depth control per route (-100% to +100%)
+- Visual feedback: active routes highlighted
+
+### Dependencies on Existing Features
+
+- Modulation Matrix placeholder (v1.0) upgraded to functional
+- SVG rendering for complex graphics
+- Canvas rendering for waveforms
+- Interactive drag system
+- Parameter binding for multi-parameter controls
+- Export JavaScript for interaction logic
+- Asset library for icons (signal flow, patch bay)
+
+---
+
+## UX Improvements (2 items)
+
+### Visible Undo/Redo Buttons
+
+**Table Stakes:**
+- Undo/redo icons in toolbar (near logo)
+- Disabled state when at history limit
+- Keyboard shortcuts display on hover (Ctrl+Z, Ctrl+Y)
+
+**Differentiators:**
+- History preview dropdown (show list of actions)
+- Undo/redo animation feedback
+
+**Complexity:** LOW (UI placement and state binding)
+
+### Keyboard Layout Support (QWERTZ)
+
+**Table Stakes:**
+- Detect keyboard layout
+- Map shortcuts correctly (Z/Y swap for QWERTZ)
+- Display correct shortcuts in tooltips
+
+**Differentiators:**
+- User-configurable shortcuts
+- Shortcut cheat sheet (Help menu)
+
+**Complexity:** LOW (keyboard event detection, mapping layer)
+
+---
+
+## Cross-Cutting Concerns
+
+### Export Considerations
+
+All 78 elements must support:
+1. **HTML/CSS export** - Render to static HTML for JUCE WebView2
+2. **JavaScript interaction** - Export event handlers, value formatting
+3. **JUCE parameter binding** - Map to C++ backend parameters
+4. **Mock preview mode** - Show realistic behavior in designer preview
+
+**Complexity varies by element:**
+- Simple displays (LEDs, labels): LOW (static HTML/CSS)
+- Interactive controls (sliders, XY pad): MEDIUM (JavaScript event handling)
+- Real-time visualizations (spectrum, meters): HIGH (Canvas API, frame loops)
+- Standards-compliant meters: HIGH (ballistics calculations in JavaScript)
+
+### Property Panel Complexity
+
+All elements need property panels with:
+- Common properties: position, size, colors, parameter binding
+- Element-specific properties: meter ballistics, FFT size, step count, etc.
+- Validation: min/max ranges, enum constraints
+- Preview updates: live preview on canvas as properties change
+
+**Recommended grouping:**
+- Position & Size (shared)
+- Visual Style (shared + element-specific)
+- Behavior (element-specific)
+- Data Binding (shared)
+
+### Rendering Pipeline
+
+**Three rendering modes needed:**
+1. **Canvas rendering** - Real-time visualizations (waveform, spectrum, scopes)
+2. **SVG rendering** - Interactive curves (EQ, compressor, envelope)
+3. **HTML/CSS rendering** - Controls, displays, containers
+
+**Decision tree:**
+- Needs real-time updates (>20 FPS)? → Canvas
+- Interactive curve editing? → SVG
+- Static or low-frequency updates? → HTML/CSS
+
+---
+
+## MVP Recommendations by Category
+
+### High Priority (Essential for professional credibility)
+
+**Meters (industry standards):**
+1. VU Meter - most common analog-style meter
+2. True Peak Meter - essential for mastering plugins
+3. LUFS Integrated - broadcast standard
+4. K-14 Meter - pop/rock standard
+
+**Visualizations (common in modern plugins):**
+1. Spectrum Analyzer - universal analysis tool
+2. EQ Curve - interactive EQ is table stakes
+3. Envelope Display - synthesizer essential
+
+**Controls (common interaction patterns):**
+1. Stepped Knob - filter types, waveform selection
+2. Center-Detented Knob - pan controls
+3. Bipolar Slider - stereo width, detune
+4. XY Pad - modern modulation standard
+
+**Displays (parameter feedback):**
+1. Numeric Display - raw values
+2. Time Display - delay/reverb times
+3. Note Display - tuning, MIDI
+
+**Navigation (complex plugins need this):**
+1. Tab Bar - multi-page UIs
+2. Preset Browser upgrade - from placeholder to functional
+
+### Medium Priority (Common but not universal)
+
+**Meters:**
+- RMS Meter, Correlation Meter
+
+**Visualizations:**
+- Goniometer, Compressor Curve, Filter Response
+
+**Controls:**
+- Toggle Switch, Segment Button, Concentric Dual Knob
+- Multi-Slider (EQ bands)
+
+**Specialized:**
+- Piano Keyboard (instruments)
+- Step Sequencer (rhythm plugins)
+- Harmonic Editor (additive synthesis)
+
+### Lower Priority (Nice-to-have)
+
+**Meters:**
+- PPM Type I/II (broadcast-specific)
+- K-12, K-20 (niche use cases)
+- Stereo Width Meter
+
+**Visualizations:**
+- Spectrogram, Vectorscope, Wavetable Display, LFO Display
+
+**Specialized:**
+- Drum Pad, Pad Grid, Patch Bay, Signal Flow
+
+**Navigation:**
+- Multi-Select Dropdown, Combo Box, Breadcrumb, Tree View, Tag Selector
+
+**Containers:**
+- Tooltip, Spacer, Window Chrome
+
+**Controls:**
+- Endless Encoder, Dot Indicator Knob, Arc Slider, Rotary Switch
+
+---
+
+## Dependencies & Phase Ordering Recommendations
+
+### Foundation First
+1. **Canvas rendering system** (NEW) - Required for all real-time visualizations
+2. **Interactive SVG curves** (NEW) - Required for EQ/compressor/envelope editors
+3. **Multi-parameter binding** (EXTEND) - Required for XY pad, concentric knobs
+
+### Standards Implementation Second
+4. **Meter ballistics engine** - Implement VU, RMS, PPM, LUFS, K-System standards
+5. **True Peak oversampling** - ITU-R BS.1770 implementation
+
+### Complex Interactions Third
+6. **Drag-based editors** - Envelope, EQ curve, harmonic editor
+7. **Grid-based input** - Step sequencer, piano keyboard, pad grid
+
+### Polish Last
+8. **Navigation components** - Tabs, breadcrumbs, tree view
+9. **Tooltips and chrome** - UX enhancements
+
+---
+
+## Research Confidence Assessment
+
+| Area | Confidence | Source Quality | Notes |
+|------|------------|----------------|-------|
+| Meter Standards | HIGH | Official ITU-R, IEC, EBU docs, industry articles | Standards are well-documented |
+| K-System | HIGH | Bob Katz AES paper, multiple implementations | Creator's documentation available |
+| Visualization Patterns | MEDIUM | Plugin reviews, developer forums | Current practices clear, specifics vary |
+| Interaction Patterns | MEDIUM | WebSearch + existing plugins analysis | Common patterns identified |
+| LUFS Implementation | HIGH | EBU R128 spec, plugin implementations | Standard is prescriptive |
+| True Peak | HIGH | ITU-R BS.1770-5 specification | Algorithm clearly defined |
+| XY Pad Patterns | MEDIUM | Modern plugin examples | Common but no formal standard |
+| Step Sequencer UI | MEDIUM | DAW and plugin examples | Patterns well-established |
+| Navigation Components | MEDIUM | General UI/UX patterns | Not audio-specific but applicable |
 
 ---
 
 ## Sources
 
-### Design Tool Patterns
-- [Improved SVG Import: Compound Paths](https://www.shapertools.com/en-us/blog/compound-paths) — SVG fill-rule handling
-- [Tips for Creating and Exporting Better SVGs for the Web](https://www.sarasoueidan.com/blog/svg-tips-for-designers/) — Best practices
-- [Best Practices for Working with SVGs](https://www.bitovi.com/blog/best-practices-for-working-with-svgs) — Optimization techniques
-- [A Practical Guide To SVG And Design Tools — Smashing Magazine](https://www.smashingmagazine.com/2019/05/svg-design-tools-practical-guide/) — Design tool comparison
+### Standards & Specifications
+- [ITU-R BS.1770-5 (2023)](https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.1770-5-202311-I!!PDF-E.pdf) - Loudness and True Peak metering
+- [EBU R 128](https://en.wikipedia.org/wiki/EBU_R_128) - Loudness normalization
+- [IEC 60268-10/18](https://en.wikipedia.org/wiki/Peak_programme_meter) - PPM standards
+- [Bob Katz K-System](https://www.meterplugs.com/blog/2016/10/14/k-system-metering-101.html) - Integrated metering
 
-### Figma/Sketch SVG Import
-- [How to import optimized SVG files to Figma with one click using Convertify](https://www.hypermatic.com/tutorials/how-to-import-optimized-svg-files-to-figma-with-one-click-using-convertify/) — Plugin-based optimization
-- [Copy assets between design tools – Figma Learn](https://help.figma.com/hc/en-us/articles/360040030374-Copy-assets-between-design-tools) — Cross-tool workflows
-- [How to Import Files Into Figma](https://www.oreateai.com/blog/how-to-import-files-into-figma/6e5990bc69d69e8458489c9b821c1807) — Import patterns
+### Meter Ballistics
+- [VU Meter Ballistics](https://en.wikipedia.org/wiki/VU_meter) - 300ms integration standard
+- [VU And PPM Audio Metering](https://www.sound-au.com/project55.htm) - Technical details
+- [Audio Metering Guide - SonicScoop](https://sonicscoop.com/everything-need-know-audio-meteringand/) - Industry overview
+- [PPM Standards Comparison](https://www.soundonsound.com/sound-advice/q-whats-difference-between-ppm-and-vu-meters) - Type I vs Type II
 
-### Audio Plugin UI Design
-- [AudioKnobs — Beautiful SVG audio knobs with mouse and touch control](https://github.com/Megaemce/AudioKnobs) — SVG knob library
-- [Vector graphics gui's and knob/slider design - JUCE Forum](https://forum.juce.com/t/vector-graphics-guis-and-knob-slider-design/13524) — Community discussion
-- [Ui Design Tutorials? - KVR Audio](https://www.kvraudio.com/forum/viewtopic.php?t=541318) — Design approaches (flat vs skeuomorphic)
-- [Free HISE Filmstrips! Analog Knob-Kit 01](https://forum.hise.audio/topic/6427/free-hise-filmstrips-analog-knob-kit-01-by-noisehead) — Filmstrip workflow
-- [Procedural User Interface Design – Audio Damage](https://www.audiodamage.com/blogs/news/procedures) — Procedural vs image-based
+### LUFS & Loudness
+- [HoRNet ELM128 MK2](https://www.hornetplugins.com/plugins/hornet-elm128-mk2/) - EBU R128 implementation reference
+- [Youlean Loudness Meter](https://youlean.co/youlean-loudness-meter/) - Free standards-compliant implementation
+- [Loudness Metering Explained - Waves](https://www.waves.com/loudness-metering-explained) - Educational resource
 
-### SVG Technical Details
-- [SVG viewBox Explained: The Complete Guide](https://www.svggenie.com/blog/svg-viewbox-guide) — Scaling behavior
-- [Understanding SVG Coordinate Systems and Transformations](https://www.sarasoueidan.com/blog/svg-coordinate-systems/) — viewport, viewBox, preserveAspectRatio
-- [preserveAspectRatio - SVG | MDN](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/preserveAspectRatio) — Official docs
-- [How to Scale SVG | CSS-Tricks](https://css-tricks.com/scale-svg/) — Practical scaling techniques
+### Visualizations
+- [iZotope Insight 2](https://www.izotope.com/en/products/insight/features/spectrogram.html) - Professional spectrogram/vectorscope
+- [Voxengo SPAN](https://www.voxengo.com/product/span/) - Spectrum analyzer reference
+- [Blue Cat's Oscilloscope Multi](https://www.bluecataudio.com/Products/Product_OscilloscopeMulti/) - Multi-track waveform display
+- [Best Spectrum Analyzer Plugins](https://emastered.com/blog/best-spectrum-analyzer-plugins) - 2026 market survey
 
-### SVG Layer Management
-- [Preserve Layers When Opening an SVG File](https://alpha.inkscape.org/vectors/www.inkscapeforum.com/viewtopic5a60.html?t=1272) — Layer preservation challenges
-- [GitHub: svg-flatten](https://github.com/stadline/svg-flatten) — Convert shapes to paths, merge groups
-- [The Illustrator-to-Figma Pipeline: A Guide to Clean, Editable SVGs](https://medium.com/@King_Marquant/the-illustrator-to-figma-pipeline-a-guide-to-clean-editable-svgs-cb71ba3d31d9) — Workflow optimization
+### Interaction Patterns
+- [MeldaProduction XY Pads](https://www.meldaproduction.com/tutorials/xy_pads_morphing_gf) - XY pad modulation tutorial
+- [KAOSS PAD Plugin](https://kosssound.com/kaoss-pad/) - XY + modulation integration
+- [Best Sequencer Plugins 2026](https://pluginoise.com/11-best-sequencer-vst-plugins/) - Step sequencer patterns
+- [HISE Piano Roll UI Discussion](https://forum.hise.audio/topic/12030/piano-roll-ui-component) - Piano keyboard implementation
 
-### SVG Optimization
-- [SVGO - Node.js tool for optimizing SVG files](https://github.com/svg/svgo) — Industry-standard optimizer
-- [SVGOMG - SVGO's Missing GUI](https://jakearchibald.github.io/svgomg/) — Online tool with visual preview
-- [Three Ways of Decreasing SVG File Size with SVGO](https://www.sitepoint.com/three-ways-decreasing-svg-file-size-svgo/) — Optimization strategies
-- [A Developer's Guide to SVG Optimization | Cloudinary](https://cloudinary.com/guides/image-formats/a-developers-guide-to-svg-optimization) — Comprehensive guide
+### Correlation & Stereo Imaging
+- [HoRNet StereoView](https://www.hornetplugins.com/plugins/hornet-stereoview/) - Free correlation meter
+- [Voxengo Correlometer](https://www.voxengo.com/product/correlometer/) - Multiband correlation
+- [Best Stereo Imaging Plugins 2026](https://pluginoise.com/9-best-stereo-imaging-plugins/) - Market overview
 
-### Asset Management Patterns
-- [SVG Asset Library for Building Automation](https://watkinswebdesign.co.uk/case-studies/svg-asset-library-for-building-automation) — Award-winning library (1,857 assets)
-- [Creating your custom SVG Icon library in React](https://medium.com/@mateuszpalka/creating-your-custom-svg-icon-library-in-react-a5ff1c4c704a) — Component patterns
-- [Transform SVGs into React Components with SVGR](https://www.ivstudio.com/blog/svg-icon-library-in-react) — Build-time optimization
-- [9 New Design System Examples to Scale Brands in 2026](https://www.superside.com/blog/design-systems-examples) — Enterprise asset management
+### Navigation & Preset Management
+- [GForce OB-E v2.5 Preset Browser](https://oberheim.com/news/gforce-releases-oberheim-ob-e-v2-5-sem-v1-5-free-update-with-new-preset-browser/) - Modern preset browser with tagging
+- [Best Preset Browser Discussions](https://www.kvraudio.com/forum/viewtopic.php?p=6053200) - User expectations
+- [Breadcrumbs UX Best Practices 2026](https://www.pencilandpaper.io/articles/breadcrumbs-ux) - Navigation patterns
 
-### SVG Path Conversion
-- [Convert SVGs from Stroke to Path](https://dev.to/saulodias/convert-svgs-from-stroke-to-path-420j) — Stroke conversion techniques
-- [SVG Stroke to Fill Converter Online](https://10015.io/tools/svg-stroke-to-fill-converter) — Online conversion tool
-- [GitHub: svg-stroke-to-path](https://github.com/leifgehrmann/svg-stroke-to-path) — Inkscape CLI automation
+### General UI/UX
+- [Mobile Navigation UX 2026](https://www.designstudiouiux.com/blog/mobile-navigation-ux/) - Tab bar patterns
+- [Tree View Libraries 2026](https://www.cssscript.com/best-tree-view/) - Implementation references
+- [JUCE Audio Parameter Docs](https://docs.juce.com/master/classAudioProcessorParameter.html) - Parameter binding reference
 
 ---
 
-## Confidence Assessment
-
-| Category | Confidence | Notes |
-|----------|-----------|-------|
-| **Table stakes features** | HIGH | Validated against Figma, Sketch, Illustrator patterns + v1.0 codebase |
-| **Differentiators** | HIGH | Audio plugin domain research + v1.0 SVG system analysis |
-| **Anti-features** | HIGH | Based on design tool scope boundaries + v1.0 lessons |
-| **Implementation complexity** | HIGH | Direct analysis of existing v1.0 code + library ecosystem |
-| **Storage strategy** | HIGH | localStorage limits well-documented, JSON export standard |
-| **Audio plugin patterns** | MEDIUM | Based on forum discussions and example projects, not user interviews |
-
----
-
-## Next Steps
-
-This research informs:
-1. **REQUIREMENTS.md** — Convert features to testable requirements
-2. **ROADMAP.md** — Phase structure for v1.1 implementation
-3. **ARCHITECTURE.md** — Component design for asset library + rotation system
-4. **PITFALLS.md** — SVG import gotchas and edge cases
-
----
-
-*Research completed: 2026-01-25*
-*Ready for requirements definition phase*
+**Research completed:** 2026-01-26
+**Total sources consulted:** 40+ web searches, official specifications, plugin documentation
+**Next step:** Synthesize into phase-by-phase roadmap for v1.2 milestone

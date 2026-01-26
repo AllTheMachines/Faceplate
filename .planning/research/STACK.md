@@ -1,655 +1,568 @@
-# Technology Stack - SVG Import System
+# Technology Stack for 78 New Elements
 
-**Project:** VST3 WebView UI Designer - v1.1 SVG Import System
-**Focus:** Stack additions for comprehensive SVG import, sanitization, and rendering
-**Researched:** 2026-01-25
-**Overall Confidence:** HIGH
+**Project:** VST3 WebView UI Designer v1.2
+**Research Date:** 2026-01-26
+**Focus:** Stack additions for Complete Element Taxonomy milestone
 
 ## Executive Summary
 
-The v1.0 stack (React 18, TypeScript, Vite, Zustand, Tailwind CSS) is solid. For v1.1's SVG Import System, we need **minimal strategic additions** focused on security and optimization. The project already has `svgson` for parsing, and most SVG rendering can leverage existing DOM rendering patterns.
-
-**Key recommendation:** Add DOMPurify for security-critical sanitization, optionally add SVGO for optimization, and avoid over-engineering with unnecessary SVG manipulation libraries.
-
-**Critical insight:** User-uploaded SVGs are an XSS attack vector. Sanitization is non-negotiable.
-
-## Current Stack Assessment
-
-### Already Installed (Validated)
-| Technology | Version | Current Use | Status |
-|------------|---------|-------------|--------|
-| React | 18.3.1 | UI framework | ✅ Keep (upgrade to 19 deferred) |
-| TypeScript | ~5.6.2 | Type safety | ✅ Keep |
-| Vite | ^6.0.5 | Build tool | ✅ Keep |
-| Zustand | ^5.0.10 | State management | ✅ Keep |
-| Tailwind CSS | ^3.4.19 | Styling | ✅ Keep |
-| **svgson** | ^5.3.1 | SVG → JSON parsing | ✅ Keep - already parsing SVG structure |
-| react-dropzone | ^14.3.8 | File upload | ✅ Keep - handles SVG file drop |
-| browser-fs-access | ^0.38.0 | File picker | ✅ Keep - modern File System Access API |
-| Zod | ^4.3.6 | Validation | ✅ Keep - will validate SVG metadata |
-| konva | ^9.3.22 | Canvas rendering | ⚠️ Installed but NOT used (renders DOM, not Konva) |
-| react-konva | ^18.2.14 | React canvas bindings | ⚠️ Installed but NOT used |
-
-**Note on Konva:** Package.json shows Konva installed, but PROJECT.md confirms "HTML/CSS rendering over Canvas" and "True WYSIWYG - export matches design exactly". The tool renders elements as DOM (HTML/CSS), not canvas. Konva is unused and could be removed, but that's cleanup, not critical for v1.1.
-
-## Recommended Stack Additions
-
-### Security - CRITICAL
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| **DOMPurify** | ^3.3.1 | SVG sanitization | **REQUIRED.** User-uploaded SVGs can contain XSS attacks via `<script>` tags, `<foreignObject>`, event handlers (onclick, onload), and `javascript:` URLs. DOMPurify is the industry-standard sanitizer (18.8M weekly downloads, actively maintained by Cure53). Supports SVG-specific profiles. | HIGH |
-| @types/dompurify | ^3.2.0 | TypeScript definitions | Type safety for DOMPurify API | HIGH |
-
-**Installation:**
-```bash
-npm install dompurify@^3.3.1
-npm install -D @types/dompurify@^3.2.0
-```
-
-**Usage Pattern:**
-```typescript
-import DOMPurify from 'dompurify';
-
-// Sanitize SVG before rendering
-const cleanSVG = DOMPurify.sanitize(userUploadedSVG, {
-  USE_PROFILES: { svg: true, svgFilters: true },
-  ALLOWED_TAGS: ['svg', 'path', 'circle', 'rect', 'g', 'defs', 'linearGradient', 'stop', /* ... */],
-  ALLOWED_ATTR: ['viewBox', 'width', 'height', 'fill', 'stroke', 'transform', /* ... */],
-  FORBID_TAGS: ['script', 'foreignObject', 'iframe'],
-  FORBID_ATTR: ['onclick', 'onload', 'onerror', 'href', 'xlink:href'] // Block JS execution
-});
-```
-
-**Why DOMPurify over alternatives:**
-- **@mattkrick/sanitize-svg**: Has known CVE-2023-22461 (XSS vulnerability). DO NOT USE.
-- **Custom sanitization**: Too risky. XSS vectors are subtle (e.g., SVG animation attributes, MathML injection).
-- **Server-side only**: This is a browser-based tool. Must sanitize client-side.
-
-**Defense-in-depth strategy:**
-1. **DOMPurify sanitization** (primary defense)
-2. **Content Security Policy** via meta tag in exported HTML (prevents script execution if XSS slips through)
-3. **Render as `<img>` for untrusted content** (safest - prevents script execution entirely)
-
-### Optimization - OPTIONAL
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| **SVGO** | ^4.0.0 | SVG optimization | **OPTIONAL.** Removes metadata, comments, hidden elements, optimizes path data. Reduces file size 30-70%. Good for exported JUCE bundles but NOT critical for v1.1 MVP. Defer until users complain about bundle size. | MEDIUM |
-
-**Installation (if needed later):**
-```bash
-npm install svgo@^4.0.0
-```
-
-**When to add SVGO:**
-- Users complain exported JUCE bundles are too large
-- Asset library grows large (many SVG knob styles)
-- Performance issues with complex SVGs
-
-**When NOT to add SVGO:**
-- MVP phase - premature optimization
-- Small SVG files (<10KB each)
-- User-uploaded SVGs already optimized in Illustrator/Figma
-
-### Rendering - Use Existing Patterns
-| Technology | Version | Purpose | Why | Confidence |
-|------------|---------|---------|-----|------------|
-| **Existing DOM rendering** | N/A | Render SVGs as inline SVG or data URLs | Project already renders elements as DOM (HTML/CSS). Continue this pattern for SVGs. No new library needed. | HIGH |
-
-**Rendering approaches for v1.1:**
-
-1. **Static SVG Graphics (decorative):**
-   - **Method:** Render as `<img src="data:image/svg+xml,...">` (existing pattern in `svgImport.ts`)
-   - **Why:** Simplest, safest, no script execution risk
-   - **When:** SVG is static decoration (logo, icon, divider)
-
-2. **Interactive SVG Knobs (custom designs):**
-   - **Method:** Inline SVG in JSX with layers as `<g>` elements
-   - **Why:** Need to manipulate layers (rotate indicator, fill progress)
-   - **Security:** MUST sanitize before inlining
-   - **When:** SVG has interactive parts (knob rotation, slider fill)
-
-3. **Asset Library SVGs:**
-   - **Method:** Store as base64 data URLs in JSON
-   - **Why:** Consistent with existing image handling, self-contained projects
-   - **When:** User saves SVG knob style for reuse
-
-**No need for:**
-- react-inlinesvg (adds complexity, existing pattern works)
-- SVGR (transforms SVG to components - over-engineering for runtime uploads)
-- react-svg (wrapper around SVGR - unnecessary)
-
-## Alternatives Considered
-
-| Category | Recommended | Alternative | Why Not | Confidence |
-|----------|-------------|-------------|---------|------------|
-| **SVG Sanitization** | DOMPurify | @mattkrick/sanitize-svg | Known XSS vulnerability (CVE-2023-22461) | HIGH |
-| **SVG Sanitization** | DOMPurify | Custom regex/string replacement | Too fragile, will miss edge cases, security risk | HIGH |
-| **SVG Parsing** | svgson (already installed) | svg-parser | svgson has better TypeScript support, async API | MEDIUM |
-| **SVG Optimization** | SVGO (defer) | Manual optimization | SVGO is battle-tested, handles edge cases | HIGH |
-| **SVG Rendering** | Existing DOM patterns | react-inlinesvg | Adds dependency for no value, existing pattern works | HIGH |
-| **SVG Rendering** | Inline SVG / data URLs | SVGR build-time transform | SVGR is for build-time, not runtime user uploads | HIGH |
-| **SVG Manipulation** | Direct DOM manipulation | Snap.svg / Raphael.js | Legacy libraries, unnecessary for this use case | HIGH |
-
-## Installation Commands
-
-### Essential (Add Now)
-```bash
-# Security - REQUIRED
-npm install dompurify@^3.3.1
-npm install -D @types/dompurify@^3.2.0
-```
-
-### Optional (Add Later if Needed)
-```bash
-# Optimization - defer until proven need
-npm install svgo@^4.0.0
-```
-
-## Security Architecture
-
-### XSS Attack Vectors in SVGs
-
-SVGs can execute JavaScript through multiple vectors:
-
-1. **`<script>` tags**
-   ```xml
-   <svg><script>alert('XSS')</script></svg>
-   ```
-
-2. **Event handlers**
-   ```xml
-   <svg><circle onclick="alert('XSS')" /></svg>
-   <svg><circle onload="alert('XSS')" /></svg>
-   ```
-
-3. **`javascript:` URLs**
-   ```xml
-   <svg><a href="javascript:alert('XSS')"><text>Click</text></a></svg>
-   ```
-
-4. **`<foreignObject>` with HTML**
-   ```xml
-   <svg><foreignObject><body onload="alert('XSS')"></body></foreignObject></svg>
-   ```
-
-5. **SVG animation attributes**
-   ```xml
-   <svg><set attributeName="onload" to="alert('XSS')" /></svg>
-   ```
-
-6. **XML Entity Expansion (DoS)**
-   ```xml
-   <!DOCTYPE svg [<!ENTITY lol "lol"><!ENTITY lol2 "&lol;&lol;">]>
-   <svg>&lol2;</svg>
-   ```
-
-### Sanitization Strategy
-
-**Server-side sanitization** (if backend added later):
-- Sanitize on upload before storage
-- Store only clean SVGs
-
-**Client-side sanitization** (required now):
-- Sanitize immediately after file read
-- Before rendering to DOM
-- Before storing in Zustand state
-
-**Sanitization points in codebase:**
-
-1. **`src/utils/svgImport.ts` → `parseSVGFile()`**
-   ```typescript
-   import DOMPurify from 'dompurify';
-
-   export async function parseSVGFile(svgString: string): Promise<ParsedSVG> {
-     // SANITIZE FIRST
-     const cleanSVG = DOMPurify.sanitize(svgString, {
-       USE_PROFILES: { svg: true, svgFilters: true }
-     });
-
-     const parsed = await parse(cleanSVG); // svgson parse
-     // ... rest of parsing
-   }
-   ```
-
-2. **`src/utils/svgImport.ts` → `svgToDataUrl()`**
-   ```typescript
-   export function svgToDataUrl(svgString: string): string {
-     // Assume already sanitized, but double-check
-     const cleanSVG = DOMPurify.sanitize(svgString, {
-       USE_PROFILES: { svg: true, svgFilters: true }
-     });
-     const encoded = encodeURIComponent(cleanSVG);
-     return `data:image/svg+xml,${encoded}`;
-   }
-   ```
-
-3. **Content Security Policy (defense-in-depth)**
-
-   Add to exported HTML:
-   ```html
-   <meta http-equiv="Content-Security-Policy"
-         content="default-src 'self'; script-src 'none'; style-src 'unsafe-inline';">
-   ```
-
-### DOMPurify Configuration
-
-**Recommended config for v1.1:**
-
-```typescript
-const SANITIZE_CONFIG = {
-  USE_PROFILES: { svg: true, svgFilters: true },
-
-  // Allow essential SVG elements
-  ALLOWED_TAGS: [
-    'svg', 'g', 'path', 'circle', 'rect', 'ellipse', 'line', 'polyline', 'polygon',
-    'text', 'tspan', 'defs', 'linearGradient', 'radialGradient', 'stop', 'clipPath',
-    'mask', 'pattern', 'image', 'use', 'symbol', 'marker'
-  ],
-
-  // Allow essential attributes
-  ALLOWED_ATTR: [
-    'viewBox', 'width', 'height', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
-    'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin',
-    'transform', 'id', 'class', 'd', 'points', 'offset', 'stop-color',
-    'opacity', 'fill-opacity', 'stroke-opacity'
-  ],
-
-  // Explicitly forbid dangerous elements
-  FORBID_TAGS: ['script', 'foreignObject', 'iframe', 'embed', 'object'],
-
-  // Explicitly forbid event handlers and JavaScript URLs
-  FORBID_ATTR: [
-    'onclick', 'onload', 'onerror', 'onmouseover', 'onmouseout',
-    'href', 'xlink:href' // Can contain javascript: URLs
-  ],
-
-  // Return DOM element (not string) for better performance
-  RETURN_DOM: false,
-  RETURN_DOM_FRAGMENT: false
-};
-```
-
-**Testing sanitization:**
-
-Create test SVGs with each XSS vector and verify they're blocked:
-```typescript
-// tests/svgSanitization.test.ts
-import DOMPurify from 'dompurify';
-
-test('blocks script tags', () => {
-  const malicious = '<svg><script>alert("XSS")</script><circle r="10"/></svg>';
-  const clean = DOMPurify.sanitize(malicious, SANITIZE_CONFIG);
-  expect(clean).not.toContain('<script>');
-  expect(clean).toContain('<circle'); // Preserves safe elements
-});
-
-test('blocks event handlers', () => {
-  const malicious = '<svg><circle r="10" onclick="alert(1)"/></svg>';
-  const clean = DOMPurify.sanitize(malicious, SANITIZE_CONFIG);
-  expect(clean).not.toContain('onclick');
-});
-
-test('blocks foreignObject', () => {
-  const malicious = '<svg><foreignObject><body onload="alert(1)"></body></foreignObject></svg>';
-  const clean = DOMPurify.sanitize(malicious, SANITIZE_CONFIG);
-  expect(clean).not.toContain('foreignObject');
-});
-```
-
-## Responsive SVG Scaling
-
-For "Resizable UI Support" milestone goal, SVGs must scale correctly.
-
-### Current Approach (Already Working)
-
-`svgImport.ts` extracts viewBox and dimensions:
-```typescript
-// Extract viewBox
-const viewBox = parsed.attributes?.viewBox || null;
-
-// Extract dimensions (from viewBox or explicit width/height)
-if (viewBox) {
-  const parts = viewBox.split(/\s+/);
-  width = parseFloat(parts[2] ?? '100') || 100;
-  height = parseFloat(parts[3] ?? '100') || 100;
-}
-```
-
-This is correct. Continue this pattern.
-
-### SVG Scaling Principles
-
-**viewBox** defines the coordinate system inside SVG:
-```xml
-<svg viewBox="0 0 100 100" width="200" height="200">
-  <!-- Content in 0-100 coords, displayed at 200x200px -->
-</svg>
-```
-
-**preserveAspectRatio** controls scaling behavior:
-- `xMidYMid meet` (default) - scales to fit, maintains aspect ratio, centers
-- `xMidYMid slice` - scales to fill, maintains aspect ratio, crops overflow
-- `none` - stretches to fill (distorts aspect ratio)
-
-**For v1.1:**
-- Interactive SVG Knobs: Use `xMidYMid meet` (preserve aspect ratio)
-- Static SVG Graphics: Use `xMidYMid meet` (preserve aspect ratio)
-- User can resize element, SVG scales proportionally
-
-**No new library needed.** Browser handles SVG scaling natively.
-
-## Asset Library Architecture
-
-For managing SVG knob styles and graphic assets.
-
-### Storage Strategy
-
-**Recommended:** Store SVGs as base64 data URLs in Zustand state, persist to JSON.
-
-```typescript
-// types/assets.ts
-interface SVGAsset {
-  id: string;
-  name: string;
-  type: 'knob' | 'graphic';
-  dataUrl: string; // data:image/svg+xml,... (already sanitized)
-  thumbnail: string; // Small preview data URL
-  width: number;
-  height: number;
-  layers?: Record<SVGLayerType, string>; // For interactive knobs
-  createdAt: number;
-}
-
-// store.ts (Zustand)
-interface DesignerState {
-  // ... existing state
-  svgAssets: SVGAsset[];
-  addSVGAsset: (asset: SVGAsset) => void;
-  removeSVGAsset: (id: string) => void;
-}
-```
-
-**Why base64 data URLs:**
-- Self-contained (no external file references)
-- Works with existing JSON persistence
-- Consistent with current image handling
-- No need for asset bundling
-
-**Why NOT separate files:**
-- Complicates project structure (need to bundle multiple files)
-- Browser-based tool (no filesystem access beyond explicit file picker)
-- User expectation: single .json file per project
-
-### Asset Library UI Pattern
-
-Follow existing palette pattern:
-
-```
-Asset Library Panel
-├── Knob Styles (category)
-│   ├── [Thumbnail] Vintage Knob
-│   ├── [Thumbnail] Modern Knob
-│   └── + Import New Knob
-└── Graphics (category)
-    ├── [Thumbnail] Logo
-    ├── [Thumbnail] Divider
-    └── + Import New Graphic
-```
-
-**Drag from Asset Library → Canvas** uses existing @dnd-kit patterns.
-
-**No new library needed.** Reuse existing palette/drag-drop architecture.
-
-## What NOT to Add
-
-### Avoid Over-Engineering
-
-| Library | Why NOT to Add | Confidence |
-|---------|----------------|------------|
-| **react-inlinesvg** | Adds HTTP fetching and caching. Unnecessary - we load from File API, not URLs. Existing pattern works. | HIGH |
-| **SVGR** | Build-time SVG→component transformer. Not for runtime user uploads. Wrong tool for this use case. | HIGH |
-| **react-svg** | Wrapper around SVGR. Same issue - build-time, not runtime. | HIGH |
-| **Snap.svg** | Legacy SVG manipulation library (last release 2017). Unmaintained, large bundle. Use native DOM APIs. | HIGH |
-| **Raphael.js** | Legacy SVG library (last release 2019). Unmaintained. Use native SVG. | HIGH |
-| **svg.js / SVG.js** | Full-featured SVG manipulation. Overkill for this use case. 150KB bundle. | MEDIUM |
-| **Paper.js** | Canvas-based vector graphics. Wrong rendering model (we render DOM, not canvas). | HIGH |
-| **Fabric.js** | Canvas-based. Wrong rendering model. | HIGH |
-| **Two.js** | Canvas/SVG abstraction. Over-engineering - direct SVG works fine. | MEDIUM |
-
-### Avoid Premature Optimization
-
-| Pattern | Why Avoid | When to Add |
-|---------|-----------|-------------|
-| **SVGO optimization** | Premature. Add only if users complain about bundle size. | Phase 3+ or user reports |
-| **SVG sprite sheets** | Premature. Add only if rendering hundreds of SVGs. | Performance issues with >50 assets |
-| **Virtual scrolling in Asset Library** | Premature. Add only if library has hundreds of assets. | User reports sluggishness |
-| **Web Workers for sanitization** | Premature. DOMPurify is fast (<1ms for typical SVGs). | Profiling shows bottleneck |
-
-## Migration Path
-
-### Phase 1: Add Security (REQUIRED)
-1. Install DOMPurify
-2. Add sanitization to `parseSVGFile()` in `svgImport.ts`
-3. Add sanitization to `svgToDataUrl()` in `svgImport.ts`
-4. Write sanitization tests
-5. Add CSP meta tag to exported HTML
-
-**Time estimate:** 2-4 hours
-
-### Phase 2: Interactive SVG Knobs (Core Feature)
-1. Extend `SVGLayer` types (already defined)
-2. Implement layer-based rendering (inline SVG with `<g>` elements)
-3. Add rotation/fill manipulation for interactive layers
-4. No new libraries needed
-
-**Time estimate:** 1-2 days
-
-### Phase 3: Asset Library (Management)
-1. Add `svgAssets` to Zustand store
-2. Create Asset Library panel component (follow Palette pattern)
-3. Implement add/remove/drag from library
-4. Persist to JSON (already works with Zustand)
-5. No new libraries needed
-
-**Time estimate:** 1-2 days
-
-### Phase 4: Optimization (If Needed)
-1. Profile bundle sizes
-2. If SVGs are large, add SVGO
-3. Run SVGO on asset import (optional)
-
-**Time estimate:** 4-6 hours (if needed)
-
-## Performance Considerations
-
-### Bundle Size Budget
-
-Current v1.0 stack: ~180KB gzipped
-
-**v1.1 additions:**
-- DOMPurify: +21KB gzipped (3.3.1)
-- **Total v1.1:** ~201KB gzipped
-
-**Still within reasonable bounds for desktop browser tool.**
-
-### Runtime Performance
-
-**SVG rendering performance:**
-- Static SVGs as `<img>`: Excellent (browser-native)
-- Inline SVG: Good (DOM manipulation, React reconciliation)
-- 100+ SVGs: Use virtual scrolling in Asset Library (defer)
-
-**Sanitization performance:**
-- DOMPurify: <1ms for typical SVGs (5-50KB)
-- 10-20ms for very complex SVGs (>500KB)
-- Non-blocking (synchronous but fast)
-
-**If sanitization becomes bottleneck:**
-- Move to Web Worker (defer until profiling shows need)
-- Cache sanitized results (key by SVG content hash)
-
-## Testing Strategy
-
-### Security Testing (Critical)
-
-**XSS vector tests:**
-```typescript
-// tests/svg-security.test.ts
-describe('SVG Sanitization', () => {
-  test('blocks script tags', () => { /* ... */ });
-  test('blocks event handlers', () => { /* ... */ });
-  test('blocks foreignObject', () => { /* ... */ });
-  test('blocks javascript: URLs', () => { /* ... */ });
-  test('blocks data: URLs with scripts', () => { /* ... */ });
-  test('preserves safe SVG elements', () => { /* ... */ });
-});
-```
-
-**Automated security scanning:**
-- Add `npm audit` to CI
-- Monitor DOMPurify releases for security updates
-
-### Functional Testing
-
-**SVG import:**
-- Upload valid SVG → parses correctly
-- Upload SVG with named layers → detects layers
-- Upload SVG without viewBox → falls back to width/height
-- Upload malformed SVG → shows error message
-
-**SVG rendering:**
-- Static SVG displays correctly
-- Interactive SVG layers manipulate correctly
-- SVG scales proportionally on resize
-
-**Asset Library:**
-- Add asset → appears in library
-- Drag from library → creates element
-- Remove asset → disappears from library
-- Save project → assets persist to JSON
-- Load project → assets restore correctly
-
-### Performance Testing
-
-**Benchmark sanitization:**
-```typescript
-const svg = readSVGFile('complex-knob.svg'); // 50KB
-const start = performance.now();
-DOMPurify.sanitize(svg, CONFIG);
-const end = performance.now();
-expect(end - start).toBeLessThan(10); // <10ms acceptable
-```
-
-**Benchmark rendering:**
-- Render 50 SVG assets in Asset Library
-- Measure render time (<100ms target)
-- Measure scroll performance (60fps target)
-
-## Version Pinning Strategy
-
-**DOMPurify:** Use caret (`^3.3.1`) for automatic patch updates
-- Security library - want patches automatically
-- Follows semver - safe to auto-update minors
-
-**SVGO (if added):** Use caret (`^4.0.0`)
-- Optimization tool - want improvements
-- Breaking changes rare, well-documented
-
-**svgson:** Keep caret (`^5.3.1`)
-- Already installed, working well
-- Stable library, safe to auto-update
-
-## Ecosystem Health Check
-
-| Library | Last Release | GitHub Stars | npm Weekly Downloads | Ecosystem Health | Confidence |
-|---------|--------------|--------------|---------------------|------------------|------------|
-| DOMPurify | Jan 2026 | 14K+ | 18.8M+ | Excellent - actively maintained by Cure53 | HIGH |
-| svgson | Active (2024) | 700+ | 250K+ | Good - stable, maintained | HIGH |
-| SVGO | Jan 2026 | 21K+ | 16M+ | Excellent - actively maintained | HIGH |
-
-**All recommended libraries are actively maintained with healthy ecosystems as of January 2026.**
-
-## Confidence Assessment
-
-| Category | Confidence Level | Reasoning |
-|----------|------------------|-----------|
-| **Security (DOMPurify)** | HIGH | Industry standard, 18.8M weekly downloads, actively maintained by security firm (Cure53), comprehensive XSS protection |
-| **Parsing (svgson)** | HIGH | Already installed and working, stable API, TypeScript support |
-| **Rendering (existing patterns)** | HIGH | DOM rendering already works for v1.0, SVGs are DOM elements, no new library needed |
-| **Optimization (SVGO)** | MEDIUM | Proven library, but unclear if needed for v1.1 MVP. Defer until user reports. |
-| **Asset Library** | HIGH | Reuse existing Zustand/JSON patterns. No new libraries needed. |
-
-## Open Questions & Deferred Decisions
-
-### Answered Questions
-
-1. ✅ **SVG sanitization library?** → DOMPurify (industry standard)
-2. ✅ **SVG parsing library?** → svgson (already installed)
-3. ✅ **SVG rendering approach?** → Existing DOM patterns (inline SVG / data URLs)
-4. ✅ **Asset storage format?** → Base64 data URLs in JSON (consistent with images)
-
-### Open Questions (Not Blocking v1.1)
-
-1. **SVGO integration?** → Defer until users complain about bundle size
-2. **Web Worker sanitization?** → Defer until profiling shows bottleneck
-3. **Virtual scrolling in Asset Library?** → Defer until >50 assets cause lag
-4. **SVG animation support?** → Out of scope for v1.1 (static UIs)
-
-## Summary
-
-**Validated additions:**
-- ✅ DOMPurify 3.3.1 (security - REQUIRED)
-- ✅ @types/dompurify 3.2.0 (TypeScript - REQUIRED)
-
-**Optional additions (defer):**
-- ⏸️ SVGO 4.0.0 (optimization - add if needed)
-
-**No new libraries needed for:**
-- ✅ SVG parsing (svgson already installed)
-- ✅ SVG rendering (existing DOM patterns work)
-- ✅ Asset library (reuse Zustand/JSON patterns)
-- ✅ File upload (react-dropzone already installed)
-
-**Critical changes:**
-- Add DOMPurify sanitization to `svgImport.ts`
-- Add CSP meta tag to exported HTML
-- Write security tests for XSS vectors
-
-**This minimal, security-focused approach delivers comprehensive SVG import capabilities without over-engineering.**
-
-## Sources
-
-### Official Documentation (HIGH Confidence)
-- [DOMPurify GitHub](https://github.com/cure53/DOMPurify) - v3.3.1 release verification
-- [DOMPurify npm](https://www.npmjs.com/package/dompurify) - 18.8M weekly downloads verification
-- [svgson npm](https://www.npmjs.com/package/svgson) - Library documentation
-- [SVGO GitHub](https://github.com/svg/svgo) - v4.0.0 release verification
-- [browser-fs-access GitHub](https://github.com/GoogleChromeLabs/browser-fs-access) - File System Access API documentation
-
-### Security Research (HIGH Confidence)
-- [SVG Security Best Practices: Preventing XSS and Injection Attacks](https://www.svggenie.com/blog/svg-security-best-practices) - XSS vectors in SVGs
-- [React Security: Vulnerabilities & Best Practices [2026]](https://www.glorywebs.com/blog/react-security-practices) - React-specific security patterns
-- [@mattkrick/sanitize-svg CVE-2023-22461](https://security.snyk.io/vuln/SNYK-JS-MATTKRICKSANITIZESVG-3225111) - Why NOT to use sanitize-svg
-- [Angular SVG XSS Vulnerability](https://github.com/angular/angular/security/advisories/GHSA-jrmj-c5cx-3cw6) - Recent SVG security issues
-
-### SVG Rendering Research (MEDIUM-HIGH Confidence)
-- [A guide to using SVGs in React - LogRocket Blog](https://blog.logrocket.com/how-to-use-svgs-react/) - Updated April 2025
-- [react-inlinesvg npm](https://www.npmjs.com/package/react-inlinesvg) - v4.2.0 documentation
-- [SVGR Documentation](https://react-svgr.com/) - Build-time SVG transformation
-- [SVG viewBox Guide - SVG Genie Blog](https://www.svggenie.com/blog/svg-viewbox-guide) - Responsive scaling
-- [Make any SVG responsive with this React component - LogRocket Blog](https://blog.logrocket.com/make-any-svg-responsive-with-this-react-component/) - Responsive patterns
-
-### Library Comparisons (MEDIUM Confidence)
-- [SVGO Official Site](https://svgo.dev/) - Optimization documentation
-- [SVGOMG GUI](https://jakearchibald.github.io/svgomg/) - Visual optimization tool
-- [How to Use SVG in React - Telerik](https://www.telerik.com/blogs/how-to-use-svg-react) - Rendering approaches
-- [Using SVGs in React - Refine](https://refine.dev/blog/react-svg/) - Best practices guide
-
-### Asset Management Research (MEDIUM Confidence)
-- [react-svg-assets GitHub](https://github.com/zauberware/react-svg-assets) - Asset management patterns
-- [SVGR Best Practices](https://react-svgr.com/) - Component-based approach
-- [Excalidraw blog | The browser-fs-access library](https://plus.excalidraw.com/blog/browser-fs-access) - File handling patterns
+The existing stack (React 18, TypeScript, Vite, Zustand, @dnd-kit, Tailwind CSS, DOMPurify, SVGO, svgson, react-dropzone, Zod) remains sufficient for **most** of the 78 new elements. The project's DOM + SVG rendering approach proven in v1.0-v1.1 scales well for static and interactive controls.
+
+**Key additions needed:**
+1. **Piano keyboard**: React component library for MIDI note input
+2. **Professional metering**: JavaScript/TypeScript libraries for VU/PPM/LUFS ballistics
+3. **Real-time visualizations**: Canvas rendering for spectrum analyzers and goniometers
+4. **Tree view**: Accessible React tree component
+
+**Not needed:**
+- Full canvas rendering migration (DOM approach works, true WYSIWYG export)
+- Web Audio API integration (designer exports static UI, not audio processing)
+- Heavy charting libraries (custom Canvas for audio-specific needs)
 
 ---
 
-*Research complete. Ready for roadmap creation with security-focused, minimal-dependency stack additions.*
+## Rendering Architecture Decision
+
+### Continue DOM + SVG Rendering (No Canvas Migration)
+
+**Rationale:**
+- **WYSIWYG principle**: Exported HTML/CSS must match designer exactly. DOM rendering guarantees this.
+- **Proven approach**: v1.0-v1.1 with 30 elements demonstrates performance is adequate
+- **Export simplicity**: Elements are already in final format (HTML/CSS/SVG)
+- **Accessibility**: DOM elements have native focus, keyboard nav, screen reader support
+- **Konva already installed**: Available for specific Canvas needs without migration
+
+**When to use Canvas:**
+- **Real-time visualizations only**: Spectrum analyzer, spectrogram, goniometer, vectorscope
+- **Performance justification**: These update 30-60 FPS and draw thousands of points
+- **Hybrid approach**: Canvas for visualization, DOM for controls and UI chrome
+
+**Evidence:**
+- Web research confirms "Canvas and WebGL are more performant than the DOM" but notes "for UI elements, performance may actually improve using DOM when static" ([Building a High-Performance UI Framework with HTML5 Canvas and WebGL](https://medium.com/@beyons/building-a-high-performance-ui-framework-with-html5-canvas-and-webgl-f7628af8a3c2))
+- MDN Web Audio best practices recommend `requestAnimationFrame` for visualizations, acknowledging Canvas is appropriate for frequency/time domain displays ([Visualizations with Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API))
+
+---
+
+## Required Additions
+
+### 1. Piano Keyboard Component
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| **react-piano** | ^3.1.3 | Interactive piano keyboard | Most mature, MIT licensed, 1.3k+ stars |
+
+**Installation:**
+```bash
+npm install react-piano
+```
+
+**Why react-piano:**
+- **Separation of concerns**: Library provides UI/interaction, doesn't force audio implementation
+- **Customizable**: MIDI range, key styling, keyboard shortcuts all configurable
+- **Touch/mouse/keyboard**: All input methods supported
+- **TypeScript support**: Ships with type definitions
+- **Proven**: Used in production applications, active maintenance
+
+**Alternatives considered:**
+
+| Library | Pros | Cons | Why Not |
+|---------|------|------|---------|
+| klavier | Lightweight (ships minimal styling) | Less mature (newer project) | react-piano more battle-tested |
+| react-piano-component | Includes MP3 audio | Forces audio implementation | Violates separation of concerns |
+
+**Integration notes:**
+- Designer renders static piano (no audio playback)
+- Export generates HTML/CSS + C++ JUCE MIDI event bindings
+- User configures: start note, end note, key colors, labels
+
+**Sources:**
+- [react-piano on npm](https://www.npmjs.com/package/react-piano)
+- [react-piano GitHub](https://github.com/kevinsqi/react-piano)
+- [Klavier GitHub](https://github.com/tigranpetrossian/klavier)
+
+---
+
+### 2. Professional Audio Metering (VU/PPM/LUFS)
+
+**Recommendation:** **Custom TypeScript implementation** using meter ballistics algorithms from standards.
+
+**Why custom vs library:**
+- **Static display**: Designer shows meter UI, not real-time audio processing
+- **Standards compliance**: VU (300ms attack/release), PPM (10ms attack, 1.7s fall), LUFS (EBU R128 weighting)
+- **Lightweight**: Ballistics algorithms are ~50 lines of TypeScript each
+- **JUCE integration**: Export generates C++ snippets that implement real ballistics
+
+**Reference implementations for algorithms:**
+
+| Meter Type | Standard | Attack | Release | Implementation Reference |
+|------------|----------|--------|---------|-------------------------|
+| VU Meter | Volume Units | 300ms | 300ms | [VU And PPM Audio Metering](https://www.sound-au.com/project55.htm) |
+| PPM Type I | IEC 60268-10 | 10ms | 1.5s | [Peak programme meter - Wikipedia](https://en.wikipedia.org/wiki/Peak_programme_meter) |
+| PPM Type II | BBC standard | 10ms | 2.8s | [Q. What's the difference between PPM and VU meters?](https://www.soundonsound.com/sound-advice/q-whats-difference-between-ppm-and-vu-meters) |
+| LUFS | EBU R128 | 400ms window | - | [@domchristie/needles](https://github.com/domchristie/needles) |
+| K-meters | Bob Katz | 600ms | 600ms | [Meters: Essential Tools for Professional Audio](https://tapeop.com/interviews/54/meters) |
+
+**Optional library (if real-time preview added later):**
+
+| Library | Version | Purpose | When to Add |
+|---------|---------|---------|-------------|
+| @domchristie/needles | ^0.x | EBU R128 LUFS measurement | Only if adding real-time audio preview |
+
+**Why needles (for future):**
+- Browser-based LUFS/LKFS measurement
+- Supports momentary, short-term, integrated modes
+- EBU R 128 / ITU-R BS.1770-4 compliant
+- Demo: https://domchristie.github.io/needles/
+
+**NOT recommended:**
+
+| Library | Why Not |
+|---------|---------|
+| ebur128-wasm | WASM overhead unnecessary for static designer |
+| lufs.js (dodds-cc) | Archived project, unmaintained |
+| SciChart.js | Commercial license, heavy for design tool |
+
+**Designer implementation:**
+1. Render meter UI (DOM + SVG gradient fills)
+2. Mock needle/bar position at design time
+3. Export generates C++ ballistics code + HTML/CSS meter visual
+
+**Sources:**
+- [@domchristie/needles npm](https://www.npmjs.com/package/@domchristie/needles)
+- [Everything You Need to Know About Audio Metering](https://sonicscoop.com/everything-need-know-audio-meteringand/)
+- [VU Meter ballistics - diyAudio](https://www.diyaudio.com/community/threads/vu-meter-ballistics.239534/)
+
+---
+
+### 3. Real-Time Visualizations (Canvas Rendering)
+
+**Use existing:** **Konva + react-konva** (already installed in package.json v9.3.22 / v18.2.14)
+
+**Why Konva:**
+- **Already in project**: Listed in package.json dependencies
+- **React integration**: react-konva provides declarative API
+- **Performance**: Efficient for canvas rendering with redraw optimization
+- **Design-time flexibility**: Can switch between static preview and animated mock
+
+**Visualization components requiring Canvas:**
+
+| Element | Why Canvas | Update Rate | Drawing Complexity |
+|---------|------------|-------------|-------------------|
+| Spectrum Analyzer | FFT data (512-8192 bins) | 30-60 FPS | High (thousands of bars/line segments) |
+| Spectrogram | Time-frequency heatmap | 30-60 FPS | Very High (2D pixel array) |
+| Goniometer | L/R phase Lissajous | 60 FPS | High (XY scatter plot) |
+| Vectorscope | Stereo correlation | 60 FPS | High (XY plot with persistence) |
+| Scrolling Waveform | Time domain sample data | 30 FPS | High (continuous scroll buffer) |
+
+**NOT recommended:**
+
+| Library | Why Not |
+|---------|---------|
+| react-canvas (Flipboard) | Unmaintained, last commit 2016 |
+| audiomotion-analyzer | Complete analyzer (3.3k+ lines), overkill for design tool |
+| react-audio-visualizer-pro | Forces real-time audio input, not design-time mockable |
+| Chart.js / Recharts | General charting, not audio-specific (no log scales, FFT binning) |
+
+**Designer implementation:**
+1. Canvas element with mock data at design time
+2. User configures: FFT size, color map, scale (linear/log), smoothing
+3. Export generates HTML5 Canvas + JavaScript draw functions + C++ data transfer
+
+**Reference implementations:**
+- [Visualizations with Web Audio API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API)
+- [jsGoniometer GitHub](https://github.com/DrSnuggles/jsGoniometer) (reference for goniometer algorithm)
+- [web-audio-goniometer-react](https://github.com/esonderegger/web-audio-goniometer-react) (React component pattern)
+
+**Performance best practices:**
+- Use `requestAnimationFrame` for animation loop
+- Limit visual complexity (subsample frequency bins if >256 bars)
+- Use `OffscreenCanvas` for background rendering (modern browsers)
+- Monitor render capacity (Web Audio API provides metrics)
+
+**Sources:**
+- [Web Audio API best practices - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices)
+- [Canvas vs DOM rendering](https://blog.logrocket.com/when-to-use-html5s-canvas-ce992b100ee8/)
+- [Konva documentation](https://konvajs.org/docs/react/index.html)
+
+---
+
+### 4. Tree View Component
+
+| Library | Version | Purpose | Why |
+|---------|---------|---------|-----|
+| **react-arborist** | ^3.x | Complete tree view component | Best-in-class, VSCode-like experience |
+
+**Installation:**
+```bash
+npm install react-arborist
+```
+
+**Why react-arborist:**
+- **Complete solution**: Drag-drop, selection, keyboard nav, virtualization built-in
+- **TypeScript**: Full type definitions included
+- **Performance**: Virtualization for large trees (1000+ nodes)
+- **Accessibility**: ARIA compliant
+- **Professional UX**: Matches VSCode sidebar, Finder, Explorer patterns
+- **Active maintenance**: Regular updates, responsive maintainers
+
+**Alternatives considered:**
+
+| Library | Pros | Cons | Why Not |
+|---------|------|------|---------|
+| MUI X Tree View | Part of Material-UI ecosystem | Requires @mui/x-tree-view (adds MUI dependency) | Project uses Tailwind, not MUI |
+| react-complex-tree | Strong accessibility | More complex API | react-arborist simpler for our needs |
+| @naisutech/react-tree | Good TypeScript support | Less feature-complete | Missing drag-drop, virtualization |
+
+**Use cases in designer:**
+- Preset browser hierarchical navigation
+- Patch bay signal routing tree
+- Element layer hierarchy (future: parent-child relationships)
+
+**Sources:**
+- [react-arborist GitHub](https://github.com/brimdata/react-arborist)
+- [7 Best React Tree View Components](https://reactscript.com/best-tree-view/)
+- [MUI X Tree View](https://mui.com/x/react-tree-view/)
+
+---
+
+## Existing Stack (No Changes)
+
+These libraries remain sufficient for the new elements:
+
+| Library | Current Version | Use Cases |
+|---------|----------------|-----------|
+| React | 18.3.1 | UI framework |
+| TypeScript | ~5.6.2 | Type safety |
+| Vite | ^6.0.5 | Build tool |
+| Zustand | ^5.0.10 | State management |
+| @dnd-kit/core | ^6.3.1 | Drag-drop (palette, canvas) |
+| Tailwind CSS | ^3.4.19 | Styling |
+| DOMPurify | 2.35.0 | SVG sanitization |
+| SVGO | ^4.0.0 | SVG optimization |
+| svgson | ^5.3.1 | SVG parsing |
+| react-dropzone | ^14.3.8 | File upload |
+| Zod | ^4.3.6 | Validation |
+| Konva | ^9.3.22 | Canvas rendering (already installed) |
+| react-konva | ^18.2.14 | React Canvas bindings (already installed) |
+
+**Why no additions:**
+- **Rotary controls (5 new)**: SVG rendering, same as existing Knob
+- **Linear controls (5 new)**: SVG rendering, same as existing Slider
+- **Buttons/switches (7 new)**: DOM elements with CSS, existing patterns
+- **Value displays (8 new)**: Text formatting, no new dependencies
+- **LED indicators (6 new)**: SVG circles with CSS transitions
+- **Containers/decorative (3 new)**: DOM layout, existing approach
+- **Specialized audio (most)**: Custom implementations using existing stack
+
+---
+
+## NOT Adding
+
+### Web Audio API
+
+**NOT NEEDED** for designer.
+
+**Why:**
+- Designer creates **static UI mockups**, not functional audio processing
+- JUCE WebView2 plugin handles real audio in C++, not JavaScript
+- Visualizations show **design-time mock data**, not real-time audio
+
+**When it WOULD be needed:**
+- If adding "Preview with Audio" feature (out of scope for v1.2)
+- If building standalone audio plugin (different project)
+
+### FFT Libraries
+
+**NOT NEEDED** for designer.
+
+**Why:**
+- Spectrum analyzer shows **static frequency bars** at design time
+- Real FFT happens in JUCE C++ at runtime
+- JavaScript export includes FFT drawing code, not FFT computation
+
+**When it WOULD be needed:**
+- If adding audio file import for waveform display (future feature)
+
+### Heavy Charting Libraries
+
+**NOT NEEDED**: No Chart.js, Recharts, D3, Victory, etc.
+
+**Why:**
+- Audio visualizations have specific needs (log scales, FFT binning, ballistics)
+- General charting libraries add 100-500KB for features we don't need
+- Custom Canvas implementations are 50-200 lines and exactly fit requirements
+- Better performance with targeted code
+
+---
+
+## Installation Summary
+
+```bash
+# New dependencies for v1.2
+npm install react-piano@^3.1.3
+npm install react-arborist@^3
+
+# Development dependencies (no changes)
+# Konva and react-konva already installed (v9.3.22, v18.2.14)
+```
+
+**Total added:** 2 dependencies (react-piano, react-arborist)
+
+**Bundle size impact:**
+- react-piano: ~50KB minified
+- react-arborist: ~80KB minified
+- **Total increase:** ~130KB (acceptable for 78 new elements)
+
+---
+
+## Integration Points with Existing Stack
+
+### Element Rendering Pattern
+
+All elements follow existing pattern:
+
+```typescript
+// src/types/elements.ts
+interface NewElementConfig extends BaseElementConfig {
+  type: 'piano-keyboard' | 'vu-meter' | 'spectrum-analyzer' | ...
+  // Element-specific properties
+}
+
+// src/components/elements/renderers/PianoKeyboardRenderer.tsx
+import { Piano } from 'react-piano'
+
+function PianoKeyboardRenderer({ config }: Props) {
+  // Render using react-piano
+  return <Piano noteRange={[config.startNote, config.endNote]} ... />
+}
+```
+
+### Zustand Store Extension
+
+```typescript
+// src/store/index.ts
+interface DesignerState {
+  elements: ElementConfig[] // Already handles all element types
+  // No store changes needed for new element types
+}
+```
+
+### Export System Extension
+
+```typescript
+// src/services/export/html.ts
+function generateElementHTML(config: ElementConfig): string {
+  switch (config.type) {
+    case 'piano-keyboard':
+      return generatePianoHTML(config as PianoKeyboardConfig)
+    case 'vu-meter':
+      return generateVUMeterHTML(config as VUMeterConfig)
+    // ... existing cases
+  }
+}
+```
+
+**No breaking changes to existing architecture.**
+
+---
+
+## Performance Considerations
+
+### Design-Time Rendering
+
+**Target:** 60 FPS with 100+ elements on canvas
+
+**Strategies:**
+- **Selective rendering**: Only redraw elements that changed (Zustand selector optimization)
+- **Virtualization**: Tree view and preset browser use react-arborist virtualization
+- **Debouncing**: Property panel updates debounced to reduce re-renders
+- **Canvas optimization**: Konva layer caching for static elements
+
+**Evidence from existing implementation:**
+- v1.1 handles 30+ element types smoothly
+- DOM rendering performs well for static/semi-static UI
+- Canvas used only where justified (visualizations)
+
+### Export Bundle Size
+
+**Exported JUCE bundle includes:**
+- HTML (elements structure): ~10-50KB depending on element count
+- CSS (styling): ~20-100KB depending on customization
+- JavaScript (interactivity + JUCE bridge): ~30-80KB
+- Assets (SVG knobs, backgrounds): Variable (user-provided)
+
+**New elements add:**
+- Piano keyboard: ~5KB HTML/CSS per instance
+- Meters: ~3KB HTML/CSS per instance (SVG gradients)
+- Visualizations: ~10-15KB JavaScript per type (Canvas drawing code)
+
+**Total impact:** Minimal (complexity scales with element count, not type count)
+
+---
+
+## Version Pinning Strategy
+
+| Dependency | Version Strategy | Rationale |
+|------------|------------------|-----------|
+| react-piano | ^3.1.3 | Caret (minor updates safe, stable API) |
+| react-arborist | ^3.x | Caret (v3 stable, no breaking changes expected) |
+| Konva | ^9.3.22 | Caret (already in project, proven stable) |
+| react-konva | ^18.2.14 | Caret (matches React 18, stable) |
+
+**Update cadence:**
+- Review quarterly for security patches
+- Major version upgrades only when justified by features
+- Lock file (package-lock.json) ensures reproducible builds
+
+---
+
+## Risk Assessment
+
+### Low Risk
+
+- **Piano keyboard (react-piano)**: Mature library, TypeScript support, active maintenance
+- **Tree view (react-arborist)**: Well-architected, used in production apps
+- **Konva for Canvas**: Widely adopted, 10+ years of development
+
+### Medium Risk
+
+- **Custom meter ballistics**: Requires careful implementation of standards (VU/PPM/LUFS)
+  - **Mitigation:** Reference implementations exist, well-documented standards
+- **Canvas visualization export**: Ensuring exported JavaScript works in JUCE WebView2
+  - **Mitigation:** Test in EFXvst/INSTvst templates, follow existing export patterns
+
+### No Risk
+
+- **Existing stack**: Proven in v1.0-v1.1, no changes needed
+
+---
+
+## Future Considerations
+
+### If Adding Real-Time Audio Preview (Out of Scope for v1.2)
+
+**Then add:**
+- `@domchristie/needles` for LUFS measurement
+- Web Audio API (built-in, no install) for AnalyserNode
+- `audiomotion-analyzer` or custom FFT visualization
+
+**Complexity increase:** Significant (audio routing, latency management, browser compatibility)
+
+### If Migrating to Full Canvas Rendering (Not Recommended)
+
+**Would need:**
+- Full UI framework on Canvas (e.g., custom framework)
+- Accessibility layer (ARIA, screen readers won't work with Canvas)
+- Hit testing rewrite (no DOM events)
+- Export rewrite (Canvas → DOM conversion)
+
+**Complexity increase:** Massive (months of work, marginal benefit)
+
+**Verdict:** Stick with DOM + SVG for UI, Canvas for visualizations only.
+
+---
+
+## Confidence Assessment
+
+| Area | Confidence | Basis |
+|------|------------|-------|
+| Piano keyboard | **HIGH** | react-piano well-established, TypeScript support, MIT license |
+| Meter ballistics | **MEDIUM** | Algorithms documented, but custom implementation required |
+| Canvas visualizations | **HIGH** | Konva proven, MDN best practices documented, reference implementations exist |
+| Tree view | **HIGH** | react-arborist best-in-class, active maintenance, TypeScript support |
+| Rendering architecture | **HIGH** | DOM + SVG approach validated by v1.0-v1.1, research confirms suitability |
+| Export compatibility | **MEDIUM** | New element types need testing in JUCE WebView2, but follow existing patterns |
+
+**Overall stack confidence:** **HIGH** (2 new libraries, both mature; custom code well-specified)
+
+---
+
+## Recommendations for Roadmap
+
+### Phase Structure
+
+Based on stack requirements, suggest phases:
+
+1. **Simple Elements First** (use existing stack)
+   - Rotary variants, linear variants, buttons, LEDs
+   - Value displays, containers
+   - **Complexity:** Low (existing rendering patterns)
+
+2. **Piano Keyboard** (add react-piano)
+   - Install dependency
+   - Build renderer component
+   - Test MIDI export
+   - **Complexity:** Low-Medium (library integration)
+
+3. **Tree View** (add react-arborist)
+   - Install dependency
+   - Build preset browser
+   - Test navigation
+   - **Complexity:** Low-Medium (library integration)
+
+4. **Professional Meters** (custom ballistics)
+   - Implement VU/PPM/LUFS algorithms
+   - Build meter renderers
+   - Test C++ export accuracy
+   - **Complexity:** Medium (algorithm implementation)
+
+5. **Real-Time Visualizations** (Konva Canvas)
+   - Build spectrum analyzer
+   - Build spectrogram, goniometer, vectorscope
+   - Test Canvas export to JUCE
+   - **Complexity:** Medium-High (Canvas rendering + mock data)
+
+### Research Flags
+
+**Likely needs deeper research:**
+- **Phase 4 (Meters)**: Ballistics algorithms need precise implementation, testing against standards
+- **Phase 5 (Visualizations)**: Canvas export to JUCE WebView2 needs integration testing
+
+**Unlikely to need research:**
+- **Phase 1**: Existing patterns proven
+- **Phase 2**: react-piano well-documented
+- **Phase 3**: react-arborist well-documented
+
+---
+
+## Sources
+
+### React Component Libraries
+- [react-piano on npm](https://www.npmjs.com/package/react-piano)
+- [react-piano GitHub](https://github.com/kevinsqi/react-piano)
+- [Klavier GitHub](https://github.com/tigranpetrossian/klavier)
+- [react-arborist GitHub](https://github.com/brimdata/react-arborist)
+- [7 Best React Tree View Components](https://reactscript.com/best-tree-view/)
+- [MUI X Tree View](https://mui.com/x/react-tree-view/)
+
+### Audio Metering
+- [@domchristie/needles npm](https://www.npmjs.com/package/@domchristie/needles)
+- [@domchristie/needles GitHub](https://github.com/domchristie/needles)
+- [VU And PPM Audio Metering](https://www.sound-au.com/project55.htm)
+- [Peak programme meter - Wikipedia](https://en.wikipedia.org/wiki/Peak_programme_meter)
+- [Q. What's the difference between PPM and VU meters?](https://www.soundonsound.com/sound-advice/q-whats-difference-between-ppm-and-vu-meters)
+- [Everything You Need to Know About Audio Metering](https://sonicscoop.com/everything-need-know-audio-meteringand/)
+- [VU Meter ballistics - diyAudio](https://www.diyaudio.com/community/threads/vu-meter-ballistics.239534/)
+- [Meters: Essential Tools for Professional Audio](https://tapeop.com/interviews/54/meters)
+- [EBU R 128 - Wikipedia](https://en.wikipedia.org/wiki/EBU_R_128)
+
+### Canvas and Visualization
+- [Konva documentation](https://konvajs.org/docs/react/index.html)
+- [Visualizations with Web Audio API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API)
+- [Web Audio API best practices - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Best_practices)
+- [Building a High-Performance UI Framework with HTML5 Canvas and WebGL](https://medium.com/@beyons/building-a-high-performance-ui-framework-with-html5-canvas-and-webgl-f7628af8a3c2)
+- [Canvas vs DOM rendering](https://blog.logrocket.com/when-to-use-html5s-canvas-ce992b100ee8/)
+- [jsGoniometer GitHub](https://github.com/DrSnuggles/jsGoniometer)
+- [web-audio-goniometer-react GitHub](https://github.com/esonderegger/web-audio-goniometer-react)
+- [Metering with the Web Audio API](https://www.rpy.xyz/posts/20190119/web-audio-meters.html)
+
+### Performance and Best Practices
+- [Web Audio API performance and debugging notes](https://padenot.github.io/web-audio-perf/)
+- [Profiling Web Audio apps in Chrome](https://web.dev/articles/profiling-web-audio-apps-in-chrome)
+- [DOM vs. Canvas comparison](https://www.kirupa.com/html5/dom_vs_canvas.htm)
+
+---
+
+**Research completed:** 2026-01-26
+**Stack additions:** 2 new dependencies (react-piano, react-arborist)
+**Overall assessment:** Existing stack scales well, minimal additions needed

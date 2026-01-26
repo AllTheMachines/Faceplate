@@ -1,369 +1,478 @@
 # Project Research Summary
 
-**Project:** VST3 WebView UI Designer - v1.1 SVG Import System
-**Domain:** Design tool with SVG asset management and interactive controls
-**Researched:** 2026-01-25
+**Project:** VST3 WebView UI Designer v1.2 - Complete Element Taxonomy
+**Domain:** Audio plugin UI designer with comprehensive element library (25→103 elements)
+**Researched:** 2026-01-26
 **Confidence:** HIGH
 
 ## Executive Summary
 
-The v1.1 SVG Import System extends the existing VST3 WebView UI Designer with comprehensive SVG asset management. Research reveals this is fundamentally a **security-critical** feature requiring multi-layer XSS defense, not just a "file upload" feature. The recommended approach uses **DOMPurify for sanitization at every render point**, normalized asset storage in Zustand, and progressive enhancement of existing knob elements to support SVG rendering modes.
+The VST3 WebView UI Designer is scaling from 25 to 103 element types — a 4x increase that will expose architectural weaknesses invisible at current scale. Research across stack, features, architecture, and pitfalls reveals this is **fundamentally a scaling challenge**, not a greenfield project.
 
-The architecture builds on v1.0's solid foundation (React 18, TypeScript, Zustand, existing SVG parsing with svgson) by adding minimal strategic dependencies: DOMPurify (security-critical) and optionally SVGO (optimization). The asset library follows established Zustand slice patterns, with normalized storage (assets referenced by ID, not duplicated) and lazy rendering for performance.
+**The good news:** The current architecture (React + TypeScript + Zustand + discriminated unions) is sound and proven through v1.0-1.1. The DOM + SVG rendering approach has successfully handled 30 element types with excellent performance and WYSIWYG export fidelity.
 
-**Critical insight from 2026 Angular CVE:** Even major frameworks struggle with SVG sanitization. The recent CVE-2026-22610 demonstrates XSS via `href` and `xlink:href` attributes in SVG `<script>` elements, confirming that sanitization must be battle-tested (DOMPurify) and applied at every render point, not just upload. This project's exported code runs in JUCE WebView2 (Chromium), making XSS especially dangerous since it could compromise native plugin functionality.
+**The critical insight:** Adding 78 elements without structural changes creates technical debt that compounds exponentially. Five critical issues must be addressed **before** adding new elements:
+
+1. **PropertyPanel.tsx will become unmaintainable** (25 type guards → 103 type guards, 200+ LOC)
+2. **Bundle size explosion** (2.2MB → 8-10MB without code splitting)
+3. **TypeScript compilation degradation** (large discriminated unions slow tsc)
+4. **Canvas performance collapse** (20-30 real-time visualizations at 30-60 FPS)
+5. **Palette organization breakdown** (100+ items in flat lists)
+
+**The recommended approach:** Invest 2-3 weeks in architectural refactoring (Phase 0) before adding any elements. This up-front investment prevents months of retrofitting later. The refactoring establishes patterns that make adding 78 elements straightforward rather than painful.
+
+**Key risks and mitigation:** The highest risk is skipping Phase 0 refactoring and adding elements directly to the current architecture. This creates a "technical debt spiral" where each new element makes refactoring harder. Mitigation: treat Phase 0 as non-negotiable prerequisite work.
 
 ## Key Findings
 
 ### Recommended Stack
 
-**Minimal, security-focused additions to existing v1.0 stack.** The project already has React 18, TypeScript, Vite, Zustand, and svgson (SVG parsing). Only one critical addition is required:
+The existing stack (React 18, TypeScript, Vite, Zustand, @dnd-kit, Tailwind CSS, DOMPurify, SVGO, svgson, react-dropzone, Zod, Konva, react-konva) remains sufficient for **most** of the 78 new elements. The DOM + SVG rendering approach proven in v1.0-v1.1 scales well for static and interactive controls.
 
-**Core additions:**
-- **DOMPurify 3.3.1** (REQUIRED) — Industry-standard XSS sanitizer with 18.8M weekly downloads, actively maintained by Cure53 security firm. Supports SVG-specific profiles and removes dangerous elements (`<script>`, `<foreignObject>`, event handlers, `javascript:` URLs). Non-negotiable for security.
-- **@types/dompurify 3.2.0** (REQUIRED) — TypeScript definitions for type-safe sanitization API.
-- **SVGO 4.0.0** (OPTIONAL, defer) — SVG optimization to reduce file size 30-70%. Add only if users complain about bundle size or performance issues with complex SVGs.
+**Core technologies to add (2 new dependencies):**
+- **react-piano (^3.1.3):** Interactive piano keyboard — mature library with TypeScript support, 1.3k+ stars, MIT licensed, separates UI from audio implementation
+- **react-arborist (^3.x):** Complete tree view component — best-in-class VSCode-like experience, virtualization for large trees, accessibility compliant, active maintenance
 
-**No new libraries needed for:**
-- SVG parsing (svgson already installed)
-- SVG rendering (use existing DOM rendering patterns: inline SVG or data URLs)
-- Asset library (reuse Zustand state management patterns)
-- File upload (react-dropzone already integrated)
+**Already installed (no additions needed):**
+- **Konva (^9.3.22) + react-konva (^18.2.14):** Canvas rendering for real-time visualizations (spectrum analyzer, waveform, oscilloscope, goniometer, vectorscope)
 
-**Security architecture requires defense-in-depth:**
-1. DOMPurify sanitization (primary defense)
-2. Content Security Policy in exported HTML (prevents script execution if XSS slips through)
-3. Render as `<img>` for untrusted content (safest approach for static graphics)
+**Not adding:**
+- Web Audio API integration (designer exports static UI, not audio processing)
+- FFT libraries (real FFT happens in JUCE C++, designer shows mock data)
+- Heavy charting libraries (custom Canvas implementations more appropriate for audio-specific needs)
+- Full canvas rendering migration (DOM approach works, maintains WYSIWYG export)
+
+**Critical architectural decision:** Continue DOM + SVG rendering for 95% of elements. Use Canvas only for real-time visualizations requiring 30-60 FPS updates with thousands of drawing operations.
 
 ### Expected Features
 
-Research identifies two distinct feature categories with different table stakes:
+Research identified 78 new elements across 10 categories, totaling 103 elements when combined with existing 25.
 
-**Must have (table stakes for SVG import):**
-- Drag-drop SVG file upload (v1.0 already has this with react-dropzone)
-- Preview before import (v1.0 has this)
-- Preserve aspect ratio on resize (v1.0 has basic support, needs viewBox validation)
-- Import as static image element (v1.0 fully supports)
-- Duplicate imported assets (v1.0 general copy/paste works)
-- Export SVG in JUCE bundle (v1.0 embeds as data URL)
-- Undo/redo import actions (v1.0 history system handles this)
+**Must have (table stakes for professional credibility):**
+- **Meter ballistics compliance:** VU (300ms), PPM Type I/II (10ms attack, 1.5-2.8s fall), True Peak (ITU-R BS.1770 4x oversampling), LUFS (EBU R128 K-weighting), K-System (600ms integration)
+- **Standard rotary variants:** Endless encoder, stepped knob, center-detented knob (expected for filter selection, pan controls, bipolar parameters)
+- **Professional visualizations:** Spectrum analyzer (FFT with log scale), EQ curve (interactive handles), envelope display (ADSR)
+- **Value displays with formatting:** Time display (ms/s/bars), note display (MIDI → C4), ratio display (∞:1 for limiters)
 
-**Should have (differentiators for v1.1):**
-- **Asset library management** (NEW) — Central panel for browsing/reusing custom knobs and graphics across projects. Follows pattern from Figma/Sketch asset libraries.
-- **Interactive knob rotation** (NEW) — Map SVG indicator layer to parameter value rotation. This is the killer feature: replaces memory-intensive filmstrips with scalable SVG knobs.
-- **Layer detection from naming conventions** (ENHANCE v1.0) — v1.0 detects indicator, thumb, track, fill, glow. Expand with arc, normal, hover, active for button states.
-- **SVGO optimization** (NEW, optional) — Run on import to reduce file size. Add only if performance issues arise.
-- **Asset categories** (NEW) — Tag assets as Knobs/Sliders/Buttons/Decorative for organization.
+**Should have (competitive differentiators):**
+- Visual customization of standards-compliant meters (color zones, peak hold, custom ballistics)
+- Interactive curve editors (EQ, compressor, envelope) with drag handles
+- XY pad for modern modulation control
+- Step sequencer with modern features (probability, ratcheting, ghost notes)
 
-**Defer to v1.2+:**
-- Slider fill animation (less common than knobs)
-- Multi-state button graphics (buttons usually simple in audio UIs)
-- In-app SVG editing (anti-feature — out of scope, users have Figma/Illustrator)
-- Gradient editor (design-time concern, handle in source tool)
-- SVG animation timeline (too complex, niche use case)
+**Defer to v2+:**
+- Real-time audio preview in designer (Web Audio API integration)
+- Auto-EQ suggestions (AI overreach)
+- Built-in preset libraries (bloat)
+- Multi-track visualization (scope creep)
+
+**Critical success factor:** The designer's value is making standards-compliant elements visually customizable and exportable to JUCE code. Must expose meter ballistics, FFT parameters, scale options as configurable properties while providing sensible defaults.
 
 ### Architecture Approach
 
-**Normalized asset storage with ID-based references.** Assets stored once in Zustand, elements reference by ID. Follows Redux-style normalization patterns proven at scale.
+The current architecture uses discriminated unions with type guards across three layers (types, renderers, property panels). This pattern **scales well to 100+ element types** with one critical change: migrate from massive switch statements to **registry-based lookups** using Map structures.
 
-**Major components:**
+**Major components and patterns to preserve:**
+1. **Type System (src/types/elements.ts):** Discriminated union with literal `type` discriminant, factory functions, type guards — **NO CHANGES NEEDED**, this scales perfectly to 103 types
+2. **Zustand Store:** Slice-based organization with temporal middleware for undo/redo — **NO NEW SLICES NEEDED**, all element types in single elements array
+3. **Renderer Pattern:** One renderer component per element type receiving config as prop — **KEEP 1:1 MAPPING**, improve lookup mechanism
+4. **Property Panel Pattern:** One property component per element type with reusable inputs — **KEEP PATTERN**, migrate to registry-based lookup
 
-1. **AssetsSlice (Zustand)** — New slice for SVG asset management. Stores `svgAssets` (Record<string, SVGAsset>) and `knobStyles` (Record<string, KnobStyle>). Normalized storage prevents duplication, enables efficient updates. Follows v1.0's slice pattern (CanvasSlice, ElementsSlice, ViewportSlice).
+**Major components requiring refactoring:**
+1. **Component Registration:** Replace switch statements in PropertyPanel.tsx and Element.tsx with Map-based component registries
+2. **Code Generation:** Migrate export generators from switch-based to template-driven architecture using Mustache templates
+3. **Palette Organization:** Add 2-level category hierarchy with search/filter for 100+ items
 
-2. **Asset Library Panel** — New UI component with tabbed interface (Knob Styles | Graphics | Import), grid view with thumbnails, search/filter, drag-to-canvas. Follows existing Palette component patterns.
+**Rendering strategy decision framework:**
+- **Use DOM when:** Static or infrequent updates, user interaction needed, <100 elements simultaneously
+- **Use Canvas when:** Real-time animation (>30 FPS), hundreds of visual elements, custom drawing algorithms
 
-3. **SVGKnobRenderer** — New renderer for knobs with SVG styles. Replaces built-in arc rendering with composed SVG layers. Uses CSS transforms for rotation (`transform: rotate(${angle}deg)`), inline SVG with `dangerouslySetInnerHTML` (sanitized). Progressive enhancement: existing knobs keep built-in rendering, new `renderMode` property adds SVG option.
-
-4. **SafeSVG Component** — Reusable component encapsulating DOMPurify sanitization. All SVG rendering must use this component to enforce security. ESLint rule bans direct `dangerouslySetInnerHTML` except in SafeSVG.tsx.
-
-5. **Import Pipeline** — Reuses v1.0 SVGDesignMode for layer assignment. Adds sanitization step, SVGO optimization (optional), asset metadata entry, thumbnail generation. Saves to AssetsSlice instead of directly creating element.
-
-**Key patterns:**
-- **Normalized references:** Elements store `svgKnobStyleId`, not full asset data. Prevents duplication, enables shared styles.
-- **Progressive enhancement:** Existing knobs work unchanged. New `renderMode: 'svg'` option adds SVG rendering without breaking existing projects.
-- **Selector encapsulation:** Complex queries (`getAssetsByType`, `getKnobStylesForAsset`) live in AssetsSlice, not components.
-- **Lazy rendering:** Asset library uses virtual scrolling for performance with 50+ assets. Non-selected SVG elements render as `<img>` data URLs instead of inline DOM nodes.
+**Elements requiring Canvas (5% of total):**
+- Waveform Display, Oscilloscope, Spectrum Analyzer, Spectrogram, Vectorscope, Goniometer
+- All others remain DOM-based (knobs, sliders, buttons, meters, LEDs, displays, containers)
 
 ### Critical Pitfalls
 
-Research identified 12 pitfalls across security, performance, and UX categories. Top 5 critical:
+**1. PropertyPanel.tsx maintenance collapse**
+- **Risk:** 25 type guards → 103 type guards creates 200+ line if-else chain, merge conflicts on every PR
+- **Prevention:** Migrate to Map-based component registry pattern before adding elements
+- **Phase impact:** MUST address in Phase 0 (refactoring before element addition)
 
-1. **XSS via Embedded Scripts** (CRITICAL) — SVG files can contain `<script>` tags, event handlers (`onload`, `onclick`), `javascript:` URLs, and `<foreignObject>` with HTML. Recent Angular CVE-2026-22610 shows even frameworks miss edge cases like `href` and `xlink:href` in SVG `<script>` elements. **Prevention:** DOMPurify sanitization at EVERY render point (upload, load from JSON, render to canvas, export to JUCE). Defense-in-depth: CSP headers in exported HTML, render untrusted SVG as `<img>`.
+**2. Bundle size explosion (2MB → 8-10MB)**
+- **Risk:** Each element adds 15-40KB, all loaded upfront causes 3-5 second initial load time
+- **Prevention:** Code splitting by element category, lazy load visualization renderers
+- **Phase impact:** Set up infrastructure in Phase 0-1 before adding elements
 
-2. **XML Bomb (Billion Laughs Attack)** (CRITICAL) — 1KB SVG with recursive entity definitions expands to gigabytes in memory, crashing browser tab. **Prevention:** Reject DOCTYPE declarations (DOMPurify strips these automatically), validate file size (<1MB), validate element count (<5000 nodes), add complexity checks post-parse.
+**3. TypeScript compilation performance degradation**
+- **Risk:** 103-type discriminated union causes tsc to slow from 2-3s → 15-30s, IDE lag
+- **Prevention:** Split unions by category (5-6 sub-unions), enable incremental compilation
+- **Phase impact:** Refactor type system in Phase 0 before union grows
 
-3. **dangerouslySetInnerHTML Without Sanitization** (CRITICAL) — React's `dangerouslySetInnerHTML` bypasses XSS protection. Must sanitize before using. **Prevention:** Create SafeSVG component encapsulating sanitization, ESLint rule to ban direct `dangerouslySetInnerHTML`, always use SafeSVG for SVG rendering.
+**4. Canvas performance collapse with 50+ real-time visualizations**
+- **Risk:** 20-30 visualizations updating at 30-60 FPS = 1,200 renders/second, frame rate drops <15 FPS
+- **Prevention:** Hybrid SVG + Canvas architecture, requestAnimationFrame batching, visibility culling
+- **Phase impact:** Implement in Phase 2 before adding visualization elements
 
-4. **Performance Degradation with Complex SVGs** (HIGH) — SVGs with 1000+ elements cause slow renders (>50ms), canvas drag lag (<10 FPS), memory spikes. **Prevention:** File size limits (512KB max, 256KB warning), element count limits (5000 max, 1000 warning), render non-selected SVG as `<img>` data URL instead of inline DOM, virtual scrolling in asset library, SVGO optimization on import (optional).
-
-5. **SVG Stored in JSON Without Re-Sanitization** (CRITICAL) — Sanitizing on upload isn't enough. Attacker can edit project JSON to inject malicious SVG, bypassing upload sanitization. **Prevention:** Sanitize at render time, not just upload time. Treat all loaded data as untrusted. Validate JSON on load with Zod, warn on suspicious patterns (`<script>`, event handlers), re-sanitize before export.
-
-**Moderate pitfalls:**
-- SSRF via external resources (LOW risk for client-side tool, but sanitize external `href`/`xlink:href`)
-- Missing fonts in imported SVG (warn users, suggest converting text to paths)
-- Exported code contains unsanitized SVG (re-sanitize during export, add CSP)
-- Circular references in `<use>` elements (detect cycles, reject malformed SVG)
-- Missing validation on JSON deserialization (validate with Zod, check XML structure)
-
-**Minor pitfalls:**
-- No user feedback during upload (show sanitization report, progress indicator)
-- No undo/redo for import (integrate with existing undo system)
+**5. Palette organization breakdown**
+- **Risk:** 100+ items in flat lists, users spend 30-60s finding elements, low feature discovery
+- **Prevention:** 2-level category hierarchy, search/filter, favorites/recent tracking
+- **Phase impact:** Redesign palette UX in Phase 1 before adding 78 elements
 
 ## Implications for Roadmap
 
-Based on research, recommended phase structure focuses on **security first, asset library second, interactive knobs third**. Security cannot be retrofitted and must be correct from day one.
+Based on research, the 4x scaling challenge requires architectural refactoring before element addition. Suggested phase structure:
 
-### Phase 1: Security Foundation & Upload Pipeline
-**Rationale:** Security is non-negotiable and must be implemented before any SVG rendering. XSS vulnerabilities from unsanitized SVG stored in project JSON affect all users. Recent CVE-2026-22610 proves even major frameworks miss edge cases.
+### Phase 0: Architectural Refactoring (2-3 weeks) — PREREQUISITE
 
-**Delivers:**
-- DOMPurify integration and sanitization utilities
-- SafeSVG component with ESLint enforcement
-- File upload validation (size limits, DOCTYPE rejection, complexity checks)
-- Sanitization report UI (show users what was removed)
-- Security tests for all XSS vectors
-
-**Addresses pitfalls:**
-- XSS via embedded scripts (Pitfall 1)
-- XML bomb attacks (Pitfall 2)
-- dangerouslySetInnerHTML misuse (Pitfall 3)
-
-**Tech stack:**
-- DOMPurify 3.3.1 + @types/dompurify 3.2.0 (install)
-- Zod validation (already installed)
-- ESLint rules for SafeSVG enforcement
-
-**Research needs:** None — DOMPurify is battle-tested with comprehensive documentation. Standard patterns apply.
-
----
-
-### Phase 2: Asset Library Storage & UI
-**Rationale:** Asset management must be in place before interactive features. Users need a way to save and organize imported SVGs. Normalized storage prevents data duplication and enables shared styles. This phase establishes the data model for all subsequent features.
+**Rationale:** Adding 78 elements to current architecture creates compounding technical debt. Refactoring with 25 elements takes 2-3 weeks; retrofitting after 103 elements exist takes 2-3 months.
 
 **Delivers:**
-- AssetsSlice (Zustand) with normalized storage (Record<string, SVGAsset>)
-- Asset CRUD operations (add, remove, update, get)
-- Asset Library Panel component (grid view, thumbnails, categories)
-- Asset import wizard (reuses v1.0 SVGDesignMode for layer assignment)
-- Thumbnail generation (render SVG to canvas, extract PNG data URL)
-- Export/import library as JSON
+- PropertyPanel.tsx migrated to component registry pattern (<100 lines vs 200+)
+- File organization refactored into category-based structure
+- Code splitting infrastructure established
+- TypeScript unions split by category for compilation performance
+- 2-level palette hierarchy with search
 
-**Addresses pitfalls:**
-- Performance with large libraries (virtual scrolling, lazy loading)
-- No user feedback (import wizard, progress indicator)
+**Addresses (from PITFALLS.md):**
+- Pitfall 1: PropertyPanel.tsx monolith
+- Pitfall 2: Bundle size explosion (infrastructure)
+- Pitfall 3: TypeScript performance
+- Pitfall 5: Palette organization
+- Pitfall 6: File organization chaos
 
-**Implements architecture:**
-- AssetsSlice following v1.0 slice pattern
-- Normalized storage with ID-based references
-- Selector encapsulation for complex queries
+**Avoids:** Technical debt spiral where each new element makes refactoring exponentially harder
 
-**Tech stack:**
-- Zustand (already installed, add new slice)
-- react-window (virtual scrolling, install if needed)
-- Canvas API for thumbnail generation
+**Research flags:** No additional research needed (architecture patterns well-documented)
 
-**Research needs:** None — Zustand slice patterns are established in v1.0 codebase. Virtual scrolling is well-documented.
+### Phase 1: Simple Controls (Low Risk, High Reuse) — 1-2 weeks
 
----
-
-### Phase 3: Static SVG Graphics (Image Elements)
-**Rationale:** Simplest use case to validate asset library integration. Static graphics use existing Image element renderer with minimal changes. Proves out asset resolution and sanitization pipeline before tackling complex interactive rendering.
+**Rationale:** Foundation controls with no dependencies. Establishes registry pattern for all subsequent phases.
 
 **Delivers:**
-- Extend ImageElementConfig with `svgAssetId` property
-- Modify ImageRenderer to resolve assets by ID
-- "Add to Canvas" from Asset Library (drag-drop or click)
-- Render as data URL for performance (unless selected)
-- Integration with existing undo/redo system
+- 5 rotary variants (endless encoder, stepped knob, center-detented, concentric dual, dot indicator)
+- 5 linear variants (bipolar slider, crossfade slider, notched slider, arc slider, multi-slider)
+- 7 buttons/switches (icon button, toggle switch, rocker switch, rotary switch, kick button, segment button, power button)
 
-**Addresses features:**
-- Import SVG as static image (table stakes)
-- Asset library drag-to-canvas (differentiator)
+**Uses (from STACK.md):**
+- Existing React + SVG rendering pipeline
+- Existing parameter binding system
+- Component registry pattern from Phase 0
 
-**Addresses pitfalls:**
-- No undo for import (integrate with history system)
-- Exported code unsanitized (test sanitization on export)
+**Implements (from ARCHITECTURE.md):**
+- Registry-based renderer and property panel lookup
+- Validation with Zod schemas
+- Design token system for consistency
 
-**Tech stack:**
-- Existing ImageRenderer (minor modifications)
-- @dnd-kit (already installed, extend palette drop targets)
+**Avoids (from PITFALLS.md):**
+- Pitfall 7: Automated element validation catches missing implementations
+- Pitfall 9: Zod schemas prevent invalid property values
 
-**Research needs:** None — Extends existing patterns. Standard image handling with asset resolution.
+**Research flags:** No additional research needed (extends existing control patterns)
 
----
+### Phase 2: Value Displays & LEDs (Low Complexity) — 1 week
 
-### Phase 4: Interactive SVG Knobs (Core Feature)
-**Rationale:** This is the killer feature for v1.1 — replacing memory-intensive filmstrips with scalable SVG knobs. Depends on asset library (Phase 2) for storage and static graphics (Phase 3) for proven asset resolution. Most complex phase due to layer composition and rotation mapping.
-
-**Delivers:**
-- KnobStyle type and CRUD operations (extends AssetsSlice)
-- SVGKnobRenderer component (layer composition, rotation transform)
-- Extend KnobElementConfig with `svgKnobStyleId` and `renderMode` properties
-- Modify KnobRenderer to delegate to SVGKnobRenderer when `renderMode === 'svg'`
-- Knob rotation mapping (calculate angle from value, apply CSS transform)
-- Color override system (CSS custom properties or SVG attribute replacement)
-- Property panel integration (rendering mode toggle, style selector)
-
-**Addresses features:**
-- Interactive knob rotation (differentiator, core v1.1 feature)
-- Layer-to-property mapping (indicator → rotation)
-
-**Addresses pitfalls:**
-- Performance with multiple animated knobs (render as static when not selected)
-- Transform origin calculation (assume center, allow manual adjustment)
-
-**Implements architecture:**
-- SVGKnobRenderer with layer composition
-- Progressive enhancement (existing knobs unchanged)
-- SafeSVG for all rendering
-
-**Tech stack:**
-- CSS transforms for rotation
-- Inline SVG with dangerouslySetInnerHTML (via SafeSVG)
-- React.memo for render optimization
-
-**Research needs:** LOW — SVG rotation via CSS transforms is standard. May need performance testing with 50+ knobs to validate optimization strategy.
-
----
-
-### Phase 5: Export & Polish
-**Rationale:** Final phase ensures exported code is secure and optimized. Re-sanitizes all content, adds CSP headers, generates clean JUCE bundles. Validates entire pipeline end-to-end.
+**Rationale:** Simple text/color rendering with no complex state or interactions.
 
 **Delivers:**
-- Re-sanitize all SVG content during export
-- Add CSP meta tags to exported HTML template
-- Export validation UI (warn if security issues detected)
-- SVGO optimization (optional, user toggle)
-- Documentation for exported code security
-- Security testing suite (XSS vectors, performance tests)
+- 8 value displays (numeric, time, percentage, ratio, note, BPM, editable, multi-value)
+- 6 LED indicators (single, bi-color, tri-color, array, ring, matrix)
 
-**Addresses pitfalls:**
-- Exported code unsanitized (Pitfall 8)
-- SVG stored in JSON without re-sanitization (Pitfall 5)
+**Uses (from STACK.md):**
+- Text formatting utilities
+- Color property system
+- CSS transitions for state changes
 
-**Tech stack:**
-- DOMPurify (re-sanitize before export)
-- SVGO (optional, install if user enables optimization)
-- CSP headers in HTML template
+**Implements (from ARCHITECTURE.md):**
+- formatValue utility extensions
+- State-based color switching
+- Array rendering for LED arrays
 
-**Research needs:** None — Standard export validation patterns. CSP is well-documented.
+**Research flags:** No additional research needed (straightforward rendering)
 
----
+### Phase 3: Navigation & Selection (Medium Complexity) — 1-2 weeks
+
+**Rationale:** Establish complex interactive components before adding specialized audio elements.
+
+**Delivers:**
+- 8 selection/navigation elements (multi-select dropdown, combo box, tab bar, menu button, breadcrumb, stepper, tag selector, tree view)
+- Install react-arborist for tree view
+
+**Uses (from STACK.md):**
+- react-arborist (^3.x) for professional tree view
+- Keyboard event handling
+- Virtualization for large lists
+
+**Implements (from FEATURES.md):**
+- Type-to-filter (combo box for preset search)
+- Expand/collapse hierarchies (tree view for patch bay)
+- Search highlights and keyboard navigation
+
+**Avoids (from PITFALLS.md):**
+- Pitfall 8: React Hook Form optimizes property panel performance for complex forms
+
+**Research flags:** react-arborist integration needs testing with preset browser use case
+
+### Phase 4: Professional Meters (Medium-High Complexity) — 2-3 weeks
+
+**Rationale:** Standards-compliant meter ballistics are critical for professional credibility but require precise implementation.
+
+**Delivers:**
+- 5 level meters (RMS, VU, PPM Type I, PPM Type II, True Peak)
+- 3 frequency/correlation meters (Correlation, Stereo Width, LUFS)
+- Custom ballistics implementation (VU: 300ms, PPM: 10ms/1.5s, K-System: 600ms)
+
+**Uses (from STACK.md):**
+- Custom TypeScript implementation of meter ballistics
+- Standards: IEC 60268-10 (PPM), EBU R128 (LUFS), ANSI C16.5-1942 (VU)
+
+**Implements (from FEATURES.md):**
+- Configurable ballistics (attack/release properties)
+- Peak hold indicator (1-3s hold time)
+- Clip indicator (latches at 0 dBFS)
+- Color zones (green <-18, yellow <-6, red ≥-6)
+
+**Avoids (from PITFALLS.md):**
+- Non-standard ballistics (breaks professional expectations)
+
+**Research flags:** NEEDS RESEARCH-PHASE — Precise ballistics algorithms require validation against standards (IEC, EBU, ITU-R docs). Test in JUCE WebView2 to verify C++ export accuracy.
+
+### Phase 5: Specialized Audio Controls (High Complexity) — 2-3 weeks
+
+**Rationale:** MIDI and synthesis controls require specialized interactions and component integrations.
+
+**Delivers:**
+- Piano keyboard (install react-piano ^3.1.3)
+- XY Pad (2D control with crosshair)
+- Harmonic Editor (bar chart for partials)
+- Envelope Display (ADSR with draggable points)
+- 4 additional specialized controls
+
+**Uses (from STACK.md):**
+- react-piano for MIDI keyboard UI
+- Multi-parameter binding (XY pad controls 2 parameters simultaneously)
+- Interactive drag system for envelope points
+
+**Implements (from FEATURES.md):**
+- Piano keyboard: MIDI note on/off, configurable range, velocity sensitivity
+- XY Pad: crosshair, snap-to-grid, parameter labels
+- Envelope: ADSR with curve types (linear, exponential, logarithmic)
+
+**Avoids (from PITFALLS.md):**
+- Built-in piano sounds (out of scope, visual element only)
+- Real-time XY recording (complex state management)
+
+**Research flags:** react-piano integration straightforward (well-documented library)
+
+### Phase 6: Real-Time Visualizations (Canvas) — 3-4 weeks
+
+**Rationale:** Requires Canvas rendering infrastructure and mock data handling. Most complex phase.
+
+**Delivers:**
+- Spectrum Analyzer (FFT visualization with smoothing)
+- Spectrogram (waterfall display)
+- Waveform Display (upgrade placeholder)
+- Oscilloscope (upgrade placeholder)
+- Goniometer, Vectorscope
+- Hybrid SVG + Canvas architecture implementation
+
+**Uses (from STACK.md):**
+- Konva + react-konva (already installed)
+- requestAnimationFrame for 30-60 FPS updates
+- OffscreenCanvas for background rendering
+
+**Implements (from ARCHITECTURE.md):**
+- VisualizationLayer component (single canvas for all visualizations)
+- Throttled animation updates (30 FPS for analyzers)
+- Visibility culling (don't render off-screen)
+- Offscreen canvas for static grid/labels
+
+**Addresses (from FEATURES.md):**
+- FFT size options (512, 1024, 2048, 4096, 8192)
+- Frequency scale (linear, log, MEL)
+- Color gradients (hot, cool, rainbow)
+- Persistence/trails (ghost image fade)
+
+**Avoids (from PITFALLS.md):**
+- Pitfall 4: Canvas performance collapse (batched rendering, culling, throttling)
+
+**Research flags:** NEEDS RESEARCH-PHASE — Canvas export to JUCE WebView2 needs integration testing. Mock data generation for realistic previews. Performance profiling with 10-20 simultaneous visualizations.
+
+### Phase 7: Interactive Curves (SVG) — 2 weeks
+
+**Rationale:** Interactive curve editors build on SVG rendering experience from previous phases.
+
+**Delivers:**
+- EQ Curve (interactive frequency response handles)
+- Compressor Curve (threshold, ratio, knee dragging)
+- Filter Response (frequency response visualization)
+- Envelope Editor (multi-segment ADSR)
+
+**Uses (from STACK.md):**
+- SVG path generation for curves
+- Interactive drag system for handles
+- Bezier curve fitting for smoothing
+
+**Implements (from FEATURES.md):**
+- Drag handles for frequency, gain, Q adjustment
+- Collision detection (handles don't overlap)
+- Real-time curve preview
+- Filter types: bell, shelf, high-pass, low-pass, notch
+
+**Research flags:** Standard curve editing patterns (no additional research needed)
+
+### Phase 8: Containers & Polish — 1 week
+
+**Rationale:** Low-complexity finishing elements.
+
+**Delivers:**
+- 3 containers/decorative (tooltip, spacer, window chrome)
+- Remaining edge case elements
+- UX improvements (visible undo/redo buttons, QWERTZ keyboard support)
+
+**Research flags:** No additional research needed
 
 ### Phase Ordering Rationale
 
-**Security-first approach:** Phase 1 must complete before any other work. XSS vulnerabilities cannot be patched later — they affect all saved projects and exported code. DOMPurify integration and SafeSVG component establish security boundaries for all subsequent phases.
+**Dependencies discovered:**
+1. **Phase 0 is non-negotiable prerequisite** — Refactoring with 25 elements vs 103 elements differs by 10x effort
+2. **Simple → Complex progression** — Each phase builds patterns for next phase
+3. **Component libraries early** — Install react-piano and react-arborist when needed, not all at once
+4. **Canvas architecture before visualizations** — Phase 6 requires infrastructure from Phase 0-5
+5. **Standards-compliant meters before visualizations** — Phase 4 establishes data flow patterns for Phase 6
 
-**Foundation before features:** Asset library (Phase 2) provides data model for both static graphics (Phase 3) and interactive knobs (Phase 4). Building features before storage would require refactoring. Normalized storage enables shared styles and efficient updates.
-
-**Simple before complex:** Static graphics (Phase 3) prove asset resolution and sanitization pipeline with minimal rendering complexity. Interactive knobs (Phase 4) build on this proven foundation, adding layer composition and rotation. Incremental complexity reduces risk.
-
-**Export validates pipeline:** Phase 5 is last because it tests the entire system end-to-end. Export must re-sanitize to catch any vulnerabilities that slipped through earlier stages. Defense-in-depth principle.
-
-**Dependencies by phase:**
-- Phase 2 depends on Phase 1 (sanitization utilities used by import wizard)
-- Phase 3 depends on Phase 2 (asset library storage for graphics)
-- Phase 4 depends on Phase 2 (asset library storage for knob styles)
-- Phase 5 depends on all phases (validates complete pipeline)
+**How this avoids pitfalls:**
+- Phase 0 prevents all 5 critical pitfalls before they occur
+- Incremental validation catches issues early (add 10-15 elements, test, repeat)
+- Performance measurement after each phase prevents degradation
+- Code splitting infrastructure established before bundle grows
 
 ### Research Flags
 
+**Phases likely needing `/gsd:research-phase` during planning:**
+
+**Phase 4 (Professional Meters): NEEDS RESEARCH**
+- **Why:** Ballistics algorithms need precise implementation per standards (IEC 60268-10, EBU R128, ITU-R BS.1770-5)
+- **What to research:** Reference implementations for VU/PPM/LUFS calculations, True Peak oversampling filter coefficients
+- **When:** Before starting Phase 4 implementation
+- **Confidence gap:** Current research identified standards but not exact implementation details
+
+**Phase 6 (Real-Time Visualizations): NEEDS RESEARCH**
+- **Why:** Canvas export to JUCE WebView2 integration unclear
+- **What to research:** JUCE C++ ↔ JavaScript data transfer patterns, Canvas API compatibility in JUCE WebView2
+- **When:** Before starting Phase 6 implementation
+- **Confidence gap:** MDN best practices cover general Canvas, but JUCE-specific needs validation
+
 **Phases with standard patterns (skip research-phase):**
 
-- **Phase 1 (Security Foundation):** DOMPurify is industry-standard with comprehensive docs. XSS patterns are well-documented. No deeper research needed.
-- **Phase 2 (Asset Library):** Zustand slice pattern established in v1.0. Normalized storage follows Redux patterns. Virtual scrolling is mature technology.
-- **Phase 3 (Static Graphics):** Extends existing Image element. Standard asset resolution. No novel patterns.
-- **Phase 5 (Export & Polish):** CSP headers are standard. Export validation follows established patterns.
-
-**Phase likely needing validation during implementation:**
-
-- **Phase 4 (Interactive Knobs):** LOW research need, but may require performance testing. Questions to validate:
-  - Performance with 50+ animated knobs on canvas (CSS transform vs Canvas2D rendering)
-  - Transform origin calculation for arbitrary SVG layers (assume center may not work for all designs)
-  - Color override approach (CSS custom properties vs SVG attribute replacement)
-  - Export bundle size with 20+ embedded SVGs (may need SVGO if too large)
-
-**Recommended validation approach for Phase 4:** Create prototype with 3-5 test knob designs during requirements phase. Benchmark rendering performance, test transform origin assumptions, validate color override strategy. Adjust implementation plan based on findings. Estimated validation time: 4-8 hours.
+**Phase 1 (Simple Controls):** React component patterns well-documented, extends existing controls
+**Phase 2 (Displays & LEDs):** Text formatting and color switching are straightforward
+**Phase 3 (Navigation):** react-arborist well-documented, standard React patterns
+**Phase 5 (Specialized Audio):** react-piano well-documented, XY pad is standard pattern
+**Phase 7 (Interactive Curves):** SVG drag patterns established in existing codebase
+**Phase 8 (Containers & Polish):** Low-complexity finishing work
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | **HIGH** | DOMPurify is industry-standard (18.8M downloads, Cure53-maintained). svgson already proven in v1.0. SVGO is optional and well-documented. Minimal additions reduce risk. |
-| Features | **HIGH** | Asset library patterns validated against Figma/Sketch. Audio plugin UI research confirms knob rotation is desired over filmstrips. v1.0 codebase analysis shows existing features cover most table stakes. |
-| Architecture | **HIGH** | Zustand slice pattern established in v1.0. Normalized storage follows Redux best practices (proven at scale). Progressive enhancement preserves backward compatibility. SafeSVG component encapsulates security. |
-| Pitfalls | **HIGH** | 2026 Angular CVE confirms SVG sanitization is critical. Multiple recent CVEs (CairoSVG, Plane, ThingsBoard) validate security concerns. Performance benchmarks from real-world projects (Felt, CodePen articles). |
+| **Stack** | **HIGH** | react-piano and react-arborist are mature, well-maintained libraries. Konva already installed and proven. Custom meter ballistics are well-specified by standards. Only 2 new dependencies needed. |
+| **Features** | **HIGH** | 40+ web searches, official specifications (ITU-R, EBU, IEC), plugin market analysis. Standards for meters are prescriptive (VU: 300ms, PPM: 10ms/1.5s, LUFS: EBU R128). Feature categorization based on professional plugin expectations. |
+| **Architecture** | **HIGH** | Registry pattern proven for 100+ component systems. Template-driven code generation is industry standard. Canvas vs DOM decision backed by real-world case studies (Felt, MDN). Current architecture analysis shows discriminated unions scale well. |
+| **Pitfalls** | **HIGH** | Cross-referenced with 2026 performance research, official TypeScript/React docs, and existing codebase analysis. All 5 critical pitfalls validated against community articles and technical deep dives. Phase 0 refactoring patterns are established best practices. |
 
 **Overall confidence:** **HIGH**
 
-Research based on:
-- Official documentation (DOMPurify, React, MDN)
-- Recent CVEs (2025-2026) demonstrating active threat landscape
-- v1.0 codebase analysis (architecture patterns proven in production)
-- Design tool research (Figma, Sketch patterns for asset libraries)
-- Audio plugin community research (forum discussions, example projects)
+The convergence of findings across all four research dimensions (stack, features, architecture, pitfalls) reinforces confidence. The recommended approach — Phase 0 refactoring before element addition — appears consistently across architecture and pitfalls research.
 
 ### Gaps to Address
 
-**Minimal gaps — all critical decisions validated:**
+**During Phase 0 (Refactoring):**
+- **Validation:** Measure bundle size after code splitting implementation (target: initial load <800KB)
+- **Validation:** Benchmark TypeScript compilation time after union split (target: <10 seconds)
+- **Validation:** Test PropertyPanel.tsx with 103-entry registry (ensure type safety maintained)
 
-1. **Performance with many animated knobs** (LOW priority) — Research provides benchmarks (150ms for 300KB SVG, manageable with 2500 elements), but actual performance depends on specific SVG designs. Mitigation: Implement lazy rendering (static snapshot when not interacting), test with realistic assets during Phase 4. Fallback: Switch to Canvas2D if CSS transforms insufficient.
+**During Phase 4 (Professional Meters):**
+- **Research:** Reference implementations for meter ballistics algorithms
+- **Validation:** Test ballistics accuracy against known-good implementations (compare with iZotope Insight, Waves WLM)
+- **Validation:** Verify JUCE C++ export generates correct ballistics code
 
-2. **Color override complexity** (LOW priority) — CSS custom properties approach requires SVG to use `var(--color)`. Real-world Figma/Illustrator exports use hex colors. Mitigation: Document requirement in import wizard, provide fallback SVG attribute replacement if needed. Test with designer exports during Phase 4.
+**During Phase 6 (Real-Time Visualizations):**
+- **Research:** JUCE WebView2 Canvas performance characteristics
+- **Validation:** Profile with 10-20 simultaneous visualizations (target: maintain >30 FPS)
+- **Validation:** Test Canvas export to JUCE, ensure JavaScript draw functions work in WebView2
 
-3. **Export bundle size** (LOW priority) — Unknown impact of embedding 20+ SVG assets in JUCE bundle. Mitigation: Test export size with realistic asset library (10-30 items) during Phase 5. Add SVGO optimization if bundle >10MB. JUCE supports resource compression.
-
-4. **JUCE WebView2 CSP enforcement** (LOW priority) — Assumes JUCE WebView2 enforces CSP identically to Chrome. Mitigation: Test CSP headers in JUCE environment during Phase 5. If enforcement differs, adjust CSP configuration.
-
-**None of these gaps block implementation.** All have clear mitigation strategies and can be validated during respective phases. No additional research needed before starting.
+**Not addressed in research (needs empirical testing):**
+- Exact bundle size per element type (depends on implementation complexity)
+- Memory profiling with 100+ element instances on canvas
+- User testing of 2-level palette hierarchy (UX validation)
+- JUCE WebView2 performance limits on lower-end hardware
 
 ## Sources
 
-### Primary (HIGH confidence)
+### Primary Sources (HIGH confidence)
 
-**Security (XSS and Sanitization):**
-- [Angular CVE-2026-22610: XSS via SVG script attributes](https://github.com/advisories/GHSA-jrmj-c5cx-3cw6) — Recent CVE demonstrating `href`/`xlink:href` attack vector
-- [DOMPurify GitHub](https://github.com/cure53/DOMPurify) — Industry-standard sanitizer, 18.8M downloads
-- [SVG Security Best Practices](https://www.svggenie.com/blog/svg-security-best-practices) — Comprehensive XSS vector analysis
-- [Exploiting SVG Upload Vulnerabilities: Stored XSS](https://medium.com/@xgckym/exploiting-svg-upload-vulnerabilities-a-deep-dive-into-stored-xss-430e9bb1cee1) — Real-world attack scenarios
-- [Plane CVE: XSS via SVG Upload](https://github.com/makeplane/plane/security/advisories/GHSA-rcg8-g69v-x23j) — 2025 vulnerability
+**Stack Research:**
+- [react-piano on npm](https://www.npmjs.com/package/react-piano) — MIDI keyboard UI library
+- [react-arborist GitHub](https://github.com/brimdata/react-arborist) — Tree view component
+- [Konva documentation](https://konvajs.org/docs/react/index.html) — Canvas rendering
+- [Visualizations with Web Audio API - MDN](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API) — Best practices
+- [Building a High-Performance UI Framework with HTML5 Canvas and WebGL](https://medium.com/@beyons/building-a-high-performance-ui-framework-with-html5-canvas-and-webgl-f7628af8a3c2) — Rendering strategy
 
-**Security (XML Bombs):**
-- [Billion Laughs Attack - Wikipedia](https://en.wikipedia.org/wiki/Billion_laughs_attack) — Authoritative explanation
-- [A Billion Points: SVG Bomb](https://brhfl.com/2017/11/svg-bomb/) — SVG-specific attack examples
-- [Recent CVE-2025-3225](https://medium.com/@instatunnel/billion-laughs-attack-the-xml-that-brings-servers-to-their-knees-f83ba617caa4) — Confirms attacks still relevant in 2025
+**Features Research:**
+- [ITU-R BS.1770-5 (2023)](https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.1770-5-202311-I!!PDF-E.pdf) — True Peak metering standard
+- [EBU R 128](https://en.wikipedia.org/wiki/EBU_R_128) — LUFS loudness normalization
+- [IEC 60268-10/18](https://en.wikipedia.org/wiki/Peak_programme_meter) — PPM Type I/II standards
+- [VU And PPM Audio Metering](https://www.sound-au.com/project55.htm) — Ballistics technical details
+- [Everything You Need to Know About Audio Metering](https://sonicscoop.com/everything-need-know-audio-meteringand/) — Industry overview
 
-**Stack & Libraries:**
-- [DOMPurify npm](https://www.npmjs.com/package/dompurify) — Download stats, API documentation
-- [svgson npm](https://www.npmjs.com/package/svgson) — Already used in v1.0
-- [SVGO GitHub](https://github.com/svg/svgo) — Optimization library
+**Architecture Research:**
+- [Factory Pattern Type Script Implementation with Type Map](https://medium.com/codex/factory-pattern-type-script-implementation-with-type-map-ea422f38862) — Registry pattern
+- [Zustand Architecture Patterns at Scale](https://brainhub.eu/library/zustand-architecture-patterns-at-scale) — State management
+- [A Guide to Code Generation](https://tomassetti.me/code-generation/) — Template-driven generation
+- [DOM vs. Canvas](https://www.kirupa.com/html5/dom_vs_canvas.htm) — Rendering comparison
 
-### Secondary (MEDIUM confidence)
+**Pitfalls Research:**
+- [From SVG to Canvas – part 1: making Felt faster](https://felt.com/blog/from-svg-to-canvas-part-1-making-felt-faster) — Real-world performance case study
+- [Code-split JavaScript | web.dev](https://web.dev/learn/performance/code-split-javascript) — Bundle optimization
+- [TypeScript Best Practices for Large-Scale Web Applications in 2026](https://johal.in/typescript-best-practices-for-large-scale-web-applications-in-2026/) — Compilation performance
+- [React project structure for scale: decomposition, layers and hierarchy](https://www.developerway.com/posts/react-project-structure) — File organization
 
-**Architecture Patterns:**
-- [Zustand Documentation - Slice Pattern](https://zustand.docs.pmnd.rs/guides/slices-pattern) — Official pattern guide
-- [Zustand Architecture Patterns at Scale](https://brainhub.eu/library/zustand-architecture-patterns-at-scale) — Production validation
-- [Normalizing State Shape (Redux Docs)](https://redux.js.org/usage/structuring-reducers/normalizing-state-shape) — Normalized storage rationale
+### Secondary Sources (MEDIUM confidence)
 
-**Features & UX:**
-- [A Guide to Using SVGs in React](https://blog.logrocket.com/how-to-use-svgs-react/) — Updated April 2025
-- [AudioKnobs GitHub](https://github.com/Megaemce/AudioKnobs) — SVG knob library for audio
-- [JUCE Forum: Vector graphics GUIs](https://forum.juce.com/t/vector-graphics-guis-and-knob-slider-design/13524) — Community patterns
-- [Design System Asset Management](https://www.figma.com/best-practices/components-styles-and-shared-libraries/) — Figma patterns
+**Stack Research:**
+- [@domchristie/needles npm](https://www.npmjs.com/package/@domchristie/needles) — EBU R128 LUFS (future consideration)
+- [7 Best React Tree View Components](https://reactscript.com/best-tree-view/) — Library comparison
+- Web Audio API best practices — General canvas performance
 
-**Performance:**
-- [Improving SVG Runtime Performance - CodePen](https://codepen.io/tigt/post/improving-svg-rendering-performance) — Real-world benchmarks
-- [High Performance SVGs - CSS-Tricks](https://css-tricks.com/high-performance-svgs/) — Optimization techniques
-- [Planning for Performance — Using SVG](https://oreillymedia.github.io/Using_SVG/extras/ch19-performance.html) — Comprehensive guide
+**Features Research:**
+- [Bob Katz K-System](https://www.meterplugs.com/blog/2016/10/14/k-system-metering-101.html) — Integrated metering
+- [iZotope Insight 2](https://www.izotope.com/en/products/insight/features/spectrogram.html) — Professional visualization reference
+- [Best Spectrum Analyzer Plugins](https://emastered.com/blog/best-spectrum-analyzer-plugins) — 2026 market survey
 
-### Tertiary (LOW confidence, validation recommended)
+**Architecture Research:**
+- [Scaling React Component Architecture](https://dev.to/nithinbharathwaj/scaling-react-component-architecture-expert-patterns-for-large-javascript-applications-5fh3) — Large app patterns
+- [Understanding the Differences: DOM vs SVG vs Canvas vs WebGL](https://sourcefound.dev/dom-vs-svg-vs-canvas-vs-webgl) — Rendering strategy
 
-**JUCE WebView2 Security:**
-- [JUCE 8 WebView UIs Overview](https://juce.com/blog/juce-8-feature-overview-webview-uis/) — Official overview
-- [JUCE Forum: WebView2 Security](https://forum.juce.com/t/how-does-webview2-work-on-juce-7-0-5/57155) — Community discussion (needs validation in actual environment)
+**Pitfalls Research:**
+- [SVG vs Canvas Animation: Best Choice for Modern Frontends](https://www.augustinfotech.com/blogs/svg-vs-canvas-animation-what-modern-frontends-should-use-in-2026/) — Performance comparison
+- [Reducing JavaScript Bundle Size with Code Splitting in 2025](https://dev.to/hamzakhan/reducing-javascript-bundle-size-with-code-splitting-in-2025-3927) — Optimization strategies
+- [Solving React Form Performance](https://dev.to/opensite/solving-react-form-performance-why-your-forms-are-slow-and-how-to-fix-them-1g9i) — Property panel optimization
+
+### Tertiary Sources (Community consensus)
+
+- [Keep it together: 5 essential design patterns for dev tool UIs](https://evilmartians.com/chronicles/keep-it-together-5-essential-design-patterns-for-dev-tool-uis) — Palette UX patterns
+- [React Folder Structure in 5 Steps [2025]](https://www.robinwieruch.de/react-folder-structure/) — File organization
+- KVR Audio forum discussions — Plugin user expectations
+- JUCE forum discussions — WebView UI patterns
 
 ---
 
-*Research completed: 2026-01-25*
-*Ready for roadmap: yes*
-*Next step: Requirements definition (REQUIREMENTS.md) based on phase structure*
+**Research completed:** 2026-01-26
+**Ready for roadmap:** Yes
+
+**Next steps:**
+1. Review SUMMARY.md with stakeholders
+2. Confirm Phase 0 refactoring is acceptable 2-3 week investment
+3. Prioritize 78 element types if timeline constraints exist
+4. Create detailed roadmap from phase structure above
+5. Execute Phase 0 refactoring before adding any new elements

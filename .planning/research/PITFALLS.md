@@ -1,192 +1,670 @@
-# Domain Pitfalls: Canvas-Based Visual Design Tools
+# Domain Pitfalls: Scaling Audio UI Element Library from 25 to 103 Elements
 
-**Domain:** Browser-based visual design tools / canvas editors
-**Researched:** 2026-01-23
-**Confidence:** MEDIUM (WebSearch findings cross-referenced across multiple sources)
+**Domain:** Audio plugin UI designer with comprehensive element taxonomy
+**Context:** Adding 78 new audio UI elements (meters, visualizations, specialized controls) to existing 25-element system
+**Researched:** 2026-01-26
+**Overall Confidence:** HIGH (Cross-referenced with official docs, 2026 performance research, and existing codebase analysis)
+
+---
+
+## Executive Summary
+
+This project currently has **25 element types** with corresponding renderers and property panels. Adding **78 additional audio UI elements** creates a **4x scaling challenge** that will expose architectural weaknesses invisible at current scale.
+
+**Critical risks:**
+1. **Bundle size explosion**: 2.2MB → 8-10MB without optimization
+2. **PropertyPanel.tsx maintenance collapse**: 25 type guards → 103 type guards (200+ LOC)
+3. **Canvas rendering degradation**: SVG DOM scales poorly beyond 50-100 elements
+4. **Build time increases**: TypeScript compilation slows with large discriminated unions
+5. **Import graph bloat**: Every new element adds 3 files (renderer, properties, type guards)
+
+**Key insight:** The system architecture works well for 25 elements but requires structural changes before adding 78 more.
+
+---
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites or major issues.
+Mistakes that cause rewrites or major architectural changes.
 
-### Pitfall 1: Naive Undo/Redo with Full Canvas Snapshots
-**What goes wrong:** Storing the entire canvas state as an image (base64 via toDataURL) for every undo/redo operation creates massive memory consumption and performance degradation. With 50+ undo states, memory usage spirals out of control, causing browser crashes.
+### Pitfall 1: Monolithic PropertyPanel.tsx with 103 Type Guards
 
-**Why it happens:** It's the simplest implementation to write. Developers reach for `canvas.toDataURL()` because it "just works" initially with minimal code.
-
-**Consequences:**
-- Memory exceptions and browser freezes
-- Undo/redo becomes slower as history grows
-- Mobile devices crash with moderate usage
-- Forces aggressive history limits (10-15 steps max)
-
-**Prevention:**
-- Store minimal command/action objects instead: `{type: 'move', elementId: 'knob-1', from: {x: 10, y: 20}, to: {x: 50, y: 60}}`
-- For SVG-based editors (like this project), serialize only the changed element properties
-- Use immutable data structures with structural sharing (Immer.js with Zustand)
-- Store deltas, not full snapshots
-
-**Detection:**
-- Undo/redo feels sluggish after 5-10 operations
-- Browser DevTools shows memory climbing with each undo
-- Mobile testing reveals crashes
-- Heap snapshots show massive base64 strings in memory
-
-**Phase Impact:** Phase 2 (Core Canvas Operations). Undo/redo architecture must be correct from the start. Refactoring later requires touching every state mutation.
-
-**Sources:**
-- [Development of undo and redo functionality with canvas](https://www.abidibo.net/blog/2011/10/12/development-undo-and-redo-functionality-canvas/)
-- [Undo and Redo with HTML5 Canvas](https://codicode.com/art/undo_and_redo_to_the_html5_canvas.aspx)
-
----
-
-### Pitfall 2: DOM Mutation in Drag-Drop Instead of React's Declarative Model
-**What goes wrong:** Directly manipulating the DOM during drag operations (position: absolute with manual x/y updates) breaks React's rendering model. Results in ghost elements, lost state, and impossible-to-debug race conditions between React renders and manual DOM updates.
-
-**Why it happens:** Many drag-drop tutorials and legacy jQuery examples use imperative DOM manipulation. Developers copy these patterns without understanding they conflict with React.
-
-**Consequences:**
-- Elements appear in wrong positions after drag
-- State becomes desynchronized from UI
-- Redo/undo breaks because DOM and state diverge
-- Component lifecycle issues (useEffect runs against stale DOM)
-- Testing becomes impossible (can't assert on state vs DOM)
-
-**Prevention:**
-- Use @dnd-kit (already in project stack) which is React-native and manages state declaratively
-- All drag operations must update Zustand store, never DOM directly
-- Let React re-render based on state changes
-- Use CSS transforms for visual feedback during drag, but commit to state on drop
-
-**Detection:**
-- console.warn() calls from React about external DOM mutations
-- Elements snap to wrong positions after drag completes
-- Undo reverts state but UI doesn't update
-- Cannot reproduce drag bugs in tests
-
-**Phase Impact:** Phase 3 (Drag & Drop). Architectural decision. Using @dnd-kit prevents this, but if custom drag logic is added later, this trap reappears.
-
-**Sources:**
-- [The Future of Drag and Drop APIs by Dan Abramov](https://medium.com/@dan_abramov/the-future-of-drag-and-drop-apis-249dfea7a15f)
-- [Drag and Drop Component Builder using React](https://whoisryosuke.com/blog/2020/drag-and-drop-builder-using-react)
-
----
-
-### Pitfall 3: SVG DOM Overhead with Many Elements
-**What goes wrong:** SVG elements in the DOM are expensive. With 100+ elements (a moderate-sized design), browsers struggle with style recalculation, reflow, and event handler overhead. Dragging feels janky. Selection boxes lag. The entire editor becomes unresponsive.
-
-**Why it happens:** SVG seems perfect for design tools (vector, zoomable, styleable), but each SVG element is a full DOM node with associated overhead. React managing thousands of SVG nodes with event handlers amplifies the problem.
-
-**Consequences:**
-- Frame drops during drag (< 30 FPS)
-- Multi-select with 50+ elements freezes UI
-- Property panel updates cause entire canvas to re-render
-- Memory usage scales poorly (50 MB for 200 elements is common)
-
-**Prevention:**
-- **Hybrid rendering:** Keep selected/hovered elements as SVG DOM (for easy manipulation), render unselected elements to a cached `<canvas>` or `<img>` layer underneath
-- Virtualization: Only render elements in viewport (like Figma does)
-- Use React.memo() aggressively on SVG components
-- Consolidate event handlers (single handler on container, not per-element)
-- Debounce property panel updates (see Pitfall 6)
-
-**Detection:**
-- Chrome DevTools Performance tab shows > 50ms for "Recalculate Style"
-- FPS drops below 30 during drag with > 50 elements
-- React DevTools Profiler shows entire component tree re-rendering on property change
-
-**Phase Impact:** Phase 1 (Basic Canvas & Element Rendering). Affects architecture choice. Decide early: pure SVG, pure Canvas, or hybrid. Refactoring later is a rewrite.
-
-**Recommendation:** For this project (audio plugin UI designer), element counts will likely be modest (< 100 elements per design). Start with pure SVG (simpler, already using React). Add canvas layer optimization later if profiling shows it's needed. Don't pre-optimize.
-
-**Sources:**
-- [From SVG to Canvas – part 1: making Felt faster](https://felt.com/blog/from-svg-to-canvas-part-1-making-felt-faster)
-- [High Performance SVGs](https://css-tricks.com/high-performance-svgs/)
-- [Canvas vs SVG: Choosing the Right Tool](https://www.sitepoint.com/canvas-vs-svg/)
-
----
-
-### Pitfall 4: Coordinate System Confusion (Screen vs Canvas vs Element Space)
-**What goes wrong:** Mix up coordinate systems when implementing zoom/pan/drag. Mouse click at screen position (200, 100) isn't the same as canvas position with 2x zoom and pan offset. Elements get placed in wrong locations. Selection boxes don't align. Resize handles appear offset from elements.
-
-**Why it happens:** Forgetting to transform coordinates between spaces. Three different coordinate systems exist simultaneously:
-1. Screen space (mouse event clientX/clientY)
-2. Canvas space (after zoom/pan transforms)
-3. Element space (relative to element's own origin for nested transforms)
-
-**Consequences:**
-- Elements placed at wrong positions when zoomed
-- Selection box doesn't surround element correctly
-- Drag handles appear offset from corners
-- Multi-select bounding box calculations are wrong
-- Copy/paste places elements at incorrect coordinates
-
-**Prevention:**
-- Create utility functions for each transform: `screenToCanvas()`, `canvasToElement()`, `elementToCanvas()`
-- Test coordinate transforms at 0.25x, 1x, and 4x zoom levels
-- Test with pan offset (not just 0,0 origin)
-- Document which coordinate system each function expects/returns
-- Use TypeScript nominal types to prevent mixing coordinate systems
+**What goes wrong:**
+The current `/workspaces/vst3-webview-ui-designer/src/components/Properties/PropertyPanel.tsx` has a giant if-else chain with 25 type guard checks (lines 174-204). Adding 78 more creates:
+- 103 type guard checks (300+ lines of boilerplate)
+- Every element addition requires editing this core file
+- Merge conflicts on every PR touching properties
+- TypeScript compilation slows (type narrowing on 103-way union)
+- New developers cannot understand the file structure
 
 ```typescript
-type ScreenCoord = { x: number; y: number } & { __brand: 'screen' };
-type CanvasCoord = { x: number; y: number } & { __brand: 'canvas' };
+// Current pattern (25 elements):
+{isKnob(element) && <KnobProperties element={element} onUpdate={update} />}
+{isSlider(element) && <SliderProperties element={element} onUpdate={update} />}
+// ... 23 more lines
 
-function screenToCanvas(screen: ScreenCoord, zoom: number, pan: CanvasCoord): CanvasCoord {
-  return {
-    x: (screen.x - pan.x) / zoom,
-    y: (screen.y - pan.y) / zoom,
-  } as CanvasCoord;
+// After adding 78 elements (103 total):
+{isKnob(element) && <KnobProperties element={element} onUpdate={update} />}
+// ... 101 more lines (300+ LOC of pure boilerplate)
+```
+
+**Why it happens:**
+Simple pattern that works well for 5-25 elements. TypeScript discriminated unions require explicit type narrowing. Developers keep adding to existing pattern without refactoring.
+
+**Consequences:**
+- **File becomes unmaintainable** (300+ lines of identical patterns)
+- **Performance impact**: 103 type guard function calls on every render
+- **Bundle size**: imports all 103 property components upfront (no code splitting)
+- **TypeScript compilation time**: increases quadratically with union size
+- **Git conflicts**: every feature branch touching properties conflicts with this file
+
+**Prevention:**
+
+**Option A: Component Registry Pattern** (Recommended)
+```typescript
+// PropertyComponentRegistry.ts
+const PROPERTY_COMPONENTS: Record<ElementType, React.ComponentType<PropertyProps>> = {
+  knob: KnobProperties,
+  slider: SliderProperties,
+  // ... 101 more (explicit, but centralized)
+}
+
+// PropertyPanel.tsx (clean)
+export function PropertyPanel() {
+  const element = getSelectedElement()
+  const PropertyComponent = PROPERTY_COMPONENTS[element.type]
+  return <PropertyComponent element={element} onUpdate={update} />
 }
 ```
 
-**Detection:**
-- Elements jump to wrong position when zoomed
-- Selection boxes don't align with elements at non-1x zoom
-- Drag operations work at 1x zoom but fail at 2x zoom
-- Copy-paste position changes based on zoom level
+**Option B: Dynamic Imports with Code Splitting**
+```typescript
+// PropertyPanel.tsx
+const PropertyComponent = lazy(() =>
+  import(`./properties/${element.type}Properties.tsx`)
+)
 
-**Phase Impact:** Phase 2 (Core Canvas Operations - Zoom/Pan). Must be correct from the start. All future features (drag, select, resize) depend on this foundation.
+return (
+  <Suspense fallback={<PropertySkeleton />}>
+    <PropertyComponent element={element} onUpdate={update} />
+  </Suspense>
+)
+```
 
-**Sources:**
-- [Panning and Zooming in HTML Canvas](https://harrisonmilbradt.com/blog/canvas-panning-and-zooming)
-- [Transform Coordinate Systems with Map 3D Tools](https://www.seiler-ds.com/transform-coordinate-systems-map-3d-tools-inside-civil-3d/)
-
----
-
-### Pitfall 5: Missing Transform Reset Before Canvas Clear
-**What goes wrong:** When using `<canvas>` for rendering, forgetting to reset transforms before clearing leads to visual artifacts. Clearing with an active zoom/pan transform only clears a zoomed portion, leaving ghost images from previous frames.
-
-**Why it happens:** Canvas context retains transform state across frames. `ctx.clearRect()` is affected by current transform, which is non-obvious.
-
-**Consequences:**
-- Trails/ghosts during animations
-- Canvas never fully clears
-- Zooming leaves artifacts
-- Only visible during zoom/pan operations (works fine at 1x, breaks at other scales)
-
-**Prevention:**
-```javascript
-// WRONG
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-// CORRECT
-ctx.save();
-ctx.setTransform(1, 0, 0, 1, 0, 0); // reset to identity
-ctx.clearRect(0, 0, canvas.width, canvas.height);
-ctx.restore();
+**Option C: Convention-Based Loading**
+```typescript
+// Auto-discover property components from filesystem
+// /properties/knob/KnobProperties.tsx
+// /properties/slider/SliderProperties.tsx
+// Each registers itself via module side-effect
 ```
 
 **Detection:**
-- Visual artifacts during zoom/pan
-- Canvas never fully clears
-- Previous frame elements leave trails
-- Only happens when zoom !== 1 or pan !== (0,0)
+- PropertyPanel.tsx exceeds 200 lines
+- Adding new element type requires editing 3+ central files
+- TypeScript compilation noticeably slower
+- Bundle size increases disproportionately to element count
 
-**Phase Impact:** Phase 2 (Core Canvas Operations). Only applies if using `<canvas>` for rendering. This project uses SVG, so this specific issue doesn't apply, but similar transform issues exist with SVG viewBox.
+**Phase Impact:**
+**Phase 1** of new milestone: **MUST address before adding elements**. Refactoring after 50+ elements are added is exponentially harder. The registry pattern takes 2-4 hours to implement now, 2-3 weeks to refactor later.
+
+**Architecture Decision:**
+- Use **Component Registry Pattern** (Option A) for this project
+- Dynamic imports (Option B) add complexity without clear benefit (property panels are lightweight)
+- Explicit registry makes element types discoverable and validates completeness at build time
 
 **Sources:**
-- [Simple Pan and Zoom Canvas](https://codepen.io/chengarda/pen/wRxoyB)
-- [HTML5 Canvas Zoom and Pan Image](https://gist.github.com/dzhang123/2a3a611b3d75a45a3f41)
+- [React project structure for scale: decomposition, layers and hierarchy](https://www.developerway.com/posts/react-project-structure)
+- [How to Organize a Large React Application and Make It Scale](https://www.sitepoint.com/organize-large-react-application/)
+
+---
+
+### Pitfall 2: Bundle Size Explosion (2MB → 8-10MB Without Tree Shaking)
+
+**What goes wrong:**
+Currently 2.2MB bundle with 25 elements. Each element adds:
+- Renderer component (~5-15KB)
+- Property panel component (~8-20KB)
+- Type definitions and guards (~2-5KB)
+- **Total per element:** ~15-40KB
+
+Adding 78 elements without optimization:
+- **Conservative:** 78 × 15KB = 1.17MB (best case)
+- **Realistic:** 78 × 25KB = 1.95MB
+- **Worst case:** 78 × 40KB = 3.12MB
+- **New bundle size:** 4-6MB (before compression), 8-10MB if audio visualizations use heavy libraries
+
+**Why it happens:**
+Default Vite/Webpack behavior bundles all imported modules. Every element renderer imports its dependencies. Complex audio visualizations (spectrum analyzers, waveform displays, oscilloscopes) may import:
+- Canvas/WebGL rendering libraries
+- Audio processing utilities
+- Chart/graph libraries
+- Heavy computational code
+
+Without code splitting, all 103 element implementations load on app startup, even though users typically only use 5-15 element types per project.
+
+**Consequences:**
+- **Initial load time**: 3-5 seconds on 3G connections (users perceive as broken)
+- **Memory usage**: 150-300MB browser heap (causes mobile browser crashes)
+- **Hosting costs**: CDN bandwidth scales with bundle size
+- **User abandonment**: 53% of users abandon sites taking > 3 seconds to load
+
+**Prevention:**
+
+**Phase 1: Route-based splitting** (if multiple routes exist)
+```typescript
+// Split by major routes (already done in most React apps)
+const DesignCanvas = lazy(() => import('./DesignCanvas'))
+const ExportPanel = lazy(() => import('./ExportPanel'))
+```
+
+**Phase 2: Element category splitting** (Recommended for this project)
+```typescript
+// Split by element category (lazy load by category)
+// Basic elements loaded upfront (knobs, sliders, buttons)
+// Advanced elements loaded on-demand (visualizations, complex widgets)
+
+const BASIC_ELEMENTS = ['knob', 'slider', 'button', 'label']
+const VISUALIZATION_ELEMENTS = ['oscilloscope', 'waveform', 'spectrum']
+
+// Load visualization renderers only when first used
+const loadVisualizationRenderer = (type: string) =>
+  import(`./renderers/visualizations/${type}Renderer`)
+```
+
+**Phase 3: Per-element code splitting**
+```typescript
+// Most aggressive: lazy load every element
+const loadRenderer = (type: ElementType) =>
+  lazy(() => import(`./renderers/${type}Renderer`))
+
+// With preloading hint for expected elements
+<link rel="prefetch" href="/renderers/knobRenderer.js" />
+```
+
+**Measurement:**
+```bash
+# Analyze bundle before optimization
+npm run build
+du -sh dist/assets/*.js  # Shows individual chunk sizes
+
+# Expected targets after optimization:
+# - Main bundle: < 500KB (core + basic elements)
+# - Per-category chunks: 200-400KB
+# - Per-element chunks: 10-50KB
+# - Total initial load: < 800KB
+```
+
+**Detection:**
+- `npm run build` shows bundle > 3MB
+- Lighthouse Performance Score < 80
+- Time to Interactive > 3 seconds
+- Network tab shows single 5MB+ JavaScript file
+
+**Phase Impact:**
+**Phase 1-2** of new milestone. Implement code splitting **before** adding elements. Retrofitting code splitting after 103 elements exist requires touching every import path.
+
+**Implementation Strategy:**
+1. **Week 1:** Set up code splitting infrastructure (registry + lazy loading)
+2. **Week 2:** Migrate existing 25 elements to new structure
+3. **Week 3:** Validate bundle sizes before proceeding
+4. **Week 4+:** Add new elements using split pattern
+
+**Sources:**
+- [Code-split JavaScript | web.dev](https://web.dev/learn/performance/code-split-javascript)
+- [Reducing JavaScript Bundle Size with Code Splitting in 2025](https://dev.to/hamzakhan/reducing-javascript-bundle-size-with-code-splitting-in-2025-3927)
+- [8 Ways to Optimize Your JavaScript Bundle Size](https://about.codecov.io/blog/8-ways-to-optimize-your-javascript-bundle-size/)
+
+---
+
+### Pitfall 3: TypeScript Compilation Performance Degradation
+
+**What goes wrong:**
+Large discriminated unions (103 element types) cause TypeScript compilation slowdown:
+- **Current (25 types):** `tsc -b` completes in 2-3 seconds
+- **After (103 types):** `tsc -b` takes 15-30 seconds or more
+- **Type narrowing:** Each type guard call must check 103 possible types
+- **IDE responsiveness:** VSCode IntelliSense lags 500ms-2s on element type
+
+The `ElementConfig` discriminated union becomes a bottleneck:
+```typescript
+// Current union (25 types)
+export type ElementConfig =
+  | KnobElementConfig
+  | SliderElementConfig
+  // ... 23 more
+
+// After adding 78 types (103 total)
+export type ElementConfig =
+  | KnobElementConfig
+  // ... 102 more types
+```
+
+**Why it happens:**
+TypeScript must:
+1. **Build type graph**: 103 types × average 15 properties = 1,500+ type nodes
+2. **Perform type narrowing**: On every property access, verify type compatibility against 103 possibilities
+3. **Generate type guards**: 103 `isX()` functions, each checking discriminant against union
+4. **Compute union distribution**: For mapped types, distribute operations over 103 types
+
+**Consequences:**
+- **Development velocity decreases**: devs wait 30s for type errors after each change
+- **CI/CD pipeline slows**: Build time increases from 2min → 5-8min
+- **IDE becomes sluggish**: VSCode/IntelliJ shows "Computing..." on hover
+- **Type inference breaks**: `const element = elements[0]` inferred as `ElementConfig` (union) instead of narrowing
+- **Developer frustration**: Team complains about TypeScript being "slow"
+
+**Prevention:**
+
+**Strategy 1: Segregate Union by Category** (Recommended)
+```typescript
+// Instead of one giant union, split by category
+type ControlElement = KnobConfig | SliderConfig | ButtonConfig // ~15 types
+type VisualizationElement = WaveformConfig | OscilloscopeConfig // ~12 types
+type ContainerElement = PanelConfig | GroupBoxConfig // ~8 types
+type MeterElement = VUMeterConfig | SpectrumMeterConfig // ~10 types
+// ... etc
+
+type ElementConfig =
+  | ControlElement
+  | VisualizationElement
+  | ContainerElement
+  | MeterElement
+  | OtherCategories
+
+// Type guards work on category first, then specific type
+if (isControlElement(element)) {
+  // Union of 15 types (fast)
+  if (isKnob(element)) { /* ... */ }
+}
+```
+
+**Strategy 2: Enable TypeScript Performance Optimizations**
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "incremental": true,           // Cache compilation between runs
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "skipLibCheck": true,          // Don't type-check node_modules
+    "isolatedModules": true,       // Faster transpilation (Vite requirement)
+    "composite": true              // Enable project references
+  }
+}
+```
+
+**Strategy 3: Type Guard Optimization**
+```typescript
+// SLOW: Pattern matching on each call
+export function isKnob(el: ElementConfig): el is KnobElementConfig {
+  return el.type === 'knob'
+}
+
+// FASTER: Memoized type guards (cache results)
+const typeGuardCache = new WeakMap<ElementConfig, string>()
+
+export function getElementCategory(el: ElementConfig): string {
+  if (!typeGuardCache.has(el)) {
+    typeGuardCache.set(el, computeCategory(el))
+  }
+  return typeGuardCache.get(el)!
+}
+```
+
+**Measurement:**
+```bash
+# Measure TypeScript compilation time
+time npm run build
+
+# Expected targets:
+# - Initial build: < 10 seconds
+# - Incremental build: < 3 seconds
+# - IDE responsiveness: < 200ms IntelliSense delay
+
+# Measure with TypeScript performance tracing
+tsc --generateTrace trace --incremental
+# Analyze trace/types.json for hot spots
+```
+
+**Detection:**
+- `tsc -b` takes > 10 seconds
+- VSCode shows "Initializing TypeScript..." for > 5 seconds
+- IntelliSense suggestions lag > 500ms
+- Type errors take > 2 seconds to appear after code change
+- CI builds time out or exceed 10 minutes
+
+**Phase Impact:**
+**Phase 0 (Pre-work)**: Refactor type unions **before** adding elements. Splitting 103-type union after-the-fact requires:
+- Rewriting all type guards
+- Updating all type narrowing call sites
+- Regression testing entire codebase
+
+**Sources:**
+- [TypeScript Best Practices for Large-Scale Web Applications in 2026](https://johal.in/typescript-best-practices-for-large-scale-web-applications-in-2026/)
+- [Fixing Type Narrowing Issues, Compiler Errors, and Performance Bottlenecks in TypeScript](https://www.mindfulchase.com/explore/troubleshooting-tips/fixing-type-narrowing-issues,-compiler-errors,-and-performance-bottlenecks-in-typescript.html)
+- [TypeScript: Documentation - Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
+
+---
+
+### Pitfall 4: Canvas Performance Collapse with 50+ Real-Time Audio Visualizations
+
+**What goes wrong:**
+Audio plugin UIs commonly display **real-time visualizations** that update at 30-60 FPS:
+- Oscilloscopes (waveform traces)
+- Spectrum analyzers (frequency bars)
+- Waveform displays (audio buffer visualization)
+- VU meters with peak hold
+- Gain reduction meters
+- Correlation meters
+
+With 25 basic elements (mostly static knobs/sliders), performance is fine. Adding 78 elements means:
+- **Potential:** 20-30 active visualizations on complex plugin UIs
+- **Update frequency:** Each visualization renders 30-60 times/second
+- **Canvas operations:** 600-1,800 canvas draws per second
+- **Result:** Frame rate drops to < 15 FPS, UI becomes unusable
+
+Current implementation (from codebase analysis):
+- **SVG-based rendering** for most elements (good for static elements)
+- **Some Canvas usage** (seen in KnobRenderer with memoization)
+- **No Canvas pooling or optimization** visible in current code
+
+**Why it happens:**
+1. **SVG DOM overhead**: Each visualization as SVG element creates:
+   - 50-200 DOM nodes per visualization
+   - Style recalculation on every update
+   - React reconciliation overhead
+
+2. **No render batching**: Each visualization updates independently:
+   - 20 visualizations × 60 FPS = 1,200 React renders/second
+   - No `requestAnimationFrame` coordination
+   - Multiple layout thrashing events per frame
+
+3. **Naive Canvas usage**: Direct canvas operations without optimization:
+   - No dirty rectangle tracking
+   - Full canvas clear/redraw every frame
+   - No offscreen canvas caching
+
+**Consequences:**
+- **Design-time performance**: Dragging elements stutters with 10+ active visualizations
+- **User perception**: Plugin feels "broken" or "laggy"
+- **CPU usage**: 100% CPU usage on single core (battery drain on laptops)
+- **JUCE WebView2 integration**: Chromium in JUCE struggles more than standalone browser
+- **Testing difficulty**: Performance issues only appear with real-world plugin designs
+
+**Prevention:**
+
+**Strategy 1: Hybrid SVG + Canvas Architecture** (Recommended)
+```typescript
+// Static elements (knobs, buttons, labels): Render as SVG
+//   - Easy to manipulate
+//   - Good click targeting
+//   - Zoomable without pixelation
+
+// Real-time visualizations: Render to Canvas layer
+//   - Single <canvas> element underneath SVG layer
+//   - All visualizations draw to same canvas
+//   - Batch updates via requestAnimationFrame
+
+// VisualizationLayer.tsx
+export function VisualizationLayer() {
+  const visualizations = useStore(state =>
+    state.elements.filter(isVisualizationElement)
+  )
+
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useAnimationFrame(() => {
+    const ctx = canvasRef.current?.getContext('2d')
+    if (!ctx) return
+
+    // Clear once
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+    // Batch draw all visualizations
+    visualizations.forEach(viz => {
+      drawVisualization(ctx, viz)
+    })
+  }, [visualizations])
+
+  return <canvas ref={canvasRef} className="absolute inset-0" />
+}
+```
+
+**Strategy 2: Throttle Visualization Updates**
+```typescript
+// Don't update at 60 FPS if not necessary
+// Audio visualizations can look good at 30 FPS (33ms)
+// Meters can update at 20 FPS (50ms)
+
+const useThrottledAnimation = (callback: () => void, fps: number) => {
+  const frameInterval = 1000 / fps
+  const lastFrameTime = useRef(0)
+
+  useAnimationFrame((time) => {
+    if (time - lastFrameTime.current >= frameInterval) {
+      callback()
+      lastFrameTime.current = time
+    }
+  })
+}
+
+// Usage
+useThrottledAnimation(() => updateVisualization(), 30) // 30 FPS
+```
+
+**Strategy 3: Visibility Culling**
+```typescript
+// Don't render visualizations outside viewport
+// Or visualizations on hidden layers/collapsed panels
+
+const isInViewport = (element: ElementConfig, viewport: Rect) => {
+  return !(
+    element.x > viewport.right ||
+    element.x + element.width < viewport.left ||
+    element.y > viewport.bottom ||
+    element.y + element.height < viewport.top
+  )
+}
+
+// Only render visible visualizations
+const visibleViz = visualizations.filter(v =>
+  isInViewport(v, viewport) && v.visible
+)
+```
+
+**Strategy 4: Offscreen Canvas for Static Parts**
+```typescript
+// For visualizations with static background (grid, labels)
+// Draw static parts once to offscreen canvas, reuse
+
+const gridCanvas = useMemo(() => {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')!
+  drawGrid(ctx, gridOptions) // Draw once
+  return canvas
+}, [gridOptions])
+
+// In animation loop
+ctx.drawImage(gridCanvas, 0, 0) // Fast blit
+drawDynamicWaveform(ctx) // Only redraw changing parts
+```
+
+**Measurement:**
+```typescript
+// Measure rendering performance
+const stats = {
+  fps: 0,
+  frameTime: 0,
+  renderCalls: 0
+}
+
+// In Chrome DevTools:
+// Performance tab → Record → Drag element with visualizations
+// Look for:
+//   - FPS counter (should stay > 30 FPS)
+//   - "Recalculate Style" < 5ms per frame
+//   - "Render" < 10ms per frame
+```
+
+**Detection:**
+- FPS drops below 30 with 10+ visualizations on canvas
+- Chrome DevTools Performance shows "Long Tasks" (> 50ms)
+- CPU usage 100% when canvas is visible
+- UI feels "janky" when dragging elements
+- React DevTools Profiler shows components rendering > 60 times/second
+
+**Phase Impact:**
+**Phase 2-3** of new milestone: Implement **before** adding visualization elements. Retrofitting render architecture after 50+ visualizations exist requires rewriting every visualization component.
+
+**Architecture Decision:**
+- **Phase 2**: Implement hybrid SVG + Canvas architecture
+- **Phase 3**: Add first visualization elements (oscilloscope, waveform)
+- **Phase 4**: Measure performance with 10-20 simultaneous visualizations
+- **Phase 5**: Optimize based on profiling (culling, throttling)
+
+**Sources:**
+- [From SVG to Canvas – part 1: making Felt faster](https://felt.com/blog/from-svg-to-canvas-part-1-making-felt-faster)
+- [SVG vs Canvas Animation: Best Choice for Modern Frontends](https://www.augustinfotech.com/blogs/svg-vs-canvas-animation-what-modern-frontends-should-use-in-2026/)
+- [Optimizing canvas - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
+- [Optimizing GSAP & Canvas for Smooth, Responsive Design](https://www.augustinfotech.com/blogs/optimizing-gsap-and-canvas-for-smooth-performance-and-responsive-design/)
+
+---
+
+### Pitfall 5: Palette Category Organization Breakdown
+
+**What goes wrong:**
+Current Palette.tsx (lines 6-79) has **10 categories** with 25 elements. Well-organized and readable.
+
+Adding 78 elements naively:
+- **17-20 categories** (too many to scroll through)
+- **Categories with 15-20 items** (overwhelming)
+- **Loss of discoverability**: Users can't find elements
+- **Inconsistent categorization**: Where does "Stereo Width Meter" go? "Meters"? "Visualizations"? "Audio Displays"?
+
+Example category bloat:
+```typescript
+// Current (manageable)
+{ name: 'Meters', items: [
+  { id: 'meter-vertical', type: 'meter', name: 'Meter' }
+]}
+
+// After adding 78 elements (unmanageable)
+{ name: 'Meters', items: [
+  { id: 'meter-vu', name: 'VU Meter' },
+  { id: 'meter-peak', name: 'Peak Meter' },
+  { id: 'meter-rms', name: 'RMS Meter' },
+  // ... 15 more meter types
+  // Users must scroll through 18 similar items
+]}
+```
+
+**Why it happens:**
+- Flat categorization works for 25 elements, breaks at 100+
+- No search/filter functionality
+- No hierarchical organization
+- Categories designed for MVP, not for comprehensive taxonomy
+
+**Consequences:**
+- **Poor UX**: Users spend 30-60 seconds finding the right element
+- **Onboarding difficulty**: New users overwhelmed by choices
+- **Support burden**: "Where is X element?" questions
+- **Reduces feature value**: Users don't discover advanced elements because they're hidden in long lists
+
+**Prevention:**
+
+**Strategy 1: Two-Level Category Hierarchy**
+```typescript
+const paletteCategories = [
+  {
+    name: 'Controls',
+    subcategories: [
+      {
+        name: 'Rotary',
+        items: [/* knobs, encoders, ... */]
+      },
+      {
+        name: 'Linear',
+        items: [/* sliders, faders, ... */]
+      },
+      {
+        name: 'Switches',
+        items: [/* buttons, toggles, ... */]
+      }
+    ]
+  },
+  {
+    name: 'Meters & Visualizations',
+    subcategories: [
+      { name: 'Level Meters', items: [/* VU, peak, RMS */] },
+      { name: 'Spectrum', items: [/* FFT, 3rd octave */] },
+      { name: 'Waveform', items: [/* oscilloscope, waveform */] }
+    ]
+  }
+]
+```
+
+**Strategy 2: Search + Tags**
+```typescript
+// Add searchable metadata to each element
+const elementDefinitions = [
+  {
+    id: 'meter-vu',
+    type: 'vu-meter',
+    name: 'VU Meter',
+    tags: ['meter', 'level', 'audio', 'monitoring', 'vu'],
+    category: 'Meters',
+    subcategory: 'Level Meters'
+  }
+]
+
+// Search filter
+<input
+  placeholder="Search elements..."
+  onChange={(e) => filterElements(e.target.value)}
+/>
+```
+
+**Strategy 3: Favorites + Recent**
+```typescript
+// Track frequently used elements
+const recentElements = useStore(state => state.recentElements) // Last 10 used
+const favoriteElements = useStore(state => state.favoriteElements) // User-starred
+
+<PaletteCategory name="Recent" items={recentElements} />
+<PaletteCategory name="Favorites" items={favoriteElements} />
+// ... rest of categories
+```
+
+**Strategy 4: Collapsible Categories with Smart Defaults**
+```typescript
+// Collapse less-used categories by default
+const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
+  new Set([0, 1, 2]) // Only first 3 expanded
+)
+
+// Track usage analytics
+const categoryUsage = analytics.getMostUsedCategories()
+// Auto-expand categories user actually uses
+```
+
+**Detection:**
+- Palette panel requires scrolling > 2-3 screen heights
+- Any category has > 10 items
+- Users report "can't find X element"
+- Support tickets about element discovery
+- Low usage of newly added elements (hidden in long lists)
+
+**Phase Impact:**
+**Phase 1** of new milestone: Redesign palette UX **before** adding 78 elements. Retrofitting search/hierarchy after elements are added is purely additive work, but poor UX during development slows team velocity.
+
+**Implementation Priority:**
+1. **Phase 1**: Add search bar (2-4 hours)
+2. **Phase 1**: Add two-level hierarchy (4-8 hours)
+3. **Phase 2**: Add favorites/recent (4-6 hours, track usage)
+4. **Phase 3**: Polish with keyboard navigation, drag preview
+
+**Sources:**
+- [Keep it together: 5 essential design patterns for dev tool UIs](https://evilmartians.com/chronicles/keep-it-together-5-essential-design-patterns-for-dev-tool-uis)
+- [Designing For Complex UIs in 2026](https://maven.com/p/69113d/designing-for-complex-u-is-in-2026)
 
 ---
 
@@ -194,232 +672,484 @@ ctx.restore();
 
 Mistakes that cause delays or technical debt.
 
-### Pitfall 6: No Debouncing on Real-Time Preview Updates
-**What goes wrong:** Property panel with color picker, number inputs, sliders triggers preview update on every onChange event. Dragging a slider fires 60 events/second. Each event causes full React re-render of canvas, property panel, and preview. Frame rate drops to < 10 FPS. App feels broken.
+### Pitfall 6: File Organization Chaos (300+ Files in Same Directory)
 
-**Why it happens:** Controlled inputs in React naturally trigger onChange on every keystroke/drag. Without explicit debouncing, state updates propagate immediately.
+**What goes wrong:**
+Current structure (approximately):
+```
+src/components/
+  elements/
+    renderers/
+      KnobRenderer.tsx      (25 files)
+      SliderRenderer.tsx
+      ...
+  Properties/
+    KnobProperties.tsx      (25 files)
+    SliderProperties.tsx
+    ...
+```
+
+After adding 78 elements:
+```
+src/components/
+  elements/
+    renderers/
+      KnobRenderer.tsx      (103 files!)
+      SliderRenderer.tsx
+      ... 101 more files
+  Properties/
+    KnobProperties.tsx      (103 files!)
+    ... 101 more files
+```
+
+**Why it happens:**
+Flat file structure works for 10-30 files. Beyond that:
+- **IDE file picker becomes useless**: Scrolling through 103 files
+- **Merge conflicts increase**: Many PRs touch same directory
+- **Cognitive overhead**: No visual grouping or organization
+- **Slow file operations**: OS struggles with 100+ files in directory (especially Windows)
 
 **Consequences:**
-- Typing in number input lags (500ms+ delay between keypress and visual feedback)
-- Dragging slider is choppy
-- Color picker updates lag
-- Battery drain on laptops
-- Users perceive app as buggy/broken
+- Developers waste 30-60 seconds finding the right file
+- Accidental edits to wrong file (similar names)
+- Slow grep/search operations
+- Git operations slow down
+- New developers overwhelmed
 
 **Prevention:**
-- Debounce property panel updates with 16ms delay (one frame at 60 FPS) for preview
-- Use optimistic UI: update local input state immediately, debounce store update
-- For expensive operations (re-rendering full canvas), debounce with 100-200ms
-- Consider throttle instead of debounce for continuous interactions (slider drag)
 
+**Strategy 1: Group by Category**
+```
+src/components/
+  elements/
+    renderers/
+      controls/
+        rotary/
+          KnobRenderer.tsx
+          EncoderRenderer.tsx
+        linear/
+          SliderRenderer.tsx
+          FaderRenderer.tsx
+      visualizations/
+        waveform/
+          WaveformRenderer.tsx
+          OscilloscopeRenderer.tsx
+        spectrum/
+          FFTRenderer.tsx
+          SpectrumRenderer.tsx
+      meters/
+        level/
+          VUMeterRenderer.tsx
+          PeakMeterRenderer.tsx
+```
+
+**Strategy 2: One Folder Per Element** (Recommended)
+```
+src/components/
+  elements/
+    Knob/
+      KnobRenderer.tsx
+      KnobProperties.tsx
+      KnobDefaults.ts
+      Knob.types.ts
+      index.ts              (re-exports)
+    Slider/
+      SliderRenderer.tsx
+      SliderProperties.tsx
+      ...
+```
+
+Benefits:
+- **All related files together**: Easy to find everything about "Knob"
+- **Clear ownership**: Each element is self-contained
+- **Easier deletion**: Remove entire folder to remove element
+- **Better code review**: Changes to Knob only touch Knob/ folder
+
+**Strategy 3: Barrel Exports**
 ```typescript
-// Store shows optimistic value immediately for input
-const [localValue, setLocalValue] = useState(store.angle);
-const debouncedUpdate = useMemo(
-  () => debounce((val) => store.updateAngle(val), 100),
-  []
-);
+// src/components/elements/index.ts
+export * from './Knob'
+export * from './Slider'
+// ... 101 more exports
 
-const handleChange = (val) => {
-  setLocalValue(val); // immediate UI update
-  debouncedUpdate(val); // debounced store/canvas update
-};
+// Usage elsewhere
+import { KnobRenderer, SliderRenderer } from '@/components/elements'
 ```
 
 **Detection:**
-- Input lag when typing in property panel
-- Choppy slider interactions
-- React DevTools Profiler shows > 60 renders/second
-- Performance timeline shows frame drops during property changes
+- Finding files takes > 10 seconds
+- Developer complains about file organization
+- Accidentally editing wrong file (similar names)
+- Merge conflicts in same directory on different files
 
-**Phase Impact:** Phase 4 (Property Panel). Easy to add debouncing after the fact, but if omitted, creates bad first impression during MVP demo. Add during Phase 4 implementation.
+**Phase Impact:**
+**Phase 0**: Refactor existing 25 elements into new structure **before** adding 78 more. Refactoring 103 elements after-the-fact is 4x more work.
+
+**Recommended Approach:**
+1. **Week 1**: Create new directory structure
+2. **Week 1**: Migrate 5-10 elements as proof-of-concept
+3. **Week 2**: Migrate remaining 15-20 elements
+4. **Week 3**: Update import paths across codebase
+5. **Week 4**: Add new elements using new structure
 
 **Sources:**
-- [JavaScript Performance Optimization: Debounce vs Throttle](https://dev.to/nilebits/javascript-performance-optimization-debounce-vs-throttle-explained-5768)
-- [Optimizing Performance: Using Debouncing and Throttling](https://dev.to/austinwdigital/optimizing-performance-using-debouncing-and-throttling-1b64)
+- [React Folder Structure in 5 Steps [2025]](https://www.robinwieruch.de/react-folder-structure/)
+- [React project structure for scale: decomposition, layers and hierarchy](https://www.developerway.com/posts/react-project-structure)
 
 ---
 
-### Pitfall 7: Uncontrolled Form Performance with 20+ Inputs
-**What goes wrong:** Property panel with 20+ inputs (colors, numbers, toggles) causes entire form to re-render on every keystroke. With default React controlled components, typing in one input re-renders all 20+ inputs, their labels, and validation logic. Noticeable lag.
+### Pitfall 7: No Automated Element Type Validation
 
-**Why it happens:** React's default controlled component pattern re-renders entire form on every state change. Fine for 5 inputs, breaks at 20+.
+**What goes wrong:**
+With 25 elements, developers remember which elements exist. With 103 elements:
+- Typo in element type string: `'konb'` instead of `'knob'`
+- Forgot to add renderer to registry
+- Forgot to add property panel
+- Type definition exists but no implementation
+- Implementation exists but no type definition
 
-**Consequences:**
-- 100ms+ lag when typing in inputs
-- CPU spikes during form interactions
-- Dropdown selections feel sluggish
-- Mobile devices struggle
+These slip through code review and cause runtime errors:
+```typescript
+// User selects element, gets blank property panel
+// Console: "Warning: Failed to render KonbProperties"
+// Element renders as empty rectangle
+```
+
+**Why it happens:**
+Manual coordination between:
+1. Type definitions (`elements.ts`)
+2. Renderer registry
+3. Property panel registry
+4. Palette definitions
+5. Factory functions
+6. Type guard functions
+
+With 25 elements, manual checks work. With 103, human error inevitable.
 
 **Prevention:**
-- Use React Hook Form (already fast, minimal re-renders)
-- Alternative: Uncontrolled inputs with refs, update store on blur
-- Use `React.memo()` on individual form fields
-- Isolate subscriptions: only re-render fields that depend on changed value
 
+**Strategy 1: Build-Time Validation**
 ```typescript
-// WRONG: entire form re-renders on every change
-function PropertyPanel({ element }) {
-  const [props, setProps] = useState(element);
-  // 20+ inputs all re-render when any one changes
+// scripts/validate-elements.ts
+// Run as pre-commit hook or CI check
+
+import { ElementType } from './types/elements'
+import { RENDERER_REGISTRY } from './renderers'
+import { PROPERTY_REGISTRY } from './properties'
+import { PALETTE_DEFINITIONS } from './palette'
+
+// Ensure every type has renderer
+const allTypes = Object.keys(ElementType)
+const missingRenderers = allTypes.filter(
+  type => !RENDERER_REGISTRY[type]
+)
+
+if (missingRenderers.length > 0) {
+  throw new Error(
+    `Missing renderers for: ${missingRenderers.join(', ')}`
+  )
 }
 
-// BETTER: React Hook Form isolates re-renders
-function PropertyPanel({ element }) {
-  const { register, watch } = useForm({ defaultValues: element });
-  // Only changed input re-renders
+// Ensure every type has properties
+// Ensure every type in palette exists
+// etc.
+```
+
+**Strategy 2: TypeScript Exhaustiveness Checking**
+```typescript
+// Force compilation error if element type not handled
+function assertNever(x: never): never {
+  throw new Error('Unhandled element type: ' + x)
+}
+
+function getRenderer(type: ElementType) {
+  switch (type) {
+    case 'knob': return KnobRenderer
+    case 'slider': return SliderRenderer
+    // ... 101 more cases
+    default: return assertNever(type) // Compilation error if case missing
+  }
+}
+```
+
+**Strategy 3: Code Generation**
+```typescript
+// Generate registry from element definitions
+// scripts/generate-registries.ts
+
+// Input: element-definitions.yaml
+// Output: Auto-generated TypeScript files
+
+// element-definitions.yaml
+// - type: knob
+//   renderer: ./renderers/KnobRenderer
+//   properties: ./properties/KnobProperties
+//   factory: createKnob
+
+// Generated: element-registry.ts (auto-generated, don't edit)
+export const ELEMENT_REGISTRY = {
+  knob: {
+    renderer: KnobRenderer,
+    properties: KnobProperties,
+    factory: createKnob
+  }
+  // ... 102 more
 }
 ```
 
 **Detection:**
-- React DevTools Profiler shows all form fields re-rendering on single input change
-- Input lag with 15+ form fields
-- Performance timeline shows long "Render" phases during typing
+- Runtime error when selecting element
+- Element renders as blank
+- Property panel missing for some elements
+- Palette item doesn't create element
+- TypeScript thinks element exists but no runtime implementation
 
-**Phase Impact:** Phase 4 (Property Panel). Preventable with correct library choice. If using plain controlled components, refactoring to React Hook Form later touches every input. Choose correct approach in Phase 4.
+**Phase Impact:**
+**Phase 1**: Add validation **before** adding elements. Catching errors at build time vs runtime saves hours of debugging.
+
+**Sources:**
+- [TypeScript Expert Revision Handbook](https://dev.to/anmshpndy/typescript-expert-revision-handbook-466f)
+
+---
+
+### Pitfall 8: Property Panel State Synchronization Complexity
+
+**What goes wrong:**
+PropertyPanel.tsx currently handles state for one selected element. With 103 element types:
+- Each element has 10-30 properties
+- Some properties are shared (x, y, width, height)
+- Some properties are type-specific (knob has `diameter`, slider has `orientation`)
+- Complex elements have nested state (modulation matrix has rows × columns of data)
+
+Total property count across all element types:
+- **Shared properties:** ~8 (position, size, rotation, etc.)
+- **Average type-specific properties:** ~15
+- **Total unique properties:** 103 × 15 = ~1,545 property definitions
+
+Without proper state management:
+- Property panel re-renders on every state change
+- Typing in one input re-renders all inputs
+- Undo/redo becomes slow (must diff entire property tree)
+- Synchronization bugs between property panel and canvas
+
+**Why it happens:**
+- Simple useState pattern works for 25 elements
+- No optimization for form performance
+- No separation of concerns (property panel both reads and writes state)
+
+**Consequences:**
+- Input lag when typing in property panel
+- Canvas stutters when adjusting properties
+- Memory usage increases (property panel holds duplicate state)
+- Bugs where property panel and canvas show different values
+
+**Prevention:**
+
+**Strategy 1: Optimistic Updates**
+```typescript
+// Property input shows local state immediately
+// Debounced update to global store
+
+function PropertyInput({ value, onChange }) {
+  const [localValue, setLocalValue] = useState(value)
+
+  const debouncedUpdate = useMemo(
+    () => debounce(onChange, 100),
+    [onChange]
+  )
+
+  const handleChange = (newValue) => {
+    setLocalValue(newValue)      // Immediate UI update
+    debouncedUpdate(newValue)    // Debounced store update
+  }
+
+  return <input value={localValue} onChange={handleChange} />
+}
+```
+
+**Strategy 2: React Hook Form** (Recommended)
+```typescript
+// Minimal re-renders, built-in validation
+import { useForm } from 'react-hook-form'
+
+function PropertyPanel({ element }) {
+  const { register, watch, handleSubmit } = useForm({
+    defaultValues: element
+  })
+
+  const onSubmit = (data) => updateElement(element.id, data)
+
+  // Only changed fields trigger re-render
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('x')} />
+      <input {...register('y')} />
+      {/* 20+ more inputs, minimal re-renders */}
+    </form>
+  )
+}
+```
+
+**Strategy 3: Zustand Selective Subscription**
+```typescript
+// Only subscribe to specific element properties
+function KnobProperties({ elementId }) {
+  // Only re-renders when knob diameter changes
+  const diameter = useStore(
+    state => state.elements.find(e => e.id === elementId)?.diameter
+  )
+
+  // Not: const element = useStore(state => state.elements.find(...))
+  // ^ Would re-render on ANY element property change
+}
+```
+
+**Detection:**
+- Typing in property input has 100ms+ lag
+- Property panel re-renders 10+ times per keystroke (React DevTools)
+- CPU usage spikes when adjusting property
+- Canvas re-renders when changing unrelated property
+
+**Phase Impact:**
+**Phase 2**: Implement before adding elements. Retrofitting React Hook Form after 103 property panels exist requires touching every component.
 
 **Sources:**
 - [Solving React Form Performance](https://dev.to/opensite/solving-react-form-performance-why-your-forms-are-slow-and-how-to-fix-them-1g9i)
-- [Best Practices for Handling Forms in React (2025 Edition)](https://medium.com/@farzanekazemi8517/best-practices-for-handling-forms-in-react-2025-edition-62572b14452f)
+- [How To Avoid Performance Pitfalls in React with memo, useMemo, and useCallback](https://www.digitalocean.com/community/tutorials/how-to-avoid-performance-pitfalls-in-react-with-memo-usememo-and-usecallback)
 
 ---
 
-### Pitfall 8: Deep Cloning State with JSON.parse(JSON.stringify())
-**What goes wrong:** Using `JSON.parse(JSON.stringify(state))` to deep clone state for undo/redo or immutability loses:
-- Date objects become strings
-- Functions are dropped
-- Circular references throw errors
-- Map/Set become empty objects {}
-- undefined becomes null
+### Pitfall 9: Inconsistent Element Defaults and Validation
 
-**Why it happens:** It's the simplest one-liner for deep cloning. Works for simple objects but breaks with complex state.
+**What goes wrong:**
+Each element type has default values (current code has 25 `createX()` functions). With 103 elements:
+- **Inconsistent patterns**: Some elements default to 100px wide, others 150px
+- **Invalid states**: Negative width, empty strings, NaN values
+- **No validation**: Property panel allows invalid values (e.g., knob `startAngle > endAngle`)
+- **Merge conflicts**: Default files constantly modified
 
-**Consequences:**
-- Undo/redo breaks when state contains Dates or special objects
-- Performance overhead (serialize + deserialize entire tree)
-- Subtle bugs where typeof changes after clone
-
-**Prevention:**
-- Use Immer.js (already with Zustand) for immutable updates (no manual cloning needed)
-- If manual cloning needed, use `structuredClone()` (modern alternative, handles more types)
-- Avoid storing non-serializable data in state (functions, DOM nodes)
-
+Example inconsistency:
 ```typescript
-// WRONG
-const cloned = JSON.parse(JSON.stringify(state));
+// KnobRenderer defaults
+{ width: 80, height: 80, diameter: 60 }
 
-// BETTER (modern browsers)
-const cloned = structuredClone(state);
+// SliderRenderer defaults
+{ width: 40, height: 120 } // Vertical slider
 
-// BEST (with Zustand + Immer)
-set(produce((draft) => {
-  draft.elements[0].x = 100; // Immer handles immutability
-}));
+// Some new element
+{ width: 100, height: 100 } // Square
+
+// Why different base sizes? No design system.
 ```
 
-**Detection:**
-- Date properties become strings after undo
-- Type errors: "X is not a function" after state clone
-- Performance slow with large state trees
-
-**Phase Impact:** Phase 2 (Core Canvas Operations - Undo/Redo). Already using Zustand which supports Immer middleware. Enable Immer, avoid manual cloning.
-
-**Sources:**
-- [Deep Cloning in JavaScript: The Modern Way](https://matiashernandez.dev/blog/post/deep-cloning-in-javascript-the-modern-way.-use-%60structuredclone%60)
-- [Implementing Deep Cloning via Serializing objects](https://www.codeproject.com/Articles/23832/Implementing-Deep-Cloning-via-Serializing-objects)
-
----
-
-### Pitfall 9: Code Export Template Brittleness
-**What goes wrong:** Code generation templates break when edge cases aren't handled:
-- Element names with spaces/special chars generate invalid variable names
-- Hex colors without `#` prefix
-- Negative positions or decimal pixel values
-- Missing properties cause template crashes
-
-**Why it happens:** Templates are written for the happy path. Real user data has edge cases that weren't considered during template development.
+**Why it happens:**
+- Each developer adds elements with their own preferences
+- No shared design system or style guide
+- No validation layer
+- Default values hardcoded in factory functions
 
 **Consequences:**
-- Export generates syntax errors
-- Users lose trust in tool
-- Support burden increases
-- C++ boilerplate has compilation errors
+- **Inconsistent UX**: Elements appear at different sizes
+- **Runtime errors**: Invalid property values cause render failures
+- **Export failures**: Code generation fails on edge cases
+- **Testing difficulty**: Must test every combination of property values
 
 **Prevention:**
-- Sanitize all inputs before template insertion:
-  - Element names: convert to valid identifiers (spaces → underscores, remove special chars)
-  - Colors: ensure # prefix, validate hex format
-  - Numbers: round to integer pixels or format to 2 decimals
-  - Strings: escape quotes
-- Validate data before export, show errors instead of generating bad code
-- Include example test cases with edge cases in template tests
-- Use a proper templating library (Handlebars, Liquid) with built-in escaping, not string concatenation
 
+**Strategy 1: Zod Validation Schema**
 ```typescript
-// WRONG
-const code = `const knobX = ${element.x};`; // breaks if x is undefined
+// Define validation schema for each element type
+import { z } from 'zod'
 
-// BETTER
-const code = `const knobX = ${element.x ?? 0};`;
+export const KnobConfigSchema = z.object({
+  type: z.literal('knob'),
+  x: z.number().min(0),
+  y: z.number().min(0),
+  width: z.number().min(20).max(500),
+  height: z.number().min(20).max(500),
+  diameter: z.number().min(20).max(400),
+  startAngle: z.number().min(-180).max(180),
+  endAngle: z.number().min(-180).max(180),
+  value: z.number().min(0).max(1),
+  // ... all properties
+}).refine(
+  data => data.startAngle < data.endAngle,
+  { message: 'Start angle must be less than end angle' }
+)
 
-// BEST
-function sanitizeIdentifier(name: string): string {
-  return name.replace(/[^a-zA-Z0-9_]/g, '_').replace(/^[0-9]/, '_$&');
+// Validate before saving/exporting
+const result = KnobConfigSchema.safeParse(element)
+if (!result.success) {
+  showError('Invalid knob configuration', result.error)
 }
-const code = `const ${sanitizeIdentifier(element.name)}X = ${element.x ?? 0};`;
+```
+
+**Strategy 2: Design Tokens**
+```typescript
+// Shared design tokens for consistency
+export const ELEMENT_DEFAULTS = {
+  sizes: {
+    small: { width: 40, height: 40 },
+    medium: { width: 80, height: 80 },
+    large: { width: 120, height: 120 }
+  },
+  colors: {
+    primary: '#3b82f6',
+    secondary: '#6b7280',
+    background: '#1f2937',
+    border: '#374151'
+  },
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24
+  }
+}
+
+// Use tokens in factory functions
+export function createKnob(overrides?) {
+  return {
+    ...ELEMENT_DEFAULTS.sizes.medium,
+    trackColor: ELEMENT_DEFAULTS.colors.secondary,
+    fillColor: ELEMENT_DEFAULTS.colors.primary,
+    ...overrides
+  }
+}
+```
+
+**Strategy 3: Property Constraints**
+```typescript
+// Enforce constraints in property panel inputs
+<NumberInput
+  label="Diameter"
+  value={diameter}
+  onChange={setDiameter}
+  min={20}        // Enforced at UI level
+  max={400}
+  step={5}
+  validate={(val) => {
+    if (val > width) return 'Diameter cannot exceed width'
+    return null
+  }}
+/>
 ```
 
 **Detection:**
-- User reports "exported code doesn't compile"
-- Template crashes with TypeError on certain projects
-- Generated code has `NaN`, `undefined` in output
+- Elements render at wildly different sizes
+- Runtime errors from invalid property values
+- Export generates invalid code
+- Undo/redo causes elements to "break"
+- Users report "element disappeared" (invalid size or position)
 
-**Phase Impact:** Phase 5 (Export). Write export templates with validation from the start. Test with invalid data, not just happy path examples.
-
-**Sources:**
-- [Generate code with text templates](https://learn.microsoft.com/en-us/visualstudio/modeling/walkthrough-generating-code-by-using-text-templates?view=vs-2022)
-- [Code Generation and T4 Text Templates](https://learn.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates?view=vs-2022)
-
----
-
-### Pitfall 10: Missing Keyboard Accessibility
-**What goes wrong:** Entire tool is mouse-only. No Tab navigation, no Enter to select, no Escape to deselect, no keyboard shortcuts. Inaccessible to keyboard users, slows down power users, and violates WCAG guidelines.
-
-**Why it happens:** Visual design tools are naturally mouse-centric. Easy to forget keyboard users exist. Keyboard support isn't visually obvious, so it gets deprioritized.
-
-**Consequences:**
-- Screen reader users cannot use tool
-- Power users frustrated (mouse slower than keyboard for many operations)
-- Fails accessibility audits
-- Cannot demo tool in accessibility-focused contexts
-
-**Prevention:**
-- Use semantic HTML (`<button>`, not `<div onClick>`)
-- Tab order should match visual flow
-- Focus indicators must be visible (Tailwind's `focus:ring-2` classes)
-- Common shortcuts:
-  - Tab/Shift+Tab: navigate UI
-  - Space/Enter: activate buttons
-  - Escape: cancel/deselect
-  - Arrow keys: nudge selected element
-  - Cmd/Ctrl+Z/Y: undo/redo
-  - Delete/Backspace: delete selected
-  - Cmd/Ctrl+C/V: copy/paste
-- Use `aria-label` for icon-only buttons
-- Announce state changes to screen readers (aria-live regions)
-
-**Detection:**
-- Cannot Tab through UI to access all features
-- Focus indicator not visible
-- Actions require mouse (no keyboard alternative)
-- Screen reader doesn't announce changes
-
-**Phase Impact:** Phase 3-6 (All interactive features). Add keyboard support as features are built. Retrofitting later is expensive. Test with keyboard-only usage during development.
+**Phase Impact:**
+**Phase 1**: Define validation schemas and design tokens **before** adding elements. Retrofitting validation after 103 elements exist requires:
+- Writing 103 Zod schemas
+- Testing all existing elements against schemas
+- Fixing invalid default values
 
 **Sources:**
-- [Keyboard accessibility - TetraLogical](https://tetralogical.com/blog/2025/05/09/foundations-keyboard-accessibility/)
-- [WebAIM: Keyboard Accessibility](https://webaim.org/techniques/keyboard/)
-- [Best Practices for Prototyping Keyboard Accessibility](https://medium.com/thinking-design/best-practices-for-prototyping-keyboard-accessibility-cc2b06a96627)
+- Zod documentation (already in project dependencies)
 
 ---
 
@@ -427,212 +1157,296 @@ const code = `const ${sanitizeIdentifier(element.name)}X = ${element.x ?? 0};`;
 
 Mistakes that cause annoyance but are fixable.
 
-### Pitfall 11: Zoom/Pan Precision Loss at Extreme Values
-**What goes wrong:** Zooming in beyond 10x or out below 0.1x causes:
-- Canvas elements disappear
-- Blurry rendering
-- Coordinate calculations overflow
-- Interaction breaks (clicks miss elements)
+### Pitfall 10: Import Statement Overload
 
-**Why it happens:** Floating-point precision limits. SVG rendering engines have internal limits. Coordinate transforms compound errors at extreme scales.
-
-**Consequences:**
-- Users zoom in too far, canvas goes blank, confused
-- Coordinates outside safe integer range produce incorrect positions
-- SVG rendering breaks at extreme transforms
-
-**Prevention:**
-- Clamp zoom to reasonable range: 0.1x to 10x
-- Round coordinates to avoid sub-pixel jitter
-- At high zoom, switch from sub-pixel rendering to integer pixels
-- Test zoom limits during development
+**What goes wrong:**
+PropertyPanel.tsx currently has 27 import statements for 25 element types. After adding 78 elements:
+- **103 import statements** at top of file
+- **300+ lines** before actual code starts
+- **Import organization**: manual alphabetical sorting breaks constantly
+- **Merge conflicts**: Every PR touching imports conflicts
 
 ```typescript
-const MIN_ZOOM = 0.1;
-const MAX_ZOOM = 10;
-
-function handleZoom(delta: number) {
-  setZoom((prev) => Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta)));
-}
+// PropertyPanel.tsx after adding 78 elements
+import { KnobProperties } from './KnobProperties'
+import { SliderProperties } from './SliderProperties'
+import { ButtonProperties } from './ButtonProperties'
+// ... 100 more import lines
+// ... (300 lines later)
+// Actual component code starts here
 ```
 
+**Prevention:**
+Use barrel exports and dynamic imports (covered in Pitfall 1 & 2).
+
 **Detection:**
-- Elements disappear when zooming in
-- Canvas goes blank at extreme zoom levels
-- Coordinates become NaN or Infinity
+- Import section exceeds 50 lines
+- Merge conflicts on import statements
 
-**Phase Impact:** Phase 2 (Zoom/Pan). Easy fix. Add zoom limits during initial implementation.
-
-**Sources:**
-- [Simple Pan and Zoom Canvas](https://codepen.io/chengarda/pen/wRxoyB)
-- [Infinite HTML canvas with zoom and pan](https://www.sandromaglione.com/articles/infinite-canvas-html-with-zoom-and-pan)
+**Phase Impact:**
+Minor annoyance, easily fixed with barrel exports.
 
 ---
 
-### Pitfall 12: Save/Load Breaking on Version Changes
-**What goes wrong:** JSON format changes between versions. Old saved projects fail to load with cryptic errors. Users lose work.
+### Pitfall 11: Element Type String Literal Typos
 
-**Why it happens:** No versioning in JSON schema. Refactored property names. Added required fields without defaults.
+**What goes wrong:**
+Element types are string literals: `'knob'`, `'slider'`, etc. With 103 types, typos inevitable:
+- `'konb'` instead of `'knob'`
+- `'vuMeter'` vs `'vu-meter'` vs `'vumeter'` (inconsistent naming)
+- Developer forgets exact spelling
 
-**Consequences:**
-- Projects saved in v1.0 won't open in v1.1
-- Users lose work or spend time manually fixing JSON
+**Prevention:**
+TypeScript string literal unions already prevent this at compile time. Runtime validation (Pitfall 9) catches issues in saved projects.
+
+**Detection:**
+TypeScript compilation error.
+
+**Phase Impact:**
+Not an issue if TypeScript is configured correctly.
+
+---
+
+### Pitfall 12: Documentation Drift
+
+**What goes wrong:**
+With 25 elements, developers remember what each element does. With 103 elements:
+- New developers don't know which element to use
+- No documentation of element capabilities
+- No design guidelines
 - Support burden increases
 
 **Prevention:**
-- Include version field in saved JSON: `{ version: "1.0.0", elements: [...] }`
-- Write migrations for each version: v1.0 → v1.1 migration function
-- Never remove fields, only add (or deprecate + migrate)
-- Validate loaded JSON against schema, show actionable error if invalid
+- Generate documentation from type definitions
+- Add JSDoc comments to each element config interface
+- Create visual catalog (Storybook)
 
-```typescript
-interface ProjectV1 {
-  version: "1.0.0";
-  elements: ElementV1[];
-}
-
-interface ProjectV2 {
-  version: "1.1.0";
-  elements: ElementV2[];
-  artboardSize: { width: number; height: number }; // new field
-}
-
-function loadProject(json: string): Project {
-  const data = JSON.parse(json);
-  if (data.version === "1.0.0") {
-    return migrateV1toV2(data);
-  }
-  if (data.version === "1.1.0") {
-    return data;
-  }
-  throw new Error(`Unsupported version: ${data.version}`);
-}
-```
-
-**Detection:**
-- Old projects fail to load after updates
-- JSON.parse errors on load
-- Runtime errors about missing properties
-
-**Phase Impact:** Phase 6 (Save/Load). Add versioning from the start. First save format is version 1.0.0. Changing format later requires migration code.
+**Phase Impact:**
+Low priority for v1, but essential for v2+ when adding more elements.
 
 ---
 
 ## Phase-Specific Warnings
 
-| Phase Topic | Likely Pitfall | Mitigation |
-|-------------|---------------|------------|
-| Phase 1: Basic Canvas | Choosing pure Canvas vs SVG vs Hybrid | Start with SVG (simpler with React). Profile with 100+ elements. Only switch to hybrid if profiling shows bottleneck. |
-| Phase 2: Zoom/Pan | Coordinate system confusion | Write coordinate transform utilities first. Test at 0.25x, 1x, 4x zoom before building features. |
-| Phase 2: Undo/Redo | Snapshot-based undo architecture | Use command pattern or Immer patches. Never store full canvas snapshots. This is architectural - hard to change later. |
-| Phase 3: Drag/Drop | Imperative DOM manipulation | Use @dnd-kit correctly. All state changes via Zustand. Test that undo/redo works after drag. |
-| Phase 3: Selection | Re-rendering all elements on selection change | Use React.memo on element components. Only selected element re-renders. |
-| Phase 4: Property Panel | Form performance with 20+ inputs | Use React Hook Form or uncontrolled inputs. Test typing lag with full property panel. |
-| Phase 4: Real-time Preview | No debouncing on input changes | Add debounce (16-100ms) during Phase 4 implementation. Test slider drag performance. |
-| Phase 5: Export | Template brittleness | Sanitize all inputs. Test export with invalid data (spaces in names, missing properties). |
-| Phase 6: Save/Load | No JSON versioning | Add version field in first save format. Write migration path for any schema changes. |
-
----
-
-## SVG-Specific Warnings (Applicable to This Project)
-
-Since this project uses SVG (not Canvas), these pitfalls are especially relevant:
-
-### Inline SVG Bloat
-**Issue:** Every SVG element adds to page DOM, slowing style recalculation.
-**Mitigation:** Consider rendering off-screen elements to separate SVG, or use `<image>` with data URLs for static elements.
-
-### Filter Performance
-**Issue:** SVG filters (blur, drop-shadow) are slow, especially on many elements.
-**Mitigation:** Avoid filters during drag operations. Apply filters only to selected element, not all elements.
-
-### Path Complexity
-**Issue:** Complex paths with many points slow rendering.
-**Mitigation:** For v1 with basic shapes (knobs, sliders), this won't be an issue. If custom paths are added later, simplify paths before rendering.
+| Phase | Pitfall Risk | Must Address Before Phase |
+|-------|-------------|---------------------------|
+| **Phase 0: Refactoring** | PropertyPanel.tsx monolith (Pitfall 1) | Implement component registry pattern |
+| **Phase 0: Refactoring** | File organization chaos (Pitfall 6) | Reorganize existing 25 elements into category folders |
+| **Phase 1: Infrastructure** | Bundle size explosion (Pitfall 2) | Set up code splitting infrastructure |
+| **Phase 1: Infrastructure** | TypeScript performance (Pitfall 3) | Split unions by category, enable incremental compilation |
+| **Phase 1: Infrastructure** | Validation missing (Pitfall 7) | Add build-time element validation |
+| **Phase 2: Basic Elements** | Canvas performance (Pitfall 4) | Implement hybrid SVG + Canvas architecture |
+| **Phase 2: Basic Elements** | Property panel state (Pitfall 8) | Migrate to React Hook Form or optimistic updates |
+| **Phase 3: Visualization Elements** | Real-time rendering (Pitfall 4) | Test with 10-20 simultaneous visualizations |
+| **Phase 4: Polish** | Palette organization (Pitfall 5) | Add search, favorites, hierarchical categories |
+| **Phase 4: Polish** | Inconsistent defaults (Pitfall 9) | Add Zod validation and design tokens |
 
 ---
 
 ## Recommendations by Phase
 
-### Phase 1-2 (Foundation)
-**Priority 1 (Must Fix):**
-- Coordinate system utilities with TypeScript types
-- Command-based undo/redo (not snapshots)
+### Phase 0: Pre-work (Before Adding Elements)
+**Critical (Blockers):**
+1. Refactor PropertyPanel.tsx to registry pattern (Pitfall 1) - **2-4 hours**
+2. Reorganize file structure by category (Pitfall 6) - **8-16 hours**
+3. Set up code splitting infrastructure (Pitfall 2) - **4-8 hours**
+4. Split TypeScript unions by category (Pitfall 3) - **4-8 hours**
 
-**Priority 2 (Should Fix):**
-- Zoom limits (0.1x - 10x)
-- JSON versioning from first save
+**Total Phase 0: 1-2 weeks** (foundational refactoring)
 
-### Phase 3-4 (Interactions)
-**Priority 1 (Must Fix):**
-- Declarative drag/drop (using @dnd-kit)
-- React.memo on element components
+### Phase 1: Infrastructure
+**Critical:**
+1. Implement build-time element validation (Pitfall 7) - **4-6 hours**
+2. Add Zod schemas for validation (Pitfall 9) - **8-16 hours**
+3. Design token system (Pitfall 9) - **4-8 hours**
 
-**Priority 2 (Should Fix):**
-- Debouncing on property panel inputs
-- React Hook Form for form performance
+**Total Phase 1: 2-4 days**
 
-### Phase 5-6 (Output)
-**Priority 1 (Must Fix):**
-- Input sanitization in export templates
-- JSON schema validation on load
+### Phase 2-3: Adding Elements
+**Critical:**
+1. Implement hybrid Canvas architecture before adding visualizations (Pitfall 4) - **1-2 weeks**
+2. Migrate to React Hook Form for properties (Pitfall 8) - **3-5 days**
+3. Test performance with each batch of 10-15 new elements
 
-**Priority 2 (Should Fix):**
-- Keyboard shortcuts for common actions
-- Focus indicators for accessibility
+**Total Phase 2-3: 2-3 weeks** (parallel with element additions)
+
+### Phase 4: Polish
+**Important:**
+1. Add palette search (Pitfall 5) - **4-6 hours**
+2. Add hierarchical categories (Pitfall 5) - **8-12 hours**
+3. Add favorites/recent (Pitfall 5) - **4-6 hours**
+
+**Total Phase 4: 1 week**
+
+---
+
+## Architecture Decision Summary
+
+**Key architectural decisions that must be made before adding 78 elements:**
+
+1. **Property Panel Architecture**
+   - ✅ Use component registry pattern (not 103-way if-else chain)
+   - ✅ Dynamic imports for code splitting (optional, evaluate after registry)
+
+2. **File Organization**
+   - ✅ Group elements by category in folders
+   - ✅ One folder per element with co-located files
+   - ✅ Barrel exports for clean imports
+
+3. **Type System**
+   - ✅ Split discriminated union by category (5-6 sub-unions)
+   - ✅ Enable TypeScript incremental compilation
+   - ✅ Add exhaustiveness checking
+
+4. **Bundle Optimization**
+   - ✅ Code split by element category
+   - ✅ Lazy load visualization components
+   - ✅ Tree shaking enabled (verify with build analysis)
+
+5. **Rendering Architecture**
+   - ✅ Hybrid SVG (static elements) + Canvas (visualizations)
+   - ✅ RequestAnimationFrame batching for visualizations
+   - ✅ Visibility culling for off-screen elements
+
+6. **State Management**
+   - ✅ Zustand with selective subscriptions (already in use)
+   - ✅ React Hook Form for property panels
+   - ✅ Optimistic updates with debouncing
+
+7. **Validation & Consistency**
+   - ✅ Zod schemas for all element types
+   - ✅ Design token system
+   - ✅ Build-time validation script
+
+8. **UX Patterns**
+   - ✅ Palette search + hierarchical categories
+   - ✅ Favorites + recent elements
+   - ✅ Collapsible categories with smart defaults
+
+---
+
+## Success Criteria
+
+**Phase 0 (Refactoring) is complete when:**
+- ✅ PropertyPanel.tsx < 100 lines (registry pattern)
+- ✅ Can add new element without editing core files
+- ✅ File organization follows category structure
+- ✅ TypeScript compilation < 10 seconds
+
+**Phase 1 (Infrastructure) is complete when:**
+- ✅ Build-time validation catches missing renderers/properties
+- ✅ All element configs have Zod schemas
+- ✅ Design token system in place
+- ✅ Bundle analysis shows code splitting working
+
+**Phase 2-3 (Adding Elements) is complete when:**
+- ✅ 103 element types implemented
+- ✅ All elements validated
+- ✅ Performance remains > 30 FPS with 20 active visualizations
+- ✅ Bundle size < 5MB (initial load < 800KB)
+
+**Phase 4 (Polish) is complete when:**
+- ✅ Palette search works
+- ✅ Users can find any element in < 10 seconds
+- ✅ Hierarchical categories implemented
+- ✅ No usability complaints about element discovery
 
 ---
 
 ## Confidence Assessment
 
-| Pitfall Category | Confidence | Basis |
-|------------------|------------|-------|
-| Undo/Redo Patterns | HIGH | Multiple technical sources, consistent recommendations |
-| React Drag/Drop | HIGH | Authoritative article by Dan Abramov, @dnd-kit docs |
-| SVG vs Canvas Performance | MEDIUM | Real-world case study (Felt), but specific thresholds vary by use case |
-| Coordinate Transforms | HIGH | Common pattern, well-documented, verified across sources |
-| Form Performance | HIGH | React Hook Form docs, multiple 2025 articles with benchmarks |
-| Debouncing | HIGH | Standard technique, well-understood, verified across sources |
-| JSON Cloning | HIGH | MDN docs on structuredClone, consistent recommendations |
-| Export Templates | MEDIUM | General software engineering practice, less design-tool-specific data |
-| Accessibility | HIGH | WCAG guidelines, 2025 standards, authoritative sources |
-| Zoom Precision | MEDIUM | Common issue, but specific limits depend on implementation |
+| Area | Confidence | Basis |
+|------|------------|-------|
+| Bundle size optimization | **HIGH** | Web.dev docs, 2026 code splitting articles, bundler documentation |
+| TypeScript performance | **HIGH** | Official TypeScript docs, 2026 large-scale patterns, verified with current codebase |
+| React component registry pattern | **HIGH** | Established pattern, used in major React apps (Strapi, etc.) |
+| Canvas vs SVG performance | **MEDIUM** | Real-world case studies (Felt), but exact thresholds depend on implementation |
+| Property panel optimization | **HIGH** | React Hook Form docs, DigitalOcean performance guide, 2026 React patterns |
+| File organization patterns | **HIGH** | Multiple 2026 articles, developer community consensus |
+| Palette UX patterns | **MEDIUM** | Design tool best practices, but less audio-plugin-specific research |
+| Validation approaches | **HIGH** | Zod documentation, TypeScript exhaustiveness checking is standard |
 
 ---
 
-## What Wasn't Found (Research Gaps)
+## What This Research Did Not Cover
 
-**LOW confidence areas needing validation:**
-- Specific element count thresholds where SVG becomes problematic (sources say "100s" but no exact numbers)
-- React 18 concurrent rendering impact on canvas editors (sources pre-date React 18 concurrent features)
-- Zustand-specific performance patterns with large canvas state (Zustand docs don't cover canvas use cases specifically)
+**Out of scope (not researched):**
+- Specific JUCE WebView2 performance limitations (needs testing in target environment)
+- Memory profiling for 103 element instances (needs empirical testing)
+- Exact bundle size for each element type (depends on implementation)
+- User testing of palette organization (requires UX research)
 
-**Recommendations:**
-- Profile performance with representative designs (50-100 elements) during Phase 1
-- Test undo/redo with 100+ history entries during Phase 2
-- Load test export with projects containing edge cases during Phase 5
+**Recommendations for additional research:**
+- Profile rendering performance in JUCE WebView2 with 50+ elements
+- Load test with 1000-element designs (stress test)
+- A/B test palette organization patterns with users
+- Benchmark TypeScript compilation time with 103-type union
 
 ---
 
 ## Sources
 
-### High Confidence (Official Docs, Authoritative Technical Sources)
-- [Development of undo and redo functionality with canvas - abidibo.net](https://www.abidibo.net/blog/2011/10/12/development-undo-and-redo-functionality-canvas/)
-- [The Future of Drag and Drop APIs by Dan Abramov - Medium](https://medium.com/@dan_abramov/the-future-of-drag-and-drop-apis-249dfea7a15f)
+### High Confidence (Official Documentation, Technical Deep Dives)
+- [React project structure for scale: decomposition, layers and hierarchy](https://www.developerway.com/posts/react-project-structure)
+- [Code-split JavaScript | web.dev](https://web.dev/learn/performance/code-split-javascript)
+- [Reducing JavaScript Bundle Size with Code Splitting in 2025](https://dev.to/hamzakhan/reducing-javascript-bundle-size-with-code-splitting-in-2025-3927)
+- [TypeScript: Documentation - Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
+- [TypeScript Best Practices for Large-Scale Web Applications in 2026](https://johal.in/typescript-best-practices-for-large-scale-web-applications-in-2026/)
 - [From SVG to Canvas – part 1: making Felt faster](https://felt.com/blog/from-svg-to-canvas-part-1-making-felt-faster)
-- [High Performance SVGs - CSS-Tricks](https://css-tricks.com/high-performance-svgs/)
-- [WebAIM: Keyboard Accessibility](https://webaim.org/techniques/keyboard/)
-- [Deep Cloning in JavaScript: The Modern Way - structuredClone](https://matiashernandez.dev/blog/post/deep-cloning-in-javascript-the-modern-way.-use-%60structuredclone%60)
-- [Microsoft Learn: Code Generation and T4 Text Templates](https://learn.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates?view=vs-2022)
+- [Optimizing canvas - Web APIs | MDN](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
+- [How To Avoid Performance Pitfalls in React with memo, useMemo, and useCallback](https://www.digitalocean.com/community/tutorials/how-to-avoid-performance-pitfalls-in-react-with-memo-usememo-and-usecallback)
 
-### Medium Confidence (Multiple Community Sources, 2025-2026 Articles)
-- [Solving React Form Performance - DEV Community](https://dev.to/opensite/solving-react-form-performance-why-your-forms-are-slow-and-how-to-fix-them-1g9i)
-- [Best Practices for Handling Forms in React (2025 Edition) - Medium](https://medium.com/@farzanekazemi8517/best-practices-for-handling-forms-in-react-2025-edition-62572b14452f)
-- [JavaScript Performance Optimization: Debounce vs Throttle - DEV](https://dev.to/nilebits/javascript-performance-optimization-debounce-vs-throttle-explained-5768)
-- [Canvas vs SVG: Choosing the Right Tool - SitePoint](https://www.sitepoint.com/canvas-vs-svg/)
-- [Panning and Zooming in HTML Canvas - Harrison Milbradt](https://harrisonmilbradt.com/blog/canvas-panning-and-zooming)
+### Medium Confidence (2026 Community Articles, Best Practices)
+- [SVG vs Canvas Animation: Best Choice for Modern Frontends](https://www.augustinfotech.com/blogs/svg-vs-canvas-animation-what-modern-frontends-should-use-in-2026/)
+- [Optimizing GSAP & Canvas for Smooth, Responsive Design](https://www.augustinfotech.com/blogs/optimizing-gsap-and-canvas-for-smooth-performance-and-responsive-design/)
+- [React Folder Structure in 5 Steps [2025]](https://www.robinwieruch.de/react-folder-structure/)
+- [How to Organize a Large React Application and Make It Scale](https://www.sitepoint.com/organize-large-react-application/)
+- [Solving React Form Performance](https://dev.to/opensite/solving-react-form-performance-why-your-forms-are-slow-and-how-to-fix-them-1g9i)
+- [8 Ways to Optimize Your JavaScript Bundle Size](https://about.codecov.io/blog/8-ways-to-optimize-your-javascript-bundle-size/)
+- [Tree Shaking | webpack](https://webpack.js.org/guides/tree-shaking/)
+- [The unexpected impact of dynamic imports on tree shaking](https://medium.com/@christiango/the-unexpected-impact-of-dynamic-imports-on-tree-shaking-ddadeb135dd7)
+- [Keep it together: 5 essential design patterns for dev tool UIs](https://evilmartians.com/chronicles/keep-it-together-5-essential-design-patterns-for-dev-tool-uis)
+- [Designing For Complex UIs in 2026](https://maven.com/p/69113d/designing-for-complex-u-is-in-2026)
 
-### Supporting Context
-- [MDN: Optimizing canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)
-- [Konva.js: Undo/Redo with React](https://konvajs.org/docs/react/Undo-Redo.html)
-- [TetraLogical: Keyboard accessibility (2025)](https://tetralogical.com/blog/2025/05/09/foundations-keyboard-accessibility/)
+### Supporting Context (Audio Plugin UI)
+- [Audio-Ui | Professional Audio GUI Elements](https://www.audio-ui.com/)
+- [JUCE 8 Feature Overview: WebView UIs](https://juce.com/blog/juce-8-feature-overview-webview-uis/)
+- [Which UI framework to choose? - JUCE Forum](https://forum.juce.com/t/which-ui-framework-to-choose/67726)
+
+---
+
+## Appendix: Current Codebase Analysis
+
+**Elements currently implemented:** 25
+- Rotary Controls: 1 (knob)
+- Linear Controls: 2 (slider, rangeslider)
+- Buttons: 1 (button)
+- Value Displays: 1 (label)
+- Meters: 1 (meter)
+- Audio Displays: 5 (dbdisplay, frequencydisplay, gainreductionmeter, waveform, oscilloscope)
+- Form Controls: 4 (dropdown, checkbox, radiogroup, textfield)
+- Images & Decorative: 4 (image, svggraphic, rectangle, line)
+- Containers: 4 (panel, frame, groupbox, collapsible)
+- Complex Widgets: 2 (modulationmatrix, presetbrowser)
+
+**Current bundle size:** 2.2MB (uncompressed)
+
+**Current file count:**
+- Renderers: 25 files in `/src/components/elements/renderers/`
+- Property panels: 25 files in `/src/components/Properties/`
+- Type definitions: 1,305 lines in `/src/types/elements.ts`
+
+**Current PropertyPanel.tsx:** 208 lines
+- 27 imports
+- 25 type guard checks (lines 174-204)
+
+**Architecture:**
+- State: Zustand
+- Rendering: Primarily SVG with some Canvas (knobs)
+- Forms: Controlled React components (no React Hook Form)
+- Undo/Redo: Zundo (temporal middleware for Zustand)
+
+**Scaling factors:**
+- 25 → 103 elements = **4.12x increase**
+- 2.2MB → 4-6MB bundle = **2-3x increase** (without optimization)
+- 208 lines PropertyPanel → 400-600 lines = **2-3x increase** (without refactoring)
