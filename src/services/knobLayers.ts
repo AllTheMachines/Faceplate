@@ -8,6 +8,20 @@
 
 import { KnobStyleLayers, ColorOverrides } from '../types/knobStyle'
 
+/**
+ * Escape CSS selector (polyfill for CSS.escape which isn't available in Node.js)
+ */
+function escapeCSSSelector(str: string): string {
+  // Use native CSS.escape if available (browser environment)
+  if (typeof CSS !== 'undefined' && CSS.escape) {
+    return CSS.escape(str)
+  }
+
+  // Fallback for Node.js test environment
+  // Based on CSS.escape polyfill: https://drafts.csswg.org/cssom/#serialize-an-identifier
+  return str.replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, '\\$&')
+}
+
 // Result of auto-detection - lists all potential matches
 export interface DetectedLayers {
   indicator: string[]  // Elements matching indicator/pointer/needle naming
@@ -90,9 +104,9 @@ export function extractLayer(svgContent: string, layerIdentifier: string): strin
   const doc = parser.parseFromString(svgContent, 'image/svg+xml')
 
   // Find layer by id or class
-  let layer = doc.querySelector(`#${CSS.escape(layerIdentifier)}`)
+  let layer = doc.querySelector(`#${escapeCSSSelector(layerIdentifier)}`)
   if (!layer) {
-    layer = doc.querySelector(`.${CSS.escape(layerIdentifier)}`)
+    layer = doc.querySelector(`.${escapeCSSSelector(layerIdentifier)}`)
   }
 
   if (!layer) {
@@ -139,9 +153,9 @@ export function applyColorOverride(
   const doc = parser.parseFromString(svgContent, 'image/svg+xml')
 
   // Find layer by id or class
-  let layer = doc.querySelector(`#${CSS.escape(layerIdentifier)}`)
+  let layer = doc.querySelector(`#${escapeCSSSelector(layerIdentifier)}`)
   if (!layer) {
-    layer = doc.querySelector(`.${CSS.escape(layerIdentifier)}`)
+    layer = doc.querySelector(`.${escapeCSSSelector(layerIdentifier)}`)
   }
 
   if (!layer) {
