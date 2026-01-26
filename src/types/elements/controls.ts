@@ -420,6 +420,90 @@ export interface MultiSliderElementConfig extends BaseElementConfig {
   bandGap: number // Pixel gap between bands (default 2)
 }
 
+export interface NotchedSliderElementConfig extends BaseElementConfig {
+  type: 'notchedslider'
+
+  // Orientation
+  orientation: 'vertical' | 'horizontal'
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // Track
+  trackColor: string
+  trackFillColor: string
+
+  // Thumb
+  thumbColor: string
+  thumbWidth: number
+  thumbHeight: number
+
+  // Notch Settings
+  notchCount: number // Number of evenly spaced notches including endpoints (default 5)
+  notchPositions: number[] | null // Custom positions 0-1, overrides notchCount if provided
+  showNotchLabels: boolean // Show value at each notch position
+  notchColor: string // Color of notch indicators
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
+}
+
+export interface ArcSliderElementConfig extends BaseElementConfig {
+  type: 'arcslider'
+
+  // Dimensions
+  diameter: number
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // Arc Geometry
+  startAngle: number // Default 135 (bottom-left)
+  endAngle: number // Default 45 (bottom-right, 270 degree sweep)
+  trackWidth: number
+
+  // Track Colors
+  trackColor: string
+  fillColor: string
+
+  // Thumb
+  thumbRadius: number // Circular thumb that moves along arc
+  thumbColor: string
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
+}
+
 // ============================================================================
 // Control Element Union
 // ============================================================================
@@ -439,6 +523,8 @@ export type ControlElement =
   | BipolarSliderElementConfig
   | CrossfadeSliderElementConfig
   | MultiSliderElementConfig
+  | NotchedSliderElementConfig
+  | ArcSliderElementConfig
 
 // ============================================================================
 // Type Guards
@@ -498,6 +584,14 @@ export function isBipolarSlider(element: { type: string }): element is BipolarSl
 
 export function isCrossfadeSlider(element: { type: string }): element is CrossfadeSliderElementConfig {
   return element.type === 'crossfadeslider'
+}
+
+export function isNotchedSlider(element: { type: string }): element is NotchedSliderElementConfig {
+  return element.type === 'notchedslider'
+}
+
+export function isArcSlider(element: { type: string }): element is ArcSliderElementConfig {
+  return element.type === 'arcslider'
 }
 
 // ============================================================================
