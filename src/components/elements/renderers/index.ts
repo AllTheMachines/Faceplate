@@ -33,6 +33,8 @@ import {
   KickButtonRenderer,
   ToggleSwitchRenderer,
   PowerButtonRenderer,
+  StepperRenderer,
+  BreadcrumbRenderer,
 } from './controls'
 
 import {
@@ -131,6 +133,8 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['kickbutton', KickButtonRenderer as RendererComponent],
   ['toggleswitch', ToggleSwitchRenderer as RendererComponent],
   ['powerbutton', PowerButtonRenderer as RendererComponent],
+  ['stepper', StepperRenderer as RendererComponent],
+  ['breadcrumb', BreadcrumbRenderer as RendererComponent],
 
   // Displays
   ['label', LabelRenderer as RendererComponent],
@@ -234,6 +238,8 @@ export {
   KickButtonRenderer,
   ToggleSwitchRenderer,
   PowerButtonRenderer,
+  StepperRenderer,
+  BreadcrumbRenderer,
   // Displays
   LabelRenderer,
   MeterRenderer,
