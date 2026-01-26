@@ -257,6 +257,13 @@ Plans:
 **Goal**: Users can design UIs with all button and switch variants
 **Dependencies**: Phase 19 (requires registry pattern)
 **Requirements**: BTN-01, BTN-02, BTN-03, BTN-04, BTN-05, BTN-06, BTN-07
+**Plans**: 4 plans
+
+Plans:
+- [ ] 21-01-PLAN.md — Built-in icon system + Icon Button, Kick Button, Toggle Switch, Power Button
+- [ ] 21-02-PLAN.md — Rocker Switch, Rotary Switch, Segment Button
+- [ ] 21-03-PLAN.md — Property panels for all 7 types + palette entries
+- [ ] 21-04-PLAN.md — Export support (HTML/CSS generators)
 
 **Success Criteria:**
 1. User can add Icon Button (toolbar style, icon-only, no text label)
@@ -418,7 +425,7 @@ Plans:
 | 18. Export & Polish | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 19. Architecture Refactoring | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 20. Simple Controls | v1.2 | 4/4 | Complete | 2026-01-26 |
-| 21. Buttons & Switches | v1.2 | 0/? | Pending | — |
+| 21. Buttons & Switches | v1.2 | 0/4 | Pending | — |
 | 22. Value Displays & LEDs | v1.2 | 0/? | Pending | — |
 | 23. Professional Meters | v1.2 | 0/? | Pending | — |
 | 24. Navigation & Selection | v1.2 | 0/? | Pending | — |
