@@ -177,11 +177,13 @@ Plans:
   4. User can delete assets with usage warning if referenced by elements
   5. Assets have category tags (logo, icon, decoration, background) for organization
   6. User can drag asset from library directly to canvas to create element
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 15-01: TBD
-- [ ] 15-02: TBD
+- [ ] 15-01-PLAN.md — AssetsSlice foundation (types, state, store integration)
+- [ ] 15-02-PLAN.md — Import dialog with preview and validation
+- [ ] 15-03-PLAN.md — Asset Library panel with categories, search, and tab switching
+- [ ] 15-04-PLAN.md — Asset interactions (rename, delete, drag-to-canvas)
 
 #### Phase 16: Static SVG Graphics
 **Goal**: Users can place scalable SVG graphics on canvas as decorative elements
@@ -254,11 +256,11 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18
 | 12. Export System | v1.0 | 5/5 | Complete | 2026-01-25 |
 | 13. Project Persistence & Polish | v1.0 | 16/16 | Complete | 2026-01-25 |
 | 14. Security Foundation & Upload Pipeline | v1.1 | 4/4 | Complete | 2026-01-25 |
-| 15. Asset Library Storage & UI | v1.1 | 0/TBD | Not started | - |
+| 15. Asset Library Storage & UI | v1.1 | 0/4 | Not started | - |
 | 16. Static SVG Graphics | v1.1 | 0/TBD | Not started | - |
 | 17. Interactive SVG Knobs | v1.1 | 0/TBD | Not started | - |
 | 18. Export & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-25 after Phase 14 execution*
+*Last updated: 2026-01-25 after Phase 15 planning*
