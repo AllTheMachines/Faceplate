@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
@@ -375,6 +375,31 @@ export function generateElementHTML(element: ElementConfig): string {
   ${innerHTML}
 </div>`
     }
+
+    // Navigation Elements
+    case 'stepper':
+      return generateStepperHTML(id, baseClass, positionStyle, element as StepperElementConfig)
+
+    case 'breadcrumb':
+      return generateBreadcrumbHTML(id, baseClass, positionStyle, element as BreadcrumbElementConfig)
+
+    case 'multiselectdropdown':
+      return generateMultiSelectDropdownHTML(id, baseClass, positionStyle, element as MultiSelectDropdownElementConfig)
+
+    case 'combobox':
+      return generateComboBoxHTML(id, baseClass, positionStyle, element as ComboBoxElementConfig)
+
+    case 'menubutton':
+      return generateMenuButtonHTML(id, baseClass, positionStyle, element as MenuButtonElementConfig)
+
+    case 'tabbar':
+      return generateTabBarHTML(id, baseClass, positionStyle, element as TabBarElementConfig)
+
+    case 'tagselector':
+      return generateTagSelectorHTML(id, baseClass, positionStyle, element as TagSelectorElementConfig)
+
+    case 'treeview':
+      return generateTreeViewHTML(id, baseClass, positionStyle, element as TreeViewElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -1406,5 +1431,282 @@ function generateLedMatrixHTML(
 
   return `<div id="${id}" class="${baseClass} ledmatrix-element" data-type="ledmatrix" data-rows="${element.rows}" data-cols="${element.columns}" style="${positionStyle}">
   ${cellsHTML}
+</div>`
+}
+
+// ============================================================================
+// Navigation Element HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate Stepper HTML
+ */
+function generateStepperHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: StepperElementConfig
+): string {
+  // Format value for display
+  const actual = element.min + element.value * (element.max - element.min)
+  const formattedValue = element.valueFormat === 'custom'
+    ? `${actual.toFixed(element.decimalPlaces)}${element.valueSuffix}`
+    : actual.toFixed(element.decimalPlaces)
+
+  const valueDisplay = element.showValue
+    ? `<span class="stepper-value">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} stepper-element" data-type="stepper" data-value="${element.value}" data-min="${element.min}" data-max="${element.max}" data-step="${element.step}" data-orientation="${element.orientation}" style="${positionStyle}">
+  <button class="stepper-button decrement" aria-label="Decrement"></button>
+  ${valueDisplay}
+  <button class="stepper-button increment" aria-label="Increment"></button>
+</div>`
+}
+
+/**
+ * Generate Breadcrumb HTML
+ */
+function generateBreadcrumbHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: BreadcrumbElementConfig
+): string {
+  let itemsToRender: BreadcrumbItem[] = element.items
+
+  // Handle truncation if maxVisibleItems is set
+  if (element.maxVisibleItems > 0 && element.items.length > element.maxVisibleItems) {
+    const firstItem = element.items[0]
+    const lastItems = element.items.slice(-(element.maxVisibleItems - 1))
+    itemsToRender = [firstItem, ...lastItems]
+  }
+
+  const itemsHTML = itemsToRender.map((item, index) => {
+    const isLast = index === itemsToRender.length - 1
+    const needsEllipsis = element.maxVisibleItems > 0 && element.items.length > element.maxVisibleItems && index === 0
+
+    let html = '<li>'
+
+    if (isLast) {
+      html += `<span class="breadcrumb-current">${escapeHTML(item.label)}</span>`
+    } else {
+      html += `<a href="#" data-item-id="${escapeHTML(item.id)}">${escapeHTML(item.label)}</a>`
+    }
+
+    if (!isLast) {
+      html += `<span class="breadcrumb-separator">${escapeHTML(element.separator)}</span>`
+    }
+
+    if (needsEllipsis) {
+      html += `<span class="breadcrumb-ellipsis">...</span>`
+      html += `<span class="breadcrumb-separator">${escapeHTML(element.separator)}</span>`
+    }
+
+    html += '</li>'
+    return html
+  }).join('')
+
+  return `<nav id="${id}" class="${baseClass} breadcrumb-element" data-type="breadcrumb" aria-label="breadcrumb" style="${positionStyle}">
+  <ol>
+    ${itemsHTML}
+  </ol>
+</nav>`
+}
+
+/**
+ * Generate Multi-Select Dropdown HTML
+ */
+function generateMultiSelectDropdownHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: MultiSelectDropdownElementConfig
+): string {
+  const selectedLabels = element.selectedIndices.map(i => element.options[i]).join(', ')
+  const displayText = selectedLabels || 'Select options...'
+
+  const itemsHTML = element.options.map((option, index) => {
+    const isSelected = element.selectedIndices.includes(index)
+    return `<div class="dropdown-item" data-index="${index}">
+      <input type="checkbox" ${isSelected ? 'checked' : ''} />
+      <span>${escapeHTML(option)}</span>
+    </div>`
+  }).join('')
+
+  return `<div id="${id}" class="${baseClass} multiselectdropdown-element" data-type="multiselectdropdown" data-max-selections="${element.maxSelections}" role="listbox" aria-multiselectable="true" style="${positionStyle}">
+  <div class="dropdown-container">
+    <div class="selected-text">${escapeHTML(displayText)}</div>
+    <div class="dropdown-menu">
+      ${itemsHTML}
+    </div>
+  </div>
+</div>`
+}
+
+/**
+ * Generate Combo Box HTML
+ */
+function generateComboBoxHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ComboBoxElementConfig
+): string {
+  const itemsHTML = element.options.map((option) => {
+    return `<div class="dropdown-item" data-value="${escapeHTML(option)}">${escapeHTML(option)}</div>`
+  }).join('')
+
+  return `<div id="${id}" class="${baseClass} combobox-element" data-type="combobox" role="combobox" aria-expanded="false" aria-autocomplete="list" style="${positionStyle}">
+  <div class="dropdown-container">
+    <input type="text" value="${escapeHTML(element.selectedValue)}" placeholder="${escapeHTML(element.placeholder)}" />
+    <div class="dropdown-menu">
+      ${itemsHTML}
+      <div class="empty-state" style="display: none;">No matching options</div>
+    </div>
+  </div>
+</div>`
+}
+
+/**
+ * Helper to get built-in icon SVG for tabs
+ */
+function getBuiltInIconSVG(icon?: BuiltInIcon): string {
+  if (!icon) return ''
+  return builtInIconSVG[icon] || ''
+}
+
+/**
+ * Generate Menu Button HTML
+ */
+function generateMenuButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: MenuButtonElementConfig
+): string {
+  const itemsHTML = element.menuItems.map((item: MenuItem, index) => {
+    if (item.divider) {
+      return '<div class="menu-divider"></div>'
+    }
+
+    const disabledClass = item.disabled ? ' disabled' : ''
+    return `<div class="dropdown-item${disabledClass}" role="menuitem" data-item-id="${escapeHTML(item.id)}" data-index="${index}">${escapeHTML(item.label)}</div>`
+  }).join('')
+
+  return `<button id="${id}" class="${baseClass} menubutton-element" data-type="menubutton" aria-haspopup="menu" style="${positionStyle}">
+  ${escapeHTML(element.label)}
+  <div class="dropdown-container">
+    <div class="dropdown-menu" role="menu">
+      ${itemsHTML}
+    </div>
+  </div>
+</button>`
+}
+
+/**
+ * Generate Tab Bar HTML
+ */
+function generateTabBarHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: TabBarElementConfig
+): string {
+  const tabsHTML = element.tabs.map((tab: TabConfig, index) => {
+    const isActive = index === element.activeTabIndex
+    const iconHTML = tab.showIcon && tab.icon
+      ? `<span class="tab-icon">${getBuiltInIconSVG(tab.icon)}</span>`
+      : ''
+    const labelHTML = tab.showLabel && tab.label
+      ? `<span class="tab-label">${escapeHTML(tab.label)}</span>`
+      : ''
+
+    return `<div class="tab" role="tab" aria-selected="${isActive}" data-tab-index="${index}" data-tab-id="${escapeHTML(tab.id)}">
+    ${iconHTML}
+    ${labelHTML}
+  </div>`
+  }).join('')
+
+  // Add indicator divs for underline/accent-bar styles
+  const indicatorHTML = element.indicatorStyle === 'underline'
+    ? '<div class="indicator-underline"></div>'
+    : element.indicatorStyle === 'accent-bar'
+    ? '<div class="indicator-underline"></div><div class="indicator-accent"></div>'
+    : ''
+
+  return `<div id="${id}" class="${baseClass} tabbar-element" data-type="tabbar" data-active-tab="${element.activeTabIndex}" data-orientation="${element.orientation}" data-indicator-style="${element.indicatorStyle}" role="tablist" style="${positionStyle}">
+  ${tabsHTML}
+  ${indicatorHTML}
+</div>`
+}
+
+/**
+ * Generate Tag Selector HTML
+ */
+function generateTagSelectorHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: TagSelectorElementConfig
+): string {
+  const tagsHTML = element.selectedTags.map((tag: Tag) => {
+    return `<div class="tag-chip" data-tag-id="${escapeHTML(tag.id)}">
+    <span>${escapeHTML(tag.label)}</span>
+    <button class="tag-remove" aria-label="Remove ${escapeHTML(tag.label)}">×</button>
+  </div>`
+  }).join('')
+
+  const inputHTML = element.showInput ? `
+  <div class="tag-input-wrapper">
+    <input type="text" placeholder="${escapeHTML(element.inputPlaceholder)}" />
+    <div class="tag-dropdown">
+      ${element.availableTags.filter((tag: Tag) => !element.selectedTags.find((t: Tag) => t.id === tag.id)).map((tag: Tag) => {
+        return `<div class="tag-dropdown-item" data-tag-id="${escapeHTML(tag.id)}">${escapeHTML(tag.label)}</div>`
+      }).join('')}
+    </div>
+  </div>` : ''
+
+  return `<div id="${id}" class="${baseClass} tagselector-element" data-type="tagselector" role="list" style="${positionStyle}">
+  <div class="tags-container">
+    ${tagsHTML}
+  </div>
+  ${inputHTML}
+</div>`
+}
+
+/**
+ * Helper to recursively generate tree nodes
+ */
+function generateTreeNodeHTML(node: TreeNode, level: number, indent: number, selectedId?: string): string {
+  const hasChildren = node.children && node.children.length > 0
+  const isSelected = node.id === selectedId
+  const paddingLeft = level * indent
+
+  let html = `<div class="tree-node" data-node-id="${escapeHTML(node.id)}" data-level="${level}" data-selected="${isSelected}" style="padding-left: ${paddingLeft}px;">
+  <span class="tree-arrow ${hasChildren ? '' : 'empty'}"></span>
+  <span class="tree-node-name">${escapeHTML(node.name)}</span>
+</div>`
+
+  if (hasChildren && node.children) {
+    html += node.children.map(child => generateTreeNodeHTML(child, level + 1, indent, selectedId)).join('')
+  }
+
+  return html
+}
+
+/**
+ * Generate Tree View HTML
+ */
+function generateTreeViewHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: TreeViewElementConfig
+): string {
+  const nodesHTML = element.data.map(node => generateTreeNodeHTML(node, 0, element.indent, element.selectedId)).join('')
+
+  return `<div id="${id}" class="${baseClass} treeview-element" data-type="treeview" data-selected-id="${element.selectedId || ''}" data-row-height="${element.rowHeight}" data-indent="${element.indent}" style="${positionStyle}">
+  ${nodesHTML}
 </div>`
 }
