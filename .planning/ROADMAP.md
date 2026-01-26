@@ -212,6 +212,15 @@ Plans:
 **Goal**: Codebase scales gracefully from 25 to 103 element types without technical debt
 **Dependencies**: None (prerequisite for all other v1.2 phases)
 **Requirements**: ARCH-01, ARCH-02, ARCH-03, ARCH-04, ARCH-05, UX-01, UX-02
+**Plans**: 6 plans
+
+Plans:
+- [ ] 19-01-PLAN.md — Split TypeScript unions by category
+- [ ] 19-02-PLAN.md — Element renderer registry pattern
+- [ ] 19-03-PLAN.md — Property panel registry pattern
+- [ ] 19-04-PLAN.md — Undo/redo buttons and QWERTZ support
+- [ ] 19-05-PLAN.md — File organization by category
+- [ ] 19-06-PLAN.md — Code splitting infrastructure
 
 **Success Criteria:**
 1. PropertyPanel.tsx uses Map-based component registry instead of switch statements (<100 LOC vs 200+)
@@ -400,7 +409,7 @@ Plans:
 | 16. Static SVG Graphics | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 17. Interactive SVG Knobs | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 18. Export & Polish | v1.1 | 6/6 | Complete | 2026-01-26 |
-| 19. Architecture Refactoring | v1.2 | 0/? | Pending | — |
+| 19. Architecture Refactoring | v1.2 | 0/6 | Planned | — |
 | 20. Simple Controls | v1.2 | 0/? | Pending | — |
 | 21. Buttons & Switches | v1.2 | 0/? | Pending | — |
 | 22. Value Displays & LEDs | v1.2 | 0/? | Pending | — |
@@ -415,4 +424,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after v1.2 roadmap created*
+*Last updated: 2026-01-26 after Phase 19 planning complete*
