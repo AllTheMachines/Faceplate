@@ -162,6 +162,7 @@ export interface ImageElementConfig extends BaseElementConfig {
 
   // Source
   src: string // base64 data URL or external URL
+  assetId?: string // Reference to Asset in AssetsSlice
 
   // Fit
   fit: 'contain' | 'cover' | 'fill' | 'none'
@@ -789,6 +790,7 @@ export function createImage(overrides?: Partial<ImageElementConfig>): ImageEleme
     locked: false,
     visible: true,
     src: '',
+    assetId: undefined,
     fit: 'contain',
     ...overrides,
   }
