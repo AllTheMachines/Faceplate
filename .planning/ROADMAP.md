@@ -184,7 +184,7 @@ Plans:
 - [x] 15-02-PLAN.md — Import dialog with preview and validation
 - [x] 15-03-PLAN.md — Asset Library panel with categories, search, and tab switching
 - [x] 15-04-PLAN.md — Asset interactions (rename, delete, drag-to-canvas)
-- [ ] 15-05-PLAN.md — Gap closure: Wire ImageRenderer to render asset SVG content
+- [x] 15-05-PLAN.md — Gap closure: Wire ImageRenderer to render asset SVG content
 
 #### Phase 16: Static SVG Graphics
 **Goal**: Users can place scalable SVG graphics on canvas as decorative elements
@@ -257,11 +257,11 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 | 12. Export System | v1.0 | 5/5 | Complete | 2026-01-25 |
 | 13. Project Persistence & Polish | v1.0 | 16/16 | Complete | 2026-01-25 |
 | 14. Security Foundation & Upload Pipeline | v1.1 | 4/4 | Complete | 2026-01-25 |
-| 15. Asset Library Storage & UI | v1.1 | 4/5 | In progress | - |
+| 15. Asset Library Storage & UI | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 16. Static SVG Graphics | v1.1 | 0/TBD | Not started | - |
 | 17. Interactive SVG Knobs | v1.1 | 0/TBD | Not started | - |
 | 18. Export & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 15 gap closure planning*
+*Last updated: 2026-01-26 after Phase 15 complete*
