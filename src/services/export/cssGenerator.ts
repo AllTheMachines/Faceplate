@@ -1054,6 +1054,30 @@ ${selector} .oscilloscope-placeholder {
     case 'powerbutton':
       return generatePowerButtonCSS(selector, element)
 
+    case 'numericdisplay':
+    case 'timedisplay':
+    case 'percentagedisplay':
+    case 'ratiodisplay':
+    case 'notedisplay':
+    case 'bpmdisplay':
+    case 'editabledisplay':
+    case 'multivaluedisplay':
+      // Value displays use similar CSS to dbdisplay/frequencydisplay
+      return `${selector} {
+  /* Value Display */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ${element.fontFamily};
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  background-color: ${element.backgroundColor};
+  padding: ${element.padding}px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  user-select: none;
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

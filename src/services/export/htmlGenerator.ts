@@ -285,6 +285,17 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'powerbutton':
       return generatePowerButtonHTML(id, baseClass, positionStyle, element)
 
+    case 'numericdisplay':
+    case 'timedisplay':
+    case 'percentagedisplay':
+    case 'ratiodisplay':
+    case 'notedisplay':
+    case 'bpmdisplay':
+    case 'editabledisplay':
+    case 'multivaluedisplay':
+      // Value displays use placeholder HTML (real value comes from plugin)
+      return `${positionStyle}<div id="${id}" class="${baseClass}">0.00</div>`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
