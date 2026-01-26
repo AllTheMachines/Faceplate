@@ -90,6 +90,13 @@ import {
   GoniometerProperties,
   VectorscopeProperties,
 } from './visualizations'
+import {
+  EQCurveProperties,
+  CompressorCurveProperties,
+  EnvelopeDisplayProperties,
+  LFODisplayProperties,
+  FilterResponseProperties,
+} from './curves'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -174,6 +181,13 @@ export {
   GoniometerProperties,
   VectorscopeProperties,
 } from './visualizations'
+export {
+  EQCurveProperties,
+  CompressorCurveProperties,
+  EnvelopeDisplayProperties,
+  LFODisplayProperties,
+  FilterResponseProperties,
+} from './curves'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -278,6 +292,13 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['spectrogram', SpectrogramProperties],
   ['goniometer', GoniometerProperties],
   ['vectorscope', VectorscopeProperties],
+
+  // Curve Displays
+  ['eqcurve', EQCurveProperties],
+  ['compressorcurve', CompressorCurveProperties],
+  ['envelopedisplay', EnvelopeDisplayProperties],
+  ['lfodisplay', LFODisplayProperties],
+  ['filterresponse', FilterResponseProperties],
 
   // Containers
   ['panel', PanelProperties],
