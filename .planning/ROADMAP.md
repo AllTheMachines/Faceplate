@@ -401,6 +401,13 @@ Plans:
 **Goal**: Users can add remaining container elements and UX refinements
 **Dependencies**: Phase 19 (requires registry pattern)
 **Requirements**: CONT-01, CONT-02, CONT-03
+**Plans**: 4 plans
+
+Plans:
+- [ ] 27-01-PLAN.md — Tooltip element with DOM overlay and hover detection
+- [ ] 27-02-PLAN.md — Horizontal and Vertical Spacer elements with fixed/flexible modes
+- [ ] 27-03-PLAN.md — Window Chrome element with macOS/Windows/neutral button styles
+- [ ] 27-04-PLAN.md — Export support (HTML/CSS generators for all 4 new types)
 
 **Success Criteria:**
 1. User can add Tooltip (hover information with configurable position)
@@ -472,11 +479,11 @@ Plans:
 | 24. Navigation & Selection | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 25. Real-Time Visualizations | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 26. Interactive Curves | v1.2 | 5/5 | Complete | 2026-01-26 |
-| 27. Containers & Polish | v1.2 | 0/? | Pending | — |
+| 27. Containers & Polish | v1.2 | 0/4 | Planned | — |
 | 28. Specialized Audio (Part 1) | v1.2 | 0/? | Pending | — |
 | 29. Specialized Audio (Part 2) | v1.2 | 0/? | Pending | — |
 | 30. Specialized Audio (Part 3) | v1.2 | 0/? | Pending | — |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 26 execution complete*
+*Last updated: 2026-01-26 after Phase 27 planning complete*
