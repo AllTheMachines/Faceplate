@@ -12,6 +12,7 @@ interface KnobPropertiesProps {
 export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
   const [showManageDialog, setShowManageDialog] = useState(false)
   const knobStyles = useStore((state) => state.knobStyles)
+  const getKnobStyle = useStore((state) => state.getKnobStyle)
 
   return (
     <>
@@ -45,6 +46,44 @@ export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
           Manage styles...
         </button>
       </PropertySection>
+
+      {/* Color Overrides (only when SVG style is selected) */}
+      {element.styleId && (() => {
+        const style = getKnobStyle(element.styleId)
+        if (!style) return null
+
+        const layerNames: Array<keyof typeof style.layers> = ['indicator', 'track', 'arc', 'glow', 'shadow']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
 
       {/* Value */}
       <PropertySection title="Value">
