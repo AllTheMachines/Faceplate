@@ -26,29 +26,31 @@ import {
   createPresetBrowser,
   ElementConfig,
 } from '../../types/elements'
-import { KnobRenderer } from '../elements/renderers/KnobRenderer'
-import { SliderRenderer } from '../elements/renderers/SliderRenderer'
-import { ButtonRenderer } from '../elements/renderers/ButtonRenderer'
-import { LabelRenderer } from '../elements/renderers/LabelRenderer'
-import { MeterRenderer } from '../elements/renderers/MeterRenderer'
-import { ModulationMatrixRenderer } from '../elements/renderers/ModulationMatrixRenderer'
-import { RectangleRenderer } from '../elements/renderers/RectangleRenderer'
-import { LineRenderer } from '../elements/renderers/LineRenderer'
-import { DbDisplayRenderer } from '../elements/renderers/DbDisplayRenderer'
-import { FrequencyDisplayRenderer } from '../elements/renderers/FrequencyDisplayRenderer'
-import { GainReductionMeterRenderer } from '../elements/renderers/GainReductionMeterRenderer'
-import { PanelRenderer } from '../elements/renderers/PanelRenderer'
-import { FrameRenderer } from '../elements/renderers/FrameRenderer'
-import { GroupBoxRenderer } from '../elements/renderers/GroupBoxRenderer'
-import { CollapsibleRenderer } from '../elements/renderers/CollapsibleRenderer'
-import { RangeSliderRenderer } from '../elements/renderers/RangeSliderRenderer'
-import { DropdownRenderer } from '../elements/renderers/DropdownRenderer'
-import { CheckboxRenderer } from '../elements/renderers/CheckboxRenderer'
-import { RadioGroupRenderer } from '../elements/renderers/RadioGroupRenderer'
-import { TextFieldRenderer } from '../elements/renderers/TextFieldRenderer'
-import { WaveformRenderer } from '../elements/renderers/WaveformRenderer'
-import { OscilloscopeRenderer } from '../elements/renderers/OscilloscopeRenderer'
-import { PresetBrowserRenderer } from '../elements/renderers/PresetBrowserRenderer'
+import {
+  KnobRenderer,
+  SliderRenderer,
+  ButtonRenderer,
+  LabelRenderer,
+  MeterRenderer,
+  ModulationMatrixRenderer,
+  RectangleRenderer,
+  LineRenderer,
+  DbDisplayRenderer,
+  FrequencyDisplayRenderer,
+  GainReductionMeterRenderer,
+  PanelRenderer,
+  FrameRenderer,
+  GroupBoxRenderer,
+  CollapsibleRenderer,
+  RangeSliderRenderer,
+  DropdownRenderer,
+  CheckboxRenderer,
+  RadioGroupRenderer,
+  TextFieldRenderer,
+  WaveformRenderer,
+  OscilloscopeRenderer,
+  PresetBrowserRenderer,
+} from '../elements/renderers'
 
 interface PaletteItemProps {
   id: string

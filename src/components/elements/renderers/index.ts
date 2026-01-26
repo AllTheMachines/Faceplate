@@ -8,32 +8,43 @@
 import React from 'react'
 import type { ElementConfig } from '../../../types/elements'
 
-// Import all renderers
-import { KnobRenderer } from './KnobRenderer'
-import { SliderRenderer } from './SliderRenderer'
-import { ButtonRenderer } from './ButtonRenderer'
-import { LabelRenderer } from './LabelRenderer'
-import { MeterRenderer } from './MeterRenderer'
-import { ImageRenderer } from './ImageRenderer'
-import { DropdownRenderer } from './DropdownRenderer'
-import { CheckboxRenderer } from './CheckboxRenderer'
-import { RadioGroupRenderer } from './RadioGroupRenderer'
-import { ModulationMatrixRenderer } from './ModulationMatrixRenderer'
-import { RangeSliderRenderer } from './RangeSliderRenderer'
-import { RectangleRenderer } from './RectangleRenderer'
-import { LineRenderer } from './LineRenderer'
-import { PanelRenderer } from './PanelRenderer'
-import { FrameRenderer } from './FrameRenderer'
-import { GroupBoxRenderer } from './GroupBoxRenderer'
-import { DbDisplayRenderer } from './DbDisplayRenderer'
-import { FrequencyDisplayRenderer } from './FrequencyDisplayRenderer'
-import { GainReductionMeterRenderer } from './GainReductionMeterRenderer'
-import { PresetBrowserRenderer } from './PresetBrowserRenderer'
-import { WaveformRenderer } from './WaveformRenderer'
-import { OscilloscopeRenderer } from './OscilloscopeRenderer'
-import { TextFieldRenderer } from './TextFieldRenderer'
-import { CollapsibleRenderer } from './CollapsibleRenderer'
-import { SvgGraphicRenderer } from './SvgGraphicRenderer'
+// Import all renderers from category folders
+import {
+  KnobRenderer,
+  SliderRenderer,
+  ButtonRenderer,
+  RangeSliderRenderer,
+  DropdownRenderer,
+  CheckboxRenderer,
+  RadioGroupRenderer,
+  TextFieldRenderer,
+} from './controls'
+
+import {
+  LabelRenderer,
+  MeterRenderer,
+  DbDisplayRenderer,
+  FrequencyDisplayRenderer,
+  GainReductionMeterRenderer,
+  WaveformRenderer,
+  OscilloscopeRenderer,
+  PresetBrowserRenderer,
+  ModulationMatrixRenderer,
+} from './displays'
+
+import {
+  PanelRenderer,
+  FrameRenderer,
+  GroupBoxRenderer,
+  CollapsibleRenderer,
+} from './containers'
+
+import {
+  ImageRenderer,
+  SvgGraphicRenderer,
+  RectangleRenderer,
+  LineRenderer,
+} from './decorative'
 
 // Renderer component type - accepts config prop and renders element
 export type RendererComponent = React.ComponentType<{ config: ElementConfig }>
@@ -86,28 +97,34 @@ export function getRenderer(type: ElementConfig['type']): RendererComponent | un
 }
 
 // Re-export all individual renderers for direct import if needed
-export { KnobRenderer } from './KnobRenderer'
-export { SliderRenderer } from './SliderRenderer'
-export { ButtonRenderer } from './ButtonRenderer'
-export { LabelRenderer } from './LabelRenderer'
-export { MeterRenderer } from './MeterRenderer'
-export { ImageRenderer } from './ImageRenderer'
-export { DropdownRenderer } from './DropdownRenderer'
-export { CheckboxRenderer } from './CheckboxRenderer'
-export { RadioGroupRenderer } from './RadioGroupRenderer'
-export { ModulationMatrixRenderer } from './ModulationMatrixRenderer'
-export { RangeSliderRenderer } from './RangeSliderRenderer'
-export { RectangleRenderer } from './RectangleRenderer'
-export { LineRenderer } from './LineRenderer'
-export { PanelRenderer } from './PanelRenderer'
-export { FrameRenderer } from './FrameRenderer'
-export { GroupBoxRenderer } from './GroupBoxRenderer'
-export { DbDisplayRenderer } from './DbDisplayRenderer'
-export { FrequencyDisplayRenderer } from './FrequencyDisplayRenderer'
-export { GainReductionMeterRenderer } from './GainReductionMeterRenderer'
-export { PresetBrowserRenderer } from './PresetBrowserRenderer'
-export { WaveformRenderer } from './WaveformRenderer'
-export { OscilloscopeRenderer } from './OscilloscopeRenderer'
-export { TextFieldRenderer } from './TextFieldRenderer'
-export { CollapsibleRenderer } from './CollapsibleRenderer'
-export { SvgGraphicRenderer } from './SvgGraphicRenderer'
+export {
+  // Controls
+  KnobRenderer,
+  SliderRenderer,
+  ButtonRenderer,
+  RangeSliderRenderer,
+  DropdownRenderer,
+  CheckboxRenderer,
+  RadioGroupRenderer,
+  TextFieldRenderer,
+  // Displays
+  LabelRenderer,
+  MeterRenderer,
+  DbDisplayRenderer,
+  FrequencyDisplayRenderer,
+  GainReductionMeterRenderer,
+  WaveformRenderer,
+  OscilloscopeRenderer,
+  PresetBrowserRenderer,
+  ModulationMatrixRenderer,
+  // Containers
+  PanelRenderer,
+  FrameRenderer,
+  GroupBoxRenderer,
+  CollapsibleRenderer,
+  // Decorative
+  ImageRenderer,
+  SvgGraphicRenderer,
+  RectangleRenderer,
+  LineRenderer,
+}
