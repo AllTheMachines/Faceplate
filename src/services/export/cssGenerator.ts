@@ -3,7 +3,7 @@
  * Generates style.css with element-specific styling
  */
 
-import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig } from '../../types/elements'
+import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -1217,6 +1217,19 @@ ${selector} .channel-label {
     case 'lfodisplay':
     case 'filterresponse':
       return generateCurveCSS(element as EQCurveElementConfig | CompressorCurveElementConfig | EnvelopeDisplayElementConfig | LFODisplayElementConfig | FilterResponseElementConfig)
+
+    // Container Elements
+    case 'tooltip':
+      return generateTooltipCSS(selector, element as TooltipElementConfig)
+
+    case 'horizontalspacer':
+      return generateHorizontalSpacerCSS(selector, element as HorizontalSpacerElementConfig)
+
+    case 'verticalspacer':
+      return generateVerticalSpacerCSS(selector, element as VerticalSpacerElementConfig)
+
+    case 'windowchrome':
+      return generateWindowChromeCSS(selector, element as WindowChromeElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -2763,4 +2776,194 @@ function generateCurveCSS(
   height: 100%;
 }
 `
+}
+
+// ============================================================================
+// Container Element CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate Tooltip CSS
+ */
+function generateTooltipCSS(selector: string, element: TooltipElementConfig): string {
+  return `/* Tooltip */
+${selector} {
+  /* Invisible trigger area */
+  cursor: help;
+  position: relative;
+}
+
+${selector} .tooltip-content {
+  position: absolute;
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  font-size: ${element.fontSize}px;
+  padding: ${element.padding}px;
+  border-radius: ${element.borderRadius}px;
+  max-width: ${element.maxWidth}px;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  ${element.position === 'top' ? `bottom: calc(100% + ${element.offset}px); left: 50%; transform: translateX(-50%);` : ''}
+  ${element.position === 'bottom' ? `top: calc(100% + ${element.offset}px); left: 50%; transform: translateX(-50%);` : ''}
+  ${element.position === 'left' ? `right: calc(100% + ${element.offset}px); top: 50%; transform: translateY(-50%);` : ''}
+  ${element.position === 'right' ? `left: calc(100% + ${element.offset}px); top: 50%; transform: translateY(-50%);` : ''}
+}
+
+${selector}:hover .tooltip-content {
+  opacity: 1;
+}
+
+${element.showArrow ? `
+${selector} .tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  ${element.position === 'top' ? `top: 100%; left: 50%; transform: translateX(-50%); border-top-color: ${element.backgroundColor};` : ''}
+  ${element.position === 'bottom' ? `bottom: 100%; left: 50%; transform: translateX(-50%); border-bottom-color: ${element.backgroundColor};` : ''}
+  ${element.position === 'left' ? `left: 100%; top: 50%; transform: translateY(-50%); border-left-color: ${element.backgroundColor};` : ''}
+  ${element.position === 'right' ? `right: 100%; top: 50%; transform: translateY(-50%); border-right-color: ${element.backgroundColor};` : ''}
+}` : ''}`
+}
+
+/**
+ * Generate Horizontal Spacer CSS
+ */
+function generateHorizontalSpacerCSS(selector: string, element: HorizontalSpacerElementConfig): string {
+  const sizing = element.sizingMode === 'fixed'
+    ? `width: ${element.fixedWidth}px;`
+    : `flex-grow: ${element.flexGrow}; min-width: ${element.minWidth}px; max-width: ${element.maxWidth}px;`
+
+  return `/* Horizontal Spacer */
+${selector} {
+  /* Invisible spacing element */
+  ${sizing}
+  background: transparent;
+}`
+}
+
+/**
+ * Generate Vertical Spacer CSS
+ */
+function generateVerticalSpacerCSS(selector: string, element: VerticalSpacerElementConfig): string {
+  const sizing = element.sizingMode === 'fixed'
+    ? `height: ${element.fixedHeight}px;`
+    : `flex-grow: ${element.flexGrow}; min-height: ${element.minHeight}px; max-height: ${element.maxHeight}px;`
+
+  return `/* Vertical Spacer */
+${selector} {
+  /* Invisible spacing element */
+  ${sizing}
+  background: transparent;
+}`
+}
+
+/**
+ * Generate Window Chrome CSS
+ */
+function generateWindowChromeCSS(selector: string, element: WindowChromeElementConfig): string {
+  const buttonCSS = element.buttonStyle === 'macos'
+    ? `
+${selector} .chrome-buttons.macos {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px;
+  align-items: center;
+}
+
+${selector} .chrome-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+${selector} .chrome-button:hover {
+  filter: brightness(0.9);
+}`
+    : element.buttonStyle === 'windows'
+    ? `
+${selector} .chrome-buttons.windows {
+  display: flex;
+  margin-left: auto;
+  height: 100%;
+}
+
+${selector} .chrome-button {
+  width: 46px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: ${element.titleColor};
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+${selector} .chrome-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+${selector} .chrome-button.close:hover {
+  background-color: #e81123;
+  color: white;
+}`
+    : `
+${selector} .chrome-buttons.neutral {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px;
+  align-items: center;
+}
+
+${selector} .chrome-button {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #666666;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+${selector} .chrome-button.close:hover {
+  background-color: #ff5f57;
+}
+
+${selector} .chrome-button.minimize:hover {
+  background-color: #ffbd2e;
+}
+
+${selector} .chrome-button.maximize:hover {
+  background-color: #28ca42;
+}`
+
+  return `/* Window Chrome */
+${selector} {
+  display: flex;
+  align-items: center;
+  background-color: ${element.backgroundColor};
+  height: ${element.height}px;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+${selector} [data-drag-region="no-drag"] {
+  -webkit-app-region: no-drag;
+}
+
+${selector} .chrome-title {
+  flex: 1;
+  text-align: center;
+  font-size: ${element.titleFontSize}px;
+  color: ${element.titleColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 500;
+  -webkit-app-region: drag;
+}
+${buttonCSS}`
 }
