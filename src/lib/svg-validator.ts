@@ -116,3 +116,43 @@ export function validateSVGContent(content: string): SVGValidationResult {
     },
   };
 }
+
+/**
+ * Extracts metadata from SVG content for display purposes.
+ * Used by import dialog to show element count and validation info.
+ */
+export function getSVGMetadata(svgContent: string): {
+  elementCount: number
+  hasScripts: boolean
+  hasExternalRefs: boolean
+  viewBox: string | null
+  width: string | null
+  height: string | null
+} {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(svgContent, 'image/svg+xml')
+
+  // Check for parse errors
+  const parseError = doc.querySelector('parsererror')
+  if (parseError) {
+    return {
+      elementCount: 0,
+      hasScripts: false,
+      hasExternalRefs: false,
+      viewBox: null,
+      width: null,
+      height: null
+    }
+  }
+
+  const svg = doc.documentElement
+
+  return {
+    elementCount: doc.getElementsByTagName('*').length,
+    hasScripts: doc.querySelectorAll('script').length > 0,
+    hasExternalRefs: !!svg.innerHTML.match(/url\s*\(\s*['"]?https?:/i),
+    viewBox: svg.getAttribute('viewBox'),
+    width: svg.getAttribute('width'),
+    height: svg.getAttribute('height')
+  }
+}
