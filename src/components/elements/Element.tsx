@@ -1,8 +1,19 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { ElementConfig } from '../../types/elements'
 import { useStore } from '../../store'
 import { BaseElement } from './BaseElement'
 import { getRenderer } from './renderers'
+
+// Fallback component shown during async renderer loading
+// Currently never visible since all renderers load synchronously
+// Prepared for future React.lazy adoption
+function RendererFallback() {
+  return (
+    <div style={{ padding: '8px', color: '#666' }}>
+      Loading...
+    </div>
+  )
+}
 
 interface ElementProps {
   element: ElementConfig
@@ -50,7 +61,9 @@ function ElementComponent({ element }: ElementProps) {
 
   return (
     <BaseElement element={element} onClick={handleClick}>
-      <Renderer config={element} />
+      <Suspense fallback={<RendererFallback />}>
+        <Renderer config={element} />
+      </Suspense>
     </BaseElement>
   )
 }
