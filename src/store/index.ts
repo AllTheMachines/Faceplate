@@ -3,6 +3,7 @@ import { temporal } from 'zundo'
 import { createCanvasSlice, CanvasSlice } from './canvasSlice'
 import { createViewportSlice, ViewportSlice } from './viewportSlice'
 import { createElementsSlice, ElementsSlice } from './elementsSlice'
+import { createAssetsSlice, AssetsSlice } from './assetsSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -32,7 +33,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -42,11 +43,12 @@ export const useStore = create<Store>()(
       ...createViewportSlice(...a),
       ...createElementsSlice(...a),
       ...createTemplateSlice(...a),
+      ...createAssetsSlice(...a),
     }),
     {
       limit: 50,
       // Exclude viewport state from undo history (camera position should not be undoable)
-      // Elements ARE included in undo history
+      // Elements and assets ARE included in undo history (user may want to undo accidental deletion)
       partialize: (state) => {
         const { scale, offsetX, offsetY, isPanning, dragStart, lockAllMode, ...rest } = state
         return rest
