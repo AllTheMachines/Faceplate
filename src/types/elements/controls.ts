@@ -673,6 +673,70 @@ export interface PowerButtonElementConfig extends BaseElementConfig {
 // Navigation Element Configurations
 // ============================================================================
 
+/**
+ * MenuItem for MenuButton
+ */
+export interface MenuItem {
+  id: string
+  label: string
+  disabled?: boolean
+  divider?: boolean
+}
+
+export interface MultiSelectDropdownElementConfig extends BaseElementConfig {
+  type: 'multiselectdropdown'
+
+  // Options
+  options: string[]
+  selectedIndices: number[]
+
+  // Selection limit
+  maxSelections: number // 0 = unlimited
+
+  // Visual style
+  backgroundColor: string
+  textColor: string
+  borderColor: string
+  borderRadius: number
+
+  // Dropdown
+  dropdownMaxHeight: number // Max height of dropdown menu in pixels
+}
+
+export interface ComboBoxElementConfig extends BaseElementConfig {
+  type: 'combobox'
+
+  // Options
+  options: string[]
+  selectedValue: string
+  placeholder: string
+
+  // Visual style
+  backgroundColor: string
+  textColor: string
+  borderColor: string
+  borderRadius: number
+
+  // Dropdown
+  dropdownMaxHeight: number // Max height of dropdown menu in pixels
+}
+
+export interface MenuButtonElementConfig extends BaseElementConfig {
+  type: 'menubutton'
+
+  // Button label
+  label: string
+
+  // Menu items
+  menuItems: MenuItem[]
+
+  // Visual style
+  backgroundColor: string
+  textColor: string
+  borderColor: string
+  borderRadius: number
+}
+
 export interface StepperElementConfig extends BaseElementConfig {
   type: 'stepper'
 
@@ -1728,6 +1792,74 @@ export function createBreadcrumb(overrides?: Partial<BreadcrumbElementConfig>): 
     hoverColor: '#60a5fa',
     fontSize: 12,
     maxVisibleItems: 0,
+    ...overrides,
+  }
+}
+
+export function createTabBar(overrides?: Partial<TabBarElementConfig>): TabBarElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'tabbar',
+    name: 'Tab Bar',
+    x: 0,
+    y: 0,
+    width: 300,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    tabs: [
+      { id: 'tab1', label: 'Tab 1', showLabel: true, showIcon: false },
+      { id: 'tab2', label: 'Tab 2', showLabel: true, showIcon: false },
+      { id: 'tab3', label: 'Tab 3', showLabel: true, showIcon: false },
+    ],
+    activeTabIndex: 0,
+    orientation: 'horizontal',
+    tabHeight: 40,
+    indicatorStyle: 'background',
+    indicatorColor: '#949494',
+    backgroundColor: '#1f2937',
+    textColor: '#888888',
+    activeTextColor: '#ffffff',
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createTagSelector(overrides?: Partial<TagSelectorElementConfig>): TagSelectorElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'tagselector',
+    name: 'Tag Selector',
+    x: 0,
+    y: 0,
+    width: 300,
+    height: 100,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    availableTags: [
+      { id: 'tag1', label: 'Bass' },
+      { id: 'tag2', label: 'Lead' },
+      { id: 'tag3', label: 'Pad' },
+      { id: 'tag4', label: 'Keys' },
+      { id: 'tag5', label: 'Drums' },
+    ],
+    selectedTags: [],
+    showInput: true,
+    inputPlaceholder: 'Add tag...',
+    inputBackgroundColor: '#1f2937',
+    inputTextColor: '#ffffff',
+    inputBorderColor: '#374151',
+    chipBackgroundColor: '#374151',
+    chipTextColor: '#ffffff',
+    chipRemoveColor: '#ef4444',
+    chipBorderRadius: 4,
+    dropdownBackgroundColor: '#1f2937',
+    dropdownTextColor: '#ffffff',
+    dropdownHoverColor: '#374151',
     ...overrides,
   }
 }
