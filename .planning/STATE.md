@@ -64,6 +64,10 @@ All v1.1 decisions documented and outcomes verified.
 
 | Decision | Phase | Rationale | Outcome |
 |----------|-------|-----------|---------|
+| Simple MIDI-to-note conversion | 22-01 | Avoids external dependencies, straightforward calculation | C4 = MIDI 60 standard, full 0-127 range |
+| Negative values display in red | 22-01 | Visual feedback following CONTEXT.md guidance | Improves usability for dB, offsets, bidirectional values |
+| Multi-Value Display limited to 4 values | 22-01 | Prevents overcrowding, maintains readability | slice(0, 4) in renderer |
+| EditableDisplay uses local state | 22-01 | Keeps editing ephemeral until validated | Double-click to edit, validation on commit |
 | LED off states at 30% brightness | 22-02 | User can see what color LED will be when lit | Improved design preview UX |
 | Bi-color LED always lit | 22-02 | No off state - switches between green/red only | Matches physical bi-color LED behavior |
 | SVG dashed stroke for LED Ring | 22-02 | Discrete segments vs continuous arc | Authentic LED ring appearance |
@@ -90,6 +94,9 @@ All v1.1 decisions documented and outcomes verified.
 **Phase 22 Progress (2 of 4 plans):**
 - Plan 22-01: Value Display types (Numeric, Time, Percentage, Ratio, Note, BPM, Editable, Multi-Value) - COMPLETE
 - Plan 22-02: LED Indicator types (Single, Bi-Color, Tri-Color, Array, Ring, Matrix) - COMPLETE
+- 8 value display types with formatDisplayValue utility (6 format types)
+- EditableDisplay with double-click editing and validation
+- Multi-Value Display with up to 4 stacked values
 - 6 LED indicator types with instant transitions and glow effects
 - LED color palette system (classic, modern, neon)
 - SVG dashed stroke for LED Ring, CSS Grid for LED Matrix
@@ -97,11 +104,11 @@ All v1.1 decisions documented and outcomes verified.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 22-02-PLAN.md (LED Indicators)
+Stopped at: Completed 22-01-PLAN.md (Value Display Elements)
 Resume file: None
 
 **Next step:** Proceed to Phase 22 Plan 03 (Property Panels & Palette)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing Phase 22 Plan 02*
+*Last updated: 2026-01-26 after completing Phase 22 Plan 01*
