@@ -427,6 +427,34 @@ export interface VUMeterStereoElementConfig extends BaseProfessionalMeterConfig 
   showChannelLabels: boolean
 }
 
+// PPM Type I (DIN) - IEC 60268-10, -50 to +5 dB, 10ms attack, 1.5s release
+export interface PPMType1MonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'ppmtype1mono'
+  ballisticsType: 'PPM_TYPE_I' // 10ms attack @ 90%, 20dB/1.5s release
+}
+
+export interface PPMType1StereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'ppmtype1stereo'
+  ballisticsType: 'PPM_TYPE_I'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// PPM Type II (BBC/EBU) - IEC 60268-10, -50 to +5 dB, 10ms attack, 2.8s release
+export interface PPMType2MonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'ppmtype2mono'
+  ballisticsType: 'PPM_TYPE_II' // 10ms attack @ 80%, 24dB/2.8s release
+}
+
+export interface PPMType2StereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'ppmtype2stereo'
+  ballisticsType: 'PPM_TYPE_II'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
 // ============================================================================
 // LED Indicator Configurations
 // ============================================================================
@@ -591,6 +619,10 @@ export type DisplayElement =
   | RMSMeterStereoElementConfig
   | VUMeterMonoElementConfig
   | VUMeterStereoElementConfig
+  | PPMType1MonoElementConfig
+  | PPMType1StereoElementConfig
+  | PPMType2MonoElementConfig
+  | PPMType2StereoElementConfig
 
 // ============================================================================
 // Type Guards
@@ -702,6 +734,22 @@ export function isVUMeterMono(element: { type: string }): element is VUMeterMono
 
 export function isVUMeterStereo(element: { type: string }): element is VUMeterStereoElementConfig {
   return element.type === 'vumeterstereo'
+}
+
+export function isPPMType1Mono(element: { type: string }): element is PPMType1MonoElementConfig {
+  return element.type === 'ppmtype1mono'
+}
+
+export function isPPMType1Stereo(element: { type: string }): element is PPMType1StereoElementConfig {
+  return element.type === 'ppmtype1stereo'
+}
+
+export function isPPMType2Mono(element: { type: string }): element is PPMType2MonoElementConfig {
+  return element.type === 'ppmtype2mono'
+}
+
+export function isPPMType2Stereo(element: { type: string }): element is PPMType2StereoElementConfig {
+  return element.type === 'ppmtype2stereo'
 }
 
 // ============================================================================
@@ -1524,6 +1572,141 @@ export function createVUMeterStereo(overrides?: Partial<VUMeterStereoElementConf
     peakHoldStyle: 'line',
     peakHoldDuration: 2000,
     ballisticsType: 'VU',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+// PPM uses -50 to +5 dB range with 55 segments
+export function createPPMType1Mono(overrides?: Partial<PPMType1MonoElementConfig>): PPMType1MonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'ppmtype1mono',
+    name: 'PPM Type I',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.69, // -12 dB on PPM scale (-50 to +5)
+    minDb: -50,
+    maxDb: 5,
+    orientation: 'vertical',
+    segmentCount: 55,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'PPM_TYPE_I',
+    ...overrides,
+  }
+}
+
+export function createPPMType1Stereo(overrides?: Partial<PPMType1StereoElementConfig>): PPMType1StereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'ppmtype1stereo',
+    name: 'PPM Type I Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.69,
+    valueL: 0.69,
+    valueR: 0.67,
+    minDb: -50,
+    maxDb: 5,
+    orientation: 'vertical',
+    segmentCount: 55,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'PPM_TYPE_I',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+export function createPPMType2Mono(overrides?: Partial<PPMType2MonoElementConfig>): PPMType2MonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'ppmtype2mono',
+    name: 'PPM Type II',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.69,
+    minDb: -50,
+    maxDb: 5,
+    orientation: 'vertical',
+    segmentCount: 55,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'PPM_TYPE_II',
+    ...overrides,
+  }
+}
+
+export function createPPMType2Stereo(overrides?: Partial<PPMType2StereoElementConfig>): PPMType2StereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'ppmtype2stereo',
+    name: 'PPM Type II Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.69,
+    valueL: 0.69,
+    valueR: 0.67,
+    minDb: -50,
+    maxDb: 5,
+    orientation: 'vertical',
+    segmentCount: 55,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'PPM_TYPE_II',
     showChannelLabels: true,
     ...overrides,
   }
