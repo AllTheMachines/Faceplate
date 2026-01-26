@@ -86,6 +86,28 @@ export interface TooltipElementConfig extends BaseElementConfig {
   maxWidth: number
 }
 
+export interface WindowChromeElementConfig extends BaseElementConfig {
+  type: 'windowchrome'
+
+  // Title bar
+  titleText: string
+  showTitle: boolean
+  titleFontSize: number
+  titleColor: string
+
+  // Button style
+  buttonStyle: 'macos' | 'windows' | 'neutral'
+
+  // Button visibility
+  showCloseButton: boolean
+  showMinimizeButton: boolean
+  showMaximizeButton: boolean
+
+  // Appearance
+  backgroundColor: string
+  height: number
+}
+
 // ============================================================================
 // Container Element Union
 // ============================================================================
@@ -96,6 +118,7 @@ export type ContainerElement =
   | GroupBoxElementConfig
   | CollapsibleContainerElementConfig
   | TooltipElementConfig
+  | WindowChromeElementConfig
 
 // ============================================================================
 // Type Guards
@@ -119,6 +142,10 @@ export function isCollapsible(element: { type: string }): element is Collapsible
 
 export function isTooltip(element: { type: string }): element is TooltipElementConfig {
   return element.type === 'tooltip'
+}
+
+export function isWindowChrome(element: { type: string }): element is WindowChromeElementConfig {
+  return element.type === 'windowchrome'
 }
 
 // ============================================================================
@@ -247,6 +274,32 @@ export function createTooltip(overrides?: Partial<TooltipElementConfig>): Toolti
     padding: 8,
     borderRadius: 4,
     maxWidth: 200,
+    ...overrides,
+  }
+}
+
+export function createWindowChrome(overrides?: Partial<WindowChromeElementConfig>): WindowChromeElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'windowchrome',
+    name: 'Window Chrome',
+    x: 0,
+    y: 0,
+    width: 400,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    titleText: 'Plugin Window',
+    showTitle: true,
+    titleFontSize: 13,
+    titleColor: '#ffffff',
+    buttonStyle: 'macos',
+    showCloseButton: true,
+    showMinimizeButton: true,
+    showMaximizeButton: true,
+    backgroundColor: '#1f2937',
     ...overrides,
   }
 }
