@@ -197,11 +197,14 @@ Plans:
   4. SVG Graphic can be resized on canvas with optional aspect ratio lock
   5. SVG Graphic scales perfectly without pixelation (vector rendering)
   6. SVG Graphic supports position, size, and z-index properties
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 16-01: TBD
-- [ ] 16-02: TBD
+- [ ] 16-01-PLAN.md — Element type & renderer (SvgGraphicElementConfig, SvgGraphicRenderer)
+- [ ] 16-02-PLAN.md — Property panel (SvgGraphicProperties, getSVGNaturalSize utility)
+- [ ] 16-03-PLAN.md — Integration (palette, Element.tsx, PropertyPanel, drag-drop)
+- [ ] 16-04-PLAN.md — Export support (HTML/CSS generators)
+- [ ] 16-05-PLAN.md — Aspect ratio locking (resize hook modification)
 
 #### Phase 17: Interactive SVG Knobs
 **Goal**: Users can import custom knob designs with rotation animation mapped to parameter values
