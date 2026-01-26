@@ -81,6 +81,7 @@ function App() {
   const gridSize = useStore((state) => state.gridSize)
   const setLiveDragValues = useStore((state) => state.setLiveDragValues)
   const getElement = useStore((state) => state.getElement)
+  const getAsset = useStore((state) => state.getAsset)
 
   // Track active drag data for preview overlay
   const [activeDragData, setActiveDragData] = useState<{
@@ -110,6 +111,17 @@ function App() {
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
     const sourceType = active.data.current?.sourceType
+    const dragType = active.data.current?.type
+
+    // Handle library-asset drag
+    if (dragType === 'library-asset') {
+      const assetId = active.data.current?.assetId
+      const asset = getAsset(assetId)
+      if (asset) {
+        setActiveDragData({ elementType: 'image', variant: { name: asset.name } })
+      }
+      return
+    }
 
     // Only show overlay for palette drags, not element moves
     if (sourceType !== 'element') {
@@ -189,9 +201,64 @@ function App() {
       return
     }
 
+    // Check for library-asset drag
+    const dragType = active.data.current?.type
+    if (dragType === 'library-asset') {
+      // Only handle drops over canvas
+      if (!over || over.id !== 'canvas-droppable') {
+        setActiveDragData(null)
+        return
+      }
+
+      const assetId = active.data.current?.assetId
+      if (!assetId) return
+
+      const asset = getAsset(assetId)
+      if (!asset) return
+
+      // Get the canvas viewport element to calculate offset
+      const canvasViewport = document.querySelector('.canvas-viewport')
+      if (!canvasViewport) return
+      const viewportRect = canvasViewport.getBoundingClientRect()
+
+      // Get drop position from tracked mouse position
+      let finalX: number, finalY: number
+      const trackedPosition = lastPointerPositionRef.current
+      if (trackedPosition) {
+        finalX = trackedPosition.x
+        finalY = trackedPosition.y
+      } else {
+        const pointerEvent = event.activatorEvent as PointerEvent
+        finalX = pointerEvent.clientX + (event.delta?.x || 0)
+        finalY = pointerEvent.clientY + (event.delta?.y || 0)
+      }
+
+      // Transform screen coordinates to canvas coordinates
+      const canvasX = (finalX - viewportRect.left - offsetX) / scale
+      const canvasY = (finalY - viewportRect.top - offsetY) / scale
+
+      // Create image element with asset reference
+      const newElement = createImage({
+        x: canvasX,
+        y: canvasY,
+        assetId: assetId,
+        src: '',
+        name: asset.name,
+      })
+
+      // Center element on drop position
+      newElement.x = canvasX - newElement.width / 2
+      newElement.y = canvasY - newElement.height / 2
+
+      addElement(newElement)
+      setActiveDragData(null)
+      return
+    }
+
     // Palette drop - create new element at drop position
     // Only handle drops over canvas
     if (!over || over.id !== 'canvas-droppable') {
+      setActiveDragData(null)
       return
     }
 
