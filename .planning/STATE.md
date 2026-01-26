@@ -87,6 +87,10 @@ Recent decisions affecting current work:
 - **v1.1 (16-02)**: DOMParser for SVG viewBox extraction (synchronous, robust parsing)
 - **v1.1 (16-02)**: Auto-resize to natural size when asset selected (prevents distortion)
 - **v1.1 (16-02)**: Opacity displayed as 0-100% in UI, stored as 0-1 internally
+- **v1.1 (16-04)**: Re-sanitize SVG before export for SEC-04 compliance
+- **v1.1 (16-04)**: Combine rotation and flip transforms via regex replacement in export
+- **v1.1 (16-04)**: object-fit: contain for SVG scaling in exported CSS (maintains aspect ratio)
+- **v1.1 (16-04)**: Export missing assets as empty div with comment (graceful degradation)
 - **v1.1 (16-05)**: Aspect ratio LOCKED by default for SVG Graphics (Shift unlocks) - prevents accidental distortion
 - **v1.1 (16-05)**: 8x8 minimum size for SVG Graphics (vs 20 for other elements) - allows small icons
 
