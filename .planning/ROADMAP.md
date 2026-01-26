@@ -220,12 +220,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 17-01-PLAN.md — KnobStyle type and KnobStylesSlice store
-- [ ] 17-02-PLAN.md — Layer detection utilities (detectKnobLayers, extractLayer, applyColorOverride)
-- [ ] 17-03-PLAN.md — StyledKnobRenderer (layer-based SVG knob rendering)
-- [ ] 17-04-PLAN.md — LayerMappingDialog and ManageKnobStylesDialog
-- [ ] 17-05-PLAN.md — KnobProperties extensions (style dropdown, color overrides)
-- [ ] 17-06-PLAN.md — Project serialization and HTML/CSS export
+- [x] 17-01-PLAN.md — KnobStyle type and KnobStylesSlice store
+- [x] 17-02-PLAN.md — Layer detection utilities (detectKnobLayers, extractLayer, applyColorOverride)
+- [x] 17-03-PLAN.md — StyledKnobRenderer (layer-based SVG knob rendering)
+- [x] 17-04-PLAN.md — LayerMappingDialog and ManageKnobStylesDialog
+- [x] 17-05-PLAN.md — KnobProperties extensions (style dropdown, color overrides)
+- [x] 17-06-PLAN.md — Project serialization and HTML/CSS export
 
 #### Phase 18: Export & Polish
 **Goal**: Exported JUCE bundles include sanitized, optimized SVG with responsive scaling
@@ -266,9 +266,9 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 | 14. Security Foundation & Upload Pipeline | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 15. Asset Library Storage & UI | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 16. Static SVG Graphics | v1.1 | 5/5 | Complete | 2026-01-26 |
-| 17. Interactive SVG Knobs | v1.1 | 0/6 | Not started | - |
+| 17. Interactive SVG Knobs | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 18. Export & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 17 planning*
+*Last updated: 2026-01-26 after Phase 17 completion*
