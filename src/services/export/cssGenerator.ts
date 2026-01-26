@@ -3,7 +3,7 @@
  * Generates style.css with element-specific styling
  */
 
-import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig } from '../../types/elements'
+import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import { toKebabCase } from './utils'
 import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
@@ -1169,6 +1169,31 @@ ${selector} .channel-label {
       return generateHorizontalBarMeterCSS(config, selector)
     }
 
+    // Navigation Elements
+    case 'stepper':
+      return generateStepperCSS(selector, element as StepperElementConfig)
+
+    case 'breadcrumb':
+      return generateBreadcrumbCSS(selector, element as BreadcrumbElementConfig)
+
+    case 'multiselectdropdown':
+      return generateMultiSelectDropdownCSS(selector, element as MultiSelectDropdownElementConfig)
+
+    case 'combobox':
+      return generateComboBoxCSS(selector, element as ComboBoxElementConfig)
+
+    case 'menubutton':
+      return generateMenuButtonCSS(selector, element as MenuButtonElementConfig)
+
+    case 'tabbar':
+      return generateTabBarCSS(selector, element as TabBarElementConfig)
+
+    case 'tagselector':
+      return generateTagSelectorCSS(selector, element as TagSelectorElementConfig)
+
+    case 'treeview':
+      return generateTreeViewCSS(selector, element as TreeViewElementConfig)
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
@@ -2114,5 +2139,542 @@ ${selector} .led-cell[data-lit="false"] {
 ${selector} .led-cell[data-lit="true"] {
   background-color: ${element.onColor};
   ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.onColor};` : ''}
+}`
+}
+
+// ============================================================================
+// Navigation Element CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate Stepper CSS
+ */
+function generateStepperCSS(selector: string, element: StepperElementConfig): string {
+  const isVertical = element.orientation === 'vertical'
+  return `/* Stepper */
+${selector} {
+  display: flex;
+  flex-direction: ${isVertical ? 'column' : 'row'};
+  align-items: center;
+  gap: 8px;
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+${selector} .stepper-button {
+  width: ${element.buttonSize}px;
+  height: ${element.buttonSize}px;
+  background-color: ${element.buttonColor};
+  border: none;
+  border-radius: 4px;
+  color: ${element.textColor};
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  user-select: none;
+}
+
+${selector} .stepper-button:hover {
+  background-color: ${element.buttonHoverColor};
+}
+
+${selector} .stepper-button.decrement::before {
+  content: '−';
+}
+
+${selector} .stepper-button.increment::before {
+  content: '+';
+}
+
+${selector} .stepper-value {
+  color: ${element.textColor};
+  font-size: 14px;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 500;
+  user-select: none;
+  min-width: 40px;
+  text-align: center;
+}`
+}
+
+/**
+ * Generate Breadcrumb CSS
+ */
+function generateBreadcrumbCSS(selector: string, element: BreadcrumbElementConfig): string {
+  return `/* Breadcrumb */
+${selector} {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+${selector} ol {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+${selector} li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+${selector} a {
+  color: ${element.linkColor};
+  text-decoration: none;
+  font-size: ${element.fontSize}px;
+  transition: none;
+}
+
+${selector} a:hover {
+  color: ${element.hoverColor};
+}
+
+${selector} .breadcrumb-current {
+  color: ${element.currentColor};
+  font-size: ${element.fontSize}px;
+  font-weight: 500;
+}
+
+${selector} .breadcrumb-separator {
+  color: ${element.separatorColor};
+  font-size: ${element.fontSize}px;
+  user-select: none;
+}
+
+${selector} .breadcrumb-ellipsis {
+  color: ${element.separatorColor};
+  font-size: ${element.fontSize}px;
+  user-select: none;
+}`
+}
+
+/**
+ * Generate shared dropdown base CSS (used by Multi-Select, ComboBox, MenuButton)
+ */
+function generateDropdownBaseCSS(selector: string): string {
+  return `
+${selector} .dropdown-container {
+  position: relative;
+}
+
+${selector} .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: inherit;
+  border: 1px solid;
+  border-color: inherit;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease-in;
+  z-index: 1000;
+}
+
+${selector}.open .dropdown-menu {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 100ms ease-out;
+}
+
+${selector} .dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: none;
+}
+
+${selector} .dropdown-item:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+${selector} .dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+${selector} .dropdown-item.disabled:hover {
+  background-color: transparent;
+}`
+}
+
+/**
+ * Generate Multi-Select Dropdown CSS
+ */
+function generateMultiSelectDropdownCSS(selector: string, element: MultiSelectDropdownElementConfig): string {
+  return `/* Multi-Select Dropdown */
+${selector} {
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  padding: 8px 12px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+}
+${generateDropdownBaseCSS(selector)}
+
+${selector} .selected-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+${selector} .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+${selector} .dropdown-item input[type="checkbox"] {
+  cursor: pointer;
+}`
+}
+
+/**
+ * Generate Combo Box CSS
+ */
+function generateComboBoxCSS(selector: string, element: ComboBoxElementConfig): string {
+  return `/* Combo Box */
+${selector} {
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+${generateDropdownBaseCSS(selector)}
+
+${selector} input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-size: inherit;
+  padding: 8px 12px;
+}
+
+${selector} input::placeholder {
+  color: currentColor;
+  opacity: 0.5;
+}
+
+${selector} .empty-state {
+  padding: 8px 12px;
+  color: currentColor;
+  opacity: 0.6;
+  font-style: italic;
+  user-select: none;
+}`
+}
+
+/**
+ * Generate Menu Button CSS
+ */
+function generateMenuButtonCSS(selector: string, element: MenuButtonElementConfig): string {
+  return `/* Menu Button */
+${selector} {
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  padding: 8px 16px;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+${generateDropdownBaseCSS(selector)}
+
+${selector} .dropdown-menu {
+  min-width: 150px;
+}
+
+${selector} .menu-divider {
+  height: 1px;
+  background-color: ${element.borderColor};
+  margin: 4px 0;
+}`
+}
+
+/**
+ * Generate Tab Bar CSS
+ */
+function generateTabBarCSS(selector: string, element: TabBarElementConfig): string {
+  const isVertical = element.orientation === 'vertical'
+  const indicatorCSS = element.indicatorStyle === 'background'
+    ? `background-color: ${element.indicatorColor};`
+    : element.indicatorStyle === 'underline'
+    ? isVertical
+      ? `border-right: 3px solid ${element.indicatorColor};`
+      : `border-bottom: 3px solid ${element.indicatorColor};`
+    : '' // accent-bar handled separately
+
+  return `/* Tab Bar */
+${selector} {
+  display: flex;
+  flex-direction: ${isVertical ? 'column' : 'row'};
+  background-color: ${element.backgroundColor};
+  border: 1px solid ${element.borderColor};
+  border-radius: 4px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+${selector} .tab {
+  flex: ${isVertical ? '0 0 auto' : '1'};
+  height: ${element.tabHeight}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  color: ${element.textColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: none;
+  position: relative;
+}
+
+${selector} .tab:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+${selector} .tab[aria-selected="true"] {
+  color: ${element.activeTextColor};
+  ${indicatorCSS}
+}
+
+${selector} .tab-icon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+${selector} .tab-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+${element.indicatorStyle === 'accent-bar' ? `
+${selector} .indicator-underline,
+${selector} .indicator-accent {
+  position: absolute;
+  background-color: ${element.indicatorColor};
+  transition: none;
+}
+
+${selector} .indicator-underline {
+  ${isVertical ? 'right: 0; top: 0; bottom: 0; width: 3px;' : 'bottom: 0; left: 0; right: 0; height: 3px;'}
+}
+
+${selector} .indicator-accent {
+  ${isVertical ? 'left: 0; width: 4px;' : 'top: 0; height: 4px;'}
+}` : ''}`
+}
+
+/**
+ * Generate Tag Selector CSS
+ */
+function generateTagSelectorCSS(selector: string, element: TagSelectorElementConfig): string {
+  return `/* Tag Selector */
+${selector} {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: Inter, system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+${selector} .tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+${selector} .tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: ${element.chipBackgroundColor};
+  color: ${element.chipTextColor};
+  border-radius: ${element.chipBorderRadius}px;
+  font-size: 12px;
+  user-select: none;
+}
+
+${selector} .tag-remove {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: ${element.chipRemoveColor};
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 0;
+  transition: none;
+}
+
+${selector} .tag-remove:hover {
+  filter: brightness(1.2);
+}
+
+${element.showInput ? `
+${selector} .tag-input-wrapper {
+  position: relative;
+}
+
+${selector} input {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: ${element.inputBackgroundColor};
+  color: ${element.inputTextColor};
+  border: 1px solid ${element.inputBorderColor};
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+${selector} input::placeholder {
+  color: currentColor;
+  opacity: 0.5;
+}
+
+${selector} .tag-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: ${element.dropdownBackgroundColor};
+  color: ${element.dropdownTextColor};
+  border: 1px solid ${element.inputBorderColor};
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease-in;
+  z-index: 1000;
+}
+
+${selector}.open .tag-dropdown {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 100ms ease-out;
+}
+
+${selector} .tag-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: none;
+}
+
+${selector} .tag-dropdown-item:hover {
+  background-color: ${element.dropdownHoverColor};
+}` : ''}`
+}
+
+/**
+ * Generate Tree View CSS
+ */
+function generateTreeViewCSS(selector: string, element: TreeViewElementConfig): string {
+  return `/* Tree View */
+${selector} {
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  font-family: Inter, system-ui, sans-serif;
+  font-size: ${element.fontSize}px;
+  overflow-y: auto;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+${selector} .tree-node {
+  display: flex;
+  align-items: center;
+  height: ${element.rowHeight}px;
+  cursor: pointer;
+  transition: none;
+}
+
+${selector} .tree-node:hover {
+  background-color: ${element.hoverBackgroundColor};
+}
+
+${selector} .tree-node[data-selected="true"] {
+  background-color: ${element.selectedBackgroundColor};
+  color: ${element.selectedTextColor};
+}
+
+${selector} .tree-arrow {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: none;
+}
+
+${selector} .tree-arrow::before {
+  content: '▶';
+  font-size: 10px;
+  transform: rotate(0deg);
+  transition: none;
+}
+
+${selector} .tree-arrow.expanded::before {
+  transform: rotate(90deg);
+}
+
+${selector} .tree-arrow.empty {
+  visibility: hidden;
+}
+
+${selector} .tree-node-name {
+  flex: 1;
+  padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }`
 }
