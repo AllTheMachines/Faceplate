@@ -5,6 +5,7 @@
 
 import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
+import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import { toKebabCase } from './utils'
 import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
 
@@ -1193,6 +1194,14 @@ ${selector} .channel-label {
 
     case 'treeview':
       return generateTreeViewCSS(selector, element as TreeViewElementConfig)
+
+    // Visualization Elements
+    case 'scrollingwaveform':
+    case 'spectrumanalyzer':
+    case 'spectrogram':
+    case 'goniometer':
+    case 'vectorscope':
+      return generateVisualizationCSS(element as ScrollingWaveformElementConfig | SpectrumAnalyzerElementConfig | SpectrogramElementConfig | GoniometerElementConfig | VectorscopeElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -2677,4 +2686,35 @@ ${selector} .tree-node-name {
   overflow: hidden;
   text-overflow: ellipsis;
 }`
+}
+
+// ============================================================================
+// Visualization CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate CSS for Canvas-based visualization containers
+ */
+function generateVisualizationCSS(
+  config: ScrollingWaveformElementConfig | SpectrumAnalyzerElementConfig | SpectrogramElementConfig | GoniometerElementConfig | VectorscopeElementConfig
+): string {
+  const id = toKebabCase(config.id)
+
+  return `/* ${config.name || config.type} */
+#${id} {
+  position: absolute;
+  left: ${config.x}px;
+  top: ${config.y}px;
+  width: ${config.width}px;
+  height: ${config.height}px;
+  background-color: ${config.backgroundColor};
+  overflow: hidden;
+}
+
+#${id} canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+`
 }
