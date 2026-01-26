@@ -96,6 +96,8 @@ import {
   SpectrogramRenderer,
   GoniometerRenderer,
   VectorscopeRenderer,
+  CompressorCurveRenderer,
+  EnvelopeDisplayRenderer,
   EQCurveRenderer,
   FilterResponseRenderer,
   LFODisplayRenderer,
@@ -219,6 +221,8 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['vectorscope', VectorscopeRenderer as RendererComponent],
 
   // Interactive Curves
+  ['compressorcurve', CompressorCurveRenderer as RendererComponent],
+  ['envelopedisplay', EnvelopeDisplayRenderer as RendererComponent],
   ['eqcurve', EQCurveRenderer as RendererComponent],
   ['filterresponse', FilterResponseRenderer as RendererComponent],
   ['lfodisplay', LFODisplayRenderer as RendererComponent],
@@ -331,6 +335,8 @@ export {
   SpectrogramRenderer,
   GoniometerRenderer,
   VectorscopeRenderer,
+  CompressorCurveRenderer,
+  EnvelopeDisplayRenderer,
   EQCurveRenderer,
   FilterResponseRenderer,
   LFODisplayRenderer,
