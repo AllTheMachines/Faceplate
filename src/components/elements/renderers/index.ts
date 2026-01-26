@@ -35,6 +35,8 @@ import {
   PowerButtonRenderer,
   StepperRenderer,
   BreadcrumbRenderer,
+  TabBarRenderer,
+  TagSelectorRenderer,
 } from './controls'
 
 import {
@@ -135,6 +137,8 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['powerbutton', PowerButtonRenderer as RendererComponent],
   ['stepper', StepperRenderer as RendererComponent],
   ['breadcrumb', BreadcrumbRenderer as RendererComponent],
+  ['tabbar', TabBarRenderer as RendererComponent],
+  ['tagselector', TagSelectorRenderer as RendererComponent],
 
   // Displays
   ['label', LabelRenderer as RendererComponent],
@@ -240,6 +244,8 @@ export {
   PowerButtonRenderer,
   StepperRenderer,
   BreadcrumbRenderer,
+  TabBarRenderer,
+  TagSelectorRenderer,
   // Displays
   LabelRenderer,
   MeterRenderer,
