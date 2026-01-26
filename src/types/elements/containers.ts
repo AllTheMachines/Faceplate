@@ -108,6 +108,44 @@ export interface WindowChromeElementConfig extends BaseElementConfig {
   height: number
 }
 
+export interface HorizontalSpacerElementConfig extends BaseElementConfig {
+  type: 'horizontalspacer'
+
+  // Sizing mode
+  sizingMode: 'fixed' | 'flexible'
+
+  // Fixed mode properties
+  fixedWidth: number
+
+  // Flexible mode properties
+  flexGrow: number
+  minWidth: number
+  maxWidth: number
+
+  // Visual indicator
+  showIndicator: boolean
+  indicatorColor: string
+}
+
+export interface VerticalSpacerElementConfig extends BaseElementConfig {
+  type: 'verticalspacer'
+
+  // Sizing mode
+  sizingMode: 'fixed' | 'flexible'
+
+  // Fixed mode properties
+  fixedHeight: number
+
+  // Flexible mode properties
+  flexGrow: number
+  minHeight: number
+  maxHeight: number
+
+  // Visual indicator
+  showIndicator: boolean
+  indicatorColor: string
+}
+
 // ============================================================================
 // Container Element Union
 // ============================================================================
@@ -119,6 +157,8 @@ export type ContainerElement =
   | CollapsibleContainerElementConfig
   | TooltipElementConfig
   | WindowChromeElementConfig
+  | HorizontalSpacerElementConfig
+  | VerticalSpacerElementConfig
 
 // ============================================================================
 // Type Guards
@@ -146,6 +186,14 @@ export function isTooltip(element: { type: string }): element is TooltipElementC
 
 export function isWindowChrome(element: { type: string }): element is WindowChromeElementConfig {
   return element.type === 'windowchrome'
+}
+
+export function isHorizontalSpacer(element: { type: string }): element is HorizontalSpacerElementConfig {
+  return element.type === 'horizontalspacer'
+}
+
+export function isVerticalSpacer(element: { type: string }): element is VerticalSpacerElementConfig {
+  return element.type === 'verticalspacer'
 }
 
 // ============================================================================
@@ -300,6 +348,54 @@ export function createWindowChrome(overrides?: Partial<WindowChromeElementConfig
     showMinimizeButton: true,
     showMaximizeButton: true,
     backgroundColor: '#1f2937',
+    ...overrides,
+  }
+}
+
+export function createHorizontalSpacer(overrides?: Partial<HorizontalSpacerElementConfig>): HorizontalSpacerElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'horizontalspacer',
+    name: 'Horizontal Spacer',
+    x: 0,
+    y: 0,
+    width: 40,
+    height: 20,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    sizingMode: 'fixed',
+    fixedWidth: 40,
+    flexGrow: 1,
+    minWidth: 0,
+    maxWidth: 9999,
+    showIndicator: true,
+    indicatorColor: '#6b7280',
+    ...overrides,
+  }
+}
+
+export function createVerticalSpacer(overrides?: Partial<VerticalSpacerElementConfig>): VerticalSpacerElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'verticalspacer',
+    name: 'Vertical Spacer',
+    x: 0,
+    y: 0,
+    width: 20,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    sizingMode: 'fixed',
+    fixedHeight: 40,
+    flexGrow: 1,
+    minHeight: 0,
+    maxHeight: 9999,
+    showIndicator: true,
+    indicatorColor: '#6b7280',
     ...overrides,
   }
 }
