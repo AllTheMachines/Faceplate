@@ -335,6 +335,15 @@ Plans:
 **Goal**: Users can add navigation and selection components for complex UIs
 **Dependencies**: Phase 19 (requires registry pattern)
 **Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05, NAV-06, NAV-07, NAV-08
+**Plans**: 6 plans
+
+Plans:
+- [ ] 24-01-PLAN.md — Stepper and Breadcrumb types + renderers
+- [ ] 24-02-PLAN.md — Multi-Select Dropdown, Combo Box, Menu Button types + renderers
+- [ ] 24-03-PLAN.md — Tab Bar and Tag Selector types + renderers
+- [ ] 24-04-PLAN.md — Tree View with react-arborist
+- [ ] 24-05-PLAN.md — Property panels + palette entries (8 element types)
+- [ ] 24-06-PLAN.md — Export support (CSS/HTML generators)
 
 **Success Criteria:**
 1. User can add Multi-Select Dropdown with checkboxes for multiple selections
@@ -444,7 +453,7 @@ Plans:
 | 21. Buttons & Switches | v1.2 | 4/4 | Complete | 2026-01-26 |
 | 22. Value Displays & LEDs | v1.2 | 4/4 | Complete | 2026-01-26 |
 | 23. Professional Meters | v1.2 | 6/6 | Complete | 2026-01-26 |
-| 24. Navigation & Selection | v1.2 | 0/? | Pending | — |
+| 24. Navigation & Selection | v1.2 | 0/6 | Planned | — |
 | 25. Real-Time Visualizations | v1.2 | 0/? | Pending | — |
 | 26. Interactive Curves | v1.2 | 0/? | Pending | — |
 | 27. Containers & Polish | v1.2 | 0/? | Pending | — |
@@ -454,4 +463,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 23 execution complete*
+*Last updated: 2026-01-26 after Phase 24 planning complete*
