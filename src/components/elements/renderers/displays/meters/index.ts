@@ -5,6 +5,10 @@ export { RMSMeterMonoRenderer, RMSMeterStereoRenderer } from './RMSMeterRenderer
 export { VUMeterMonoRenderer, VUMeterStereoRenderer } from './VUMeterRenderer'
 export { PPMType1MonoRenderer, PPMType1StereoRenderer } from './PPMType1Renderer'
 export { PPMType2MonoRenderer, PPMType2StereoRenderer } from './PPMType2Renderer'
+export { TruePeakMeterMonoRenderer, TruePeakMeterStereoRenderer } from './TruePeakRenderer'
+export { LUFSMomentaryMonoRenderer, LUFSMomentaryStereoRenderer } from './LUFSMomentaryRenderer'
+export { LUFSShorttermMonoRenderer, LUFSShorttermStereoRenderer } from './LUFSShorttermRenderer'
+export { LUFSIntegratedMonoRenderer, LUFSIntegratedStereoRenderer } from './LUFSIntegratedRenderer'
 export {
   K12MeterMonoRenderer,
   K12MeterStereoRenderer,
