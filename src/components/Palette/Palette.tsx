@@ -55,6 +55,7 @@ const paletteCategories = [
     name: 'Images & Decorative',
     items: [
       { id: 'image', type: 'image', name: 'Image' },
+      { id: 'svggraphic', type: 'svggraphic', name: 'SVG Graphic' },
       { id: 'rectangle', type: 'rectangle', name: 'Rectangle' },
       { id: 'line', type: 'line', name: 'Line' },
     ],

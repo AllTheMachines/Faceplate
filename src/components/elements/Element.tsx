@@ -26,6 +26,7 @@ import { WaveformRenderer } from './renderers/WaveformRenderer'
 import { OscilloscopeRenderer } from './renderers/OscilloscopeRenderer'
 import { TextFieldRenderer } from './renderers/TextFieldRenderer'
 import { CollapsibleRenderer } from './renderers/CollapsibleRenderer'
+import { SvgGraphicRenderer } from './renderers/SvgGraphicRenderer'
 
 interface ElementProps {
   element: ElementConfig
@@ -112,6 +113,8 @@ function ElementComponent({ element }: ElementProps) {
         return <TextFieldRenderer config={element} />
       case 'collapsible':
         return <CollapsibleRenderer config={element} />
+      case 'svggraphic':
+        return <SvgGraphicRenderer config={element} />
       default:
         // TypeScript exhaustive check
         const exhaustive: never = element
