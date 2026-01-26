@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 25 - Real-Time Visualizations
-Plan: 4 of 4 complete
+Plan: 5 of 5 complete
 Status: Phase complete
-Last activity: 2026-01-26 - Completed 25-04-PLAN.md (Property Panels & Palette)
+Last activity: 2026-01-26 - Completed 25-05-PLAN.md (Export Support)
 
-Progress: [██████████] 122/122 plans complete (100%)
+Progress: [██████████] 123/123 plans complete (100%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [██████████] 122/122 plans complete (100%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 34 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 4)
+- Completed: 35 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5)
 
 ## Accumulated Context
 
@@ -147,10 +147,13 @@ All v1.1 decisions documented and outcomes verified.
 | Goniometer diagonal axes | 25-03 | M/S mode per industry standard | L/R axes at 45° with M vertical, S horizontal |
 | Vectorscope standard axes | 25-03 | Standard Lissajous display convention | L on horizontal (X), R on vertical (Y) |
 | Circular grid intervals | 25-03 | Clear phase correlation reference | Rings at 0.25, 0.5, 0.75, 1.0 radius (25% intervals) |
+| Inline JavaScript draw functions | 25-05 | Canvas visualizations export with embedded JavaScript | Avoids external script dependencies, immediate execution |
+| JUCE event naming convention | 25-05 | Consistent pattern for visualization data events | waveform_{id}, fftData_{id}, spectrogramData_{id}, stereoData_{id} |
+| HiDPI Canvas scaling in exports | 25-05 | Exported JavaScript includes devicePixelRatio scaling | Crisp rendering on retina displays in JUCE WebView2 |
 
 ### Pending Todos
 
-None - Phase 25 Plans 01-03 complete
+None - Phase 25 complete
 
 ### Blockers/Concerns
 
@@ -216,7 +219,8 @@ None - Phase 25 Plans 01-03 complete
 - Plan 25-02: Visualization Renderers (ScrollingWaveform, SpectrumAnalyzer) - COMPLETE
 - Plan 25-03: Remaining Visualizations (Spectrogram, Goniometer, Vectorscope) - COMPLETE
 - Plan 25-04: Property Panels & Palette - COMPLETE
-- **Total:** 5 Canvas visualization types fully integrated end-to-end across 4 plans
+- Plan 25-05: Export Support (CSS and HTML generation for Canvas visualizations) - COMPLETE
+- **Total:** 5 Canvas visualization types fully integrated end-to-end across 5 plans
 - TypeScript types for all 5 Canvas visualizations (ScrollingWaveform, SpectrumAnalyzer, Spectrogram, Goniometer, Vectorscope)
 - Mock audio data utilities: pink noise spectrum, static waveform, spectrogram frame, mono signal
 - Canvas setup hook with HiDPI scaling using useLayoutEffect
@@ -229,15 +233,16 @@ None - Phase 25 Plans 01-03 complete
 - Static mock data per CONTEXT.md (frozen snapshots, no animation loops)
 - Property panels for all 5 visualization types with full configuration options
 - "Visualizations" palette category with all 5 element types
+- Export support: CSS generation for Canvas containers, HTML with inline JavaScript draw functions, JUCE event listeners
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 25-04-PLAN.md (Property Panels & Palette) - Phase 25 complete
+Stopped at: Completed 25-05-PLAN.md (Export Support) - Phase 25 complete
 Resume file: None
 
 **Next step:** Phase 26 (Containers & Layout)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 25-04-PLAN.md complete - Phase 25 complete*
+*Last updated: 2026-01-26 after 25-05-PLAN.md complete - Phase 25 complete*
