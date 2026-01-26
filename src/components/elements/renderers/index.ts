@@ -91,6 +91,11 @@ import {
   K20MeterStereoRenderer,
   CorrelationMeterRenderer,
   StereoWidthMeterRenderer,
+  ScrollingWaveformRenderer,
+  SpectrumAnalyzerRenderer,
+  SpectrogramRenderer,
+  GoniometerRenderer,
+  VectorscopeRenderer,
 } from './displays'
 
 import {
@@ -203,6 +208,13 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['correlationmeter', CorrelationMeterRenderer as RendererComponent],
   ['stereowidthmeter', StereoWidthMeterRenderer as RendererComponent],
 
+  // Canvas Visualizations
+  ['scrollingwaveform', ScrollingWaveformRenderer as RendererComponent],
+  ['spectrumanalyzer', SpectrumAnalyzerRenderer as RendererComponent],
+  ['spectrogram', SpectrogramRenderer as RendererComponent],
+  ['goniometer', GoniometerRenderer as RendererComponent],
+  ['vectorscope', VectorscopeRenderer as RendererComponent],
+
   // Containers
   ['panel', PanelRenderer as RendererComponent],
   ['frame', FrameRenderer as RendererComponent],
@@ -306,6 +318,8 @@ export {
   K20MeterStereoRenderer,
   CorrelationMeterRenderer,
   StereoWidthMeterRenderer,
+  ScrollingWaveformRenderer,
+  SpectrumAnalyzerRenderer,
   // Containers
   PanelRenderer,
   FrameRenderer,

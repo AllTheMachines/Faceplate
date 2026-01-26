@@ -59,3 +59,12 @@ export {
   CorrelationMeterRenderer,
   StereoWidthMeterRenderer,
 } from './meters'
+
+// Canvas Visualizations
+export {
+  ScrollingWaveformRenderer,
+  SpectrumAnalyzerRenderer,
+  SpectrogramRenderer,
+  GoniometerRenderer,
+  VectorscopeRenderer,
+} from './visualizations'
