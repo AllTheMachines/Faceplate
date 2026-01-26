@@ -7,6 +7,8 @@ import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElemen
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
+import { extractLayer, applyAllColorOverrides } from '../knobLayers'
+import type { KnobStyle } from '../../types/knobStyle'
 
 // ============================================================================
 // Value Formatting Utility
@@ -242,9 +244,83 @@ export function generateElementHTML(element: ElementConfig): string {
 }
 
 /**
- * Generate knob HTML with SVG arc structure
+ * Generate styled knob HTML with custom SVG layers
+ */
+function generateStyledKnobHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: KnobElementConfig,
+  style: KnobStyle
+): string {
+  // Apply color overrides to SVG (if any)
+  let svgWithOverrides = style.svgContent
+  if (config.colorOverrides) {
+    svgWithOverrides = applyAllColorOverrides(
+      style.svgContent,
+      style.layers,
+      config.colorOverrides
+    )
+  }
+
+  // Re-sanitize before export (SEC-04: defense-in-depth)
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+
+  // Extract each layer (if defined)
+  const trackSvg = style.layers.track ? extractLayer(sanitizedSvg, style.layers.track) : ''
+  const shadowSvg = style.layers.shadow ? extractLayer(sanitizedSvg, style.layers.shadow) : ''
+  const arcSvg = style.layers.arc ? extractLayer(sanitizedSvg, style.layers.arc) : ''
+  const indicatorSvg = style.layers.indicator ? extractLayer(sanitizedSvg, style.layers.indicator) : ''
+  const glowSvg = style.layers.glow ? extractLayer(sanitizedSvg, style.layers.glow) : ''
+
+  // Calculate normalized value for rotation
+  const range = config.max - config.min
+  const normalizedValue = (config.value - config.min) / range
+
+  // Label and value display
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} knob knob-element styled-knob" data-type="knob" data-value="${normalizedValue}" data-min-angle="${style.minAngle}" data-max-angle="${style.maxAngle}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <div class="styled-knob-container">
+        ${trackSvg ? `<div class="knob-layer knob-track">${trackSvg}</div>` : ''}
+        ${shadowSvg ? `<div class="knob-layer knob-shadow">${shadowSvg}</div>` : ''}
+        ${arcSvg ? `<div class="knob-layer knob-arc">${arcSvg}</div>` : ''}
+        ${indicatorSvg ? `<div class="knob-layer knob-indicator">${indicatorSvg}</div>` : ''}
+        ${glowSvg ? `<div class="knob-layer knob-glow">${glowSvg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate knob HTML with SVG arc structure (default CSS knob)
  */
 function generateKnobHTML(id: string, baseClass: string, positionStyle: string, config: KnobElementConfig): string {
+  // Check if this knob uses a custom SVG style
+  if (config.styleId) {
+    const knobStyles = useStore.getState().knobStyles
+    const style = knobStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      return generateStyledKnobHTML(id, baseClass, positionStyle, config, style)
+    } else {
+      // Style deleted - render placeholder
+      return `<div id="${id}" class="${baseClass} knob knob-element" data-type="knob" style="${positionStyle}">
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; font-size: 12px;">
+          <!-- Style missing: ${config.styleId} -->
+        </div>
+      </div>`
+    }
+  }
+
+  // Default CSS knob rendering
   const centerX = config.diameter / 2
   const centerY = config.diameter / 2
   const radius = (config.diameter - config.trackWidth) / 2
