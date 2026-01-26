@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 21 - Buttons & Switches (IN PROGRESS)
-Plan: 3 of 4 complete (21-01, 21-02, 21-03)
-Status: In progress - Property panels and palette entries complete
-Last activity: 2026-01-26 — Completed 21-03-PLAN.md (Property Panels)
+Phase: 21 - Buttons & Switches (COMPLETE)
+Plan: 4 of 4 complete (21-01, 21-02, 21-03, 21-04)
+Status: Phase complete - Ready for Phase 22
+Last activity: 2026-01-26 - Completed 21-04-PLAN.md (Export Support)
 
-Progress: [██████████] 101/110 plans complete (~92%)
+Progress: [###########] 102/110 plans complete (~93%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [██████████] 101/110 plans complete (~92%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 13 plans (Phase 19: 6, Phase 20: 4, Phase 21: 3)
+- Completed: 14 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4)
 
 ## Accumulated Context
 
@@ -58,31 +58,33 @@ All v1.1 decisions documented and outcomes verified.
 | Unicode symbols as icon fallback | 21-02 | Enables rendering before builtInIconSVG utility available | Graceful degradation |
 | Icons grouped by category in dropdowns | 21-03 | Easier navigation with 35 icons | Transport, Common, Audio, Additional groups |
 | Dynamic segment configuration | 21-03 | Flexible per-segment icon/text settings | useCallback for immutable updates |
+| Inline SVG in exports | 21-04 | Eliminates external dependencies, works offline | HTML has embedded SVG content |
 
 ### Pending Todos
 
-- Plan 21-04: Verification and documentation
+- Phase 22: Display Elements (Numeric, Text, Status displays)
 
 ### Blockers/Concerns
 
 **Pre-existing build errors:** TypeScript errors in SVG utilities and dialog components from v1.1 code. Not blocking Phase 21 functionality.
 
-**Phase 21 Progress:**
+**Phase 21 Complete:**
 - Plan 21-01: Button types (Icon Button, Kick Button, Toggle Switch, Power Button) - COMPLETE
 - Plan 21-02: Switch types (Rocker Switch, Rotary Switch, Segment Button) - COMPLETE
 - Plan 21-03: Property panels and palette entries - COMPLETE
-- 7 button/switch element types with complete UI integration
+- Plan 21-04: Export support (HTML and CSS generation) - COMPLETE
+- 7 button/switch element types fully integrated end-to-end
 - Built-in icon system with 35 audio plugin icons
-- Export support in cssGenerator and htmlGenerator
+- Export support with inline SVG and state-based CSS
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 21-03-PLAN.md (Property Panels)
+Stopped at: Completed 21-04-PLAN.md (Export Support)
 Resume file: None
 
-**Next step:** Complete Plan 21-04 (Verification) or proceed to Phase 22
+**Next step:** Proceed to Phase 22 (Display Elements)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing Plan 21-03*
+*Last updated: 2026-01-26 after completing Plan 21-04*
