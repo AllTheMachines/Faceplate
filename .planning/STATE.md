@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 16 of 18 (Static SVG Graphics) — IN PROGRESS
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-26 — Completed 16-01-PLAN.md (SVG Graphic Element Foundation)
+Last activity: 2026-01-26 — Completed 16-02-PLAN.md (SVG Graphic Property Panel)
 
-Progress: [█████████░] 83% (72/87 total plans estimated)
+Progress: [█████████░] 84% (73/87 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,10 +38,10 @@ Progress: [█████████░] 83% (72/87 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 9 (14-01 through 16-01)
+- Plans completed: 10 (14-01 through 16-02)
 - Phase 14: 4 plans, ~100 minutes total (Security foundations)
 - Phase 15: 5 plans, ~12 minutes total (Asset library complete)
-- Phase 16: 1 plan so far, ~2 minutes (SVG Graphics in progress)
+- Phase 16: 2 plans so far, ~4 minutes (SVG Graphics in progress)
 
 ## Accumulated Context
 
@@ -84,6 +84,9 @@ Recent decisions affecting current work:
 - **v1.1 (16-01)**: 100x100 default size for SVG Graphic elements (icon-sized graphics)
 - **v1.1 (16-01)**: Rotation handled by BaseElement, only flipH/flipV in renderer (avoid double-rotation)
 - **v1.1 (16-01)**: Three-state placeholder UI (unassigned, valid, missing) for SVG Graphics
+- **v1.1 (16-02)**: DOMParser for SVG viewBox extraction (synchronous, robust parsing)
+- **v1.1 (16-02)**: Auto-resize to natural size when asset selected (prevents distortion)
+- **v1.1 (16-02)**: Opacity displayed as 0-100% in UI, stored as 0-1 internally
 
 ### Pending Todos
 
@@ -107,7 +110,8 @@ None yet.
 
 **Phase 16 IN PROGRESS (Static SVG Graphics):**
 - ✓ 16-01: SvgGraphicElementConfig type and SvgGraphicRenderer component
-- NEXT: 16-02 (Property Panel Integration)
+- ✓ 16-02: SvgGraphicProperties component and getSVGNaturalSize utility
+- NEXT: 16-03 (Property Panel Wiring)
 
 **Phase 17 considerations (from research):**
 - Performance with 50+ animated knobs may need optimization
@@ -117,9 +121,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 16-01-PLAN.md (SVG Graphic Element Foundation)
+Stopped at: Completed 16-02-PLAN.md (SVG Graphic Property Panel)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 16-01 completion*
+*Last updated: 2026-01-26 after 16-02 completion*
