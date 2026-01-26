@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 15 of 18 (Asset Library Storage & UI)
-Plan: 1 of 4 in current phase (Wave 1 in progress)
+Plan: 2 of 4 in current phase (Wave 2 in progress)
 Status: In progress
-Last activity: 2026-01-26 — Completed 15-01-PLAN.md (Asset Library Storage Foundation)
+Last activity: 2026-01-26 — Completed 15-02-PLAN.md (SVG Import Dialog)
 
-Progress: [█████████░] 78% (67/86 total plans estimated)
+Progress: [█████████░] 79% (68/86 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,9 +38,9 @@ Progress: [█████████░] 78% (67/86 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 5 (14-01 through 15-01)
+- Plans completed: 6 (14-01 through 15-02)
 - Phase 14: 4 plans, ~100 minutes total
-- Phase 15-01: 1 plan, ~1.5 minutes (state management only)
+- Phase 15: 2 plans so far (~3.5 minutes total)
 
 ## Accumulated Context
 
@@ -68,6 +68,10 @@ Recent decisions affecting current work:
 - **v1.1 (15-01)**: Normalized asset storage (flat array, derive categories on-the-fly) ✓
 - **v1.1 (15-01)**: crypto.randomUUID() for asset IDs (built-in, faster than nanoid)
 - **v1.1 (15-01)**: Assets included in undo history (user may undo accidental deletion)
+- **v1.1 (15-02)**: react-dropzone for file upload with single file mode
+- **v1.1 (15-02)**: URL.createObjectURL for preview with useEffect cleanup
+- **v1.1 (15-02)**: Name field empty by default (forces intentional naming)
+- **v1.1 (15-02)**: Preview at 96px max size in import dialog
 
 ### Pending Todos
 
@@ -89,8 +93,10 @@ None yet.
 - ✓ Asset type defined with all required fields (15-01)
 - ✓ Store integration complete with undo/redo support (15-01)
 - ✓ crypto.randomUUID() established as project standard (15-01)
-- NEXT: File upload integration with react-dropzone (15-02)
+- ✓ ImportAssetDialog with file upload and preview (15-02)
+- ✓ getSVGMetadata helper for element counting (15-02)
 - NEXT: Asset browser UI with category filtering (15-03)
+- NEXT: Wire up button to open ImportAssetDialog (15-03)
 - NEXT: Drag-from-library-to-canvas integration (15-04)
 
 **Phase 17 considerations (from research):**
@@ -101,9 +107,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Phase 15-01 executed - Asset Library Storage Foundation complete
+Stopped at: Phase 15-02 executed - SVG Import Dialog complete
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 15-01 execution*
+*Last updated: 2026-01-26 after Phase 15-02 execution*
