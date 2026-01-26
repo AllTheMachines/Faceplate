@@ -110,6 +110,8 @@ import {
   CollapsibleRenderer,
   TooltipRenderer,
   WindowChromeRenderer,
+  HorizontalSpacerRenderer,
+  VerticalSpacerRenderer,
 } from './containers'
 
 import {
@@ -236,6 +238,8 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['collapsible', CollapsibleRenderer as RendererComponent],
   ['tooltip', TooltipRenderer as RendererComponent],
   ['windowchrome', WindowChromeRenderer as RendererComponent],
+  ['horizontalspacer', HorizontalSpacerRenderer as RendererComponent],
+  ['verticalspacer', VerticalSpacerRenderer as RendererComponent],
 
   // Decorative
   ['image', ImageRenderer as RendererComponent],
@@ -351,6 +355,8 @@ export {
   CollapsibleRenderer,
   TooltipRenderer,
   WindowChromeRenderer,
+  HorizontalSpacerRenderer,
+  VerticalSpacerRenderer,
   // Decorative
   ImageRenderer,
   SvgGraphicRenderer,
