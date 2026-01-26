@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -440,6 +440,19 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'filterresponse':
       return generateFilterResponseHTML(element as FilterResponseElementConfig)
+
+    // Container Elements
+    case 'tooltip':
+      return generateTooltipHTML(id, baseClass, positionStyle, element as TooltipElementConfig)
+
+    case 'horizontalspacer':
+      return generateHorizontalSpacerHTML(id, baseClass, positionStyle, element as HorizontalSpacerElementConfig)
+
+    case 'verticalspacer':
+      return generateVerticalSpacerHTML(id, baseClass, positionStyle, element as VerticalSpacerElementConfig)
+
+    case 'windowchrome':
+      return generateWindowChromeHTML(id, baseClass, positionStyle, element as WindowChromeElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -2793,4 +2806,87 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
   window.updateFilterResponse_${id.replace(/-/g, '_')}({filterType: '${config.filterType}', cutoffFrequency: ${config.cutoffFrequency}, resonance: ${config.resonance}, gain: ${config.gain}});
 })();
 </script>`
+}
+
+// ============================================================================
+// Container Element HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate Tooltip HTML
+ */
+function generateTooltipHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: TooltipElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} tooltip-element" data-type="tooltip" data-position="${config.position}" data-hover-delay="${config.hoverDelay}" data-content="${escapeHTML(config.content)}" style="${positionStyle}"></div>`
+}
+
+/**
+ * Generate Horizontal Spacer HTML
+ */
+function generateHorizontalSpacerHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: HorizontalSpacerElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} spacer-element horizontal-spacer" data-type="horizontalspacer" data-sizing-mode="${config.sizingMode}" ${config.sizingMode === 'fixed' ? `data-fixed-width="${config.fixedWidth}"` : `data-flex-grow="${config.flexGrow}" data-min-width="${config.minWidth}" data-max-width="${config.maxWidth}"`} style="${positionStyle}"></div>`
+}
+
+/**
+ * Generate Vertical Spacer HTML
+ */
+function generateVerticalSpacerHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: VerticalSpacerElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} spacer-element vertical-spacer" data-type="verticalspacer" data-sizing-mode="${config.sizingMode}" ${config.sizingMode === 'fixed' ? `data-fixed-height="${config.fixedHeight}"` : `data-flex-grow="${config.flexGrow}" data-min-height="${config.minHeight}" data-max-height="${config.maxHeight}"`} style="${positionStyle}"></div>`
+}
+
+/**
+ * Generate Window Chrome HTML
+ */
+function generateWindowChromeHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: WindowChromeElementConfig
+): string {
+  // Generate buttons based on style
+  let buttonsHTML = ''
+
+  if (config.buttonStyle === 'macos') {
+    // macOS traffic light buttons
+    const buttons = []
+    if (config.showCloseButton) buttons.push('<div class="chrome-button close" data-action="close" style="background-color: #ff5f57;"></div>')
+    if (config.showMinimizeButton) buttons.push('<div class="chrome-button minimize" data-action="minimize" style="background-color: #ffbd2e;"></div>')
+    if (config.showMaximizeButton) buttons.push('<div class="chrome-button maximize" data-action="maximize" style="background-color: #28ca42;"></div>')
+    buttonsHTML = `<div class="chrome-buttons macos" data-drag-region="no-drag">${buttons.join('')}</div>`
+  } else if (config.buttonStyle === 'windows') {
+    // Windows icon buttons
+    const buttons = []
+    if (config.showMinimizeButton) buttons.push('<div class="chrome-button minimize" data-action="minimize">−</div>')
+    if (config.showMaximizeButton) buttons.push('<div class="chrome-button maximize" data-action="maximize">□</div>')
+    if (config.showCloseButton) buttons.push('<div class="chrome-button close" data-action="close">×</div>')
+    buttonsHTML = `<div class="chrome-buttons windows" data-drag-region="no-drag">${buttons.join('')}</div>`
+  } else {
+    // Neutral circular buttons
+    const buttons = []
+    if (config.showCloseButton) buttons.push('<div class="chrome-button close" data-action="close"></div>')
+    if (config.showMinimizeButton) buttons.push('<div class="chrome-button minimize" data-action="minimize"></div>')
+    if (config.showMaximizeButton) buttons.push('<div class="chrome-button maximize" data-action="maximize"></div>')
+    buttonsHTML = `<div class="chrome-buttons neutral" data-drag-region="no-drag">${buttons.join('')}</div>`
+  }
+
+  const titleHTML = config.showTitle ? `<div class="chrome-title" data-drag-region="drag">${escapeHTML(config.titleText)}</div>` : ''
+
+  return `<div id="${id}" class="${baseClass} windowchrome-element" data-type="windowchrome" data-button-style="${config.buttonStyle}" data-drag-region="drag" style="${positionStyle}">
+  ${buttonsHTML}
+  ${titleHTML}
+</div>`
 }
