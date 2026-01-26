@@ -26,6 +26,13 @@ import {
   CrossfadeSliderRenderer,
   NotchedSliderRenderer,
   ArcSliderRenderer,
+  RockerSwitchRenderer,
+  RotarySwitchRenderer,
+  SegmentButtonRenderer,
+  IconButtonRenderer,
+  KickButtonRenderer,
+  ToggleSwitchRenderer,
+  PowerButtonRenderer,
 } from './controls'
 
 import {
@@ -79,6 +86,13 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['crossfadeslider', CrossfadeSliderRenderer as RendererComponent],
   ['notchedslider', NotchedSliderRenderer as RendererComponent],
   ['arcslider', ArcSliderRenderer as RendererComponent],
+  ['rockerswitch', RockerSwitchRenderer as RendererComponent],
+  ['rotaryswitch', RotarySwitchRenderer as RendererComponent],
+  ['segmentbutton', SegmentButtonRenderer as RendererComponent],
+  ['iconbutton', IconButtonRenderer as RendererComponent],
+  ['kickbutton', KickButtonRenderer as RendererComponent],
+  ['toggleswitch', ToggleSwitchRenderer as RendererComponent],
+  ['powerbutton', PowerButtonRenderer as RendererComponent],
 
   // Displays
   ['label', LabelRenderer as RendererComponent],
@@ -131,6 +145,13 @@ export {
   CrossfadeSliderRenderer,
   NotchedSliderRenderer,
   ArcSliderRenderer,
+  RockerSwitchRenderer,
+  RotarySwitchRenderer,
+  SegmentButtonRenderer,
+  IconButtonRenderer,
+  KickButtonRenderer,
+  ToggleSwitchRenderer,
+  PowerButtonRenderer,
   // Displays
   LabelRenderer,
   MeterRenderer,
