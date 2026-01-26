@@ -1,0 +1,1 @@
+export { SharedMeterProperties } from './SharedMeterProperties'
