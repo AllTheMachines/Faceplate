@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 Phase: 24 - Navigation & Selection
 Plan: 4 of 8 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 24-04-PLAN.md (Tree View)
+Last activity: 2026-01-26 - Completed 24-02-PLAN.md (Multi-Select/ComboBox/MenuButton)
 
 Progress: [██████████] 116/120 plans complete (97%)
 
@@ -115,6 +115,9 @@ All v1.1 decisions documented and outcomes verified.
 | Stepper orientation support | 24-01 | Vertical steppers needed for compact UIs | orientation property (horizontal/vertical) with flex-direction |
 | Breadcrumb truncation with ellipsis | 24-01 | Long paths need graceful overflow handling | maxVisibleItems shows first + last items with ellipsis |
 | Instant transitions on navigation | 24-01 | Navigation needs immediate visual feedback | transition:none on all state changes |
+| Multi-select checkbox UI | 24-02 | Multi-select dropdown needs visual indication | Checkboxes in dropdown items, comma-separated text when closed with ellipsis |
+| ComboBox empty state | 24-02 | Combo box can filter to zero results | "No matching options" in italic gray when filteredOptions.length === 0 |
+| Dropdown fade timing | 24-02 | CONTEXT.md specified 100-150ms range | 100ms ease-out for open, 150ms ease-in for close |
 | TabBar indicator styles | 24-03 | Three visual patterns for different design needs | background, underline, accent-bar indicator styles |
 | Per-tab configuration | 24-03 | Each tab independently controls icon/text display | TabConfig with showIcon and showLabel booleans |
 | data-active-tab attribute | 24-03 | JUCE integration without JavaScript callbacks | C++ polls getAttribute('data-active-tab') |
@@ -169,21 +172,28 @@ None - Phase 24 Plans 01-04 complete
 
 **Phase 24 In Progress:**
 - Plan 24-01: Stepper & Breadcrumb (basic navigation elements) - COMPLETE
+- Plan 24-02: Multi-Select Dropdown, Combo Box, Menu Button (dropdown navigation) - COMPLETE
 - Plan 24-03: Tab Bar & Tag Selector (selection and navigation UI patterns) - COMPLETE
-- 4 navigation element types total
+- Plan 24-04: Tree View (hierarchical navigation) - COMPLETE
+- 7 navigation element types total
+- Dropdown patterns: click-outside handling, 100-150ms CSS fade, keyboard navigation (ArrowUp/Down/Enter/Escape)
+- Multi-Select: checkboxes, maxSelections limit, comma-separated closed state
+- ComboBox: text filtering, "No matching options" empty state
+- MenuButton: dividers, disabled items, context menu
 - Tab Bar: data-active-tab JUCE integration, arrow key navigation, three indicator styles
 - Tag Selector: chip removal, dropdown filtering, click-outside handling
-- Per-tab configuration pattern (showIcon, showLabel per tab)
+- Tree View: arrow-only expand/collapse, row selection, nested structure
+- Per-component configuration patterns (showIcon/showLabel, disabled/divider)
 - Data attributes for JUCE parameter binding
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 24-04-PLAN.md (Tree View)
+Stopped at: Completed 24-02-PLAN.md (Multi-Select/ComboBox/MenuButton)
 Resume file: None
 
-**Next step:** Continue Phase 24 with Plan 24-05 (List View & Grid View)
+**Next step:** Continue Phase 24 with Plan 24-05 (Property Panels & Palette)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 24 Plan 04 complete*
+*Last updated: 2026-01-26 after Phase 24 Plan 02 complete*
