@@ -670,6 +670,128 @@ export interface PowerButtonElementConfig extends BaseElementConfig {
 }
 
 // ============================================================================
+// Navigation Element Configurations
+// ============================================================================
+
+export interface StepperElementConfig extends BaseElementConfig {
+  type: 'stepper'
+
+  // Value (for JUCE parameter binding)
+  value: number
+  min: number
+  max: number
+  step: number
+
+  // Visual style
+  buttonColor: string
+  buttonHoverColor: string
+  textColor: string
+  backgroundColor: string
+  borderColor: string
+  borderRadius: number
+
+  // Display
+  showValue: boolean
+  valueFormat: 'numeric' | 'custom'
+  valueSuffix: string
+  decimalPlaces: number
+
+  // Layout
+  orientation: 'horizontal' | 'vertical'
+  buttonSize: number // Size of +/- buttons in px
+}
+
+export interface BreadcrumbItem {
+  id: string
+  label: string
+}
+
+export interface BreadcrumbElementConfig extends BaseElementConfig {
+  type: 'breadcrumb'
+
+  // Path items
+  items: BreadcrumbItem[]
+
+  // Separator
+  separator: string // Default '/'
+
+  // Visual style
+  linkColor: string
+  currentColor: string
+  separatorColor: string
+  hoverColor: string
+  fontSize: number
+
+  // Layout
+  maxVisibleItems: number // 0 = show all, >0 = truncate with ellipsis
+}
+
+/**
+ * Configuration for individual tab in Tab Bar
+ */
+export interface TabConfig {
+  id: string
+  label?: string
+  icon?: BuiltInIcon
+  showLabel: boolean
+  showIcon: boolean
+}
+
+export interface TabBarElementConfig extends BaseElementConfig {
+  type: 'tabbar'
+
+  // Tabs
+  tabs: TabConfig[]
+  activeTabIndex: number
+
+  // Layout
+  orientation: 'horizontal' | 'vertical'
+  tabHeight: number
+
+  // Visual
+  indicatorStyle: 'background' | 'underline' | 'accent-bar'
+  indicatorColor: string
+  backgroundColor: string
+  textColor: string
+  activeTextColor: string
+  borderColor: string
+}
+
+/**
+ * Tag for Tag Selector
+ */
+export interface Tag {
+  id: string
+  label: string
+}
+
+export interface TagSelectorElementConfig extends BaseElementConfig {
+  type: 'tagselector'
+
+  // Tags
+  availableTags: Tag[]
+  selectedTags: Tag[]
+
+  // Input
+  showInput: boolean
+  inputPlaceholder: string
+  inputBackgroundColor: string
+  inputTextColor: string
+  inputBorderColor: string
+
+  // Chips
+  chipBackgroundColor: string
+  chipTextColor: string
+  chipRemoveColor: string
+  chipBorderRadius: number
+
+  // Dropdown
+  dropdownBackgroundColor: string
+  dropdownTextColor: string
+  dropdownHoverColor: string
+}
+
+// ============================================================================
 // Control Element Union
 // ============================================================================
 
@@ -697,6 +819,10 @@ export type ControlElement =
   | KickButtonElementConfig
   | ToggleSwitchElementConfig
   | PowerButtonElementConfig
+  | StepperElementConfig
+  | BreadcrumbElementConfig
+  | TabBarElementConfig
+  | TagSelectorElementConfig
 
 // ============================================================================
 // Type Guards
@@ -792,6 +918,22 @@ export function isToggleSwitch(element: { type: string }): element is ToggleSwit
 
 export function isPowerButton(element: { type: string }): element is PowerButtonElementConfig {
   return element.type === 'powerbutton'
+}
+
+export function isStepper(element: { type: string }): element is StepperElementConfig {
+  return element.type === 'stepper'
+}
+
+export function isBreadcrumb(element: { type: string }): element is BreadcrumbElementConfig {
+  return element.type === 'breadcrumb'
+}
+
+export function isTabBar(element: { type: string }): element is TabBarElementConfig {
+  return element.type === 'tabbar'
+}
+
+export function isTagSelector(element: { type: string }): element is TagSelectorElementConfig {
+  return element.type === 'tagselector'
 }
 
 // ============================================================================
@@ -1524,6 +1666,68 @@ export function createPowerButton(overrides?: Partial<PowerButtonElementConfig>)
     textColor: '#ffffff',
     borderColor: '#6b7280',
     borderRadius: 4,
+    ...overrides,
+  }
+}
+
+export function createStepper(overrides?: Partial<StepperElementConfig>): StepperElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'stepper',
+    name: 'Stepper',
+    x: 0,
+    y: 0,
+    width: 120,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0,
+    min: 0,
+    max: 100,
+    step: 1,
+    buttonColor: '#374151',
+    buttonHoverColor: '#4b5563',
+    textColor: '#ffffff',
+    backgroundColor: '#1f2937',
+    borderColor: '#6b7280',
+    borderRadius: 4,
+    showValue: true,
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    decimalPlaces: 0,
+    orientation: 'horizontal',
+    buttonSize: 24,
+    ...overrides,
+  }
+}
+
+export function createBreadcrumb(overrides?: Partial<BreadcrumbElementConfig>): BreadcrumbElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'breadcrumb',
+    name: 'Breadcrumb',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 24,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    items: [
+      { id: '1', label: 'Root' },
+      { id: '2', label: 'Folder' },
+      { id: '3', label: 'Current' },
+    ],
+    separator: '/',
+    linkColor: '#3b82f6',
+    currentColor: '#ffffff',
+    separatorColor: '#6b7280',
+    hoverColor: '#60a5fa',
+    fontSize: 12,
+    maxVisibleItems: 0,
     ...overrides,
   }
 }
