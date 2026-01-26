@@ -332,6 +332,18 @@ export interface CollapsibleContainerElementConfig extends BaseElementConfig {
   borderRadius: number
 }
 
+export interface SvgGraphicElementConfig extends BaseElementConfig {
+  type: 'svggraphic'
+
+  // Asset Reference
+  assetId?: string // Optional - undefined for placeholder state
+
+  // Transforms
+  flipH: boolean // Horizontal flip
+  flipV: boolean // Vertical flip
+  opacity: number // 0-1 range
+}
+
 export interface LineElementConfig extends BaseElementConfig {
   type: 'line'
 
@@ -518,6 +530,7 @@ export type ElementConfig =
   | FrameElementConfig
   | GroupBoxElementConfig
   | CollapsibleContainerElementConfig
+  | SvgGraphicElementConfig
 
 // ============================================================================
 // Type Guards
@@ -605,6 +618,10 @@ export function isGroupBox(element: ElementConfig): element is GroupBoxElementCo
 
 export function isCollapsible(element: ElementConfig): element is CollapsibleContainerElementConfig {
   return element.type === 'collapsible'
+}
+
+export function isSvgGraphic(element: ElementConfig): element is SvgGraphicElementConfig {
+  return element.type === 'svggraphic'
 }
 
 export function isTextField(element: ElementConfig): element is TextFieldElementConfig {
@@ -1254,6 +1271,27 @@ export function createOscilloscope(overrides?: Partial<OscilloscopeElementConfig
     timeDiv: 10,
     amplitudeScale: 1,
     triggerLevel: 0.5,
+    ...overrides,
+  }
+}
+
+export function createSvgGraphic(overrides?: Partial<SvgGraphicElementConfig>): SvgGraphicElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'svggraphic',
+    name: 'SVG Graphic',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    assetId: undefined,
+    flipH: false,
+    flipV: false,
+    opacity: 1,
     ...overrides,
   }
 }
