@@ -15,19 +15,19 @@ Requirements for Complete Element Taxonomy milestone. 76 new elements + 2 UX imp
 - [x] **ARCH-04**: File organization restructured by element category
 - [x] **ARCH-05**: TypeScript unions split by category to improve compilation
 
-### Rotary Controls (3 elements)
+### Rotary Controls (3 elements) ✓
 
-- [ ] **ROT-01**: Stepped Knob with configurable detent positions (12-64)
-- [ ] **ROT-02**: Center-Detented Knob that snaps to center position
-- [ ] **ROT-03**: Dot Indicator Knob with minimal dot-style indicator
+- [x] **ROT-01**: Stepped Knob with configurable detent positions (12-64)
+- [x] **ROT-02**: Center-Detented Knob that snaps to center position
+- [x] **ROT-03**: Dot Indicator Knob with minimal dot-style indicator
 
-### Linear Controls (5 elements)
+### Linear Controls (5 elements) ✓
 
-- [ ] **LIN-01**: Bipolar Slider with center-zero default
-- [ ] **LIN-02**: Crossfade Slider for A/B balance (DJ-style)
-- [ ] **LIN-03**: Notched Slider with detent positions
-- [ ] **LIN-04**: Arc Slider following curved path
-- [ ] **LIN-05**: Multi-Slider with parallel sliders for EQ/multi-band
+- [x] **LIN-01**: Bipolar Slider with center-zero default
+- [x] **LIN-02**: Crossfade Slider for A/B balance (DJ-style)
+- [x] **LIN-03**: Notched Slider with detent positions
+- [x] **LIN-04**: Arc Slider following curved path
+- [x] **LIN-05**: Multi-Slider with parallel sliders for EQ/multi-band
 
 ### Buttons & Switches (7 elements)
 
