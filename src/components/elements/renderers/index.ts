@@ -18,6 +18,12 @@ import {
   CheckboxRenderer,
   RadioGroupRenderer,
   TextFieldRenderer,
+  MultiSliderRenderer,
+  SteppedKnobRenderer,
+  CenterDetentKnobRenderer,
+  DotIndicatorKnobRenderer,
+  BipolarSliderRenderer,
+  CrossfadeSliderRenderer,
 } from './controls'
 
 import {
@@ -63,6 +69,12 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['checkbox', CheckboxRenderer as RendererComponent],
   ['radiogroup', RadioGroupRenderer as RendererComponent],
   ['textfield', TextFieldRenderer as RendererComponent],
+  ['multislider', MultiSliderRenderer as RendererComponent],
+  ['steppedknob', SteppedKnobRenderer as RendererComponent],
+  ['centerdetentknob', CenterDetentKnobRenderer as RendererComponent],
+  ['dotindicatorknob', DotIndicatorKnobRenderer as RendererComponent],
+  ['bipolarslider', BipolarSliderRenderer as RendererComponent],
+  ['crossfadeslider', CrossfadeSliderRenderer as RendererComponent],
 
   // Displays
   ['label', LabelRenderer as RendererComponent],
@@ -107,6 +119,12 @@ export {
   CheckboxRenderer,
   RadioGroupRenderer,
   TextFieldRenderer,
+  MultiSliderRenderer,
+  SteppedKnobRenderer,
+  CenterDetentKnobRenderer,
+  DotIndicatorKnobRenderer,
+  BipolarSliderRenderer,
+  CrossfadeSliderRenderer,
   // Displays
   LabelRenderer,
   MeterRenderer,

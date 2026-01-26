@@ -981,6 +981,44 @@ ${selector} .oscilloscope-placeholder {
     case 'svggraphic':
       return generateSvgGraphicCSS(id)
 
+    case 'steppedknob':
+      return `${selector} {
+  /* Stepped Knob styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'centerdetentknob':
+      return `${selector} {
+  /* Center Detent Knob styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'dotindicatorknob':
+      return `${selector} {
+  /* Dot Indicator Knob styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'multislider':
+      return generateMultiSliderCSS(id, element)
+
+    case 'bipolarslider':
+      return `${selector} {
+  /* Bipolar Slider styles - SVG handles visual rendering */
+  cursor: ${element.orientation === 'vertical' ? 'ns-resize' : 'ew-resize'};
+  user-select: none;
+}`
+
+    case 'crossfadeslider':
+      return `${selector} {
+  /* Crossfade Slider styles - SVG handles visual rendering */
+  cursor: ew-resize;
+  user-select: none;
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
@@ -1006,5 +1044,57 @@ function generateSvgGraphicCSS(id: string): string {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}`
+}
+
+/**
+ * Generate Multi-Slider CSS
+ */
+function generateMultiSliderCSS(id: string, element: ElementConfig & { type: 'multislider' }): string {
+  const selector = `#${id}`
+  return `/* Multi-Slider: ${id} */
+${selector} {
+  cursor: pointer;
+  user-select: none;
+}
+
+${selector} .multislider-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 100%;
+  gap: ${element.bandGap}px;
+}
+
+${selector} .multislider-band {
+  flex: 1;
+  background: ${element.trackColor};
+  position: relative;
+}
+
+${selector} .multislider-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: ${element.fillColor};
+}
+
+${selector} .multislider-thumb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: ${element.thumbColor};
+}
+
+${selector} .multislider-label {
+  position: absolute;
+  bottom: -${element.labelFontSize + 4}px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: ${element.labelFontSize}px;
+  color: ${element.labelColor};
+  white-space: nowrap;
 }`
 }

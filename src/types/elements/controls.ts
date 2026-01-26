@@ -204,6 +204,222 @@ export interface TextFieldElementConfig extends BaseElementConfig {
   borderRadius: number
 }
 
+export interface SteppedKnobElementConfig extends BaseElementConfig {
+  type: 'steppedknob'
+
+  // Dimensions
+  diameter: number
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // Arc Geometry
+  startAngle: number
+  endAngle: number
+
+  // Stepped behavior
+  stepCount: number // 12, 24, 36, 48, or 64
+  showStepIndicators: boolean // Show tick marks at each step
+
+  // Visual Style
+  trackColor: string
+  fillColor: string
+  indicatorColor: string
+  trackWidth: number
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
+}
+
+export interface CenterDetentKnobElementConfig extends BaseElementConfig {
+  type: 'centerdetentknob'
+
+  // Dimensions
+  diameter: number
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // Arc Geometry
+  startAngle: number
+  endAngle: number
+
+  // Center detent behavior
+  snapThreshold: number // 0.05 = 5% of range, snaps when |value - 0.5| < threshold
+  showCenterMark: boolean // Show visual indicator at center
+
+  // Visual Style
+  trackColor: string
+  fillColor: string
+  indicatorColor: string
+  trackWidth: number
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
+}
+
+export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
+  type: 'dotindicatorknob'
+
+  // Dimensions
+  diameter: number
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // Arc Geometry
+  startAngle: number
+  endAngle: number
+
+  // Dot indicator style
+  dotRadius: number // Radius of indicator dot
+
+  // Visual Style
+  trackColor: string
+  indicatorColor: string
+  trackWidth: number
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
+}
+
+export interface BipolarSliderElementConfig extends BaseElementConfig {
+  type: 'bipolarslider'
+
+  // Orientation
+  orientation: 'vertical' | 'horizontal'
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // Center position (0.5 = center, normalized 0-1)
+  centerValue: number
+  centerLineColor: string
+
+  // Track
+  trackColor: string
+  trackFillColor: string
+
+  // Thumb
+  thumbColor: string
+  thumbWidth: number
+  thumbHeight: number
+
+  // Label Display
+  showLabel: boolean
+  labelText: string
+  labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelFontSize: number
+  labelColor: string
+
+  // Value Display
+  showValue: boolean
+  valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
+  valueSuffix: string
+  valueDecimalPlaces: number
+  valueFontSize: number
+  valueColor: string
+}
+
+export interface CrossfadeSliderElementConfig extends BaseElementConfig {
+  type: 'crossfadeslider'
+
+  // Value
+  value: number
+  min: number
+  max: number
+
+  // A/B Labels
+  labelA: string
+  labelB: string
+  labelColor: string
+  labelFontSize: number
+
+  // Track
+  trackColor: string
+  trackFillColor: string
+
+  // Thumb
+  thumbColor: string
+  thumbWidth: number
+  thumbHeight: number
+}
+
+export interface MultiSliderElementConfig extends BaseElementConfig {
+  type: 'multislider'
+
+  // Band configuration
+  bandCount: number // Number of parallel sliders (default 7)
+  bandValues: number[] // Array of values 0-1, one per band
+  min: number // Minimum value (default 0)
+  max: number // Maximum value (default 1)
+
+  // Labels
+  labelStyle: 'frequency' | 'index' | 'hidden'
+  customLabels: string[] | null // If provided, overrides labelStyle
+  labelColor: string
+  labelFontSize: number
+
+  // Link behavior (runtime hint)
+  linkMode: 'always-linked' | 'modifier-linked' | 'independent'
+
+  // Colors
+  trackColor: string
+  fillColor: string
+  thumbColor: string
+
+  // Layout
+  bandGap: number // Pixel gap between bands (default 2)
+}
+
 // ============================================================================
 // Control Element Union
 // ============================================================================
@@ -217,6 +433,12 @@ export type ControlElement =
   | CheckboxElementConfig
   | RadioGroupElementConfig
   | TextFieldElementConfig
+  | SteppedKnobElementConfig
+  | CenterDetentKnobElementConfig
+  | DotIndicatorKnobElementConfig
+  | BipolarSliderElementConfig
+  | CrossfadeSliderElementConfig
+  | MultiSliderElementConfig
 
 // ============================================================================
 // Type Guards
@@ -252,6 +474,30 @@ export function isRadioGroup(element: { type: string }): element is RadioGroupEl
 
 export function isTextField(element: { type: string }): element is TextFieldElementConfig {
   return element.type === 'textfield'
+}
+
+export function isMultiSlider(element: { type: string }): element is MultiSliderElementConfig {
+  return element.type === 'multislider'
+}
+
+export function isSteppedKnob(element: { type: string }): element is SteppedKnobElementConfig {
+  return element.type === 'steppedknob'
+}
+
+export function isCenterDetentKnob(element: { type: string }): element is CenterDetentKnobElementConfig {
+  return element.type === 'centerdetentknob'
+}
+
+export function isDotIndicatorKnob(element: { type: string }): element is DotIndicatorKnobElementConfig {
+  return element.type === 'dotindicatorknob'
+}
+
+export function isBipolarSlider(element: { type: string }): element is BipolarSliderElementConfig {
+  return element.type === 'bipolarslider'
+}
+
+export function isCrossfadeSlider(element: { type: string }): element is CrossfadeSliderElementConfig {
+  return element.type === 'crossfadeslider'
 }
 
 // ============================================================================
@@ -484,6 +730,236 @@ export function createTextField(overrides?: Partial<TextFieldElementConfig>): Te
     borderColor: '#374151',
     borderWidth: 1,
     borderRadius: 0,
+    ...overrides,
+  }
+}
+
+export function createMultiSlider(overrides?: Partial<MultiSliderElementConfig>): MultiSliderElementConfig {
+  const bandCount = overrides?.bandCount ?? 7
+  const bandValues = overrides?.bandValues ?? Array(bandCount).fill(0.5)
+
+  const defaults: MultiSliderElementConfig = {
+    id: crypto.randomUUID(),
+    type: 'multislider',
+    name: 'Multi-Slider',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 120,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    bandCount,
+    bandValues,
+    min: 0,
+    max: 1,
+    labelStyle: 'index',
+    customLabels: null,
+    labelColor: '#888888',
+    labelFontSize: 10,
+    linkMode: 'independent',
+    trackColor: '#374151',
+    fillColor: '#949494',
+    thumbColor: '#ffffff',
+    bandGap: 2,
+  }
+
+  return {
+    ...defaults,
+    ...overrides,
+    // Always use computed bandCount and bandValues
+    bandCount,
+    bandValues,
+  }
+}
+
+export function createSteppedKnob(overrides?: Partial<SteppedKnobElementConfig>): SteppedKnobElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'steppedknob',
+    name: 'Stepped Knob',
+    x: 0,
+    y: 0,
+    width: 60,
+    height: 60,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    diameter: 60,
+    value: 0.5,
+    min: 0,
+    max: 1,
+    startAngle: -135,
+    endAngle: 135,
+    stepCount: 12,
+    showStepIndicators: true,
+    trackColor: '#374151',
+    fillColor: '#949494',
+    indicatorColor: '#ffffff',
+    trackWidth: 4,
+    showLabel: false,
+    labelText: 'Stepped',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
+    ...overrides,
+  }
+}
+
+export function createCenterDetentKnob(overrides?: Partial<CenterDetentKnobElementConfig>): CenterDetentKnobElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'centerdetentknob',
+    name: 'Center Detent',
+    x: 0,
+    y: 0,
+    width: 60,
+    height: 60,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    diameter: 60,
+    value: 0.5,
+    min: 0,
+    max: 1,
+    startAngle: -135,
+    endAngle: 135,
+    snapThreshold: 0.05,
+    showCenterMark: true,
+    trackColor: '#374151',
+    fillColor: '#949494',
+    indicatorColor: '#ffffff',
+    trackWidth: 4,
+    showLabel: false,
+    labelText: 'Pan',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
+    ...overrides,
+  }
+}
+
+export function createDotIndicatorKnob(overrides?: Partial<DotIndicatorKnobElementConfig>): DotIndicatorKnobElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'dotindicatorknob',
+    name: 'Dot Indicator',
+    x: 0,
+    y: 0,
+    width: 60,
+    height: 60,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    diameter: 60,
+    value: 0.5,
+    min: 0,
+    max: 1,
+    startAngle: -135,
+    endAngle: 135,
+    dotRadius: 4,
+    trackColor: '#374151',
+    indicatorColor: '#ffffff',
+    trackWidth: 4,
+    showLabel: false,
+    labelText: 'Dot',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
+    ...overrides,
+  }
+}
+
+export function createBipolarSlider(overrides?: Partial<BipolarSliderElementConfig>): BipolarSliderElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'bipolarslider',
+    name: 'Bipolar Slider',
+    x: 0,
+    y: 0,
+    width: 40,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    orientation: 'vertical',
+    value: 0.5,
+    min: 0,
+    max: 1,
+    centerValue: 0.5,
+    centerLineColor: 'rgba(255, 255, 255, 0.5)',
+    trackColor: '#374151',
+    trackFillColor: '#949494',
+    thumbColor: '#ffffff',
+    thumbWidth: 20,
+    thumbHeight: 20,
+    showLabel: false,
+    labelText: 'Pan',
+    labelPosition: 'bottom',
+    labelFontSize: 12,
+    labelColor: '#ffffff',
+    showValue: false,
+    valuePosition: 'top',
+    valueFormat: 'numeric',
+    valueSuffix: '',
+    valueDecimalPlaces: 2,
+    valueFontSize: 12,
+    valueColor: '#a0a0a0',
+    ...overrides,
+  }
+}
+
+export function createCrossfadeSlider(overrides?: Partial<CrossfadeSliderElementConfig>): CrossfadeSliderElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'crossfadeslider',
+    name: 'Crossfade',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    min: 0,
+    max: 1,
+    labelA: 'A',
+    labelB: 'B',
+    labelColor: '#888888',
+    labelFontSize: 12,
+    trackColor: '#374151',
+    trackFillColor: '#949494',
+    thumbColor: '#ffffff',
+    thumbWidth: 20,
+    thumbHeight: 20,
     ...overrides,
   }
 }

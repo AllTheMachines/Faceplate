@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
@@ -237,6 +237,25 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'svggraphic':
       return generateSvgGraphicHTML(id, baseClass, positionStyle, element)
+
+    // Rotary control variants - use same HTML structure as knob
+    case 'steppedknob':
+      return `<div id="${id}" class="${baseClass} knob-element steppedknob-element" data-type="steppedknob" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-steps="${element.stepCount}" style="${positionStyle}"></div>`
+
+    case 'centerdetentknob':
+      return `<div id="${id}" class="${baseClass} knob-element centerdetentknob-element" data-type="centerdetentknob" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-snap-threshold="${element.snapThreshold}" style="${positionStyle}"></div>`
+
+    case 'dotindicatorknob':
+      return `<div id="${id}" class="${baseClass} knob-element dotindicatorknob-element" data-type="dotindicatorknob" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" style="${positionStyle}"></div>`
+
+    case 'multislider':
+      return generateMultiSliderHTML(id, baseClass, positionStyle, element)
+
+    case 'bipolarslider':
+      return `<div id="${id}" class="${baseClass} slider-element bipolarslider-element" data-type="bipolarslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-center-value="${element.centerValue}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
+
+    case 'crossfadeslider':
+      return `<div id="${id}" class="${baseClass} slider-element crossfadeslider-element" data-type="crossfadeslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-label-a="${escapeHTML(element.labelA)}" data-label-b="${escapeHTML(element.labelB)}" style="${positionStyle}"></div>`
 
     default:
       // TypeScript exhaustiveness check
@@ -647,5 +666,20 @@ function generateSvgGraphicHTML(
 
   return `<div id="${id}" class="${baseClass} svggraphic-element" data-type="svggraphic" style="${combinedStyle}">
   ${sanitizedSVG}
+</div>`
+}
+
+/**
+ * Generate Multi-Slider HTML with parallel vertical sliders
+ */
+function generateMultiSliderHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: MultiSliderElementConfig
+): string {
+  const bandValuesData = element.bandValues.join(',')
+  return `<div id="${id}" class="${baseClass} multislider-element" data-type="multislider" data-band-count="${element.bandCount}" data-band-values="${bandValuesData}" data-min="${element.min}" data-max="${element.max}" data-label-style="${element.labelStyle}" data-link-mode="${element.linkMode}" style="${positionStyle}">
+  <div class="multislider-container"></div>
 </div>`
 }
