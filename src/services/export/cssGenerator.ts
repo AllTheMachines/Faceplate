@@ -3,7 +3,7 @@
  * Generates style.css with element-specific styling
  */
 
-import type { ElementConfig } from '../../types/elements'
+import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig } from '../../types/elements'
 import { toKebabCase } from './utils'
 import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
 
@@ -1034,53 +1034,25 @@ ${selector} .oscilloscope-placeholder {
 }`
 
     case 'rockerswitch':
-      return `${selector} {
-  /* Rocker Switch styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generateRockerSwitchCSS(selector, element)
 
     case 'rotaryswitch':
-      return `${selector} {
-  /* Rotary Switch styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generateRotarySwitchCSS(selector, element)
 
     case 'segmentbutton':
-      return `${selector} {
-  /* Segment Button styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generateSegmentButtonCSS(selector, element)
 
     case 'iconbutton':
-      return `${selector} {
-  /* Icon Button styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generateIconButtonCSS(selector, element)
 
     case 'kickbutton':
-      return `${selector} {
-  /* Kick Button styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generateKickButtonCSS(selector, element)
 
     case 'toggleswitch':
-      return `${selector} {
-  /* Toggle Switch styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generateToggleSwitchCSS(selector, element)
 
     case 'powerbutton':
-      return `${selector} {
-  /* Power Button styles - SVG handles visual rendering */
-  cursor: pointer;
-  user-select: none;
-}`
+      return generatePowerButtonCSS(selector, element)
 
     default:
       // TypeScript exhaustiveness check
@@ -1159,5 +1131,409 @@ ${selector} .multislider-label {
   font-size: ${element.labelFontSize}px;
   color: ${element.labelColor};
   white-space: nowrap;
+}`
+}
+
+// ============================================================================
+// Button/Switch CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate Icon Button CSS
+ */
+function generateIconButtonCSS(selector: string, element: IconButtonElementConfig): string {
+  return `/* Icon Button */
+${selector} {
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+${selector}[data-pressed="true"] {
+  filter: brightness(0.85);
+}
+
+${selector} .icon {
+  width: 70%;
+  height: 70%;
+  color: ${element.iconColor};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+${selector} .icon svg {
+  width: 100%;
+  height: 100%;
+}`
+}
+
+/**
+ * Generate Kick Button CSS
+ */
+function generateKickButtonCSS(selector: string, element: KickButtonElementConfig): string {
+  return `/* Kick Button */
+${selector} {
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: Inter, system-ui, sans-serif;
+  cursor: pointer;
+  transition: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+${selector}[data-pressed="true"] {
+  filter: brightness(1.2);
+}`
+}
+
+/**
+ * Generate Toggle Switch CSS
+ */
+function generateToggleSwitchCSS(selector: string, element: ToggleSwitchElementConfig): string {
+  const trackHeight = element.height
+  const thumbSize = trackHeight - 8
+  const thumbTravel = element.width - trackHeight
+
+  return `/* Toggle Switch */
+${selector} {
+  position: relative;
+  border-radius: ${trackHeight / 2}px;
+  border: 2px solid ${element.borderColor};
+  cursor: pointer;
+  transition: none;
+  box-sizing: border-box;
+}
+
+${selector}[data-on="false"] {
+  background-color: ${element.offColor};
+}
+
+${selector}[data-on="true"] {
+  background-color: ${element.onColor};
+}
+
+${selector} .track {
+  display: none;
+}
+
+${selector} .thumb {
+  position: absolute;
+  width: ${thumbSize}px;
+  height: ${thumbSize}px;
+  background-color: ${element.thumbColor};
+  border-radius: 50%;
+  top: 2px;
+  transition: none;
+}
+
+${selector}[data-on="false"] .thumb {
+  left: 2px;
+}
+
+${selector}[data-on="true"] .thumb {
+  left: ${thumbTravel + 2}px;
+}
+
+${selector} .label-off,
+${selector} .label-on {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: ${element.labelColor};
+  user-select: none;
+}
+
+${selector} .label-off {
+  left: -30px;
+}
+
+${selector} .label-on {
+  right: -30px;
+}`
+}
+
+/**
+ * Generate Power Button CSS
+ */
+function generatePowerButtonCSS(selector: string, element: PowerButtonElementConfig): string {
+  return `/* Power Button */
+${selector} {
+  background-color: ${element.backgroundColor};
+  color: ${element.textColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: ${element.borderRadius}px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+  position: relative;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+${selector}[data-on="true"] {
+  filter: brightness(1.1);
+}
+
+${selector} .label {
+  user-select: none;
+}
+
+${selector} .led {
+  position: absolute;
+  width: ${element.ledSize}px;
+  height: ${element.ledSize}px;
+  border-radius: 50%;
+  transition: none;
+}
+
+${selector}[data-led-position="top"] .led {
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+${selector}[data-led-position="bottom"] .led {
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+${selector}[data-led-position="left"] .led {
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+${selector}[data-led-position="right"] .led {
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+${selector}[data-led-position="center"] .led {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+${selector}[data-on="false"] .led {
+  background-color: ${element.ledOffColor};
+}
+
+${selector}[data-on="true"] .led {
+  background-color: ${element.ledOnColor};
+  box-shadow: 0 0 4px ${element.ledOnColor};
+}`
+}
+
+/**
+ * Generate Rocker Switch CSS
+ */
+function generateRockerSwitchCSS(selector: string, element: RockerSwitchElementConfig): string {
+  return `/* Rocker Switch */
+${selector} {
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  box-sizing: border-box;
+}
+
+${selector} .track {
+  display: none;
+}
+
+${selector} .paddle {
+  position: absolute;
+  left: 4px;
+  width: calc(100% - 8px);
+  height: 30px;
+  background-color: ${element.switchColor};
+  border: 1px solid ${element.borderColor};
+  border-radius: 3px;
+  transition: none;
+}
+
+${selector}[data-position="2"] .paddle {
+  top: 4px;
+}
+
+${selector}[data-position="1"] .paddle {
+  top: calc(50% - 15px);
+}
+
+${selector}[data-position="0"] .paddle {
+  top: calc(100% - 34px);
+}
+
+${selector} .label-up,
+${selector} .label-down {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: ${element.labelColor};
+  user-select: none;
+}
+
+${selector} .label-up {
+  top: -18px;
+}
+
+${selector} .label-down {
+  bottom: -18px;
+}`
+}
+
+/**
+ * Generate Rotary Switch CSS
+ */
+function generateRotarySwitchCSS(selector: string, element: RotarySwitchElementConfig): string {
+  return `/* Rotary Switch */
+${selector} {
+  position: relative;
+}
+
+${selector} .body {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  left: 10%;
+  top: 10%;
+  border-radius: 50%;
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  box-sizing: border-box;
+}
+
+${selector} .pointer {
+  position: absolute;
+  width: 4px;
+  height: 30%;
+  left: calc(50% - 2px);
+  top: 10%;
+  background-color: ${element.pointerColor};
+  transform-origin: center bottom;
+  transition: none;
+  border-radius: 2px;
+}
+
+${selector} .labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+${selector} .labels .label {
+  position: absolute;
+  font-size: ${element.labelFontSize}px;
+  color: ${element.labelColor};
+  user-select: none;
+  transform: translate(-50%, -50%);
+}
+
+/* Legend layout places labels in a list outside the knob */
+${selector} .labels[data-layout="legend"] {
+  left: 110%;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+${selector} .labels[data-layout="legend"] .label {
+  position: static;
+  transform: none;
+}`
+}
+
+/**
+ * Generate Segment Button CSS
+ */
+function generateSegmentButtonCSS(selector: string, element: SegmentButtonElementConfig): string {
+  const isVertical = element.orientation === 'vertical'
+  const flexDirection = isVertical ? 'column' : 'row'
+  const borderStyle = isVertical
+    ? `border-right: none; border-bottom: 1px solid ${element.borderColor};`
+    : `border-right: 1px solid ${element.borderColor}; border-bottom: none;`
+
+  return `/* Segment Button */
+${selector} {
+  display: flex;
+  flex-direction: ${flexDirection};
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: 4px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+${selector} .segment {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 8px;
+  color: ${element.textColor};
+  ${borderStyle}
+  cursor: pointer;
+  transition: none;
+  user-select: none;
+}
+
+${selector} .segment:last-child {
+  border-right: none;
+  border-bottom: none;
+}
+
+${selector} .segment[data-selected="true"] {
+  background-color: ${element.selectedColor};
+  color: ${element.selectedTextColor};
+}
+
+${selector} .segment-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+${selector} .segment-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+${selector} .segment-text {
+  font-size: 12px;
+  font-family: Inter, system-ui, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }`
 }
