@@ -125,6 +125,10 @@ All v1.1 decisions documented and outcomes verified.
 | Tree interaction pattern | 24-04 | Arrow click expands/collapses, row click selects | Per CONTEXT.md - matches standard file browser UX, prevents accidental expand/collapse |
 | TreeNode recursive structure | 24-04 | Natural representation of hierarchical data | Compatible with react-arborist, supports unlimited nesting |
 | Designer interaction restrictions | 24-04 | disableEdit and disableDrag always true in designer mode | Tree structure is designer-defined but JUCE can modify at runtime |
+| Array item min requirements | 24-05 | Breadcrumb and Menu need minimum items | Breadcrumb min 1 item, Menu min 1 item, others allow 0 |
+| Tag availability management | 24-05 | TagSelector needs available vs selected distinction | Available tags list with selection toggle in property panel |
+| Tree recursive editor | 24-05 | Visual tree editing with nested structure | TreeView property panel with expandable nested editor, add child at any level |
+| Tab icon picker | 24-05 | Per-tab icon configuration needed | Per-tab icon dropdown from built-in icon set, consistent with SegmentButton |
 | Instant transitions on navigation exports | 24-06 | Navigation requires immediate visual feedback | All navigation elements use transition: none in exported CSS |
 | Dropdown fade timing in exports | 24-06 | CONTEXT.md specified 100-150ms range | 100ms ease-out for open, 150ms ease-in for close in exported CSS |
 | JUCE data attributes for navigation | 24-06 | C++ needs to query and update navigation state without JavaScript | Stepper: data-value/min/max/step, Tab Bar: data-active-tab, Tree View: data-selected-id/node-id |
