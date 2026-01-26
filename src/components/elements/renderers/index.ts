@@ -59,6 +59,14 @@ import {
   BpmDisplayRenderer,
   EditableDisplayRenderer,
   MultiValueDisplayRenderer,
+  RMSMeterMonoRenderer,
+  RMSMeterStereoRenderer,
+  VUMeterMonoRenderer,
+  VUMeterStereoRenderer,
+  PPMType1MonoRenderer,
+  PPMType1StereoRenderer,
+  PPMType2MonoRenderer,
+  PPMType2StereoRenderer,
 } from './displays'
 
 import {
@@ -137,6 +145,16 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['editabledisplay', EditableDisplayRenderer as RendererComponent],
   ['multivaluedisplay', MultiValueDisplayRenderer as RendererComponent],
 
+  // Professional Meters
+  ['rmsmetermo', RMSMeterMonoRenderer as RendererComponent],
+  ['rmsmeterstereo', RMSMeterStereoRenderer as RendererComponent],
+  ['vumetermono', VUMeterMonoRenderer as RendererComponent],
+  ['vumeterstereo', VUMeterStereoRenderer as RendererComponent],
+  ['ppmtype1mono', PPMType1MonoRenderer as RendererComponent],
+  ['ppmtype1stereo', PPMType1StereoRenderer as RendererComponent],
+  ['ppmtype2mono', PPMType2MonoRenderer as RendererComponent],
+  ['ppmtype2stereo', PPMType2StereoRenderer as RendererComponent],
+
   // Containers
   ['panel', PanelRenderer as RendererComponent],
   ['frame', FrameRenderer as RendererComponent],
@@ -208,6 +226,14 @@ export {
   BpmDisplayRenderer,
   EditableDisplayRenderer,
   MultiValueDisplayRenderer,
+  RMSMeterMonoRenderer,
+  RMSMeterStereoRenderer,
+  VUMeterMonoRenderer,
+  VUMeterStereoRenderer,
+  PPMType1MonoRenderer,
+  PPMType1StereoRenderer,
+  PPMType2MonoRenderer,
+  PPMType2StereoRenderer,
   // Containers
   PanelRenderer,
   FrameRenderer,

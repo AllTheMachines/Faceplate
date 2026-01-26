@@ -31,3 +31,15 @@ export { NoteDisplayRenderer } from './NoteDisplayRenderer'
 export { BpmDisplayRenderer } from './BpmDisplayRenderer'
 export { EditableDisplayRenderer } from './EditableDisplayRenderer'
 export { MultiValueDisplayRenderer } from './MultiValueDisplayRenderer'
+
+// Professional Meters
+export {
+  RMSMeterMonoRenderer,
+  RMSMeterStereoRenderer,
+  VUMeterMonoRenderer,
+  VUMeterStereoRenderer,
+  PPMType1MonoRenderer,
+  PPMType1StereoRenderer,
+  PPMType2MonoRenderer,
+  PPMType2StereoRenderer,
+} from './meters'
