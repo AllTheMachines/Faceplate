@@ -93,6 +93,9 @@ All v1.1 decisions documented and outcomes verified.
 | PPM dB range (-50 to +5 dB) | 23-02 | IEC 60268-10 standard for Type I (DIN) and Type II (BBC) | 55 segments, distinct ballistics |
 | Stereo channel gap (8px) | 23-02 | Visual separation without excessive width | Consistent with LED arrays |
 | Channel labels at bottom | 23-02 | Clear L/R identification outside meter body | Optional, 10px font, #999 color |
+| LUFS meters use -60 to 0 LUFS range | 23-03 | Same range as True Peak for consistency | All LUFS variants use 60 segments |
+| LUFS unit property | 23-03 | Distinguishes LUFS meters from dB meters | Display logic can show "LUFS" suffix |
+| LUFS ballistics naming | 23-03 | Clear distinction between window types | LUFS_M (400ms), LUFS_S (3s), LUFS_I (full) |
 | K-System ranges | 23-04 | Bob Katz calibrated monitoring standards | K-12: -32 to +12 dB, K-14: -34 to +14 dB, K-20: -40 to +20 dB |
 | K-System color zones | 23-04 | Simplified from full K-System spec | Green below 0 dB, red above K headroom |
 | Correlation Meter horizontal bar | 23-04 | CONTEXT.md spec for analysis meters | Center marker at 0, red/yellow/green zones |
