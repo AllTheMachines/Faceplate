@@ -109,8 +109,10 @@ export function generateHTML(
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="plugin-container">
-    ${elementsHTML}
+  <div id="plugin-wrapper">
+    <div id="plugin-container">
+      ${elementsHTML}
+    </div>
   </div>
   <script src="components.js"></script>
   <script src="bindings.js"></script>
