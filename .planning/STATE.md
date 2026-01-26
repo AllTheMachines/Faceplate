@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 
 ## Current Position
 
-Phase: 16 of 18 (Static SVG Graphics) — IN PROGRESS
-Plan: 2 of 5 in current phase
-Status: In progress
-Last activity: 2026-01-26 — Completed 16-02-PLAN.md (SVG Graphic Property Panel)
+Phase: 16 of 18 (Static SVG Graphics) — COMPLETE
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-01-26 — Completed 16-05-PLAN.md (SVG Graphic Aspect Ratio Locking)
 
-Progress: [█████████░] 84% (73/87 total plans estimated)
+Progress: [█████████░] 86% (75/87 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,10 +38,10 @@ Progress: [█████████░] 84% (73/87 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 10 (14-01 through 16-02)
+- Plans completed: 12 (14-01 through 16-05)
 - Phase 14: 4 plans, ~100 minutes total (Security foundations)
 - Phase 15: 5 plans, ~12 minutes total (Asset library complete)
-- Phase 16: 2 plans so far, ~4 minutes (SVG Graphics in progress)
+- Phase 16: 5 plans, ~8 minutes total (SVG Graphics COMPLETE)
 
 ## Accumulated Context
 
@@ -87,6 +87,8 @@ Recent decisions affecting current work:
 - **v1.1 (16-02)**: DOMParser for SVG viewBox extraction (synchronous, robust parsing)
 - **v1.1 (16-02)**: Auto-resize to natural size when asset selected (prevents distortion)
 - **v1.1 (16-02)**: Opacity displayed as 0-100% in UI, stored as 0-1 internally
+- **v1.1 (16-05)**: Aspect ratio LOCKED by default for SVG Graphics (Shift unlocks) - prevents accidental distortion
+- **v1.1 (16-05)**: 8x8 minimum size for SVG Graphics (vs 20 for other elements) - allows small icons
 
 ### Pending Todos
 
@@ -108,10 +110,13 @@ None yet.
 - ✓ Asset library fully functional with import, browse, drag-to-canvas
 - ✓ Asset persistence and undo/redo support
 
-**Phase 16 IN PROGRESS (Static SVG Graphics):**
+**Phase 16 COMPLETE (Static SVG Graphics):**
 - ✓ 16-01: SvgGraphicElementConfig type and SvgGraphicRenderer component
 - ✓ 16-02: SvgGraphicProperties component and getSVGNaturalSize utility
-- NEXT: 16-03 (Property Panel Wiring)
+- ✓ 16-03: Property panel wiring and palette integration
+- ✓ 16-04: HTML/CSS export for SVG Graphics
+- ✓ 16-05: Aspect ratio locking during resize
+- Phase 16 complete - SVG Graphics fully functional
 
 **Phase 17 considerations (from research):**
 - Performance with 50+ animated knobs may need optimization
@@ -121,9 +126,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 16-02-PLAN.md (SVG Graphic Property Panel)
+Stopped at: Completed 16-05-PLAN.md (SVG Graphic Aspect Ratio Locking) - Phase 16 COMPLETE
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 16-02 completion*
+*Last updated: 2026-01-26 after 16-05 completion*
