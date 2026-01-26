@@ -10,6 +10,7 @@ export interface AssetsSlice {
   addAsset: (asset: Omit<Asset, 'id' | 'createdAt'>) => void
   removeAsset: (id: string) => void
   updateAsset: (id: string, updates: Partial<Asset>) => void
+  setAssets: (assets: Asset[]) => void  // Replace all assets (for project load)
   getAsset: (id: string) => Asset | undefined
   getAssetsByCategory: (category: string) => Asset[]
   addCustomCategory: (category: string) => void
@@ -47,6 +48,11 @@ export const createAssetsSlice: StateCreator<AssetsSlice, [], [], AssetsSlice> =
       assets: state.assets.map((asset) =>
         asset.id === id ? { ...asset, ...updates } : asset
       ),
+    })),
+
+  setAssets: (assets) =>
+    set(() => ({
+      assets,
     })),
 
   // Selector helper

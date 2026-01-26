@@ -7,6 +7,7 @@ import { generateErrorMessage } from 'zod-error'
 import { ProjectSchema, type ProjectData } from '../schemas/project'
 import type { ElementConfig } from '../types/elements'
 import type { GradientConfig } from '../store/canvasSlice'
+import type { Asset } from '../types/asset'
 import { sanitizeSVG } from '../lib/svg-sanitizer'
 
 // ============================================================================
@@ -23,6 +24,7 @@ export interface SerializationInput {
   snapToGrid: boolean
   gridSize: number
   selectedIds: string[]
+  assets: Asset[]
 }
 
 /**
@@ -45,6 +47,7 @@ export function serializeProject(state: SerializationInput): string {
     // Cast needed: TypeScript ElementConfig is wider than Zod ProjectData schema
     elements: state.elements as ProjectData['elements'],
     selectedIds: state.selectedIds,
+    assets: state.assets,
   }
 
   // JSON.stringify with 2-space indent for human readability
@@ -119,14 +122,14 @@ export function deserializeProject(json: string): DeserializeResult {
   // Re-sanitize all SVG assets (SEC-02: tampering protection)
   if (data.assets && data.assets.length > 0) {
     data.assets = data.assets.map(asset => {
-      const resanitized = sanitizeSVG(asset.content)
+      const resanitized = sanitizeSVG(asset.svgContent)
       // Log if content changed during re-sanitization (possible tampering)
-      if (resanitized !== asset.content) {
+      if (resanitized !== asset.svgContent) {
         console.warn(`Asset "${asset.name}" was modified during re-sanitization (possible tampering)`)
       }
       return {
         ...asset,
-        content: resanitized
+        svgContent: resanitized
       }
     })
   }

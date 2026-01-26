@@ -71,6 +71,7 @@ export function SaveLoadPanel() {
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
   const selectedIds = useStore((state) => state.selectedIds)
+  const assets = useStore((state) => state.assets)
 
   // Get actions for load
   const setElements = useStore((state) => state.setElements)
@@ -81,6 +82,7 @@ export function SaveLoadPanel() {
   const setSnapToGrid = useStore((state) => state.setSnapToGrid)
   const setGridSize = useStore((state) => state.setGridSize)
   const selectMultiple = useStore((state) => state.selectMultiple)
+  const setAssets = useStore((state) => state.setAssets)
 
   const handleSave = async () => {
     setLoading(true)
@@ -98,6 +100,7 @@ export function SaveLoadPanel() {
         snapToGrid,
         gridSize,
         selectedIds,
+        assets,
       })
 
       // Save to file
@@ -158,6 +161,11 @@ export function SaveLoadPanel() {
       // Restore selection if present
       if (data.selectedIds) {
         selectMultiple(data.selectedIds)
+      }
+
+      // Restore assets if present
+      if (data.assets) {
+        setAssets(data.assets)
       }
 
       // Clear error on success

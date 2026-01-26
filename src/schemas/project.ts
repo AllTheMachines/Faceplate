@@ -132,8 +132,9 @@ const MeterElementSchema = BaseElementSchema.extend({
 const ImageElementSchema = BaseElementSchema.extend({
   type: z.literal('image'),
 
-  // Source
+  // Source (either src URL or assetId reference)
   src: z.string(),
+  assetId: z.string().optional(), // Reference to asset library
 
   // Fit
   fit: z.enum(['contain', 'cover', 'fill', 'none']),
@@ -146,14 +147,11 @@ const ImageElementSchema = BaseElementSchema.extend({
 export const SVGAssetSchema = z.object({
   id: z.string(),
   name: z.string(),
-  content: z.string(), // Always sanitized SVG content
-  category: z.enum(['logo', 'icon', 'decoration', 'background']),
-  notes: z.string().optional(),
-  uploadedAt: z.number(),
-  metadata: z.object({
-    originalSize: z.number(),
-    elementCount: z.number(),
-  }),
+  svgContent: z.string(), // Sanitized SVG markup
+  categories: z.array(z.string()), // Multi-category tags
+  fileSize: z.number(),
+  elementCount: z.number(),
+  createdAt: z.number(),
 })
 
 export type SVGAsset = z.infer<typeof SVGAssetSchema>
