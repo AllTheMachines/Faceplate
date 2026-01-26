@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Phase 18 - Export & Polish (v1.1 Professional Export Experience)
+**Current focus:** v1.1 SVG Import System — SHIPPED 2026-01-26
 
 ## Current Position
 
 Phase: 18 of 18 (Export & Polish) — COMPLETE
 Plan: 6 of 6 in current phase
-Status: Phase complete
-Last activity: 2026-01-26 — Completed 18-06-PLAN.md (Export Workflow Polish)
+Status: MILESTONE COMPLETE — v1.1 shipped
+Last activity: 2026-01-26 — v1.1 SVG Import System SHIPPED
 
 Progress: [██████████] 100% (79/79 total plans)
 

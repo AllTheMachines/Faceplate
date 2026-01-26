@@ -54,11 +54,11 @@ Requirements for SVG Import System milestone. Each maps to roadmap phases.
 
 ### Export
 
-- [ ] **EXP-01**: SVG Graphics export as inline SVG in HTML
-- [ ] **EXP-02**: SVG Knobs export with working rotation interactivity
-- [ ] **EXP-03**: Exported HTML includes CSP headers for security
-- [ ] **EXP-04**: SVG content is optimized with SVGO before export (optional toggle)
-- [ ] **EXP-05**: Exported CSS includes responsive scaling rules for SVG elements
+- [x] **EXP-01**: SVG Graphics export as inline SVG in HTML
+- [x] **EXP-02**: SVG Knobs export with working rotation interactivity
+- [x] **EXP-03**: Exported HTML includes CSP headers for security
+- [x] **EXP-04**: SVG content is optimized with SVGO before export (optional toggle)
+- [x] **EXP-05**: Exported CSS includes responsive scaling rules for SVG elements
 
 ## Future Requirements (v1.2+)
 
@@ -126,17 +126,18 @@ Requirements for SVG Import System milestone. Each maps to roadmap phases.
 | KNOB-07 | Phase 17 | Complete |
 | KNOB-08 | Phase 17 | Complete |
 | KNOB-09 | Phase 17 | Complete |
-| EXP-01 | Phase 18 | Pending |
-| EXP-02 | Phase 18 | Pending |
-| EXP-03 | Phase 18 | Pending |
-| EXP-04 | Phase 18 | Pending |
-| EXP-05 | Phase 18 | Pending |
+| EXP-01 | Phase 18 | Complete |
+| EXP-02 | Phase 18 | Complete |
+| EXP-03 | Phase 18 | Complete |
+| EXP-04 | Phase 18 | Complete |
+| EXP-05 | Phase 18 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 38 total
 - Mapped to phases: 38/38 ✓
+- Complete: 38/38 ✓
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 17 completion*
+*Last updated: 2026-01-26 after Phase 18 completion — v1.1 SHIPPED*
