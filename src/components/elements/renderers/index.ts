@@ -108,6 +108,7 @@ import {
   FrameRenderer,
   GroupBoxRenderer,
   CollapsibleRenderer,
+  TooltipRenderer,
 } from './containers'
 
 import {
@@ -232,6 +233,7 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['frame', FrameRenderer as RendererComponent],
   ['groupbox', GroupBoxRenderer as RendererComponent],
   ['collapsible', CollapsibleRenderer as RendererComponent],
+  ['tooltip', TooltipRenderer as RendererComponent],
 
   // Decorative
   ['image', ImageRenderer as RendererComponent],
@@ -345,6 +347,7 @@ export {
   FrameRenderer,
   GroupBoxRenderer,
   CollapsibleRenderer,
+  TooltipRenderer,
   // Decorative
   ImageRenderer,
   SvgGraphicRenderer,
