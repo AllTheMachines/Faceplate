@@ -87,6 +87,8 @@ Recent decisions affecting current work:
 - **v1.1 (16-02)**: DOMParser for SVG viewBox extraction (synchronous, robust parsing)
 - **v1.1 (16-02)**: Auto-resize to natural size when asset selected (prevents distortion)
 - **v1.1 (16-02)**: Opacity displayed as 0-100% in UI, stored as 0-1 internally
+- **v1.1 (16-03)**: Library asset drags create SvgGraphic elements (not Image elements)
+- **v1.1 (16-03)**: Natural size from SVG viewBox used for library drops (prevents distortion)
 - **v1.1 (16-04)**: Re-sanitize SVG before export for SEC-04 compliance
 - **v1.1 (16-04)**: Combine rotation and flip transforms via regex replacement in export
 - **v1.1 (16-04)**: object-fit: contain for SVG scaling in exported CSS (maintains aspect ratio)
