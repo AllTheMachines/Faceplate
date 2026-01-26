@@ -55,7 +55,17 @@ const KnobElementSchema = BaseElementSchema.extend({
   fillColor: z.string(),
   indicatorColor: z.string(),
   trackWidth: z.number(),
-})
+
+  // SVG Knob Style (optional)
+  styleId: z.string().optional(),
+  colorOverrides: z.object({
+    indicator: z.string().optional(),
+    track: z.string().optional(),
+    arc: z.string().optional(),
+    glow: z.string().optional(),
+    shadow: z.string().optional(),
+  }).optional(),
+}).passthrough()
 
 const SliderElementSchema = BaseElementSchema.extend({
   type: z.literal('slider'),
@@ -157,6 +167,30 @@ export const SVGAssetSchema = z.object({
 export type SVGAsset = z.infer<typeof SVGAssetSchema>
 
 // ============================================================================
+// Knob Style Schema
+// ============================================================================
+
+const KnobStyleLayersSchema = z.object({
+  indicator: z.string().optional(),
+  track: z.string().optional(),
+  arc: z.string().optional(),
+  glow: z.string().optional(),
+  shadow: z.string().optional(),
+})
+
+export const KnobStyleSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  svgContent: z.string(),
+  layers: KnobStyleLayersSchema,
+  minAngle: z.number(),
+  maxAngle: z.number(),
+  createdAt: z.number(),
+})
+
+export type KnobStyle = z.infer<typeof KnobStyleSchema>
+
+// ============================================================================
 // Discriminated Union for Element Types
 // ============================================================================
 
@@ -215,7 +249,8 @@ export const ProjectSchema = z.object({
   version: z.string(),
   canvas: CanvasConfigSchema,
   elements: z.array(ElementConfigSchema),
-  assets: z.array(SVGAssetSchema).optional().default([]), // New field
+  assets: z.array(SVGAssetSchema).optional().default([]),
+  knobStyles: z.array(KnobStyleSchema).optional().default([]),
   selectedIds: z.array(z.string()).optional(),
 })
 
