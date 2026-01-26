@@ -66,7 +66,42 @@ const paletteCategories = [
   },
   {
     name: 'Meters',
-    items: [{ id: 'meter-vertical', type: 'meter', name: 'Meter', variant: { orientation: 'vertical' } }],
+    items: [
+      // Legacy meter (keep for backward compatibility)
+      { id: 'meter-vertical', type: 'meter', name: 'Meter', variant: { orientation: 'vertical' } },
+
+      // Level Meters
+      { id: 'rmsmetermo', type: 'rmsmetermo', name: 'RMS Meter' },
+      { id: 'rmsmeterstereo', type: 'rmsmeterstereo', name: 'RMS Meter (Stereo)' },
+      { id: 'vumetermono', type: 'vumetermono', name: 'VU Meter' },
+      { id: 'vumeterstereo', type: 'vumeterstereo', name: 'VU Meter (Stereo)' },
+      { id: 'ppmtype1mono', type: 'ppmtype1mono', name: 'PPM Type I' },
+      { id: 'ppmtype1stereo', type: 'ppmtype1stereo', name: 'PPM Type I (Stereo)' },
+      { id: 'ppmtype2mono', type: 'ppmtype2mono', name: 'PPM Type II' },
+      { id: 'ppmtype2stereo', type: 'ppmtype2stereo', name: 'PPM Type II (Stereo)' },
+      { id: 'truepeakmetermono', type: 'truepeakmetermono', name: 'True Peak' },
+      { id: 'truepeakmeterstereo', type: 'truepeakmeterstereo', name: 'True Peak (Stereo)' },
+
+      // LUFS Meters
+      { id: 'lufsmomomo', type: 'lufsmomomo', name: 'LUFS Momentary' },
+      { id: 'lufsmomostereo', type: 'lufsmomostereo', name: 'LUFS Momentary (Stereo)' },
+      { id: 'lufsshortmono', type: 'lufsshortmono', name: 'LUFS Short-term' },
+      { id: 'lufsshortstereo', type: 'lufsshortstereo', name: 'LUFS Short-term (Stereo)' },
+      { id: 'lufsintmono', type: 'lufsintmono', name: 'LUFS Integrated' },
+      { id: 'lufsintstereo', type: 'lufsintstereo', name: 'LUFS Integrated (Stereo)' },
+
+      // K-System
+      { id: 'k12metermono', type: 'k12metermono', name: 'K-12 Meter' },
+      { id: 'k12meterstereo', type: 'k12meterstereo', name: 'K-12 Meter (Stereo)' },
+      { id: 'k14metermono', type: 'k14metermono', name: 'K-14 Meter' },
+      { id: 'k14meterstereo', type: 'k14meterstereo', name: 'K-14 Meter (Stereo)' },
+      { id: 'k20metermono', type: 'k20metermono', name: 'K-20 Meter' },
+      { id: 'k20meterstereo', type: 'k20meterstereo', name: 'K-20 Meter (Stereo)' },
+
+      // Analysis
+      { id: 'correlationmeter', type: 'correlationmeter', name: 'Correlation Meter' },
+      { id: 'stereowidthmeter', type: 'stereowidthmeter', name: 'Stereo Width Meter' },
+    ],
   },
   {
     name: 'Audio Displays',

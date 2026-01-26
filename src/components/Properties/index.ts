@@ -62,6 +62,19 @@ import { TriColorLEDProperties } from './TriColorLEDProperties'
 import { LEDArrayProperties } from './LEDArrayProperties'
 import { LEDRingProperties } from './LEDRingProperties'
 import { LEDMatrixProperties } from './LEDMatrixProperties'
+import {
+  RMSMeterProperties,
+  VUMeterProperties,
+  PPMType1Properties,
+  PPMType2Properties,
+  TruePeakMeterProperties,
+  LUFSMomentaryProperties,
+  LUFSShorttermProperties,
+  LUFSIntegratedProperties,
+  KMeterProperties,
+  CorrelationMeterProperties,
+  StereoWidthMeterProperties,
+} from './meters'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -118,6 +131,19 @@ export { TriColorLEDProperties } from './TriColorLEDProperties'
 export { LEDArrayProperties } from './LEDArrayProperties'
 export { LEDRingProperties } from './LEDRingProperties'
 export { LEDMatrixProperties } from './LEDMatrixProperties'
+export {
+  RMSMeterProperties,
+  VUMeterProperties,
+  PPMType1Properties,
+  PPMType2Properties,
+  TruePeakMeterProperties,
+  LUFSMomentaryProperties,
+  LUFSShorttermProperties,
+  LUFSIntegratedProperties,
+  KMeterProperties,
+  CorrelationMeterProperties,
+  StereoWidthMeterProperties,
+} from './meters'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -179,6 +205,32 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['ledarray', LEDArrayProperties],
   ['ledring', LEDRingProperties],
   ['ledmatrix', LEDMatrixProperties],
+
+  // Professional Meters
+  ['rmsmetermo', RMSMeterProperties],
+  ['rmsmeterstereo', RMSMeterProperties],
+  ['vumetermono', VUMeterProperties],
+  ['vumeterstereo', VUMeterProperties],
+  ['ppmtype1mono', PPMType1Properties],
+  ['ppmtype1stereo', PPMType1Properties],
+  ['ppmtype2mono', PPMType2Properties],
+  ['ppmtype2stereo', PPMType2Properties],
+  ['truepeakmetermono', TruePeakMeterProperties],
+  ['truepeakmeterstereo', TruePeakMeterProperties],
+  ['lufsmomomo', LUFSMomentaryProperties],
+  ['lufsmomostereo', LUFSMomentaryProperties],
+  ['lufsshortmono', LUFSShorttermProperties],
+  ['lufsshortstereo', LUFSShorttermProperties],
+  ['lufsintmono', LUFSIntegratedProperties],
+  ['lufsintstereo', LUFSIntegratedProperties],
+  ['k12metermono', KMeterProperties],
+  ['k12meterstereo', KMeterProperties],
+  ['k14metermono', KMeterProperties],
+  ['k14meterstereo', KMeterProperties],
+  ['k20metermono', KMeterProperties],
+  ['k20meterstereo', KMeterProperties],
+  ['correlationmeter', CorrelationMeterProperties],
+  ['stereowidthmeter', StereoWidthMeterProperties],
 
   // Containers
   ['panel', PanelProperties],
