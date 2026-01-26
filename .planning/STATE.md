@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 26 - Interactive Curves (in progress)
-Plan: 4 of 5 complete
-Status: In progress
-Last activity: 2026-01-26 - Completed 26-04-PLAN.md (LFO Display, property panels, palette)
+Phase: 26 - Interactive Curves (complete)
+Plan: 5 of 5 complete
+Status: Phase complete
+Last activity: 2026-01-26 - Completed 26-05-PLAN.md (Export support for all 5 curve types)
 
-Progress: [██████████] 127/123 plans complete (103%)
+Progress: [██████████] 128/123 plans complete (104%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [██████████] 127/123 plans complete (103%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 39 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 4)
+- Completed: 40 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5)
 
 ## Accumulated Context
 
@@ -171,10 +171,14 @@ All v1.1 decisions documented and outcomes verified.
 | Hard edges for square waveforms | 26-04 | Authentic square/pulse/sample-hold appearance | lineTo with horizontal then vertical segments |
 | Deterministic sample-hold | 26-04 | Consistent pattern across renders | Pseudo-random formula for static preview |
 | Conditional property controls | 26-04 | Cleaner UI with contextual sections | Pulse width only for pulse, gain only for shelf/peak |
+| Inline JavaScript draw functions | 26-05 | Avoids external dependencies in exports | Each curve exports with embedded JavaScript |
+| JUCE event naming for curves | 26-05 | Consistent pattern for curve data events | eqData_{id}, compressorData_{id}, envelopeData_{id}, lfoData_{id}, filterData_{id} |
+| HiDPI Canvas scaling in exports | 26-05 | Crisp rendering on retina displays in JUCE | devicePixelRatio scaling in exported JavaScript |
+| Audio math utilities inlined | 26-05 | Self-contained exports with no external dependencies | frequency/dB mapping, biquad, compressor, envelope, filter calculations |
 
 ### Pending Todos
 
-None - Phase 26 Plans 01-04 complete
+None - Phase 26 complete
 
 ### Blockers/Concerns
 
@@ -256,12 +260,13 @@ None - Phase 26 Plans 01-04 complete
 - "Visualizations" palette category with all 5 element types
 - Export support: CSS generation for Canvas containers, HTML with inline JavaScript draw functions, JUCE event listeners
 
-**Phase 26 in progress:**
+**Phase 26 Complete:**
 - Plan 26-01: Curve element types and utilities - COMPLETE
 - Plan 26-02: EQ Curve & Filter Response renderers - COMPLETE
 - Plan 26-03: Compressor Curve & Envelope Display renderers - COMPLETE
 - Plan 26-04: LFO Display renderer - COMPLETE
-- **Total:** 5 curve element types with Canvas renderers
+- Plan 26-05: Export support (CSS and HTML generation) - COMPLETE
+- **Total:** 5 curve element types fully integrated end-to-end across 5 plans
 - TypeScript types for 5 interactive curve elements (EQCurve, CompressorCurve, EnvelopeDisplay, LFODisplay, FilterResponse)
 - Audio math utilities: logarithmic frequency scale, biquad filter calculations (7 filter types), compressor transfer function
 - Curve rendering utilities: Bezier curve drawing, square handles (8px/10px hover), grid rendering, mock data generators
@@ -271,15 +276,18 @@ None - Phase 26 Plans 01-04 complete
 - CompressorCurveRenderer: transfer function with soft knee, 1:1 reference line, gain reduction mode
 - EnvelopeDisplayRenderer: ADSR envelope with exponential/linear curves, stage coloring, stage markers
 - LFODisplayRenderer: 8 waveform shapes (sine, triangle, saw-up/down, square, pulse, sample-hold, smooth-random)
+- Property panels for all 5 curve types with full configuration options
+- "Curves" palette category with all 5 element types
+- Export support: CSS generation for Canvas containers, HTML with inline JavaScript draw functions, JUCE event listeners
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 26-04-PLAN.md
+Stopped at: Completed 26-05-PLAN.md
 Resume file: None
 
-**Next step:** Continue Phase 26 with remaining plan (property panels & palette)
+**Next step:** Phase 26 complete. Ready for Phase 27 or next work.
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 26-03-PLAN.md complete - Compressor & Envelope renderers*
+*Last updated: 2026-01-26 after 26-05-PLAN.md complete - Export support for all 5 curve types*
