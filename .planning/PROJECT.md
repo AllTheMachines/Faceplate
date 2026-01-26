@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A browser-based visual design tool for creating audio plugin user interfaces. Users drag-and-drop UI components (knobs, sliders, meters, buttons, containers, form controls) onto a canvas, configure their properties through a panel, and export working code for JUCE WebView2 plugins. Built for plugin developers who need to iterate visually instead of hand-coding SVG and CSS.
+A browser-based visual design tool for creating audio plugin user interfaces. Users drag-and-drop UI components (knobs, sliders, meters, buttons, containers, form controls) onto a canvas, configure their properties through a panel, and export working code for JUCE WebView2 plugins. Now supports custom SVG asset import for branded knob designs and decorative graphics with defense-in-depth security. Built for plugin developers who need to iterate visually instead of hand-coding SVG and CSS.
 
 ## Core Value
 
@@ -36,15 +36,25 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - Font selection (Inter, Roboto, Roboto Mono embedded) - v1.0
 - SVG Design Mode for layer assignment - v1.0
 - Template import from existing JUCE projects - v1.0
+- Defense-in-depth SVG security (sanitize at upload, load, render, export) - v1.1
+- Central asset library with import, categories, and drag-to-canvas - v1.1
+- SVG Graphic element type with aspect ratio locking - v1.1
+- Interactive SVG knobs with layer mapping and reusable styles - v1.1
+- Per-instance color overrides for knob styles - v1.1
+- SVGO optimization toggle for export - v1.1
+- Responsive scaling CSS/JS in exported bundles - v1.1
+- Browser preview for export verification - v1.1
+- JUCE integration README in exported bundle - v1.1
 
 ### Active
 
-**v1.1 Focus: SVG Import System**
+**v1.2 Focus: Extended SVG Controls**
 
-- [ ] Interactive SVG Knobs — Import custom knob designs with element mapping (track, arc, indicator)
-- [ ] Static SVG Graphics — Import any SVG as decorative elements (logos, icons, dividers)
-- [ ] Asset Library — Manage knob styles and graphic assets in unified panel
-- [ ] Resizable UI Support — Export with responsive scaling for SVG elements
+- [ ] Interactive SVG Sliders with track and thumb mapping
+- [ ] Interactive SVG Buttons with pressed state mapping
+- [ ] SVG Meters with fill animation
+- [ ] Batch import multiple SVGs at once
+- [ ] Asset search/filter in library
 
 ### Out of Scope
 
@@ -60,12 +70,13 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Context
 
 **Current State:**
+- v1.1 SVG Import System shipped (2026-01-26)
 - v1.0 MVP shipped (2026-01-25)
-- 420 files, ~99,000 lines TypeScript
-- 22 element types supported
-- Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS
+- ~540 files, ~120,000 lines TypeScript
+- 23 element types supported (added SVG Graphic in v1.1)
+- Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS, SVGO, DOMPurify
 
-**Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds. WebSliderRelay boilerplate was error-prone.
+**Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds. WebSliderRelay boilerplate was error-prone. v1.1 adds custom branding support via SVG import.
 
 **Prior work:** Complete specification exists in `docs/SPECIFICATION.md` with 108 element types across 10 categories.
 
@@ -121,6 +132,13 @@ Pattern discovered and refined January 24-25, 2026 through extensive debugging.
 | Dual export modes | JUCE bundle vs HTML preview serves different use cases | Good - flexible workflow |
 | WOFF2 font embedding | Offline VST3 plugins need self-contained fonts | Good - professional output |
 | Visual-only containers | Avoids store architecture complexity for v1 | Acceptable - noted as tech debt |
+| Defense-in-depth SVG sanitization | Security critical - sanitize at 4 points | Good - comprehensive XSS protection |
+| DOMPurify with strict allowlist | Allowlist safer than USE_PROFILES | Good - precise control |
+| Normalized asset storage | Flat array with derived categories | Good - efficient lookups |
+| 3-step knob import flow | Separates upload, mapping, config | Good - guided workflow |
+| Aspect ratio locked by default | Prevents accidental distortion | Good - user expectation |
+| SVGO with safe defaults | Preserve viewBox, cleanupIds: false | Good - no visual regressions |
+| Optimization enabled by default | Better default experience | Good - smaller bundles |
 
 ---
-*Last updated: 2026-01-25 after v1.1 milestone start*
+*Last updated: 2026-01-26 after v1.1 milestone complete*

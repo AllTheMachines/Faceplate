@@ -143,21 +143,11 @@ Plans:
 
 </details>
 
-### v1.1 SVG Import System (SHIPPED 2026-01-26)
+<details>
+<summary>v1.1 SVG Import System (Phases 14-18) - SHIPPED 2026-01-26</summary>
 
-**Milestone Goal:** Enable custom SVG asset import for interactive knobs and static graphics with comprehensive security.
-
-#### Phase 14: Security Foundation & Upload Pipeline
+### Phase 14: Security Foundation & Upload Pipeline
 **Goal**: All SVG rendering is sanitized and protected against XSS attacks
-**Depends on**: Phase 13
-**Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07, SEC-08
-**Success Criteria** (what must be TRUE):
-  1. SVG files are sanitized with DOMPurify at upload time before storage
-  2. Loaded project JSON re-sanitizes all SVG content (tampering protection)
-  3. All canvas rendering of SVG goes through SafeSVG component
-  4. Exported HTML includes sanitized SVG and CSP headers
-  5. DOCTYPE declarations in SVG files are rejected with error message
-  6. SVG file size limit (1MB max) and element count limit (5000 max) are enforced
 **Plans**: 4 plans
 
 Plans:
@@ -166,91 +156,55 @@ Plans:
 - [x] 14-03: SafeSVG component and toast infrastructure
 - [x] 14-04: Integration (serialization re-sanitization, export CSP)
 
-#### Phase 15: Asset Library Storage & UI
+### Phase 15: Asset Library Storage & UI
 **Goal**: Users can import, organize, and browse SVG assets in a central library
-**Depends on**: Phase 14
-**Requirements**: ASSET-01, ASSET-02, ASSET-03, ASSET-04, ASSET-05, ASSET-06, ASSET-07, ASSET-08
-**Success Criteria** (what must be TRUE):
-  1. SVG assets are stored in Zustand AssetsSlice with normalized structure
-  2. Asset Library panel displays all imported SVGs with thumbnail previews
-  3. User can import SVG via dialog with preview before confirming
-  4. User can delete assets with usage warning if referenced by elements
-  5. Assets have category tags (logo, icon, decoration, background) for organization
-  6. User can drag asset from library directly to canvas to create element
-**Plans**: 5 plans (4 original + 1 gap closure)
-
-Plans:
-- [x] 15-01-PLAN.md — AssetsSlice foundation (types, state, store integration)
-- [x] 15-02-PLAN.md — Import dialog with preview and validation
-- [x] 15-03-PLAN.md — Asset Library panel with categories, search, and tab switching
-- [x] 15-04-PLAN.md — Asset interactions (rename, delete, drag-to-canvas)
-- [x] 15-05-PLAN.md — Gap closure: Wire ImageRenderer to render asset SVG content
-
-#### Phase 16: Static SVG Graphics
-**Goal**: Users can place scalable SVG graphics on canvas as decorative elements
-**Depends on**: Phase 15
-**Requirements**: GFX-01, GFX-02, GFX-03, GFX-04, GFX-05, GFX-06, GFX-07, GFX-08
-**Success Criteria** (what must be TRUE):
-  1. New "SVG Graphic" element type appears in palette
-  2. SVG Graphic element references asset by ID (not duplicating SVG data)
-  3. User can place SVG Graphic via palette or drag from asset library
-  4. SVG Graphic can be resized on canvas with optional aspect ratio lock
-  5. SVG Graphic scales perfectly without pixelation (vector rendering)
-  6. SVG Graphic supports position, size, and z-index properties
 **Plans**: 5 plans
 
 Plans:
-- [x] 16-01-PLAN.md — Element type & renderer (SvgGraphicElementConfig, SvgGraphicRenderer)
-- [x] 16-02-PLAN.md — Property panel (SvgGraphicProperties, getSVGNaturalSize utility)
-- [x] 16-03-PLAN.md — Integration (palette, Element.tsx, PropertyPanel, drag-drop)
-- [x] 16-04-PLAN.md — Export support (HTML/CSS generators)
-- [x] 16-05-PLAN.md — Aspect ratio locking (resize hook modification)
+- [x] 15-01: AssetsSlice foundation (types, state, store integration)
+- [x] 15-02: Import dialog with preview and validation
+- [x] 15-03: Asset Library panel with categories, search, and tab switching
+- [x] 15-04: Asset interactions (rename, delete, drag-to-canvas)
+- [x] 15-05: Gap closure: Wire ImageRenderer to render asset SVG content
 
-#### Phase 17: Interactive SVG Knobs
+### Phase 16: Static SVG Graphics
+**Goal**: Users can place scalable SVG graphics on canvas as decorative elements
+**Plans**: 5 plans
+
+Plans:
+- [x] 16-01: Element type & renderer (SvgGraphicElementConfig, SvgGraphicRenderer)
+- [x] 16-02: Property panel (SvgGraphicProperties, getSVGNaturalSize utility)
+- [x] 16-03: Integration (palette, Element.tsx, PropertyPanel, drag-drop)
+- [x] 16-04: Export support (HTML/CSS generators)
+- [x] 16-05: Aspect ratio locking (resize hook modification)
+
+### Phase 17: Interactive SVG Knobs
 **Goal**: Users can import custom knob designs with rotation animation mapped to parameter values
-**Depends on**: Phase 15
-**Requirements**: KNOB-01, KNOB-02, KNOB-03, KNOB-04, KNOB-05, KNOB-06, KNOB-07, KNOB-08, KNOB-09
-**Success Criteria** (what must be TRUE):
-  1. User can import SVG knob design with layer mapping dialog (track, arc, indicator)
-  2. Imported knob design creates reusable "Knob Style" stored in project state
-  3. User can apply knob style to any knob element via property panel dropdown
-  4. Knob with SVG style renders with smooth rotation animation based on parameter value
-  5. Multiple knobs can share same style (single asset, many instances)
-  6. User can override colors per knob instance (track, arc, indicator colors)
 **Plans**: 6 plans
 
 Plans:
-- [x] 17-01-PLAN.md — KnobStyle type and KnobStylesSlice store
-- [x] 17-02-PLAN.md — Layer detection utilities (detectKnobLayers, extractLayer, applyColorOverride)
-- [x] 17-03-PLAN.md — StyledKnobRenderer (layer-based SVG knob rendering)
-- [x] 17-04-PLAN.md — LayerMappingDialog and ManageKnobStylesDialog
-- [x] 17-05-PLAN.md — KnobProperties extensions (style dropdown, color overrides)
-- [x] 17-06-PLAN.md — Project serialization and HTML/CSS export
+- [x] 17-01: KnobStyle type and KnobStylesSlice store
+- [x] 17-02: Layer detection utilities (detectKnobLayers, extractLayer, applyColorOverride)
+- [x] 17-03: StyledKnobRenderer (layer-based SVG knob rendering)
+- [x] 17-04: LayerMappingDialog and ManageKnobStylesDialog
+- [x] 17-05: KnobProperties extensions (style dropdown, color overrides)
+- [x] 17-06: Project serialization and HTML/CSS export
 
-#### Phase 18: Export & Polish
+### Phase 18: Export & Polish
 **Goal**: Exported JUCE bundles include sanitized, optimized SVG with responsive scaling
-**Depends on**: Phase 16, Phase 17
-**Requirements**: EXP-01, EXP-02, EXP-03, EXP-04, EXP-05
-**Success Criteria** (what must be TRUE):
-  1. SVG Graphics export as inline SVG in HTML (sanitized)
-  2. SVG Knobs export with working rotation interactivity in JUCE WebView2
-  3. Exported HTML includes CSP headers to prevent XSS
-  4. SVG content can be optimized with SVGO before export (optional toggle)
-  5. Exported CSS includes responsive scaling rules for SVG elements
 **Plans**: 6 plans
 
 Plans:
-- [x] 18-01-PLAN.md — SVGO wrapper with safe optimization settings
-- [x] 18-02-PLAN.md — Responsive scaling CSS/JS for exported HTML
-- [x] 18-03-PLAN.md — Export integration (SVGO + responsive scaling)
-- [x] 18-04-PLAN.md — Browser preview for export verification
-- [x] 18-05-PLAN.md — JUCE integration README in exported bundle
-- [x] 18-06-PLAN.md — Export workflow polish and error messages
+- [x] 18-01: SVGO wrapper with safe optimization settings
+- [x] 18-02: Responsive scaling CSS/JS for exported HTML
+- [x] 18-03: Export integration (SVGO + responsive scaling)
+- [x] 18-04: Browser preview for export verification
+- [x] 18-05: JUCE integration README in exported bundle
+- [x] 18-06: Export workflow polish and error messages
+
+</details>
 
 ## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -267,12 +221,12 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 | 11. Audio Displays | v1.0 | 3/3 | Complete | 2026-01-24 |
 | 12. Export System | v1.0 | 5/5 | Complete | 2026-01-25 |
 | 13. Project Persistence & Polish | v1.0 | 16/16 | Complete | 2026-01-25 |
-| 14. Security Foundation & Upload Pipeline | v1.1 | 4/4 | Complete | 2026-01-25 |
-| 15. Asset Library Storage & UI | v1.1 | 5/5 | Complete | 2026-01-26 |
+| 14. Security Foundation | v1.1 | 4/4 | Complete | 2026-01-25 |
+| 15. Asset Library | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 16. Static SVG Graphics | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 17. Interactive SVG Knobs | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 18. Export & Polish | v1.1 | 6/6 | Complete | 2026-01-26 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 18 completion — v1.1 SHIPPED*
+*Last updated: 2026-01-26 after v1.1 milestone complete*
