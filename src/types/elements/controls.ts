@@ -853,6 +853,41 @@ export interface TagSelectorElementConfig extends BaseElementConfig {
   dropdownBackgroundColor: string
   dropdownTextColor: string
   dropdownHoverColor: string
+
+export interface TreeNode {
+  id: string
+  name: string
+  children?: TreeNode[]
+}
+
+export interface TreeViewElementConfig extends BaseElementConfig {
+  type: 'treeview'
+
+  // Tree data (designer defines, JUCE can modify at runtime)
+  data: TreeNode[]
+
+  // Selection
+  selectedId?: string
+
+  // Expansion state
+  expandedIds: string[]
+
+  // Layout
+  rowHeight: number
+  indent: number // Pixels to indent per level
+
+  // Visual style
+  backgroundColor: string
+  textColor: string
+  selectedBackgroundColor: string
+  selectedTextColor: string
+  hoverBackgroundColor: string
+  fontSize: number
+
+  // Interaction (always true in designer mode)
+  disableEdit: boolean
+  disableDrag: boolean
+}
 }
 
 // ============================================================================
@@ -883,10 +918,14 @@ export type ControlElement =
   | KickButtonElementConfig
   | ToggleSwitchElementConfig
   | PowerButtonElementConfig
+  | MultiSelectDropdownElementConfig
+  | ComboBoxElementConfig
+  | MenuButtonElementConfig
   | StepperElementConfig
   | BreadcrumbElementConfig
   | TabBarElementConfig
   | TagSelectorElementConfig
+  | TreeViewElementConfig
 
 // ============================================================================
 // Type Guards
@@ -984,6 +1023,18 @@ export function isPowerButton(element: { type: string }): element is PowerButton
   return element.type === 'powerbutton'
 }
 
+export function isMultiSelectDropdown(element: { type: string }): element is MultiSelectDropdownElementConfig {
+  return element.type === 'multiselectdropdown'
+}
+
+export function isComboBox(element: { type: string }): element is ComboBoxElementConfig {
+  return element.type === 'combobox'
+}
+
+export function isMenuButton(element: { type: string }): element is MenuButtonElementConfig {
+  return element.type === 'menubutton'
+}
+
 export function isStepper(element: { type: string }): element is StepperElementConfig {
   return element.type === 'stepper'
 }
@@ -998,6 +1049,12 @@ export function isTabBar(element: { type: string }): element is TabBarElementCon
 
 export function isTagSelector(element: { type: string }): element is TagSelectorElementConfig {
   return element.type === 'tagselector'
+}
+
+export function isTreeView(element: { type: string }): element is TreeViewElementConfig {
+  return element.type === 'treeview'
+}
+
 }
 
 // ============================================================================
@@ -1860,6 +1917,150 @@ export function createTagSelector(overrides?: Partial<TagSelectorElementConfig>)
     dropdownBackgroundColor: '#1f2937',
     dropdownTextColor: '#ffffff',
     dropdownHoverColor: '#374151',
+    ...overrides,
+  }
+}
+export function createTreeView(overrides?: Partial<TreeViewElementConfig>): TreeViewElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'treeview',
+    name: 'Tree View',
+    x: 0,
+    y: 0,
+    width: 250,
+    height: 300,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    data: [
+      {
+        id: 'presets',
+        name: 'Presets',
+        children: [
+          {
+            id: 'bass',
+            name: 'Bass',
+            children: [
+              { id: 'bass-1', name: 'Wobble Bass' },
+              { id: 'bass-2', name: 'Sub Bass' },
+              { id: 'bass-3', name: 'Pluck Bass' },
+            ],
+          },
+          {
+            id: 'lead',
+            name: 'Lead',
+            children: [
+              { id: 'lead-1', name: 'Synth Lead' },
+              { id: 'lead-2', name: 'Square Lead' },
+            ],
+          },
+          {
+            id: 'pad',
+            name: 'Pad',
+            children: [
+              { id: 'pad-1', name: 'Warm Pad' },
+              { id: 'pad-2', name: 'Dark Pad' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'favorites',
+        name: 'Favorites',
+        children: [],
+      },
+    ],
+    selectedId: undefined,
+    expandedIds: ['presets'],
+    rowHeight: 28,
+    indent: 20,
+    backgroundColor: '#1f2937',
+    textColor: '#ffffff',
+    selectedBackgroundColor: '#374151',
+    selectedTextColor: '#ffffff',
+    hoverBackgroundColor: '#2d3748',
+    fontSize: 14,
+    disableEdit: true,
+    disableDrag: true,
+    ...overrides,
+  }
+}
+
+export function createMultiSelectDropdown(overrides?: Partial<MultiSelectDropdownElementConfig>): MultiSelectDropdownElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'multiselectdropdown',
+    name: 'Multi-Select Dropdown',
+    x: 0,
+    y: 0,
+    width: 180,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+    selectedIndices: [],
+    maxSelections: 0,
+    backgroundColor: '#1f2937',
+    textColor: '#ffffff',
+    borderColor: '#374151',
+    borderRadius: 0,
+    dropdownMaxHeight: 200,
+    ...overrides,
+  }
+}
+
+export function createComboBox(overrides?: Partial<ComboBoxElementConfig>): ComboBoxElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'combobox',
+    name: 'Combo Box',
+    x: 0,
+    y: 0,
+    width: 180,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+    selectedValue: '',
+    placeholder: 'Type or select...',
+    backgroundColor: '#1f2937',
+    textColor: '#ffffff',
+    borderColor: '#374151',
+    borderRadius: 0,
+    dropdownMaxHeight: 200,
+    ...overrides,
+  }
+}
+
+export function createMenuButton(overrides?: Partial<MenuButtonElementConfig>): MenuButtonElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'menubutton',
+    name: 'Menu Button',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    label: 'Menu',
+    menuItems: [
+      { id: '1', label: 'Item 1' },
+      { id: '2', label: 'Item 2' },
+      { id: '3', label: 'Item 3', divider: true },
+      { id: '4', label: 'Item 4' },
+    ],
+    backgroundColor: '#374151',
+    textColor: '#ffffff',
+    borderColor: '#6b7280',
+    borderRadius: 4,
     ...overrides,
   }
 }
