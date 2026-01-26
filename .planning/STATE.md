@@ -168,6 +168,9 @@ All v1.1 decisions documented and outcomes verified.
 | Envelope sustain hold time | 26-03 | Static preview needs fixed display time | 0.3 fixed sustain time for visual readability |
 | Exponential curve formulas | 26-03 | Professional synthesizer behavior | Attack pow(t, 0.3), decay/release exp(-5*t) |
 | Stage markers for envelope | 26-03 | Visualize ADSR timing boundaries | Optional vertical dashed lines at stage transitions |
+| Hard edges for square waveforms | 26-04 | Authentic square/pulse/sample-hold appearance | lineTo with horizontal then vertical segments |
+| Deterministic sample-hold | 26-04 | Consistent pattern across renders | Pseudo-random formula for static preview |
+| Conditional property controls | 26-04 | Cleaner UI with contextual sections | Pulse width only for pulse, gain only for shelf/peak |
 
 ### Pending Todos
 
