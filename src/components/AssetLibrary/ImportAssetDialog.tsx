@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { useStore } from '../../store'
 import { SafeSVG } from '../SafeSVG'
 import { validateSVGFile, validateSVGContent, getSVGMetadata } from '../../lib/svg-validator'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
+import { detectKnobLayers, DetectedLayers } from '../../services/knobLayers'
 import { DEFAULT_CATEGORIES } from '../../types/asset'
 
 interface ImportAssetDialogProps {
@@ -21,6 +22,7 @@ export function ImportAssetDialog({ isOpen, onClose }: ImportAssetDialogProps) {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [validationResult, setValidationResult] = useState<ReturnType<typeof validateSVGContent> | null>(null)
   const [importing, setImporting] = useState(false)
+  const [detectedLayers, setDetectedLayers] = useState<DetectedLayers | null>(null)
 
   const addAsset = useStore((state) => state.addAsset)
 
@@ -59,6 +61,14 @@ export function ImportAssetDialog({ isOpen, onClose }: ImportAssetDialogProps) {
 
       // Sanitize content
       const sanitized = sanitizeSVG(text)
+
+      // Detect layers for knob style potential
+      try {
+        const layers = detectKnobLayers(sanitized)
+        setDetectedLayers(layers)
+      } catch {
+        setDetectedLayers(null)
+      }
 
       // Create preview URL
       const blob = new Blob([sanitized], { type: 'image/svg+xml' })
@@ -138,6 +148,7 @@ export function ImportAssetDialog({ isOpen, onClose }: ImportAssetDialogProps) {
     setName('')
     setSelectedCategories([])
     setValidationResult(null)
+    setDetectedLayers(null)
   }, [previewUrl])
 
   const handleClose = useCallback(() => {
@@ -244,6 +255,80 @@ export function ImportAssetDialog({ isOpen, onClose }: ImportAssetDialogProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Detected Layers */}
+              {detectedLayers && (
+                <div className="bg-gray-800 rounded p-4">
+                  <h3 className="font-medium text-white mb-2">Detected Layers</h3>
+                  {(() => {
+                    const hasKnobLayers = detectedLayers.indicator.length > 0 ||
+                                          detectedLayers.track.length > 0 ||
+                                          detectedLayers.arc.length > 0
+                    const totalLayers = detectedLayers.indicator.length +
+                                        detectedLayers.track.length +
+                                        detectedLayers.arc.length +
+                                        detectedLayers.glow.length +
+                                        detectedLayers.shadow.length +
+                                        detectedLayers.unmapped.length
+
+                    if (totalLayers === 0) {
+                      return (
+                        <p className="text-sm text-gray-400">
+                          No named layers detected. This SVG can be used as a static graphic.
+                        </p>
+                      )
+                    }
+
+                    return (
+                      <div className="space-y-2 text-sm">
+                        {detectedLayers.indicator.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-400 w-20">Indicator:</span>
+                            <span className="text-gray-300">{detectedLayers.indicator.join(', ')}</span>
+                          </div>
+                        )}
+                        {detectedLayers.track.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-400 w-20">Track:</span>
+                            <span className="text-gray-300">{detectedLayers.track.join(', ')}</span>
+                          </div>
+                        )}
+                        {detectedLayers.arc.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-400 w-20">Arc:</span>
+                            <span className="text-gray-300">{detectedLayers.arc.join(', ')}</span>
+                          </div>
+                        )}
+                        {detectedLayers.glow.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-400 w-20">Glow:</span>
+                            <span className="text-gray-300">{detectedLayers.glow.join(', ')}</span>
+                          </div>
+                        )}
+                        {detectedLayers.shadow.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-blue-400 w-20">Shadow:</span>
+                            <span className="text-gray-300">{detectedLayers.shadow.join(', ')}</span>
+                          </div>
+                        )}
+                        {detectedLayers.unmapped.length > 0 && (
+                          <div className="flex items-start gap-2">
+                            <span className="text-gray-500 w-20">Other:</span>
+                            <span className="text-gray-400 text-xs">{detectedLayers.unmapped.slice(0, 5).join(', ')}{detectedLayers.unmapped.length > 5 ? ` +${detectedLayers.unmapped.length - 5} more` : ''}</span>
+                          </div>
+                        )}
+
+                        {hasKnobLayers && (
+                          <div className="mt-3 p-2 bg-blue-900/30 border border-blue-700/50 rounded text-blue-300 text-xs">
+                            <strong>Tip:</strong> This SVG has knob-compatible layers. To use it as an interactive knob with rotation,
+                            import it via <span className="font-mono">Manage Knob Styles</span> in the Knob properties panel instead.
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })()}
+                </div>
+              )}
 
               {/* Name Input */}
               <div>
