@@ -240,12 +240,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 18-01-PLAN.md — SVGO wrapper with safe optimization settings
-- [ ] 18-02-PLAN.md — Responsive scaling CSS/JS for exported HTML
-- [ ] 18-03-PLAN.md — Export integration (SVGO + responsive scaling)
-- [ ] 18-04-PLAN.md — Browser preview for export verification
-- [ ] 18-05-PLAN.md — JUCE integration README in exported bundle
-- [ ] 18-06-PLAN.md — Export workflow polish and error messages
+- [x] 18-01-PLAN.md — SVGO wrapper with safe optimization settings
+- [x] 18-02-PLAN.md — Responsive scaling CSS/JS for exported HTML
+- [x] 18-03-PLAN.md — Export integration (SVGO + responsive scaling)
+- [x] 18-04-PLAN.md — Browser preview for export verification
+- [x] 18-05-PLAN.md — JUCE integration README in exported bundle
+- [x] 18-06-PLAN.md — Export workflow polish and error messages
 
 ## Progress
 
