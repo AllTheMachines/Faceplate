@@ -124,6 +124,16 @@ const paletteCategories = [
     ],
   },
   {
+    name: 'Curves',
+    items: [
+      { id: 'eqcurve', type: 'eqcurve', name: 'EQ Curve' },
+      { id: 'compressorcurve', type: 'compressorcurve', name: 'Compressor Curve' },
+      { id: 'envelopedisplay', type: 'envelopedisplay', name: 'Envelope Display' },
+      { id: 'lfodisplay', type: 'lfodisplay', name: 'LFO Display' },
+      { id: 'filterresponse', type: 'filterresponse', name: 'Filter Response' },
+    ],
+  },
+  {
     name: 'Form Controls',
     items: [
       { id: 'dropdown', type: 'dropdown', name: 'Dropdown' },
