@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useStore } from '../../store'
-import { DEFAULT_CATEGORIES } from '../../types/asset'
+import { DEFAULT_CATEGORIES, Asset } from '../../types/asset'
 import { AssetSearch } from './AssetSearch'
 import { CategorySection } from './CategorySection'
 import { AssetThumbnail } from './AssetThumbnail'
 import { ImportAssetDialog } from './ImportAssetDialog'
+import { DeleteAssetDialog } from './DeleteAssetDialog'
 
 export function AssetLibraryPanel() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -13,9 +14,12 @@ export function AssetLibraryPanel() {
   )
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null)
   const [importDialogOpen, setImportDialogOpen] = useState(false)
+  const [deleteDialogAsset, setDeleteDialogAsset] = useState<Asset | null>(null)
 
   const assets = useStore((state) => state.assets)
   const customCategories = useStore((state) => state.customCategories)
+  const updateAsset = useStore((state) => state.updateAsset)
+  const removeAsset = useStore((state) => state.removeAsset)
 
   // Filter assets by search term (case-insensitive name match)
   const filteredAssets = useMemo(() => {
@@ -69,6 +73,38 @@ export function AssetLibraryPanel() {
   const handleAssetClick = (assetId: string) => {
     setSelectedAssetId(assetId === selectedAssetId ? null : assetId)
   }
+
+  const handleRename = (assetId: string, newName: string) => {
+    updateAsset(assetId, { name: newName })
+  }
+
+  const handleDeleteClick = (asset: Asset) => {
+    setDeleteDialogAsset(asset)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (deleteDialogAsset) {
+      removeAsset(deleteDialogAsset.id)
+      if (selectedAssetId === deleteDialogAsset.id) {
+        setSelectedAssetId(null)
+      }
+    }
+  }
+
+  // Keyboard listener for Delete key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Delete' && selectedAssetId) {
+        const asset = assets.find((a) => a.id === selectedAssetId)
+        if (asset) {
+          handleDeleteClick(asset)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedAssetId, assets])
 
   // All categories to display
   const allCategories = [...DEFAULT_CATEGORIES, ...customCategories]
@@ -170,6 +206,8 @@ export function AssetLibraryPanel() {
                       asset={asset}
                       isSelected={selectedAssetId === asset.id}
                       onClick={() => handleAssetClick(asset.id)}
+                      onRename={(newName) => handleRename(asset.id, newName)}
+                      onDeleteClick={() => handleDeleteClick(asset)}
                     />
                   ))}
                 </CategorySection>
@@ -189,6 +227,8 @@ export function AssetLibraryPanel() {
                     asset={asset}
                     isSelected={selectedAssetId === asset.id}
                     onClick={() => handleAssetClick(asset.id)}
+                    onRename={(newName) => handleRename(asset.id, newName)}
+                    onDeleteClick={() => handleDeleteClick(asset)}
                   />
                 ))}
               </CategorySection>
@@ -201,6 +241,14 @@ export function AssetLibraryPanel() {
       <ImportAssetDialog
         isOpen={importDialogOpen}
         onClose={() => setImportDialogOpen(false)}
+      />
+
+      {/* Delete Asset Dialog */}
+      <DeleteAssetDialog
+        asset={deleteDialogAsset}
+        isOpen={deleteDialogAsset !== null}
+        onClose={() => setDeleteDialogAsset(null)}
+        onConfirm={handleDeleteConfirm}
       />
     </div>
   )
