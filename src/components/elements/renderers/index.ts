@@ -37,6 +37,7 @@ import {
   BreadcrumbRenderer,
   TabBarRenderer,
   TagSelectorRenderer,
+  TreeViewRenderer,
 } from './controls'
 
 import {
@@ -139,6 +140,7 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['breadcrumb', BreadcrumbRenderer as RendererComponent],
   ['tabbar', TabBarRenderer as RendererComponent],
   ['tagselector', TagSelectorRenderer as RendererComponent],
+  ['treeview', TreeViewRenderer as RendererComponent],
 
   // Displays
   ['label', LabelRenderer as RendererComponent],
@@ -246,6 +248,7 @@ export {
   BreadcrumbRenderer,
   TabBarRenderer,
   TagSelectorRenderer,
+  TreeViewRenderer,
   // Displays
   LabelRenderer,
   MeterRenderer,
