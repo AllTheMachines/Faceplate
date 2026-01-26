@@ -9,8 +9,10 @@ import type { ElementConfig } from '../../types/elements'
 import { validateForExport } from './validators'
 import { generateHTML } from './htmlGenerator'
 import { generateCSS } from './cssGenerator'
-import { generateBindingsJS, generateComponentsJS, generateMockJUCE } from './jsGenerator'
-import { generateReadme } from './documentationGenerator'
+import { generateBindingsJS, generateComponentsJS, generateMockJUCE, generateResponsiveScaleJS } from './jsGenerator'
+import { generateReadme, generateREADME } from './documentationGenerator'
+import { optimizeSVG } from './svgOptimizer'
+import { useStore } from '../../store'
 
 // ============================================================================
 // Types
@@ -22,6 +24,8 @@ export interface ExportOptions {
   canvasHeight: number
   backgroundColor: string
   projectName?: string // Used for ZIP filename
+  optimizeSVG?: boolean // Optimize SVG assets (default true)
+  enableResponsiveScaling?: boolean // Include responsive scaling script (default true)
 }
 
 interface ImageAsset {
@@ -84,8 +88,151 @@ async function bundleImageAssets(zip: JSZip, assets: ImageAsset[]): Promise<void
   }
 }
 
+// ============================================================================
+// SVG Asset Collection and Optimization
+// ============================================================================
+
+interface SVGAssetInfo {
+  type: 'graphic' | 'knob-style'
+  id: string
+  svgContent: string
+}
+
+/**
+ * Collect all SVG content from library assets and knob styles
+ * Returns array of SVG strings that can be optimized
+ */
+function collectSVGAssets(elements: ElementConfig[]): SVGAssetInfo[] {
+  const svgAssets: SVGAssetInfo[] = []
+  const store = useStore.getState()
+
+  // Collect SVG Graphics (library assets used in SvgGraphic elements)
+  const svgGraphicElements = elements.filter((el) => el.type === 'svggraphic')
+  for (const element of svgGraphicElements) {
+    const asset = store.assets.find((a) => a.id === element.assetId)
+    if (asset && asset.svgContent) {
+      svgAssets.push({
+        type: 'graphic',
+        id: asset.id,
+        svgContent: asset.svgContent,
+      })
+    }
+  }
+
+  // Collect Knob Styles (used in styled knobs)
+  const styledKnobs = elements.filter((el) => el.type === 'knob' && el.styleId)
+  for (const knob of styledKnobs) {
+    const style = store.knobStyles.find((s) => s.id === knob.styleId)
+    if (style && style.svgContent) {
+      // Only add if not already collected
+      if (!svgAssets.find((a) => a.type === 'knob-style' && a.id === style.id)) {
+        svgAssets.push({
+          type: 'knob-style',
+          id: style.id,
+          svgContent: style.svgContent,
+        })
+      }
+    }
+  }
+
+  return svgAssets
+}
+
+/**
+ * Optimize SVG assets and return mapping of original to optimized content
+ * Also calculates total size savings
+ */
+function optimizeSVGAssets(
+  svgAssets: SVGAssetInfo[],
+  shouldOptimize: boolean
+): { optimizedMap: Map<string, string>; sizeSavings: SizeSavings | undefined } {
+  const optimizedMap = new Map<string, string>()
+
+  if (!shouldOptimize || svgAssets.length === 0) {
+    // No optimization - return original content
+    for (const asset of svgAssets) {
+      optimizedMap.set(asset.id, asset.svgContent)
+    }
+    return { optimizedMap, sizeSavings: undefined }
+  }
+
+  // Optimize each SVG and track sizes
+  let totalOriginalSize = 0
+  let totalOptimizedSize = 0
+
+  for (const asset of svgAssets) {
+    const result = optimizeSVG(asset.svgContent)
+    optimizedMap.set(asset.id, result.optimizedSvg)
+    totalOriginalSize += result.originalSize
+    totalOptimizedSize += result.optimizedSize
+  }
+
+  // Calculate savings percentage
+  const savingsPercent = totalOriginalSize > 0
+    ? ((totalOriginalSize - totalOptimizedSize) / totalOriginalSize) * 100
+    : 0
+
+  const sizeSavings: SizeSavings = {
+    original: totalOriginalSize,
+    optimized: totalOptimizedSize,
+    percent: savingsPercent,
+  }
+
+  console.log(`[Export] SVG optimization: ${totalOriginalSize} → ${totalOptimizedSize} bytes (${savingsPercent.toFixed(1)}% saved)`)
+
+  return { optimizedMap, sizeSavings }
+}
+
+/**
+ * Apply optimized SVG content to store temporarily for export generation
+ * Returns a cleanup function to restore original content
+ */
+function applyOptimizedSVGs(optimizedMap: Map<string, string>): () => void {
+  const store = useStore.getState()
+  const originalAssets = new Map<string, string>()
+  const originalStyles = new Map<string, string>()
+
+  // Replace asset SVG content
+  for (const asset of store.assets) {
+    if (optimizedMap.has(asset.id) && asset.svgContent) {
+      originalAssets.set(asset.id, asset.svgContent)
+      // Directly mutate for temporary export (will be restored)
+      asset.svgContent = optimizedMap.get(asset.id)!
+    }
+  }
+
+  // Replace knob style SVG content
+  for (const style of store.knobStyles) {
+    if (optimizedMap.has(style.id) && style.svgContent) {
+      originalStyles.set(style.id, style.svgContent)
+      // Directly mutate for temporary export (will be restored)
+      style.svgContent = optimizedMap.get(style.id)!
+    }
+  }
+
+  // Return cleanup function to restore originals
+  return () => {
+    for (const asset of store.assets) {
+      if (originalAssets.has(asset.id)) {
+        asset.svgContent = originalAssets.get(asset.id)!
+      }
+    }
+    for (const style of store.knobStyles) {
+      if (originalStyles.has(style.id)) {
+        style.svgContent = originalStyles.get(style.id)!
+      }
+    }
+  }
+}
+
+export interface SizeSavings {
+  original: number
+  optimized: number
+  percent: number
+}
+
 export type ExportResult =
-  | { success: true }
+  | { success: true; sizeSavings?: SizeSavings }
   | { success: false; error: string }
 
 // ============================================================================
@@ -149,13 +296,8 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
       isPreviewMode: false,
     })
 
-    // Generate README documentation
-    const readme = generateReadme({
-      projectName: options.projectName || 'Plugin UI',
-      elements: options.elements,
-      includeHtmlPreview: true,
-      includeJuceBundle: true,
-    })
+    // Generate README with integration instructions
+    const readme = generateREADME()
 
     // Create ZIP bundle (4 web files + README + assets, no C++)
     const zip = new JSZip()
