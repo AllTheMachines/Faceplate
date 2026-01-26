@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 Phase: 27 of 30 (Containers & Polish)
 Plan: 3 of 3 complete
 Status: Phase complete
-Last activity: 2026-01-26 - Completed 27-03-PLAN.md
+Last activity: 2026-01-26 - Completed 27-02-PLAN.md
 
 Progress: [████████░░] 131/140 plans complete (94%)
 
@@ -38,7 +38,7 @@ Progress: [████████░░] 131/140 plans complete (94%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 41 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 1)
+- Completed: 43 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 3)
 
 ## Accumulated Context
 
@@ -293,22 +293,24 @@ None - Phase 26 complete
 - Plan 27-01: Tooltip element (DOM overlay with hover detection) - COMPLETE
 - Plan 27-02: Spacer elements (HorizontalSpacer, VerticalSpacer) - COMPLETE
 - Plan 27-03: Window Chrome element (title bar with OS-specific button styles) - COMPLETE
-- **Total:** 3 container element types (tooltip, spacers, window chrome) fully integrated end-to-end
+- **Total:** 4 container element types (tooltip, 2 spacers, window chrome) fully integrated end-to-end
 - TooltipElementConfig with configurable hover delay, position, HTML content
 - TooltipRenderer using React Portal for z-index isolation
-- HorizontalSpacer and VerticalSpacer with visual indicators in designer
+- HorizontalSpacer and VerticalSpacer with fixed/flexible sizing modes
+- Spacer visual indicators show sizing labels (e.g., "40px" or "flex: 1")
+- SpacerProperties shared component for both spacer types
 - WindowChromeElementConfig with macOS/Windows/neutral button styles
 - WindowChromeRenderer with traffic light buttons, Windows icons, neutral circles
-- All 3 new types registered in rendererRegistry and propertyRegistry
+- All 4 new types registered in rendererRegistry and propertyRegistry
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 27-03-PLAN.md (Phase 27 complete)
+Stopped at: Completed 27-02-PLAN.md (Phase 27 complete - all 3 plans)
 Resume file: None
 
 **Next step:** `/gsd:discuss-phase 28` (Specialized Elements)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 27 complete (3/3 plans)*
+*Last updated: 2026-01-26 after Phase 27 plan 02 complete (3/3 plans)*
