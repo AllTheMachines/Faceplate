@@ -1158,6 +1158,17 @@ ${selector} .channel-label {
       return css
     }
 
+    // Professional Meters - Analysis Meters (horizontal bars)
+    case 'correlationmeter': {
+      const config = element as CorrelationMeterElementConfig
+      return generateHorizontalBarMeterCSS(config, selector)
+    }
+
+    case 'stereowidthmeter': {
+      const config = element as StereoWidthMeterElementConfig
+      return generateHorizontalBarMeterCSS(config, selector)
+    }
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
@@ -1893,6 +1904,67 @@ ${selector} .peak-hold {
   position: absolute;
   background-color: #ffffff;
   transition: none;
+}
+`
+}
+
+/**
+ * Generate CSS for horizontal bar meters (Correlation, Stereo Width)
+ */
+function generateHorizontalBarMeterCSS(
+  element: CorrelationMeterElementConfig | StereoWidthMeterElementConfig,
+  selector: string
+): string {
+  const { barHeight, colorZones } = element
+
+  // Generate color zone CSS variables
+  const zoneColors = colorZones.map((zone, i) =>
+    `--meter-zone-${i}: ${zone.color};`
+  ).join('\n  ')
+
+  return `
+${selector} {
+  display: flex;
+  flex-direction: column;
+  ${zoneColors}
+}
+
+${selector} .meter-track {
+  width: 100%;
+  height: ${barHeight}px;
+  background-color: #333333;
+  border-radius: 2px;
+  position: relative;
+}
+
+${selector} .center-marker {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #666666;
+  transform: translateX(-50%);
+}
+
+${selector} .meter-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 2px;
+  transition: none;
+}
+
+${selector} .meter-scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #999999;
+}
+
+${selector} .meter-readout {
+  text-align: center;
+  font-size: 12px;
 }
 `
 }
