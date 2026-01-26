@@ -332,8 +332,12 @@ export const SANITIZE_CONFIG = {
  * ```
  */
 export function sanitizeSVG(svgContent: string): string {
+  // Strip XML declaration if present - DOMPurify doesn't handle it well
+  // XML declarations look like: <?xml version="1.0" encoding="utf-8"?>
+  const contentWithoutXmlDecl = svgContent.replace(/<\?xml[^?]*\?>\s*/gi, '');
+
   // DOMPurify.sanitize returns a string by default (when RETURN_DOM* options are false)
-  const sanitized = DOMPurify.sanitize(svgContent, SANITIZE_CONFIG);
+  const sanitized = DOMPurify.sanitize(contentWithoutXmlDecl, SANITIZE_CONFIG);
 
   // Ensure we always return a string
   return typeof sanitized === 'string' ? sanitized : '';

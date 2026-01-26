@@ -148,7 +148,7 @@ export function ImportAssetDialog({ isOpen, onClose }: ImportAssetDialogProps) {
   if (!isOpen) return null
 
   const metadata = validationResult?.metadata
-  const isImportDisabled = !file || !name.trim() || !validationResult?.valid || importing
+  const isImportDisabled = !file || !sanitizedContent || !name.trim() || !validationResult?.valid || importing
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

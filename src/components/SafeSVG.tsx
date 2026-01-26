@@ -34,10 +34,17 @@ export const SafeSVG: React.FC<SafeSVGProps> = ({ content, className, style }) =
     return sanitizeSVG(content);
   }, [content]);
 
+  // Wrapper ensures SVG scales to fit container regardless of SVG's native dimensions
+  // The [&>svg] selector targets the direct SVG child
   return (
     <div
-      className={className}
-      style={style}
+      className={`${className || ''} [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto`}
+      style={{
+        ...style,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
       dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );
