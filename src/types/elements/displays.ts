@@ -363,6 +363,71 @@ export interface MultiValueDisplayElementConfig extends BaseElementConfig {
 }
 
 // ============================================================================
+// Professional Meter Configurations
+// ============================================================================
+
+// Base meter properties shared by all professional meters
+interface BaseProfessionalMeterConfig extends BaseElementConfig {
+  // Value (normalized 0-1, maps to dB range)
+  value: number
+
+  // dB range (varies per meter type)
+  minDb: number
+  maxDb: number
+
+  // Visual
+  orientation: 'vertical' | 'horizontal'
+  segmentCount: number
+  segmentGap: number // Default 1px per CONTEXT.md
+
+  // Scale
+  scalePosition: 'outside' | 'inside' | 'none'
+  showMajorTicks: boolean
+  showMinorTicks: boolean
+  showNumericReadout: boolean
+
+  // Color zones
+  colorZones: Array<{
+    startDb: number
+    endDb: number
+    color: string
+  }>
+
+  // Peak hold
+  showPeakHold: boolean
+  peakHoldStyle: 'line' | 'bar'
+  peakHoldDuration: number // ms, 1000-3000
+}
+
+// RMS Meter - 300ms averaging window, -60 to 0 dB range
+export interface RMSMeterMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'rmsmetermo'
+  ballisticsType: 'RMS' // 300ms averaging
+}
+
+export interface RMSMeterStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'rmsmeterstereo'
+  ballisticsType: 'RMS'
+  valueL: number // Left channel (0-1)
+  valueR: number // Right channel (0-1)
+  showChannelLabels: boolean
+}
+
+// VU Meter - ANSI C16.5-1942 standard, -20 to +3 dB range
+export interface VUMeterMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'vumetermono'
+  ballisticsType: 'VU' // 300ms rise/fall @ 99%
+}
+
+export interface VUMeterStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'vumeterstereo'
+  ballisticsType: 'VU'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// ============================================================================
 // LED Indicator Configurations
 // ============================================================================
 
@@ -522,6 +587,10 @@ export type DisplayElement =
   | BpmDisplayElementConfig
   | EditableDisplayElementConfig
   | MultiValueDisplayElementConfig
+  | RMSMeterMonoElementConfig
+  | RMSMeterStereoElementConfig
+  | VUMeterMonoElementConfig
+  | VUMeterStereoElementConfig
 
 // ============================================================================
 // Type Guards
@@ -617,6 +686,22 @@ export function isLEDRing(element: { type: string }): element is LEDRingElementC
 
 export function isLEDMatrix(element: { type: string }): element is LEDMatrixElementConfig {
   return element.type === 'ledmatrix'
+}
+
+export function isRMSMeterMono(element: { type: string }): element is RMSMeterMonoElementConfig {
+  return element.type === 'rmsmetermo'
+}
+
+export function isRMSMeterStereo(element: { type: string }): element is RMSMeterStereoElementConfig {
+  return element.type === 'rmsmeterstereo'
+}
+
+export function isVUMeterMono(element: { type: string }): element is VUMeterMonoElementConfig {
+  return element.type === 'vumetermono'
+}
+
+export function isVUMeterStereo(element: { type: string }): element is VUMeterStereoElementConfig {
+  return element.type === 'vumeterstereo'
 }
 
 // ============================================================================
@@ -1286,6 +1371,160 @@ export function createMultiValueDisplay(overrides?: Partial<MultiValueDisplayEle
     backgroundColor: '#1f2937',
     borderColor: '#374151',
     padding: 8,
+    ...overrides,
+  }
+}
+
+// Default color zones per CONTEXT.md: green <-18, yellow <-6, red >=0
+const defaultMeterColorZones = [
+  { startDb: -Infinity, endDb: -18, color: '#10b981' },
+  { startDb: -18, endDb: -6, color: '#eab308' },
+  { startDb: -6, endDb: Infinity, color: '#ef4444' },
+]
+
+// RMS uses -60 to 0 dB range with 60 segments (1dB each)
+export function createRMSMeterMono(overrides?: Partial<RMSMeterMonoElementConfig>): RMSMeterMonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rmsmetermo',
+    name: 'RMS Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8, // -12 dB default per CONTEXT.md
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'RMS',
+    ...overrides,
+  }
+}
+
+export function createRMSMeterStereo(overrides?: Partial<RMSMeterStereoElementConfig>): RMSMeterStereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rmsmeterstereo',
+    name: 'RMS Meter Stereo',
+    x: 0,
+    y: 0,
+    width: 80, // Wider for stereo
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8,
+    valueL: 0.8,  // -12 dB
+    valueR: 0.78, // Slight asymmetry per RESEARCH.md
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'RMS',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+// VU uses -20 to +3 dB range with 23 segments (1dB each)
+export function createVUMeterMono(overrides?: Partial<VUMeterMonoElementConfig>): VUMeterMonoElementConfig {
+  // VU-specific color zones: green to 0 VU, red above
+  const vuColorZones = [
+    { startDb: -20, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 3, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'vumetermono',
+    name: 'VU Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 150,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.35, // -12 dB on VU scale (-20 to +3)
+    minDb: -20,
+    maxDb: 3,
+    orientation: 'vertical',
+    segmentCount: 23,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: vuColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'VU',
+    ...overrides,
+  }
+}
+
+export function createVUMeterStereo(overrides?: Partial<VUMeterStereoElementConfig>): VUMeterStereoElementConfig {
+  const vuColorZones = [
+    { startDb: -20, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 3, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'vumeterstereo',
+    name: 'VU Meter Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 150,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.35,
+    valueL: 0.35,
+    valueR: 0.33,
+    minDb: -20,
+    maxDb: 3,
+    orientation: 'vertical',
+    segmentCount: 23,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: vuColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'VU',
+    showChannelLabels: true,
     ...overrides,
   }
 }
