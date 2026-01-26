@@ -83,6 +83,13 @@ import { MenuButtonProperties } from './MenuButtonProperties'
 import { TabBarProperties } from './TabBarProperties'
 import { TagSelectorProperties } from './TagSelectorProperties'
 import { TreeViewProperties } from './TreeViewProperties'
+import {
+  ScrollingWaveformProperties,
+  SpectrumAnalyzerProperties,
+  SpectrogramProperties,
+  GoniometerProperties,
+  VectorscopeProperties,
+} from './visualizations'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -160,6 +167,13 @@ export { MenuButtonProperties } from './MenuButtonProperties'
 export { TabBarProperties } from './TabBarProperties'
 export { TagSelectorProperties } from './TagSelectorProperties'
 export { TreeViewProperties } from './TreeViewProperties'
+export {
+  ScrollingWaveformProperties,
+  SpectrumAnalyzerProperties,
+  SpectrogramProperties,
+  GoniometerProperties,
+  VectorscopeProperties,
+} from './visualizations'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -257,6 +271,13 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['tabbar', TabBarProperties],
   ['tagselector', TagSelectorProperties],
   ['treeview', TreeViewProperties],
+
+  // Visualizations
+  ['scrollingwaveform', ScrollingWaveformProperties],
+  ['spectrumanalyzer', SpectrumAnalyzerProperties],
+  ['spectrogram', SpectrogramProperties],
+  ['goniometer', GoniometerProperties],
+  ['vectorscope', VectorscopeProperties],
 
   // Containers
   ['panel', PanelProperties],
