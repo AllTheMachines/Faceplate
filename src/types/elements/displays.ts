@@ -1939,3 +1939,306 @@ export function createTruePeakMeterStereo(overrides?: Partial<TruePeakMeterStere
     ...overrides,
   }
 }
+
+// K-12: -32 to +12 dB (44 segment range)
+export function createK12MeterMono(overrides?: Partial<K12MeterMonoElementConfig>): K12MeterMonoElementConfig {
+  // K-System color zones: green below 0, yellow 0 to K, red above K
+  const k12ColorZones = [
+    { startDb: -32, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 12, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'k12metermono',
+    name: 'K-12 Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 180,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.45, // -12 dB on K-12 scale
+    minDb: -32,
+    maxDb: 12,
+    orientation: 'vertical',
+    segmentCount: 44,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: k12ColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'K_SYSTEM',
+    kType: 'K-12',
+    ...overrides,
+  }
+}
+
+export function createK12MeterStereo(overrides?: Partial<K12MeterStereoElementConfig>): K12MeterStereoElementConfig {
+  const k12ColorZones = [
+    { startDb: -32, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 12, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'k12meterstereo',
+    name: 'K-12 Meter Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 180,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.45,
+    valueL: 0.45,
+    valueR: 0.43,
+    minDb: -32,
+    maxDb: 12,
+    orientation: 'vertical',
+    segmentCount: 44,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: k12ColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'K_SYSTEM',
+    kType: 'K-12',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+// K-14: -34 to +14 dB (48 segments)
+export function createK14MeterMono(overrides?: Partial<K14MeterMonoElementConfig>): K14MeterMonoElementConfig {
+  const k14ColorZones = [
+    { startDb: -34, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 14, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'k14metermono',
+    name: 'K-14 Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 180,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.46, // -12 dB on K-14 scale
+    minDb: -34,
+    maxDb: 14,
+    orientation: 'vertical',
+    segmentCount: 48,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: k14ColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'K_SYSTEM',
+    kType: 'K-14',
+    ...overrides,
+  }
+}
+
+export function createK14MeterStereo(overrides?: Partial<K14MeterStereoElementConfig>): K14MeterStereoElementConfig {
+  const k14ColorZones = [
+    { startDb: -34, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 14, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'k14meterstereo',
+    name: 'K-14 Meter Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 180,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.46,
+    valueL: 0.46,
+    valueR: 0.44,
+    minDb: -34,
+    maxDb: 14,
+    orientation: 'vertical',
+    segmentCount: 48,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: k14ColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'K_SYSTEM',
+    kType: 'K-14',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+// K-20: -40 to +20 dB (60 segments)
+export function createK20MeterMono(overrides?: Partial<K20MeterMonoElementConfig>): K20MeterMonoElementConfig {
+  const k20ColorZones = [
+    { startDb: -40, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 20, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'k20metermono',
+    name: 'K-20 Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.47, // -12 dB on K-20 scale
+    minDb: -40,
+    maxDb: 20,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: k20ColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'K_SYSTEM',
+    kType: 'K-20',
+    ...overrides,
+  }
+}
+
+export function createK20MeterStereo(overrides?: Partial<K20MeterStereoElementConfig>): K20MeterStereoElementConfig {
+  const k20ColorZones = [
+    { startDb: -40, endDb: 0, color: '#10b981' },
+    { startDb: 0, endDb: 20, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'k20meterstereo',
+    name: 'K-20 Meter Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.47,
+    valueL: 0.47,
+    valueR: 0.45,
+    minDb: -40,
+    maxDb: 20,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: k20ColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'K_SYSTEM',
+    kType: 'K-20',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+export function createCorrelationMeter(overrides?: Partial<CorrelationMeterElementConfig>): CorrelationMeterElementConfig {
+  // Correlation zones: red (-1 to 0), yellow (0 to 0.5), green (0.5 to 1)
+  const correlationColorZones = [
+    { start: -1, end: 0, color: '#ef4444' },    // Red: out of phase
+    { start: 0, end: 0.5, color: '#eab308' },   // Yellow: wide stereo
+    { start: 0.5, end: 1, color: '#10b981' },   // Green: mono compatible
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'correlationmeter',
+    name: 'Correlation Meter',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.7, // Default: fairly mono-compatible
+    orientation: 'horizontal',
+    barHeight: 12,
+    showScale: true,
+    scalePosition: 'below',
+    showNumericReadout: true,
+    colorZones: correlationColorZones,
+    ...overrides,
+  }
+}
+
+export function createStereoWidthMeter(overrides?: Partial<StereoWidthMeterElementConfig>): StereoWidthMeterElementConfig {
+  // Width zones: green (0-100%), yellow (100-150%), red (150-200%)
+  const widthColorZones = [
+    { start: 0, end: 100, color: '#10b981' },
+    { start: 100, end: 150, color: '#eab308' },
+    { start: 150, end: 200, color: '#ef4444' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'stereowidthmeter',
+    name: 'Stereo Width Meter',
+    x: 0,
+    y: 0,
+    width: 200,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 1.0, // Default: 100% (normal stereo)
+    orientation: 'horizontal',
+    barHeight: 12,
+    showScale: true,
+    scalePosition: 'below',
+    showNumericReadout: true,
+    colorZones: widthColorZones,
+    ...overrides,
+  }
+}
