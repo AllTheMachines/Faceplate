@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-25)
 ## Current Position
 
 Phase: 17 of 18 (Interactive SVG Knobs) — IN PROGRESS
-Plan: 1 of 5 in current phase
+Plan: 2 of 6 in current phase
 Status: In progress
-Last activity: 2026-01-26 — Completed 17-01-PLAN.md (KnobStyle Type System and State Management)
+Last activity: 2026-01-26 — Completed 17-02-PLAN.md (SVG Layer Detection and Manipulation)
 
-Progress: [█████████░] 87% (76/87 total plans estimated)
+Progress: [█████████░] 89% (77/87 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,11 +38,11 @@ Progress: [█████████░] 87% (76/87 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 13 (14-01 through 17-01)
+- Plans completed: 14 (14-01 through 17-02)
 - Phase 14: 4 plans, ~100 minutes total (Security foundations)
 - Phase 15: 5 plans, ~12 minutes total (Asset library complete)
 - Phase 16: 5 plans, ~8 minutes total (SVG Graphics COMPLETE)
-- Phase 17: 1 plan so far, ~3 minutes (Type system and state management)
+- Phase 17: 2 plans so far, ~6 minutes total (Type system and layer utilities)
 
 ## Accumulated Context
 
@@ -100,6 +100,10 @@ Recent decisions affecting current work:
 - **v1.1 (17-01)**: ColorOverrides as sparse object (only store explicit overrides)
 - **v1.1 (17-01)**: Knob styles included in undo/redo history (user may undo style deletion)
 - **v1.1 (17-01)**: Optional styleId in KnobElementConfig (undefined = default CSS knob)
+- **v1.1 (17-02)**: DOMParser/XMLSerializer for SVG layer manipulation (built-in, robust)
+- **v1.1 (17-02)**: CSS.escape polyfill for Node.js test environment compatibility
+- **v1.1 (17-02)**: Preserve 'none' values during color override (don't override transparent layers)
+- **v1.1 (17-02)**: Layer detection via naming conventions (indicator, track, arc, glow, shadow)
 
 ### Pending Todos
 
@@ -131,19 +135,20 @@ None yet.
 
 **Phase 17 IN PROGRESS (Interactive SVG Knobs):**
 - ✓ 17-01: KnobStyle type system and KnobStylesSlice state management
-- TODO: 17-02: SVG layer detection and manipulation utilities
+- ✓ 17-02: SVG layer detection and manipulation utilities (with CSS.escape polyfill)
 - TODO: 17-03: Knob style library UI (import, browse, map layers)
 - TODO: 17-04: SVG knob renderer with rotation and color overrides
 - TODO: 17-05: Interactive knob behavior (drag-to-rotate, value updates)
+- TODO: 17-06: Knob properties panel integration
 - Note: Performance with 50+ animated knobs may need optimization
 - Note: Transform origin calculation for SVG rotation needs testing
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 17-01-PLAN.md (KnobStyle Type System and State Management)
+Stopped at: Completed 17-02-PLAN.md (SVG Layer Detection and Manipulation)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 17-01 completion*
+*Last updated: 2026-01-26 after 17-02 completion*
