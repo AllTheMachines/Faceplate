@@ -48,6 +48,20 @@ import { PowerButtonProperties } from './PowerButtonProperties'
 import { RockerSwitchProperties } from './RockerSwitchProperties'
 import { RotarySwitchProperties } from './RotarySwitchProperties'
 import { SegmentButtonProperties } from './SegmentButtonProperties'
+import { NumericDisplayProperties } from './NumericDisplayProperties'
+import { TimeDisplayProperties } from './TimeDisplayProperties'
+import { PercentageDisplayProperties } from './PercentageDisplayProperties'
+import { RatioDisplayProperties } from './RatioDisplayProperties'
+import { NoteDisplayProperties } from './NoteDisplayProperties'
+import { BpmDisplayProperties } from './BpmDisplayProperties'
+import { EditableDisplayProperties } from './EditableDisplayProperties'
+import { MultiValueDisplayProperties } from './MultiValueDisplayProperties'
+import { SingleLEDProperties } from './SingleLEDProperties'
+import { BiColorLEDProperties } from './BiColorLEDProperties'
+import { TriColorLEDProperties } from './TriColorLEDProperties'
+import { LEDArrayProperties } from './LEDArrayProperties'
+import { LEDRingProperties } from './LEDRingProperties'
+import { LEDMatrixProperties } from './LEDMatrixProperties'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -90,6 +104,20 @@ export { PowerButtonProperties } from './PowerButtonProperties'
 export { RockerSwitchProperties } from './RockerSwitchProperties'
 export { RotarySwitchProperties } from './RotarySwitchProperties'
 export { SegmentButtonProperties } from './SegmentButtonProperties'
+export { NumericDisplayProperties } from './NumericDisplayProperties'
+export { TimeDisplayProperties } from './TimeDisplayProperties'
+export { PercentageDisplayProperties } from './PercentageDisplayProperties'
+export { RatioDisplayProperties } from './RatioDisplayProperties'
+export { NoteDisplayProperties } from './NoteDisplayProperties'
+export { BpmDisplayProperties } from './BpmDisplayProperties'
+export { EditableDisplayProperties } from './EditableDisplayProperties'
+export { MultiValueDisplayProperties } from './MultiValueDisplayProperties'
+export { SingleLEDProperties } from './SingleLEDProperties'
+export { BiColorLEDProperties } from './BiColorLEDProperties'
+export { TriColorLEDProperties } from './TriColorLEDProperties'
+export { LEDArrayProperties } from './LEDArrayProperties'
+export { LEDRingProperties } from './LEDRingProperties'
+export { LEDMatrixProperties } from './LEDMatrixProperties'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -137,6 +165,20 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['waveform', WaveformProperties],
   ['oscilloscope', OscilloscopeProperties],
   ['modulationmatrix', ModulationMatrixProperties],
+  ['numericdisplay', NumericDisplayProperties],
+  ['timedisplay', TimeDisplayProperties],
+  ['percentagedisplay', PercentageDisplayProperties],
+  ['ratiodisplay', RatioDisplayProperties],
+  ['notedisplay', NoteDisplayProperties],
+  ['bpmdisplay', BpmDisplayProperties],
+  ['editabledisplay', EditableDisplayProperties],
+  ['multivaluedisplay', MultiValueDisplayProperties],
+  ['singleled', SingleLEDProperties],
+  ['bicolorled', BiColorLEDProperties],
+  ['tricolorled', TriColorLEDProperties],
+  ['ledarray', LEDArrayProperties],
+  ['ledring', LEDRingProperties],
+  ['ledmatrix', LEDMatrixProperties],
 
   // Containers
   ['panel', PanelProperties],

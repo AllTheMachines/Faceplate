@@ -41,7 +41,28 @@ const paletteCategories = [
   },
   {
     name: 'Value Displays',
-    items: [{ id: 'label', type: 'label', name: 'Label' }],
+    items: [
+      { id: 'label', type: 'label', name: 'Label' },
+      { id: 'numericdisplay', type: 'numericdisplay', name: 'Numeric Display' },
+      { id: 'timedisplay', type: 'timedisplay', name: 'Time Display' },
+      { id: 'percentagedisplay', type: 'percentagedisplay', name: 'Percentage Display' },
+      { id: 'ratiodisplay', type: 'ratiodisplay', name: 'Ratio Display' },
+      { id: 'notedisplay', type: 'notedisplay', name: 'Note Display' },
+      { id: 'bpmdisplay', type: 'bpmdisplay', name: 'BPM Display' },
+      { id: 'editabledisplay', type: 'editabledisplay', name: 'Editable Display' },
+      { id: 'multivaluedisplay', type: 'multivaluedisplay', name: 'Multi-Value Display' },
+    ],
+  },
+  {
+    name: 'LED Indicators',
+    items: [
+      { id: 'singleled', type: 'singleled', name: 'Single LED' },
+      { id: 'bicolorled', type: 'bicolorled', name: 'Bi-Color LED' },
+      { id: 'tricolorled', type: 'tricolorled', name: 'Tri-Color LED' },
+      { id: 'ledarray', type: 'ledarray', name: 'LED Array' },
+      { id: 'ledring', type: 'ledring', name: 'LED Ring' },
+      { id: 'ledmatrix', type: 'ledmatrix', name: 'LED Matrix' },
+    ],
   },
   {
     name: 'Meters',
