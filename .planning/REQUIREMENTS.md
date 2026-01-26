@@ -7,13 +7,13 @@
 
 Requirements for Complete Element Taxonomy milestone. 76 new elements + 2 UX improvements.
 
-### Architecture Refactoring (Phase 0)
+### Architecture Refactoring (Phase 19) ✓
 
-- [ ] **ARCH-01**: PropertyPanel uses registry pattern instead of switch statements
-- [ ] **ARCH-02**: Element.tsx uses registry pattern for renderer lookup
-- [ ] **ARCH-03**: Code splitting infrastructure with lazy loading for element categories
-- [ ] **ARCH-04**: File organization restructured by element category
-- [ ] **ARCH-05**: TypeScript unions split by category to improve compilation
+- [x] **ARCH-01**: PropertyPanel uses registry pattern instead of switch statements
+- [x] **ARCH-02**: Element.tsx uses registry pattern for renderer lookup
+- [x] **ARCH-03**: Code splitting infrastructure with lazy loading for element categories
+- [x] **ARCH-04**: File organization restructured by element category
+- [x] **ARCH-05**: TypeScript unions split by category to improve compilation
 
 ### Rotary Controls (3 elements)
 
@@ -120,10 +120,10 @@ Requirements for Complete Element Taxonomy milestone. 76 new elements + 2 UX imp
 - [ ] **SPEC-11**: Patch Bay (cable routing visualization)
 - [ ] **SPEC-12**: Signal Flow (block diagram)
 
-### UX Improvements (2 items)
+### UX Improvements (2 items) ✓
 
-- [ ] **UX-01**: Visible undo/redo buttons in toolbar near logo
-- [ ] **UX-02**: Keyboard shortcut detection for QWERTZ layout support
+- [x] **UX-01**: Visible undo/redo buttons in toolbar near logo
+- [x] **UX-02**: Keyboard shortcut detection for QWERTZ layout support
 
 ## Future Requirements (v1.3+)
 
@@ -154,11 +154,11 @@ Deferred to future milestone:
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ARCH-01 | Phase 19 | Pending |
-| ARCH-02 | Phase 19 | Pending |
-| ARCH-03 | Phase 19 | Pending |
-| ARCH-04 | Phase 19 | Pending |
-| ARCH-05 | Phase 19 | Pending |
+| ARCH-01 | Phase 19 | Complete |
+| ARCH-02 | Phase 19 | Complete |
+| ARCH-03 | Phase 19 | Complete |
+| ARCH-04 | Phase 19 | Complete |
+| ARCH-05 | Phase 19 | Complete |
 | ROT-01 | Phase 20 | Pending |
 | ROT-02 | Phase 20 | Pending |
 | ROT-03 | Phase 20 | Pending |
@@ -234,8 +234,8 @@ Deferred to future milestone:
 | SPEC-10 | Phase 30 | Pending |
 | SPEC-11 | Phase 30 | Pending |
 | SPEC-12 | Phase 30 | Pending |
-| UX-01 | Phase 19 | Pending |
-| UX-02 | Phase 19 | Pending |
+| UX-01 | Phase 19 | Complete |
+| UX-02 | Phase 19 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 78 total
