@@ -68,3 +68,10 @@ export {
   GoniometerRenderer,
   VectorscopeRenderer,
 } from './visualizations'
+
+// Interactive Curves
+export {
+  EQCurveRenderer,
+  FilterResponseRenderer,
+  LFODisplayRenderer,
+} from './curves'

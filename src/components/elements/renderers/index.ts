@@ -96,6 +96,9 @@ import {
   SpectrogramRenderer,
   GoniometerRenderer,
   VectorscopeRenderer,
+  EQCurveRenderer,
+  FilterResponseRenderer,
+  LFODisplayRenderer,
 } from './displays'
 
 import {
@@ -215,6 +218,9 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['goniometer', GoniometerRenderer as RendererComponent],
   ['vectorscope', VectorscopeRenderer as RendererComponent],
 
+  // Curve Displays
+  ['lfodisplay', LFODisplayRenderer as RendererComponent],
+
   // Containers
   ['panel', PanelRenderer as RendererComponent],
   ['frame', FrameRenderer as RendererComponent],
@@ -323,6 +329,7 @@ export {
   SpectrogramRenderer,
   GoniometerRenderer,
   VectorscopeRenderer,
+  LFODisplayRenderer,
   // Containers
   PanelRenderer,
   FrameRenderer,
