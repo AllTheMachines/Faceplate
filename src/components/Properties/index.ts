@@ -17,6 +17,7 @@ import { ImageProperties } from './ImageProperties'
 import { PanelProperties } from './PanelProperties'
 import { FrameProperties } from './FrameProperties'
 import { GroupBoxProperties } from './GroupBoxProperties'
+import { TooltipProperties } from './TooltipProperties'
 import { RectangleProperties } from './RectangleProperties'
 import { LineProperties } from './LineProperties'
 import { DbDisplayProperties } from './DbDisplayProperties'
@@ -108,6 +109,7 @@ export { ImageProperties } from './ImageProperties'
 export { PanelProperties } from './PanelProperties'
 export { FrameProperties } from './FrameProperties'
 export { GroupBoxProperties } from './GroupBoxProperties'
+export { TooltipProperties } from './TooltipProperties'
 export { RectangleProperties } from './RectangleProperties'
 export { LineProperties } from './LineProperties'
 export { DbDisplayProperties } from './DbDisplayProperties'
@@ -305,6 +307,7 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['frame', FrameProperties],
   ['groupbox', GroupBoxProperties],
   ['collapsible', CollapsibleProperties],
+  ['tooltip', TooltipProperties],
 
   // Decorative
   ['image', ImageProperties],

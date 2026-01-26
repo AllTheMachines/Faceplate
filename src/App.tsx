@@ -36,6 +36,7 @@ import {
   createFrame,
   createGroupBox,
   createCollapsible,
+  createTooltip,
   createTextField,
   createWaveform,
   createOscilloscope,
@@ -365,6 +366,9 @@ function App() {
         break
       case 'collapsible':
         newElement = createCollapsible({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'tooltip':
+        newElement = createTooltip({ x: canvasX, y: canvasY, ...variant })
         break
       case 'textfield':
         newElement = createTextField({ x: canvasX, y: canvasY, ...variant })
