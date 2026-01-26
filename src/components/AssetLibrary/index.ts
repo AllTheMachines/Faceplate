@@ -1,1 +1,5 @@
 export { ImportAssetDialog } from './ImportAssetDialog'
+export { AssetLibraryPanel } from './AssetLibraryPanel'
+export { AssetThumbnail } from './AssetThumbnail'
+export { CategorySection } from './CategorySection'
+export { AssetSearch } from './AssetSearch'
