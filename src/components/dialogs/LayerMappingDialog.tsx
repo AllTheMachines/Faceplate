@@ -1,0 +1,305 @@
+import { useState, useCallback, useEffect } from 'react'
+import { useDropzone } from 'react-dropzone'
+import toast from 'react-hot-toast'
+import { useStore } from '../../store'
+import { validateSVGContent } from '../../lib/svg-validator'
+import { sanitizeSVG } from '../../lib/svg-sanitizer'
+import { detectKnobLayers, getSuggestedLayers, DetectedLayers } from '../../services/knobLayers'
+import { KnobStyleLayers } from '../../types/knobStyle'
+import { SafeSVG } from '../SafeSVG'
+
+interface LayerMappingDialogProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+type LayerRole = 'indicator' | 'track' | 'arc' | 'glow' | 'shadow' | 'exclude'
+
+export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps) {
+  const addKnobStyle = useStore((state) => state.addKnobStyle)
+
+  // Dialog state
+  const [step, setStep] = useState<'upload' | 'mapping' | 'config'>('upload')
+  const [svgContent, setSvgContent] = useState<string>('')
+  const [styleName, setStyleName] = useState<string>('')
+  const [detected, setDetected] = useState<DetectedLayers | null>(null)
+  const [mappings, setMappings] = useState<Record<string, LayerRole>>({})
+  const [minAngle, setMinAngle] = useState(-135)
+  const [maxAngle, setMaxAngle] = useState(135)
+
+  // Reset state when dialog opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setStep('upload')
+      setSvgContent('')
+      setStyleName('')
+      setDetected(null)
+      setMappings({})
+      setMinAngle(-135)
+      setMaxAngle(135)
+    }
+  }, [isOpen])
+
+  // File upload handling
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]
+    if (!file) return
+
+    try {
+      const content = await file.text()
+
+      // Validate SVG
+      const validationResult = validateSVGContent(content)
+      if (!validationResult.valid) {
+        toast.error(`Invalid SVG: ${validationResult.error}`)
+        return
+      }
+
+      // Sanitize SVG
+      const sanitized = sanitizeSVG(content)
+
+      // Detect layers
+      const detectedLayers = detectKnobLayers(sanitized)
+      const suggested = getSuggestedLayers(detectedLayers)
+
+      // Initialize mappings from suggestions
+      const initialMappings: Record<string, LayerRole> = {}
+      const allIdentifiers = [
+        ...detectedLayers.indicator,
+        ...detectedLayers.track,
+        ...detectedLayers.arc,
+        ...detectedLayers.glow,
+        ...detectedLayers.shadow,
+        ...detectedLayers.unmapped,
+      ]
+
+      allIdentifiers.forEach((id) => {
+        if (detectedLayers.indicator.includes(id)) initialMappings[id] = 'indicator'
+        else if (detectedLayers.track.includes(id)) initialMappings[id] = 'track'
+        else if (detectedLayers.arc.includes(id)) initialMappings[id] = 'arc'
+        else if (detectedLayers.glow.includes(id)) initialMappings[id] = 'glow'
+        else if (detectedLayers.shadow.includes(id)) initialMappings[id] = 'shadow'
+        else initialMappings[id] = 'exclude'
+      })
+
+      setSvgContent(sanitized)
+      setDetected(detectedLayers)
+      setMappings(initialMappings)
+      setStyleName(file.name.replace(/\.svg$/i, ''))
+      setStep('mapping')
+    } catch (error) {
+      toast.error('Failed to read SVG file')
+    }
+  }, [])
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/svg+xml': ['.svg'] },
+    multiple: false,
+  })
+
+  // Handle mapping change
+  const handleMappingChange = (identifier: string, role: LayerRole) => {
+    setMappings((prev) => ({ ...prev, [identifier]: role }))
+  }
+
+  // Build KnobStyleLayers from mappings
+  const buildLayers = (): KnobStyleLayers => {
+    const layers: KnobStyleLayers = {}
+    Object.entries(mappings).forEach(([id, role]) => {
+      if (role !== 'exclude' && !layers[role]) {
+        layers[role] = id
+      }
+    })
+    return layers
+  }
+
+  // Validation: must have at least indicator mapped
+  const hasIndicator = Object.values(mappings).includes('indicator')
+
+  // Handle create style
+  const handleCreate = () => {
+    if (!styleName.trim()) {
+      toast.error('Please enter a style name')
+      return
+    }
+
+    if (!hasIndicator) {
+      toast.error('At least one layer must be mapped as Indicator')
+      return
+    }
+
+    const layers = buildLayers()
+    addKnobStyle({
+      name: styleName.trim(),
+      svgContent,
+      layers,
+      minAngle,
+      maxAngle,
+    })
+
+    toast.success(`Knob style "${styleName}" created`)
+    onClose()
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <h2 className="text-xl font-bold mb-4">
+          {step === 'upload' && 'Import Knob Design'}
+          {step === 'mapping' && 'Map Layers'}
+          {step === 'config' && 'Configure Style'}
+        </h2>
+
+        {/* Step 1: Upload */}
+        {step === 'upload' && (
+          <div
+            {...getRootProps()}
+            className={`
+              border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+              transition-colors
+              ${isDragActive ? 'border-blue-500 bg-blue-500/10' : 'border-gray-600 hover:border-gray-500'}
+            `}
+          >
+            <input {...getInputProps()} />
+            <div className="text-gray-400">
+              <p className="mb-2">Drag & drop an SVG file here</p>
+              <p className="text-sm">or click to browse</p>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Layer Mapping */}
+        {step === 'mapping' && detected && (
+          <>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              {/* Preview */}
+              <div className="bg-gray-900 rounded-lg p-4">
+                <p className="text-sm text-gray-400 mb-2">Preview</p>
+                <div className="w-32 h-32 mx-auto">
+                  <SafeSVG content={svgContent} style={{ width: '100%', height: '100%' }} />
+                </div>
+              </div>
+
+              {/* Layer List */}
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Detected Layers</p>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {Object.keys(mappings).map((id) => (
+                    <div key={id} className="flex items-center gap-2">
+                      <span className="text-sm text-gray-300 flex-1 truncate" title={id}>
+                        {id}
+                      </span>
+                      <select
+                        value={mappings[id]}
+                        onChange={(e) => handleMappingChange(id, e.target.value as LayerRole)}
+                        className="bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
+                      >
+                        <option value="indicator">Indicator</option>
+                        <option value="track">Track</option>
+                        <option value="arc">Arc</option>
+                        <option value="glow">Glow</option>
+                        <option value="shadow">Shadow</option>
+                        <option value="exclude">Exclude</option>
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {!hasIndicator && (
+              <p className="text-sm text-amber-400 mb-4">
+                At least one layer must be mapped as Indicator
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setStep('upload')}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStep('config')}
+                disabled={!hasIndicator}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded px-4 py-2"
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Step 3: Configuration */}
+        {step === 'config' && (
+          <>
+            <div className="space-y-4 mb-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-1">Style Name</label>
+                <input
+                  type="text"
+                  value={styleName}
+                  onChange={(e) => setStyleName(e.target.value)}
+                  className="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2"
+                  placeholder="My Knob Style"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-400 mb-1">Min Angle (°)</label>
+                  <input
+                    type="number"
+                    value={minAngle}
+                    onChange={(e) => setMinAngle(Number(e.target.value))}
+                    className="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-400 mb-1">Max Angle (°)</label>
+                  <input
+                    type="number"
+                    value={maxAngle}
+                    onChange={(e) => setMaxAngle(Number(e.target.value))}
+                    className="w-full bg-gray-700 border border-gray-600 text-white rounded px-3 py-2"
+                  />
+                </div>
+              </div>
+
+              <p className="text-sm text-gray-500">
+                Rotation range: {maxAngle - minAngle}° (Default: 270° from -135° to +135°)
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setStep('mapping')}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleCreate}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2"
+              >
+                Create Style
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Cancel button */}
+        <button
+          onClick={onClose}
+          className="w-full mt-4 bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
