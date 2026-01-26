@@ -505,6 +505,88 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
 }
 
 // ============================================================================
+// Switch Element Configurations
+// ============================================================================
+
+export interface RockerSwitchElementConfig extends BaseElementConfig {
+  type: 'rockerswitch'
+
+  // Position: 0=down, 1=center, 2=up
+  position: 0 | 1 | 2
+
+  // Behavior mode
+  mode: 'spring-to-center' | 'latch-all-positions'
+
+  // Labels
+  showLabels: boolean
+  upLabel: string
+  downLabel: string
+
+  // Colors
+  backgroundColor: string
+  switchColor: string
+  borderColor: string
+  labelColor: string
+}
+
+export interface RotarySwitchElementConfig extends BaseElementConfig {
+  type: 'rotaryswitch'
+
+  // Position configuration
+  positionCount: number // 2-12 positions
+  currentPosition: number // 0 to positionCount-1
+
+  // Labels (null = show numbers 1-N)
+  positionLabels: string[] | null
+
+  // Geometry
+  rotationAngle: number // Total rotation range in degrees (default 270)
+
+  // Label layout
+  labelLayout: 'radial' | 'legend' // radial for 2-6 positions, legend for 7-12
+
+  // Colors
+  backgroundColor: string
+  pointerColor: string
+  labelColor: string
+  labelFontSize: number
+  borderColor: string
+}
+
+/**
+ * Configuration for individual segment in SegmentButton
+ */
+export interface SegmentConfig {
+  displayMode: 'icon' | 'text' | 'icon-text'
+  iconSource?: 'builtin' | 'asset'
+  builtInIcon?: string // Icon name (e.g., 'play', 'pause', 'stop')
+  assetId?: string
+  text?: string
+}
+
+export interface SegmentButtonElementConfig extends BaseElementConfig {
+  type: 'segmentbutton'
+
+  // Segment configuration
+  segmentCount: number // 2-8 segments
+  segments: SegmentConfig[]
+
+  // Selection
+  selectionMode: 'single' | 'multi'
+  selectedIndices: number[]
+
+  // Layout
+  orientation: 'horizontal' | 'vertical'
+
+  // Colors
+  backgroundColor: string
+  selectedColor: string
+  textColor: string
+  selectedTextColor: string
+  borderColor: string
+}
+
+// ============================================================================
 // Control Element Union
 // ============================================================================
 
@@ -525,6 +607,9 @@ export type ControlElement =
   | MultiSliderElementConfig
   | NotchedSliderElementConfig
   | ArcSliderElementConfig
+  | RockerSwitchElementConfig
+  | RotarySwitchElementConfig
+  | SegmentButtonElementConfig
 
 // ============================================================================
 // Type Guards
@@ -592,6 +677,18 @@ export function isNotchedSlider(element: { type: string }): element is NotchedSl
 
 export function isArcSlider(element: { type: string }): element is ArcSliderElementConfig {
   return element.type === 'arcslider'
+}
+
+export function isRockerSwitch(element: { type: string }): element is RockerSwitchElementConfig {
+  return element.type === 'rockerswitch'
+}
+
+export function isRotarySwitch(element: { type: string }): element is RotarySwitchElementConfig {
+  return element.type === 'rotaryswitch'
+}
+
+export function isSegmentButton(element: { type: string }): element is SegmentButtonElementConfig {
+  return element.type === 'segmentbutton'
 }
 
 // ============================================================================
@@ -1136,6 +1233,93 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     valueDecimalPlaces: 2,
     valueFontSize: 12,
     valueColor: '#a0a0a0',
+    ...overrides,
+  }
+}
+
+export function createRockerSwitch(overrides?: Partial<RockerSwitchElementConfig>): RockerSwitchElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rockerswitch',
+    name: 'Rocker Switch',
+    x: 0,
+    y: 0,
+    width: 40,
+    height: 80,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    position: 1, // Center position
+    mode: 'latch-all-positions',
+    showLabels: true,
+    upLabel: 'UP',
+    downLabel: 'DN',
+    backgroundColor: '#374151',
+    switchColor: '#949494',
+    borderColor: '#6b7280',
+    labelColor: '#888888',
+    ...overrides,
+  }
+}
+
+export function createRotarySwitch(overrides?: Partial<RotarySwitchElementConfig>): RotarySwitchElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'rotaryswitch',
+    name: 'Rotary Switch',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 80,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    positionCount: 4,
+    currentPosition: 0,
+    positionLabels: null, // Shows 1-4
+    rotationAngle: 270,
+    labelLayout: 'radial',
+    backgroundColor: '#374151',
+    pointerColor: '#ffffff',
+    labelColor: '#888888',
+    labelFontSize: 10,
+    borderColor: '#6b7280',
+    ...overrides,
+  }
+}
+
+export function createSegmentButton(overrides?: Partial<SegmentButtonElementConfig>): SegmentButtonElementConfig {
+  const segmentCount = overrides?.segmentCount ?? 3
+  const segments: SegmentConfig[] = overrides?.segments ?? [
+    { displayMode: 'text', text: 'A' },
+    { displayMode: 'text', text: 'B' },
+    { displayMode: 'text', text: 'C' },
+  ]
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'segmentbutton',
+    name: 'Segment Button',
+    x: 0,
+    y: 0,
+    width: 180,
+    height: 32,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    segmentCount,
+    segments,
+    selectionMode: 'single',
+    selectedIndices: [0],
+    orientation: 'horizontal',
+    backgroundColor: '#374151',
+    selectedColor: '#949494',
+    textColor: '#888888',
+    selectedTextColor: '#ffffff',
+    borderColor: '#6b7280',
     ...overrides,
   }
 }

@@ -263,6 +263,15 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'arcslider':
       return `<div id="${id}" class="${baseClass} slider-element arcslider-element" data-type="arcslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-start-angle="${element.startAngle}" data-end-angle="${element.endAngle}" style="${positionStyle}"></div>`
 
+    case 'rockerswitch':
+      return `<div id="${id}" class="${baseClass} switch-element rockerswitch-element" data-type="rockerswitch" data-position="${element.position}" data-mode="${element.mode}" style="${positionStyle}"></div>`
+
+    case 'rotaryswitch':
+      return `<div id="${id}" class="${baseClass} switch-element rotaryswitch-element" data-type="rotaryswitch" data-position-count="${element.positionCount}" data-current-position="${element.currentPosition}" style="${positionStyle}"></div>`
+
+    case 'segmentbutton':
+      return `<div id="${id}" class="${baseClass} button-element segmentbutton-element" data-type="segmentbutton" data-segment-count="${element.segmentCount}" data-selection-mode="${element.selectionMode}" data-selected="${element.selectedIndices.join(',')}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

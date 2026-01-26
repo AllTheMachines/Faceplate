@@ -1033,6 +1033,27 @@ ${selector} .oscilloscope-placeholder {
   user-select: none;
 }`
 
+    case 'rockerswitch':
+      return `${selector} {
+  /* Rocker Switch styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'rotaryswitch':
+      return `${selector} {
+  /* Rotary Switch styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'segmentbutton':
+      return `${selector} {
+  /* Segment Button styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
