@@ -260,10 +260,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 21-01-PLAN.md — Built-in icon system + Icon Button, Kick Button, Toggle Switch, Power Button
-- [ ] 21-02-PLAN.md — Rocker Switch, Rotary Switch, Segment Button
-- [ ] 21-03-PLAN.md — Property panels for all 7 types + palette entries
-- [ ] 21-04-PLAN.md — Export support (HTML/CSS generators)
+- [x] 21-01-PLAN.md — Built-in icon system + Icon Button, Kick Button, Toggle Switch, Power Button
+- [x] 21-02-PLAN.md — Rocker Switch, Rotary Switch, Segment Button
+- [x] 21-03-PLAN.md — Property panels for all 7 types + palette entries
+- [x] 21-04-PLAN.md — Export support (HTML/CSS generators)
 
 **Success Criteria:**
 1. User can add Icon Button (toolbar style, icon-only, no text label)
@@ -425,7 +425,7 @@ Plans:
 | 18. Export & Polish | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 19. Architecture Refactoring | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 20. Simple Controls | v1.2 | 4/4 | Complete | 2026-01-26 |
-| 21. Buttons & Switches | v1.2 | 0/4 | Pending | — |
+| 21. Buttons & Switches | v1.2 | 4/4 | Complete | 2026-01-26 |
 | 22. Value Displays & LEDs | v1.2 | 0/? | Pending | — |
 | 23. Professional Meters | v1.2 | 0/? | Pending | — |
 | 24. Navigation & Selection | v1.2 | 0/? | Pending | — |
@@ -438,4 +438,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 20 execution complete*
+*Last updated: 2026-01-26 after Phase 21 execution complete*

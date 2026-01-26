@@ -29,15 +29,15 @@ Requirements for Complete Element Taxonomy milestone. 76 new elements + 2 UX imp
 - [x] **LIN-04**: Arc Slider following curved path
 - [x] **LIN-05**: Multi-Slider with parallel sliders for EQ/multi-band
 
-### Buttons & Switches (7 elements)
+### Buttons & Switches (7 elements) ✓
 
-- [ ] **BTN-01**: Icon Button (toolbar style, icon only)
-- [ ] **BTN-02**: Toggle Switch (iOS-style slide switch)
-- [ ] **BTN-03**: Rocker Switch (3-position up/center/down)
-- [ ] **BTN-04**: Rotary Switch (vintage rotating selector)
-- [ ] **BTN-05**: Kick Button (momentary with animation)
-- [ ] **BTN-06**: Segment Button (multi-segment mode selection)
-- [ ] **BTN-07**: Power Button (on/off with indicator)
+- [x] **BTN-01**: Icon Button (toolbar style, icon only)
+- [x] **BTN-02**: Toggle Switch (iOS-style slide switch)
+- [x] **BTN-03**: Rocker Switch (3-position up/center/down)
+- [x] **BTN-04**: Rotary Switch (vintage rotating selector)
+- [x] **BTN-05**: Kick Button (momentary with animation)
+- [x] **BTN-06**: Segment Button (multi-segment mode selection)
+- [x] **BTN-07**: Power Button (on/off with indicator)
 
 ### Value Displays (8 elements)
 
