@@ -6,6 +6,13 @@
 import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
+import type {
+  EQCurveElementConfig,
+  CompressorCurveElementConfig,
+  EnvelopeDisplayElementConfig,
+  LFODisplayElementConfig,
+  FilterResponseElementConfig,
+} from '../../types/elements/curves'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
@@ -417,6 +424,22 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'vectorscope':
       return generateVectorscopeHTML(element as VectorscopeElementConfig)
+
+    // Curve Elements
+    case 'eqcurve':
+      return generateEQCurveHTML(element as EQCurveElementConfig)
+
+    case 'compressorcurve':
+      return generateCompressorCurveHTML(element as CompressorCurveElementConfig)
+
+    case 'envelopedisplay':
+      return generateEnvelopeDisplayHTML(element as EnvelopeDisplayElementConfig)
+
+    case 'lfodisplay':
+      return generateLFODisplayHTML(element as LFODisplayElementConfig)
+
+    case 'filterresponse':
+      return generateFilterResponseHTML(element as FilterResponseElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -2092,6 +2115,682 @@ function generateVectorscopeHTML(config: VectorscopeElementConfig): string {
       window.updateVectorscope_${id.replace(/-/g, '_')}(e.data);
     });
   }
+})();
+</script>`
+}
+
+// ============================================================================
+// Curve Element HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate EQ Curve HTML with JavaScript draw function
+ */
+function generateEQCurveHTML(config: EQCurveElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element curve-container" data-curve-type="eqcurve" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  // Audio math utilities
+  function frequencyToX(freq, width, minFreq, maxFreq) {
+    const minLog = Math.log10(minFreq);
+    const maxLog = Math.log10(maxFreq);
+    return ((Math.log10(freq) - minLog) / (maxLog - minLog)) * width;
+  }
+
+  function dbToY(db, height, minDb, maxDb) {
+    return height - ((db - minDb) / (maxDb - minDb)) * height;
+  }
+
+  function calculateBiquadResponse(freq, centerFreq, gain, Q) {
+    // Simplified biquad calculation for visualization
+    const freqRatio = Math.log10(freq / centerFreq);
+    const bellShape = Math.exp(-Math.pow(freqRatio * Q * 3, 2));
+    return gain * bellShape;
+  }
+
+  window.updateEQCurve_${id.replace(/-/g, '_')} = function(bands) {
+    const width = ${config.width};
+    const height = ${config.height};
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid lines
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    const freqs = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+    freqs.forEach(freq => {
+      const x = frequencyToX(freq, width, ${config.minFreq}, ${config.maxFreq});
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Calculate composite response
+    const points = [];
+    for (let i = 0; i <= 200; i++) {
+      const x = (i / 200) * width;
+      const freq = Math.pow(10, Math.log10(${config.minFreq}) + (x / width) * (Math.log10(${config.maxFreq}) - Math.log10(${config.minFreq})));
+      let totalDb = 0;
+      bands.forEach(band => {
+        totalDb += calculateBiquadResponse(freq, band.frequency, band.gain, band.Q);
+      });
+      const y = dbToY(totalDb, height, ${config.minDb}, ${config.maxDb});
+      points.push({x, y});
+    }
+
+    // Draw curve
+    ctx.strokeStyle = '${config.curveColor}';
+    ctx.lineWidth = ${config.lineWidth};
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+
+    ${config.showFill ? `
+    // Fill under curve
+    ctx.fillStyle = '${config.fillColor}';
+    ctx.globalAlpha = ${config.fillOpacity};
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Draw handles
+    bands.forEach((band, i) => {
+      const hx = frequencyToX(band.frequency, width, ${config.minFreq}, ${config.maxFreq});
+      const hy = dbToY(band.gain, height, ${config.minDb}, ${config.maxDb});
+      ctx.fillStyle = '${config.handleColor}';
+      ctx.fillRect(hx - 4, hy - 4, 8, 8);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(hx - 4, hy - 4, 8, 8);
+    });
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('eqData_${id}', (e) => {
+      window.updateEQCurve_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+
+  // Initial draw
+  window.updateEQCurve_${id.replace(/-/g, '_')}(${JSON.stringify(config.bands)});
+})();
+</script>`
+}
+
+/**
+ * Generate Compressor Curve HTML with JavaScript draw function
+ */
+function generateCompressorCurveHTML(config: CompressorCurveElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element curve-container" data-curve-type="compressorcurve" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  function dbToX(db, width, minDb, maxDb) {
+    return ((db - minDb) / (maxDb - minDb)) * width;
+  }
+
+  function dbToY(db, height, minDb, maxDb) {
+    return height - ((db - minDb) / (maxDb - minDb)) * height;
+  }
+
+  function applyCompression(inputDb, threshold, ratio, knee) {
+    const halfKnee = knee / 2;
+    if (inputDb < threshold - halfKnee) {
+      return inputDb;
+    } else if (inputDb > threshold + halfKnee) {
+      return threshold + (inputDb - threshold) / ratio;
+    } else {
+      // Soft knee (quadratic interpolation)
+      const x = inputDb - threshold + halfKnee;
+      const w = 2 * halfKnee;
+      const y = x * x / (2 * w);
+      return inputDb + (1 / ratio - 1) * y;
+    }
+  }
+
+  window.updateCompressorCurve_${id.replace(/-/g, '_')} = function(params) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const threshold = params.threshold || ${config.threshold};
+    const ratio = params.ratio || ${config.ratio};
+    const knee = params.knee || ${config.knee};
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid lines
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    for (let db = ${config.minDb}; db <= ${config.maxDb}; db += 12) {
+      const x = dbToX(db, width, ${config.minDb}, ${config.maxDb});
+      const y = dbToY(db, height, ${config.minDb}, ${config.maxDb});
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // 1:1 reference line
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, height);
+    ctx.lineTo(width, 0);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+
+    // Compression curve
+    ctx.strokeStyle = '${config.curveColor}';
+    ctx.lineWidth = ${config.lineWidth};
+    ctx.beginPath();
+    for (let i = 0; i <= 200; i++) {
+      const inputDb = ${config.minDb} + (i / 200) * (${config.maxDb} - ${config.minDb});
+      const outputDb = applyCompression(inputDb, threshold, ratio, knee);
+      const x = dbToX(inputDb, width, ${config.minDb}, ${config.maxDb});
+      const y = dbToY(outputDb, height, ${config.minDb}, ${config.maxDb});
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ${config.showFill ? `
+    // Fill under curve
+    ctx.fillStyle = '${config.fillColor}';
+    ctx.globalAlpha = 0.3;
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Threshold handle
+    const tx = dbToX(threshold, width, ${config.minDb}, ${config.maxDb});
+    const ty = dbToY(threshold, height, ${config.minDb}, ${config.maxDb});
+    ctx.fillStyle = '${config.handleColor}';
+    ctx.fillRect(tx - 4, ty - 4, 8, 8);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(tx - 4, ty - 4, 8, 8);
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('compressorData_${id}', (e) => {
+      window.updateCompressorCurve_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+
+  // Initial draw
+  window.updateCompressorCurve_${id.replace(/-/g, '_')}({threshold: ${config.threshold}, ratio: ${config.ratio}, knee: ${config.knee}});
+})();
+</script>`
+}
+
+/**
+ * Generate Envelope Display HTML with JavaScript draw function
+ */
+function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element curve-container" data-curve-type="envelopedisplay" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  function calculateEnvelopeCurve(attack, decay, sustain, release, curveType) {
+    const points = [];
+    const attackTime = attack;
+    const decayTime = decay;
+    const sustainTime = 0.3; // Fixed for visual display
+    const releaseTime = release;
+    const totalTime = attackTime + decayTime + sustainTime + releaseTime;
+
+    for (let i = 0; i <= 200; i++) {
+      const t = (i / 200) * totalTime;
+      let level = 0;
+
+      if (t < attackTime) {
+        // Attack phase
+        const attackProgress = t / attackTime;
+        level = curveType === 'exponential' ? Math.pow(attackProgress, 0.3) : attackProgress;
+      } else if (t < attackTime + decayTime) {
+        // Decay phase
+        const decayProgress = (t - attackTime) / decayTime;
+        if (curveType === 'exponential') {
+          level = sustain + (1 - sustain) * Math.exp(-5 * decayProgress);
+        } else {
+          level = 1 - (1 - sustain) * decayProgress;
+        }
+      } else if (t < attackTime + decayTime + sustainTime) {
+        // Sustain phase
+        level = sustain;
+      } else {
+        // Release phase
+        const releaseProgress = (t - attackTime - decayTime - sustainTime) / releaseTime;
+        if (curveType === 'exponential') {
+          level = sustain * Math.exp(-5 * releaseProgress);
+        } else {
+          level = sustain * (1 - releaseProgress);
+        }
+      }
+
+      points.push({t, level});
+    }
+
+    return points;
+  }
+
+  window.updateEnvelopeDisplay_${id.replace(/-/g, '_')} = function(params) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const attack = params.attack || ${config.attack};
+    const decay = params.decay || ${config.decay};
+    const sustain = params.sustain || ${config.sustain};
+    const release = params.release || ${config.release};
+    const curveType = params.curveType || '${config.curveType}';
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    const points = calculateEnvelopeCurve(attack, decay, sustain, release, curveType);
+    const totalTime = attack + decay + 0.3 + release;
+
+    // Draw envelope curve
+    ctx.strokeStyle = '${config.curveColor}';
+    ctx.lineWidth = ${config.lineWidth};
+    ctx.beginPath();
+    points.forEach((p, i) => {
+      const x = (p.t / totalTime) * width;
+      const y = height - p.level * height;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    ${config.showFill ? `
+    // Fill under curve
+    ctx.fillStyle = '${config.fillColor}';
+    ctx.globalAlpha = 0.3;
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    ${config.showStageMarkers ? `
+    // Stage markers
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    ctx.setLineDash([4, 4]);
+    const attackX = (attack / totalTime) * width;
+    const decayX = ((attack + decay) / totalTime) * width;
+    const releaseX = ((attack + decay + 0.3) / totalTime) * width;
+    [attackX, decayX, releaseX].forEach(x => {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('envelopeData_${id}', (e) => {
+      window.updateEnvelopeDisplay_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+
+  // Initial draw
+  window.updateEnvelopeDisplay_${id.replace(/-/g, '_')}({attack: ${config.attack}, decay: ${config.decay}, sustain: ${config.sustain}, release: ${config.release}, curveType: '${config.curveType}'});
+})();
+</script>`
+}
+
+/**
+ * Generate LFO Display HTML with JavaScript draw function
+ */
+function generateLFODisplayHTML(config: LFODisplayElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element curve-container" data-curve-type="lfodisplay" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  function generateLFOWaveform(shape, pulseWidth, sampleCount) {
+    const points = [];
+    for (let i = 0; i < sampleCount; i++) {
+      const phase = i / sampleCount;
+      let value = 0;
+
+      switch (shape) {
+        case 'sine':
+          value = Math.sin(phase * Math.PI * 2);
+          break;
+        case 'triangle':
+          value = phase < 0.5 ? (4 * phase - 1) : (3 - 4 * phase);
+          break;
+        case 'saw-up':
+          value = 2 * phase - 1;
+          break;
+        case 'saw-down':
+          value = 1 - 2 * phase;
+          break;
+        case 'square':
+          value = phase < 0.5 ? 1 : -1;
+          break;
+        case 'pulse':
+          value = phase < pulseWidth ? 1 : -1;
+          break;
+        case 'sample-hold':
+          value = Math.sin(Math.floor(phase * 8) * 0.7854) * 0.8;
+          break;
+        case 'smooth-random':
+          const t = phase * 4;
+          const t0 = Math.floor(t);
+          const t1 = t0 + 1;
+          const frac = t - t0;
+          const v0 = Math.sin(t0 * 2.3456) * 0.7;
+          const v1 = Math.sin(t1 * 2.3456) * 0.7;
+          value = v0 + (v1 - v0) * (3 - 2 * frac) * frac * frac;
+          break;
+      }
+
+      points.push(value);
+    }
+    return points;
+  }
+
+  window.updateLFODisplay_${id.replace(/-/g, '_')} = function(params) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const shape = params.shape || '${config.shape}';
+    const pulseWidth = params.pulseWidth || ${config.pulseWidth};
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    const waveform = generateLFOWaveform(shape, pulseWidth, 200);
+
+    // Draw waveform
+    ctx.strokeStyle = '${config.waveformColor}';
+    ctx.lineWidth = ${config.lineWidth};
+    ctx.beginPath();
+    waveform.forEach((value, i) => {
+      const x = (i / waveform.length) * width;
+      const y = height / 2 - (value * height * 0.4);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    ${config.showFill ? `
+    // Fill
+    ctx.fillStyle = '${config.fillColor}';
+    ctx.globalAlpha = 0.3;
+    ctx.lineTo(width, height / 2);
+    ctx.lineTo(0, height / 2);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('lfoData_${id}', (e) => {
+      window.updateLFODisplay_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+
+  // Initial draw
+  window.updateLFODisplay_${id.replace(/-/g, '_')}({shape: '${config.shape}', pulseWidth: ${config.pulseWidth}});
+})();
+</script>`
+}
+
+/**
+ * Generate Filter Response HTML with JavaScript draw function
+ */
+function generateFilterResponseHTML(config: FilterResponseElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element curve-container" data-curve-type="filterresponse" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  function frequencyToX(freq, width, minFreq, maxFreq) {
+    const minLog = Math.log10(minFreq);
+    const maxLog = Math.log10(maxFreq);
+    return ((Math.log10(freq) - minLog) / (maxLog - minLog)) * width;
+  }
+
+  function dbToY(db, height, minDb, maxDb) {
+    return height - ((db - minDb) / (maxDb - minDb)) * height;
+  }
+
+  function calculateFilterResponse(freq, filterType, cutoff, resonance, gain) {
+    const ratio = freq / cutoff;
+    let db = 0;
+
+    switch (filterType) {
+      case 'lowpass':
+        db = ratio > 1 ? -12 * Math.log2(ratio) : 0;
+        db += (resonance - 1) * 6 * Math.exp(-Math.pow(Math.log2(ratio), 2));
+        break;
+      case 'highpass':
+        db = ratio < 1 ? 12 * Math.log2(ratio) : 0;
+        db += (resonance - 1) * 6 * Math.exp(-Math.pow(Math.log2(ratio), 2));
+        break;
+      case 'bandpass':
+        db = -6 * Math.abs(Math.log2(ratio));
+        db += resonance * 6 * Math.exp(-Math.pow(Math.log2(ratio), 2) * resonance);
+        break;
+      case 'notch':
+        db = -resonance * 24 * Math.exp(-Math.pow(Math.log2(ratio), 2) * resonance * 2);
+        break;
+      case 'lowshelf':
+        db = ratio < 1 ? gain : gain / (1 + Math.pow(ratio - 1, 2));
+        break;
+      case 'highshelf':
+        db = ratio > 1 ? gain : gain / (1 + Math.pow(1 / ratio - 1, 2));
+        break;
+      case 'peak':
+        db = gain * Math.exp(-Math.pow(Math.log2(ratio) * resonance, 2));
+        break;
+    }
+
+    return db;
+  }
+
+  window.updateFilterResponse_${id.replace(/-/g, '_')} = function(params) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const filterType = params.filterType || '${config.filterType}';
+    const cutoff = params.cutoffFrequency || ${config.cutoffFrequency};
+    const resonance = params.resonance || ${config.resonance};
+    const gain = params.gain || ${config.gain};
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid lines
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    const freqs = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+    freqs.forEach(freq => {
+      const x = frequencyToX(freq, width, ${config.minFreq}, ${config.maxFreq});
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Calculate filter response
+    const points = [];
+    for (let i = 0; i <= 200; i++) {
+      const x = (i / 200) * width;
+      const freq = Math.pow(10, Math.log10(${config.minFreq}) + (x / width) * (Math.log10(${config.maxFreq}) - Math.log10(${config.minFreq})));
+      const db = calculateFilterResponse(freq, filterType, cutoff, resonance, gain);
+      const y = dbToY(db, height, ${config.minDb}, ${config.maxDb});
+      points.push({x, y});
+    }
+
+    // Draw curve
+    ctx.strokeStyle = '${config.curveColor}';
+    ctx.lineWidth = ${config.lineWidth};
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+
+    ${config.showFill ? `
+    // Fill under curve
+    ctx.fillStyle = '${config.fillColor}';
+    ctx.globalAlpha = 0.3;
+    ctx.lineTo(width, height);
+    ctx.lineTo(0, height);
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Cutoff frequency handle
+    const cutoffX = frequencyToX(cutoff, width, ${config.minFreq}, ${config.maxFreq});
+    const cutoffDb = calculateFilterResponse(cutoff, filterType, cutoff, resonance, gain);
+    const cutoffY = dbToY(cutoffDb, height, ${config.minDb}, ${config.maxDb});
+    ctx.fillStyle = '${config.handleColor}';
+    ctx.fillRect(cutoffX - 4, cutoffY - 4, 8, 8);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cutoffX - 4, cutoffY - 4, 8, 8);
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('filterData_${id}', (e) => {
+      window.updateFilterResponse_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+
+  // Initial draw
+  window.updateFilterResponse_${id.replace(/-/g, '_')}({filterType: '${config.filterType}', cutoffFrequency: ${config.cutoffFrequency}, resonance: ${config.resonance}, gain: ${config.gain}});
 })();
 </script>`
 }
