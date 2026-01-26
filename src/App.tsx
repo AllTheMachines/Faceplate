@@ -38,6 +38,8 @@ import {
   createCollapsible,
   createTooltip,
   createWindowChrome,
+  createHorizontalSpacer,
+  createVerticalSpacer,
   createTextField,
   createWaveform,
   createOscilloscope,
@@ -373,6 +375,12 @@ function App() {
         break
       case 'windowchrome':
         newElement = createWindowChrome({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'horizontalspacer':
+        newElement = createHorizontalSpacer({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'verticalspacer':
+        newElement = createVerticalSpacer({ x: canvasX, y: canvasY, ...variant })
         break
       case 'textfield':
         newElement = createTextField({ x: canvasX, y: canvasY, ...variant })

@@ -19,6 +19,7 @@ import { FrameProperties } from './FrameProperties'
 import { GroupBoxProperties } from './GroupBoxProperties'
 import { TooltipProperties } from './TooltipProperties'
 import { WindowChromeProperties } from './WindowChromeProperties'
+import { SpacerProperties } from './SpacerProperties'
 import { RectangleProperties } from './RectangleProperties'
 import { LineProperties } from './LineProperties'
 import { DbDisplayProperties } from './DbDisplayProperties'
@@ -112,6 +113,7 @@ export { FrameProperties } from './FrameProperties'
 export { GroupBoxProperties } from './GroupBoxProperties'
 export { TooltipProperties } from './TooltipProperties'
 export { WindowChromeProperties } from './WindowChromeProperties'
+export { SpacerProperties } from './SpacerProperties'
 export { RectangleProperties } from './RectangleProperties'
 export { LineProperties } from './LineProperties'
 export { DbDisplayProperties } from './DbDisplayProperties'
@@ -311,6 +313,8 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['collapsible', CollapsibleProperties],
   ['tooltip', TooltipProperties],
   ['windowchrome', WindowChromeProperties],
+  ['horizontalspacer', SpacerProperties],
+  ['verticalspacer', SpacerProperties],
 
   // Decorative
   ['image', ImageProperties],
