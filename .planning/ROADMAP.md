@@ -2,13 +2,13 @@
 
 ## Milestones
 
-- ✅ **v1.0 MVP** - Phases 1-13 (shipped 2026-01-25)
-- 🚧 **v1.1 SVG Import System** - Phases 14-18 (in progress)
+- **v1.0 MVP** - Phases 1-13 (shipped 2026-01-25)
+- **v1.1 SVG Import System** - Phases 14-18 (in progress)
 
 ## Phases
 
 <details>
-<summary>✅ v1.0 MVP (Phases 1-13) - SHIPPED 2026-01-25</summary>
+<summary>v1.0 MVP (Phases 1-13) - SHIPPED 2026-01-25</summary>
 
 ### Phase 1: Project Setup
 **Goal**: Vite + React + TypeScript development environment running
@@ -143,11 +143,11 @@ Plans:
 
 </details>
 
-### 🚧 v1.1 SVG Import System (In Progress)
+### v1.1 SVG Import System (In Progress)
 
 **Milestone Goal:** Enable custom SVG asset import for interactive knobs and static graphics with comprehensive security.
 
-#### Phase 14: Security Foundation & Upload Pipeline ✅
+#### Phase 14: Security Foundation & Upload Pipeline
 **Goal**: All SVG rendering is sanitized and protected against XSS attacks
 **Depends on**: Phase 13
 **Requirements**: SEC-01, SEC-02, SEC-03, SEC-04, SEC-05, SEC-06, SEC-07, SEC-08
@@ -177,13 +177,14 @@ Plans:
   4. User can delete assets with usage warning if referenced by elements
   5. Assets have category tags (logo, icon, decoration, background) for organization
   6. User can drag asset from library directly to canvas to create element
-**Plans**: 4 plans
+**Plans**: 5 plans (4 original + 1 gap closure)
 
 Plans:
-- [ ] 15-01-PLAN.md — AssetsSlice foundation (types, state, store integration)
-- [ ] 15-02-PLAN.md — Import dialog with preview and validation
-- [ ] 15-03-PLAN.md — Asset Library panel with categories, search, and tab switching
-- [ ] 15-04-PLAN.md — Asset interactions (rename, delete, drag-to-canvas)
+- [x] 15-01-PLAN.md — AssetsSlice foundation (types, state, store integration)
+- [x] 15-02-PLAN.md — Import dialog with preview and validation
+- [x] 15-03-PLAN.md — Asset Library panel with categories, search, and tab switching
+- [x] 15-04-PLAN.md — Asset interactions (rename, delete, drag-to-canvas)
+- [ ] 15-05-PLAN.md — Gap closure: Wire ImageRenderer to render asset SVG content
 
 #### Phase 16: Static SVG Graphics
 **Goal**: Users can place scalable SVG graphics on canvas as decorative elements
@@ -238,7 +239,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 14 → 15 → 16 → 17 → 18
+Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
@@ -256,11 +257,11 @@ Phases execute in numeric order: 14 → 15 → 16 → 17 → 18
 | 12. Export System | v1.0 | 5/5 | Complete | 2026-01-25 |
 | 13. Project Persistence & Polish | v1.0 | 16/16 | Complete | 2026-01-25 |
 | 14. Security Foundation & Upload Pipeline | v1.1 | 4/4 | Complete | 2026-01-25 |
-| 15. Asset Library Storage & UI | v1.1 | 0/4 | Not started | - |
+| 15. Asset Library Storage & UI | v1.1 | 4/5 | In progress | - |
 | 16. Static SVG Graphics | v1.1 | 0/TBD | Not started | - |
 | 17. Interactive SVG Knobs | v1.1 | 0/TBD | Not started | - |
 | 18. Export & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-25 after Phase 15 planning*
+*Last updated: 2026-01-26 after Phase 15 gap closure planning*
