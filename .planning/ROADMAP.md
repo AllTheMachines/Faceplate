@@ -237,11 +237,15 @@ Plans:
   3. Exported HTML includes CSP headers to prevent XSS
   4. SVG content can be optimized with SVGO before export (optional toggle)
   5. Exported CSS includes responsive scaling rules for SVG elements
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 18-01: TBD
-- [ ] 18-02: TBD
+- [ ] 18-01-PLAN.md — SVGO wrapper with safe optimization settings
+- [ ] 18-02-PLAN.md — Responsive scaling CSS/JS for exported HTML
+- [ ] 18-03-PLAN.md — Export integration (SVGO + responsive scaling)
+- [ ] 18-04-PLAN.md — Browser preview for export verification
+- [ ] 18-05-PLAN.md — JUCE integration README in exported bundle
+- [ ] 18-06-PLAN.md — Export workflow polish and error messages
 
 ## Progress
 
@@ -267,7 +271,7 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 | 15. Asset Library Storage & UI | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 16. Static SVG Graphics | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 17. Interactive SVG Knobs | v1.1 | 6/6 | Complete | 2026-01-26 |
-| 18. Export & Polish | v1.1 | 0/TBD | Not started | - |
+| 18. Export & Polish | v1.1 | 0/6 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
