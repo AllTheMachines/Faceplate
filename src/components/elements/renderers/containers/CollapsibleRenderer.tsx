@@ -1,5 +1,5 @@
 import React from 'react'
-import { CollapsibleContainerElementConfig } from '../../../types/elements'
+import { CollapsibleContainerElementConfig } from '../../../../types/elements'
 
 interface CollapsibleRendererProps {
   config: CollapsibleContainerElementConfig

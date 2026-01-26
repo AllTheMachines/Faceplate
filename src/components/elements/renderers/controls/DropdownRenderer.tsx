@@ -1,4 +1,4 @@
-import { DropdownElementConfig } from '../../../types/elements'
+import { DropdownElementConfig } from '../../../../types/elements'
 
 interface DropdownRendererProps {
   config: DropdownElementConfig

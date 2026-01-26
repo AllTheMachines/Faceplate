@@ -1,4 +1,4 @@
-import type { ModulationMatrixElementConfig } from '../../../types/elements'
+import type { ModulationMatrixElementConfig } from '../../../../types/elements'
 
 interface ModulationMatrixRendererProps {
   config: ModulationMatrixElementConfig

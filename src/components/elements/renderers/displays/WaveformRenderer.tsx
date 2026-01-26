@@ -1,4 +1,4 @@
-import type { WaveformElementConfig } from '../../../types/elements'
+import type { WaveformElementConfig } from '../../../../types/elements'
 
 interface WaveformRendererProps {
   config: WaveformElementConfig

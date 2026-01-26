@@ -1,4 +1,4 @@
-import { ButtonElementConfig } from '../../../types/elements'
+import { ButtonElementConfig } from '../../../../types/elements'
 
 interface ButtonRendererProps {
   config: ButtonElementConfig

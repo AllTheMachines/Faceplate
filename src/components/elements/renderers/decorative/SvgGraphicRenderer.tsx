@@ -1,7 +1,6 @@
-import React from 'react'
-import { SvgGraphicElementConfig } from '../../../types/elements'
-import { useStore } from '../../../store'
-import { SafeSVG } from '../../SafeSVG'
+import { SvgGraphicElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
+import { SafeSVG } from '../../../SafeSVG'
 
 interface SvgGraphicRendererProps {
   config: SvgGraphicElementConfig

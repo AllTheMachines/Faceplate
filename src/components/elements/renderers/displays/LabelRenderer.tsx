@@ -1,4 +1,4 @@
-import { LabelElementConfig } from '../../../types/elements'
+import { LabelElementConfig } from '../../../../types/elements'
 
 interface LabelRendererProps {
   config: LabelElementConfig

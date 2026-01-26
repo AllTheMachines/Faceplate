@@ -1,4 +1,4 @@
-import type { OscilloscopeElementConfig } from '../../../types/elements'
+import type { OscilloscopeElementConfig } from '../../../../types/elements'
 
 interface OscilloscopeRendererProps {
   config: OscilloscopeElementConfig

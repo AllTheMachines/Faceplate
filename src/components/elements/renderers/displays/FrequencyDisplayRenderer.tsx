@@ -1,4 +1,4 @@
-import type { FrequencyDisplayElementConfig } from '../../../types/elements'
+import type { FrequencyDisplayElementConfig } from '../../../../types/elements'
 
 interface FrequencyDisplayRendererProps {
   config: FrequencyDisplayElementConfig

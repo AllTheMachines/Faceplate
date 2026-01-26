@@ -1,5 +1,5 @@
 import React from 'react'
-import { FrameElementConfig } from '../../../types/elements'
+import { FrameElementConfig } from '../../../../types/elements'
 
 interface FrameRendererProps {
   config: FrameElementConfig

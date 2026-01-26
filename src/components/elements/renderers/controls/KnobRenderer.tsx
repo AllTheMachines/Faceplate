@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { KnobElementConfig } from '../../../types/elements'
-import { useStore } from '../../../store'
-import { SafeSVG } from '../../SafeSVG'
-import { extractLayer, applyAllColorOverrides } from '../../../services/knobLayers'
+import { KnobElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
+import { SafeSVG } from '../../../SafeSVG'
+import { extractLayer, applyAllColorOverrides } from '../../../../services/knobLayers'
 
 interface KnobRendererProps {
   config: KnobElementConfig

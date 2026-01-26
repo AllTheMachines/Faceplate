@@ -1,5 +1,5 @@
 import React from 'react'
-import { TextFieldElementConfig } from '../../../types/elements'
+import { TextFieldElementConfig } from '../../../../types/elements'
 
 interface TextFieldRendererProps {
   config: TextFieldElementConfig

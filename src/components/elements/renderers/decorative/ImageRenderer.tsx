@@ -1,7 +1,7 @@
 import React from 'react'
-import { ImageElementConfig } from '../../../types/elements'
-import { useStore } from '../../../store'
-import { SafeSVG } from '../../SafeSVG'
+import { ImageElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
+import { SafeSVG } from '../../../SafeSVG'
 
 interface ImageRendererProps {
   config: ImageElementConfig

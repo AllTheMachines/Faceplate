@@ -1,4 +1,4 @@
-import type { GainReductionMeterElementConfig } from '../../../types/elements'
+import type { GainReductionMeterElementConfig } from '../../../../types/elements'
 
 interface GainReductionMeterRendererProps {
   config: GainReductionMeterElementConfig

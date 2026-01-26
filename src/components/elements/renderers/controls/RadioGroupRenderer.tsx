@@ -1,4 +1,4 @@
-import { RadioGroupElementConfig } from '../../../types/elements'
+import { RadioGroupElementConfig } from '../../../../types/elements'
 
 interface RadioGroupRendererProps {
   config: RadioGroupElementConfig

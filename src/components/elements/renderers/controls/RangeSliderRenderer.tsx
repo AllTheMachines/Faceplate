@@ -1,4 +1,4 @@
-import { RangeSliderElementConfig } from '../../../types/elements'
+import { RangeSliderElementConfig } from '../../../../types/elements'
 
 interface RangeSliderRendererProps {
   config: RangeSliderElementConfig

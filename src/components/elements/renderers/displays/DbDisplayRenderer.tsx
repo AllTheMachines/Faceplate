@@ -1,4 +1,4 @@
-import type { DbDisplayElementConfig } from '../../../types/elements'
+import type { DbDisplayElementConfig } from '../../../../types/elements'
 
 interface DbDisplayRendererProps {
   config: DbDisplayElementConfig

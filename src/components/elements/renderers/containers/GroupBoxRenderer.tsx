@@ -1,5 +1,5 @@
 import React from 'react'
-import { GroupBoxElementConfig } from '../../../types/elements'
+import { GroupBoxElementConfig } from '../../../../types/elements'
 
 interface GroupBoxRendererProps {
   config: GroupBoxElementConfig

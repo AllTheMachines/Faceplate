@@ -1,4 +1,4 @@
-import { SliderElementConfig } from '../../../types/elements'
+import { SliderElementConfig } from '../../../../types/elements'
 
 interface SliderRendererProps {
   config: SliderElementConfig

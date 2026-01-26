@@ -1,4 +1,4 @@
-import { MeterElementConfig } from '../../../types/elements'
+import { MeterElementConfig } from '../../../../types/elements'
 
 interface MeterRendererProps {
   config: MeterElementConfig

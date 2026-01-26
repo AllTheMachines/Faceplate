@@ -1,4 +1,4 @@
-import { CheckboxElementConfig } from '../../../types/elements'
+import { CheckboxElementConfig } from '../../../../types/elements'
 
 interface CheckboxRendererProps {
   config: CheckboxElementConfig

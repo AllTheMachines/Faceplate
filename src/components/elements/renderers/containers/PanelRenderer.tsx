@@ -1,5 +1,5 @@
 import React from 'react'
-import { PanelElementConfig } from '../../../types/elements'
+import { PanelElementConfig } from '../../../../types/elements'
 
 interface PanelRendererProps {
   config: PanelElementConfig

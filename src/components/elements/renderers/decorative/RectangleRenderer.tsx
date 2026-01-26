@@ -1,4 +1,4 @@
-import { RectangleElementConfig } from '../../../types/elements'
+import { RectangleElementConfig } from '../../../../types/elements'
 
 interface RectangleRendererProps {
   config: RectangleElementConfig

@@ -1,4 +1,4 @@
-import type { PresetBrowserElementConfig } from '../../../types/elements'
+import type { PresetBrowserElementConfig } from '../../../../types/elements'
 
 interface PresetBrowserRendererProps {
   config: PresetBrowserElementConfig

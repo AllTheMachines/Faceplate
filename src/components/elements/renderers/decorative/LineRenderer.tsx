@@ -1,4 +1,4 @@
-import { LineElementConfig } from '../../../types/elements'
+import { LineElementConfig } from '../../../../types/elements'
 
 interface LineRendererProps {
   config: LineElementConfig
