@@ -3,12 +3,13 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig } from '../../types/elements'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
 import { extractLayer, applyAllColorOverrides } from '../knobLayers'
 import type { KnobStyle } from '../../types/knobStyle'
+import { builtInIconSVG, BuiltInIcon } from '../../utils/builtInIcons'
 
 // ============================================================================
 // Value Formatting Utility
@@ -264,25 +265,25 @@ export function generateElementHTML(element: ElementConfig): string {
       return `<div id="${id}" class="${baseClass} slider-element arcslider-element" data-type="arcslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-start-angle="${element.startAngle}" data-end-angle="${element.endAngle}" style="${positionStyle}"></div>`
 
     case 'rockerswitch':
-      return `<div id="${id}" class="${baseClass} switch-element rockerswitch-element" data-type="rockerswitch" data-position="${element.position}" data-mode="${element.mode}" style="${positionStyle}"></div>`
+      return generateRockerSwitchHTML(id, baseClass, positionStyle, element)
 
     case 'rotaryswitch':
-      return `<div id="${id}" class="${baseClass} switch-element rotaryswitch-element" data-type="rotaryswitch" data-position-count="${element.positionCount}" data-current-position="${element.currentPosition}" style="${positionStyle}"></div>`
+      return generateRotarySwitchHTML(id, baseClass, positionStyle, element)
 
     case 'segmentbutton':
-      return `<div id="${id}" class="${baseClass} button-element segmentbutton-element" data-type="segmentbutton" data-segment-count="${element.segmentCount}" data-selection-mode="${element.selectionMode}" data-selected="${element.selectedIndices.join(',')}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
+      return generateSegmentButtonHTML(id, baseClass, positionStyle, element)
 
     case 'iconbutton':
-      return `<div id="${id}" class="${baseClass} button-element iconbutton-element" data-type="iconbutton" data-icon-source="${element.iconSource}" data-mode="${element.mode}" data-pressed="${element.pressed}" style="${positionStyle}"></div>`
+      return generateIconButtonHTML(id, baseClass, positionStyle, element)
 
     case 'kickbutton':
-      return `<div id="${id}" class="${baseClass} button-element kickbutton-element" data-type="kickbutton" data-pressed="${element.pressed}" style="${positionStyle}"></div>`
+      return generateKickButtonHTML(id, baseClass, positionStyle, element)
 
     case 'toggleswitch':
-      return `<div id="${id}" class="${baseClass} switch-element toggleswitch-element" data-type="toggleswitch" data-is-on="${element.isOn}" style="${positionStyle}"></div>`
+      return generateToggleSwitchHTML(id, baseClass, positionStyle, element)
 
     case 'powerbutton':
-      return `<div id="${id}" class="${baseClass} button-element powerbutton-element" data-type="powerbutton" data-is-on="${element.isOn}" data-led-position="${element.ledPosition}" style="${positionStyle}"></div>`
+      return generatePowerButtonHTML(id, baseClass, positionStyle, element)
 
     default:
       // TypeScript exhaustiveness check
@@ -708,5 +709,183 @@ function generateMultiSliderHTML(
   const bandValuesData = element.bandValues.join(',')
   return `<div id="${id}" class="${baseClass} multislider-element" data-type="multislider" data-band-count="${element.bandCount}" data-band-values="${bandValuesData}" data-min="${element.min}" data-max="${element.max}" data-label-style="${element.labelStyle}" data-link-mode="${element.linkMode}" style="${positionStyle}">
   <div class="multislider-container"></div>
+</div>`
+}
+
+// ============================================================================
+// Button/Switch HTML Generation Functions
+// ============================================================================
+
+/**
+ * Helper to get icon content for segment buttons
+ */
+function getSegmentIconContent(seg: SegmentConfig): string {
+  if (seg.iconSource === 'builtin' && seg.builtInIcon) {
+    const icon = seg.builtInIcon as BuiltInIcon
+    return builtInIconSVG[icon] || ''
+  }
+  if (seg.iconSource === 'asset' && seg.assetId) {
+    const getAsset = useStore.getState().getAsset
+    const asset = getAsset(seg.assetId)
+    if (asset) {
+      return sanitizeSVG(asset.svgContent)
+    }
+  }
+  return ''
+}
+
+/**
+ * Generate Icon Button HTML with inline SVG
+ */
+function generateIconButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: IconButtonElementConfig
+): string {
+  let iconSvg = ''
+
+  if (element.iconSource === 'builtin' && element.builtInIcon) {
+    iconSvg = builtInIconSVG[element.builtInIcon] || ''
+  } else if (element.iconSource === 'asset' && element.assetId) {
+    const getAsset = useStore.getState().getAsset
+    const asset = getAsset(element.assetId)
+    if (asset) {
+      iconSvg = sanitizeSVG(asset.svgContent)
+    }
+  }
+
+  return `<button id="${id}" class="${baseClass} iconbutton-element" data-type="iconbutton" data-mode="${element.mode}" data-pressed="${element.pressed}" style="${positionStyle}">
+  <span class="icon">${iconSvg}</span>
+</button>`
+}
+
+/**
+ * Generate Kick Button HTML
+ */
+function generateKickButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: KickButtonElementConfig
+): string {
+  return `<button id="${id}" class="${baseClass} kickbutton-element" data-type="kickbutton" data-pressed="${element.pressed}" style="${positionStyle}">
+  ${escapeHTML(element.label)}
+</button>`
+}
+
+/**
+ * Generate Toggle Switch HTML with track and thumb
+ */
+function generateToggleSwitchHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ToggleSwitchElementConfig
+): string {
+  const labelsHTML = element.showLabels
+    ? `<span class="label-off">${escapeHTML(element.offLabel)}</span><span class="label-on">${escapeHTML(element.onLabel)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} toggleswitch-element" data-type="toggleswitch" data-on="${element.isOn}" style="${positionStyle}">
+  <div class="track"></div>
+  <div class="thumb"></div>
+  ${labelsHTML}
+</div>`
+}
+
+/**
+ * Generate Power Button HTML with LED indicator
+ */
+function generatePowerButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: PowerButtonElementConfig
+): string {
+  return `<button id="${id}" class="${baseClass} powerbutton-element" data-type="powerbutton" data-on="${element.isOn}" data-led-position="${element.ledPosition}" style="${positionStyle}">
+  <span class="label">${escapeHTML(element.label)}</span>
+  <span class="led"></span>
+</button>`
+}
+
+/**
+ * Generate Rocker Switch HTML with paddle and labels
+ */
+function generateRockerSwitchHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: RockerSwitchElementConfig
+): string {
+  const labelsHTML = element.showLabels
+    ? `<span class="label-up">${escapeHTML(element.upLabel)}</span><span class="label-down">${escapeHTML(element.downLabel)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} rockerswitch-element" data-type="rockerswitch" data-position="${element.position}" data-mode="${element.mode}" style="${positionStyle}">
+  <div class="track"></div>
+  <div class="paddle"></div>
+  ${labelsHTML}
+</div>`
+}
+
+/**
+ * Generate Rotary Switch HTML with body, pointer, and position labels
+ */
+function generateRotarySwitchHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: RotarySwitchElementConfig
+): string {
+  // Generate position labels
+  const labels = element.positionLabels || Array.from({ length: element.positionCount }, (_, i) => String(i + 1))
+  const labelsHTML = labels
+    .map((label, i) => `<span class="label" data-index="${i}">${escapeHTML(label)}</span>`)
+    .join('')
+
+  // Calculate rotation angle for pointer based on current position
+  const rotationRange = element.rotationAngle
+  const startOffset = -rotationRange / 2
+  const anglePerPosition = element.positionCount > 1 ? rotationRange / (element.positionCount - 1) : 0
+  const pointerAngle = startOffset + element.currentPosition * anglePerPosition
+
+  return `<div id="${id}" class="${baseClass} rotaryswitch-element" data-type="rotaryswitch" data-position="${element.currentPosition}" data-count="${element.positionCount}" style="${positionStyle}">
+  <div class="body"></div>
+  <div class="pointer" style="transform: rotate(${pointerAngle}deg);"></div>
+  <div class="labels" data-layout="${element.labelLayout}">
+    ${labelsHTML}
+  </div>
+</div>`
+}
+
+/**
+ * Generate Segment Button HTML with segment structure
+ */
+function generateSegmentButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: SegmentButtonElementConfig
+): string {
+  const segmentsHTML = element.segments
+    .map((seg, i) => {
+      const isSelected = element.selectedIndices.includes(i)
+      const iconHTML = seg.displayMode !== 'text'
+        ? `<span class="segment-icon">${getSegmentIconContent(seg)}</span>`
+        : ''
+      const textHTML = seg.displayMode !== 'icon'
+        ? `<span class="segment-text">${escapeHTML(seg.text || '')}</span>`
+        : ''
+
+      return `<div class="segment" data-index="${i}" data-selected="${isSelected}">
+      ${iconHTML}
+      ${textHTML}
+    </div>`
+    })
+    .join('')
+
+  return `<div id="${id}" class="${baseClass} segmentbutton-element" data-type="segmentbutton" data-mode="${element.selectionMode}" data-orientation="${element.orientation}" style="${positionStyle}">
+  ${segmentsHTML}
 </div>`
 }
