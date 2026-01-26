@@ -320,6 +320,9 @@ export {
   StereoWidthMeterRenderer,
   ScrollingWaveformRenderer,
   SpectrumAnalyzerRenderer,
+  SpectrogramRenderer,
+  GoniometerRenderer,
+  VectorscopeRenderer,
   // Containers
   PanelRenderer,
   FrameRenderer,
