@@ -257,6 +257,12 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'crossfadeslider':
       return `<div id="${id}" class="${baseClass} slider-element crossfadeslider-element" data-type="crossfadeslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-label-a="${escapeHTML(element.labelA)}" data-label-b="${escapeHTML(element.labelB)}" style="${positionStyle}"></div>`
 
+    case 'notchedslider':
+      return `<div id="${id}" class="${baseClass} slider-element notchedslider-element" data-type="notchedslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-notch-count="${element.notchCount}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
+
+    case 'arcslider':
+      return `<div id="${id}" class="${baseClass} slider-element arcslider-element" data-type="arcslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-start-angle="${element.startAngle}" data-end-angle="${element.endAngle}" style="${positionStyle}"></div>`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

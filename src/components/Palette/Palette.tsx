@@ -16,6 +16,7 @@ const paletteCategories = [
     items: [
       { id: 'slider', type: 'slider', name: 'Slider', variant: { orientation: 'vertical' } },
       { id: 'rangeslider', type: 'rangeslider', name: 'Range Slider' },
+      { id: 'multislider', type: 'multislider', name: 'Multi-Slider' },
     ],
   },
   {

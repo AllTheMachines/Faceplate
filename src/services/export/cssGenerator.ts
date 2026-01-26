@@ -1019,6 +1019,20 @@ ${selector} .oscilloscope-placeholder {
   user-select: none;
 }`
 
+    case 'notchedslider':
+      return `${selector} {
+  /* Notched Slider styles - SVG handles visual rendering */
+  cursor: ${element.orientation === 'vertical' ? 'ns-resize' : 'ew-resize'};
+  user-select: none;
+}`
+
+    case 'arcslider':
+      return `${selector} {
+  /* Arc Slider styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

@@ -33,6 +33,10 @@ import { CollapsibleProperties } from './CollapsibleProperties'
 import { RangeSliderProperties } from './RangeSliderProperties'
 import { ModulationMatrixProperties } from './ModulationMatrixProperties'
 import { SvgGraphicProperties } from './SvgGraphicProperties'
+import { MultiSliderProperties } from './MultiSliderProperties'
+import { SteppedKnobProperties } from './SteppedKnobProperties'
+import { CenterDetentKnobProperties } from './CenterDetentKnobProperties'
+import { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -60,6 +64,10 @@ export { CollapsibleProperties } from './CollapsibleProperties'
 export { RangeSliderProperties } from './RangeSliderProperties'
 export { ModulationMatrixProperties } from './ModulationMatrixProperties'
 export { SvgGraphicProperties } from './SvgGraphicProperties'
+export { MultiSliderProperties } from './MultiSliderProperties'
+export { SteppedKnobProperties } from './SteppedKnobProperties'
+export { CenterDetentKnobProperties } from './CenterDetentKnobProperties'
+export { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -81,6 +89,10 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['checkbox', CheckboxProperties],
   ['radiogroup', RadioGroupProperties],
   ['textfield', TextFieldProperties],
+  ['multislider', MultiSliderProperties],
+  ['steppedknob', SteppedKnobProperties],
+  ['centerdetentknob', CenterDetentKnobProperties],
+  ['dotindicatorknob', DotIndicatorKnobProperties],
 
   // Displays
   ['label', LabelProperties],
