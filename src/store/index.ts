@@ -4,6 +4,7 @@ import { createCanvasSlice, CanvasSlice } from './canvasSlice'
 import { createViewportSlice, ViewportSlice } from './viewportSlice'
 import { createElementsSlice, ElementsSlice } from './elementsSlice'
 import { createAssetsSlice, AssetsSlice } from './assetsSlice'
+import { createKnobStylesSlice, KnobStylesSlice } from './knobStylesSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -33,7 +34,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -44,6 +45,7 @@ export const useStore = create<Store>()(
       ...createElementsSlice(...a),
       ...createTemplateSlice(...a),
       ...createAssetsSlice(...a),
+      ...createKnobStylesSlice(...a),
     }),
     {
       limit: 50,
