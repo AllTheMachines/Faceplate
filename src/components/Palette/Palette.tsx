@@ -123,6 +123,19 @@ const paletteCategories = [
     ],
   },
   {
+    name: 'Navigation & Selection',
+    items: [
+      { id: 'stepper', type: 'stepper', name: 'Stepper' },
+      { id: 'breadcrumb', type: 'breadcrumb', name: 'Breadcrumb' },
+      { id: 'multiselectdropdown', type: 'multiselectdropdown', name: 'Multi-Select Dropdown' },
+      { id: 'combobox', type: 'combobox', name: 'Combo Box' },
+      { id: 'menubutton', type: 'menubutton', name: 'Menu Button' },
+      { id: 'tabbar', type: 'tabbar', name: 'Tab Bar' },
+      { id: 'tagselector', type: 'tagselector', name: 'Tag Selector' },
+      { id: 'treeview', type: 'treeview', name: 'Tree View' },
+    ],
+  },
+  {
     name: 'Images & Decorative',
     items: [
       { id: 'image', type: 'image', name: 'Image' },

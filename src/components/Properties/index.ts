@@ -75,6 +75,14 @@ import {
   CorrelationMeterProperties,
   StereoWidthMeterProperties,
 } from './meters'
+import { StepperProperties } from './StepperProperties'
+import { BreadcrumbProperties } from './BreadcrumbProperties'
+import { MultiSelectDropdownProperties } from './MultiSelectDropdownProperties'
+import { ComboBoxProperties } from './ComboBoxProperties'
+import { MenuButtonProperties } from './MenuButtonProperties'
+import { TabBarProperties } from './TabBarProperties'
+import { TagSelectorProperties } from './TagSelectorProperties'
+import { TreeViewProperties } from './TreeViewProperties'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -144,6 +152,14 @@ export {
   CorrelationMeterProperties,
   StereoWidthMeterProperties,
 } from './meters'
+export { StepperProperties } from './StepperProperties'
+export { BreadcrumbProperties } from './BreadcrumbProperties'
+export { MultiSelectDropdownProperties } from './MultiSelectDropdownProperties'
+export { ComboBoxProperties } from './ComboBoxProperties'
+export { MenuButtonProperties } from './MenuButtonProperties'
+export { TabBarProperties } from './TabBarProperties'
+export { TagSelectorProperties } from './TagSelectorProperties'
+export { TreeViewProperties } from './TreeViewProperties'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -231,6 +247,16 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['k20meterstereo', KMeterProperties],
   ['correlationmeter', CorrelationMeterProperties],
   ['stereowidthmeter', StereoWidthMeterProperties],
+
+  // Navigation & Selection
+  ['stepper', StepperProperties],
+  ['breadcrumb', BreadcrumbProperties],
+  ['multiselectdropdown', MultiSelectDropdownProperties],
+  ['combobox', ComboBoxProperties],
+  ['menubutton', MenuButtonProperties],
+  ['tabbar', TabBarProperties],
+  ['tagselector', TagSelectorProperties],
+  ['treeview', TreeViewProperties],
 
   // Containers
   ['panel', PanelProperties],
