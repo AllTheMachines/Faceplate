@@ -98,6 +98,41 @@ export function generateCSS(
     .map((element) => generateElementCSS(element))
     .join('\n\n')
 
+  // Styled Knob Layers CSS
+  const styledKnobStyles = `/* Styled Knob Layers */
+.styled-knob {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.styled-knob-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.knob-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.knob-layer svg {
+  width: 100%;
+  height: 100%;
+}
+
+.knob-indicator {
+  transform-origin: center center;
+  transition: transform 0.05s ease-out;
+}
+
+.knob-arc,
+.knob-glow {
+  transition: opacity 0.05s ease-out;
+}`
+
   // Global label/value styles
   const labelValueStyles = `/* Label and Value Display Styles */
 .knob-label, .slider-label {
@@ -173,6 +208,8 @@ export function generateCSS(
 ${container}
 
 ${baseElement}
+
+${styledKnobStyles}
 
 ${labelValueStyles}
 
