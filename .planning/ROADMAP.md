@@ -235,6 +235,13 @@ Plans:
 **Goal**: Users can design UIs with all rotary and linear control variants
 **Dependencies**: Phase 19 (requires registry pattern)
 **Requirements**: ROT-01, ROT-02, ROT-03, LIN-01, LIN-02, LIN-03, LIN-04, LIN-05
+**Plans**: 4 plans
+
+Plans:
+- [ ] 20-01-PLAN.md — Rotary control variants (Stepped, Center-Detent, Dot Indicator)
+- [ ] 20-02-PLAN.md — Bipolar and Crossfade sliders
+- [ ] 20-03-PLAN.md — Notched and Arc sliders
+- [ ] 20-04-PLAN.md — Multi-Slider for EQ/multi-band
 
 **Success Criteria:**
 1. User can add Stepped Knob with configurable detent positions (12, 24, 36, 48, 64 steps)
@@ -410,7 +417,7 @@ Plans:
 | 17. Interactive SVG Knobs | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 18. Export & Polish | v1.1 | 6/6 | Complete | 2026-01-26 |
 | 19. Architecture Refactoring | v1.2 | 6/6 | Complete | 2026-01-26 |
-| 20. Simple Controls | v1.2 | 0/? | Pending | — |
+| 20. Simple Controls | v1.2 | 0/4 | Planned | — |
 | 21. Buttons & Switches | v1.2 | 0/? | Pending | — |
 | 22. Value Displays & LEDs | v1.2 | 0/? | Pending | — |
 | 23. Professional Meters | v1.2 | 0/? | Pending | — |
@@ -424,4 +431,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 19 planning complete*
+*Last updated: 2026-01-26 after Phase 20 planning complete*
