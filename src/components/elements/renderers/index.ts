@@ -67,6 +67,14 @@ import {
   PPMType1StereoRenderer,
   PPMType2MonoRenderer,
   PPMType2StereoRenderer,
+  K12MeterMonoRenderer,
+  K12MeterStereoRenderer,
+  K14MeterMonoRenderer,
+  K14MeterStereoRenderer,
+  K20MeterMonoRenderer,
+  K20MeterStereoRenderer,
+  CorrelationMeterRenderer,
+  StereoWidthMeterRenderer,
 } from './displays'
 
 import {
@@ -154,6 +162,14 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['ppmtype1stereo', PPMType1StereoRenderer as RendererComponent],
   ['ppmtype2mono', PPMType2MonoRenderer as RendererComponent],
   ['ppmtype2stereo', PPMType2StereoRenderer as RendererComponent],
+  ['k12metermono', K12MeterMonoRenderer as RendererComponent],
+  ['k12meterstereo', K12MeterStereoRenderer as RendererComponent],
+  ['k14metermono', K14MeterMonoRenderer as RendererComponent],
+  ['k14meterstereo', K14MeterStereoRenderer as RendererComponent],
+  ['k20metermono', K20MeterMonoRenderer as RendererComponent],
+  ['k20meterstereo', K20MeterStereoRenderer as RendererComponent],
+  ['correlationmeter', CorrelationMeterRenderer as RendererComponent],
+  ['stereowidthmeter', StereoWidthMeterRenderer as RendererComponent],
 
   // Containers
   ['panel', PanelRenderer as RendererComponent],
@@ -234,6 +250,14 @@ export {
   PPMType1StereoRenderer,
   PPMType2MonoRenderer,
   PPMType2StereoRenderer,
+  K12MeterMonoRenderer,
+  K12MeterStereoRenderer,
+  K14MeterMonoRenderer,
+  K14MeterStereoRenderer,
+  K20MeterMonoRenderer,
+  K20MeterStereoRenderer,
+  CorrelationMeterRenderer,
+  StereoWidthMeterRenderer,
   // Containers
   PanelRenderer,
   FrameRenderer,

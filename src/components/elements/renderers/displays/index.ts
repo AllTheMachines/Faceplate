@@ -42,4 +42,12 @@ export {
   PPMType1StereoRenderer,
   PPMType2MonoRenderer,
   PPMType2StereoRenderer,
+  K12MeterMonoRenderer,
+  K12MeterStereoRenderer,
+  K14MeterMonoRenderer,
+  K14MeterStereoRenderer,
+  K20MeterMonoRenderer,
+  K20MeterStereoRenderer,
+  CorrelationMeterRenderer,
+  StereoWidthMeterRenderer,
 } from './meters'
