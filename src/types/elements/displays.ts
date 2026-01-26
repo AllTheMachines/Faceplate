@@ -455,7 +455,117 @@ export interface PPMType2StereoElementConfig extends BaseProfessionalMeterConfig
   showChannelLabels: boolean
 }
 
+// True Peak Meter - ITU-R BS.1770-5, -60 to 0 dB, 4x oversampling
+export interface TruePeakMeterMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'truepeakmetermono'
+  ballisticsType: 'TRUE_PEAK' // Instant (4x oversampled)
+}
+
+export interface TruePeakMeterStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'truepeakmeterstereo'
+  ballisticsType: 'TRUE_PEAK'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
 // ============================================================================
+// K-12 Meter - Bob Katz standard, -32 to +12 dB, 600ms ballistics
+export interface K12MeterMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'k12metermono'
+  ballisticsType: 'K_SYSTEM'
+  kType: 'K-12' // 12dB headroom
+}
+
+export interface K12MeterStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'k12meterstereo'
+  ballisticsType: 'K_SYSTEM'
+  kType: 'K-12'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// K-14 Meter - Bob Katz standard, -34 to +14 dB
+export interface K14MeterMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'k14metermono'
+  ballisticsType: 'K_SYSTEM'
+  kType: 'K-14' // 14dB headroom
+}
+
+export interface K14MeterStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'k14meterstereo'
+  ballisticsType: 'K_SYSTEM'
+  kType: 'K-14'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// K-20 Meter - Bob Katz standard, -40 to +20 dB
+export interface K20MeterMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'k20metermono'
+  ballisticsType: 'K_SYSTEM'
+  kType: 'K-20' // 20dB headroom
+}
+
+export interface K20MeterStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'k20meterstereo'
+  ballisticsType: 'K_SYSTEM'
+  kType: 'K-20'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// ============================================================================
+// Analysis Meter Configurations (horizontal bars)
+// ============================================================================
+
+// Correlation Meter - Phase relationship, -1 to +1 range
+export interface CorrelationMeterElementConfig extends BaseElementConfig {
+  type: 'correlationmeter'
+
+  // Value (-1 to +1, not normalized)
+  value: number // -1 = out of phase, 0 = uncorrelated, +1 = in phase
+
+  // Visual
+  orientation: 'horizontal' // Always horizontal per CONTEXT.md
+  barHeight: number // Height of the indicator bar
+  showScale: boolean
+  scalePosition: 'above' | 'below'
+  showNumericReadout: boolean
+
+  // Color zones
+  colorZones: Array<{
+    start: number // -1 to +1
+    end: number
+    color: string
+  }>
+}
+
+// Stereo Width Meter - M/S ratio, 0-200% range
+export interface StereoWidthMeterElementConfig extends BaseElementConfig {
+  type: 'stereowidthmeter'
+
+  // Value (0-2, where 0=0%, 1=100%, 2=200%)
+  value: number // 0 = mono, 1 = normal stereo, 2 = 200% width
+
+  // Visual
+  orientation: 'horizontal' // Always horizontal per CONTEXT.md
+  barHeight: number
+  showScale: boolean
+  scalePosition: 'above' | 'below'
+  showNumericReadout: boolean
+
+  // Color zones
+  colorZones: Array<{
+    start: number // 0-200 percentage
+    end: number
+    color: string
+  }>
+}
+
 // LED Indicator Configurations
 // ============================================================================
 
@@ -623,6 +733,16 @@ export type DisplayElement =
   | PPMType1StereoElementConfig
   | PPMType2MonoElementConfig
   | PPMType2StereoElementConfig
+  | K12MeterMonoElementConfig
+  | K12MeterStereoElementConfig
+  | K14MeterMonoElementConfig
+  | K14MeterStereoElementConfig
+  | K20MeterMonoElementConfig
+  | K20MeterStereoElementConfig
+  | CorrelationMeterElementConfig
+  | StereoWidthMeterElementConfig
+  | TruePeakMeterMonoElementConfig
+  | TruePeakMeterStereoElementConfig
 
 // ============================================================================
 // Type Guards
@@ -752,7 +872,47 @@ export function isPPMType2Stereo(element: { type: string }): element is PPMType2
   return element.type === 'ppmtype2stereo'
 }
 
+export function isTruePeakMeterMono(element: { type: string }): element is TruePeakMeterMonoElementConfig {
+  return element.type === 'truepeakmetermono'
+}
+
+export function isTruePeakMeterStereo(element: { type: string }): element is TruePeakMeterStereoElementConfig {
+  return element.type === 'truepeakmeterstereo'
+}
+
 // ============================================================================
+
+export function isK12MeterMono(element: { type: string }): element is K12MeterMonoElementConfig {
+  return element.type === 'k12metermono'
+}
+
+export function isK12MeterStereo(element: { type: string }): element is K12MeterStereoElementConfig {
+  return element.type === 'k12meterstereo'
+}
+
+export function isK14MeterMono(element: { type: string }): element is K14MeterMonoElementConfig {
+  return element.type === 'k14metermono'
+}
+
+export function isK14MeterStereo(element: { type: string }): element is K14MeterStereoElementConfig {
+  return element.type === 'k14meterstereo'
+}
+
+export function isK20MeterMono(element: { type: string }): element is K20MeterMonoElementConfig {
+  return element.type === 'k20metermono'
+}
+
+export function isK20MeterStereo(element: { type: string }): element is K20MeterStereoElementConfig {
+  return element.type === 'k20meterstereo'
+}
+
+export function isCorrelationMeter(element: { type: string }): element is CorrelationMeterElementConfig {
+  return element.type === 'correlationmeter'
+}
+
+export function isStereoWidthMeter(element: { type: string }): element is StereoWidthMeterElementConfig {
+  return element.type === 'stereowidthmeter'
+}
 // Factory Functions
 // ============================================================================
 
@@ -1707,6 +1867,74 @@ export function createPPMType2Stereo(overrides?: Partial<PPMType2StereoElementCo
     peakHoldStyle: 'line',
     peakHoldDuration: 2000,
     ballisticsType: 'PPM_TYPE_II',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+// True Peak uses -60 to 0 dB range with 60 segments
+export function createTruePeakMeterMono(overrides?: Partial<TruePeakMeterMonoElementConfig>): TruePeakMeterMonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'truepeakmetermono',
+    name: 'True Peak Meter',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8, // -12 dB
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'TRUE_PEAK',
+    ...overrides,
+  }
+}
+
+export function createTruePeakMeterStereo(overrides?: Partial<TruePeakMeterStereoElementConfig>): TruePeakMeterStereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'truepeakmeterstereo',
+    name: 'True Peak Meter Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8,
+    valueL: 0.8,
+    valueR: 0.78,
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'TRUE_PEAK',
     showChannelLabels: true,
     ...overrides,
   }
