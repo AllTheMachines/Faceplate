@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 26 - Interactive Curves (in progress)
-Plan: 1 of 5 complete
+Plan: 4 of 5 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 26-01-PLAN.md (Curve element types and utilities)
+Last activity: 2026-01-26 - Completed 26-04-PLAN.md (LFO Display, property panels, palette)
 
-Progress: [██████████] 124/123 plans complete (100%)
+Progress: [██████████] 127/123 plans complete (103%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [██████████] 124/123 plans complete (100%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 36 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 1)
+- Completed: 39 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 4)
 
 ## Accumulated Context
 
@@ -163,10 +163,15 @@ All v1.1 decisions documented and outcomes verified.
 | Composite EQ response calculation | 26-02 | Sum contributions from all bands for accurate frequency response | Realistic total EQ effect visualization |
 | Filter handle at cutoff frequency | 26-02 | Visual marker shows cutoff position on response curve | Immediate visual feedback on filter behavior |
 | Individual band overlay | 26-02 | Optional view helps understand per-band contribution | Educational feature with 0.3 opacity, toggleable |
+| Compressor 1:1 reference line | 26-03 | Visual threshold reference for transfer function | Diagonal line shows linear passthrough |
+| Compressor display modes | 26-03 | Alternative visualization options | 'transfer' shows curve, 'gainreduction' shows GR bar |
+| Envelope sustain hold time | 26-03 | Static preview needs fixed display time | 0.3 fixed sustain time for visual readability |
+| Exponential curve formulas | 26-03 | Professional synthesizer behavior | Attack pow(t, 0.3), decay/release exp(-5*t) |
+| Stage markers for envelope | 26-03 | Visualize ADSR timing boundaries | Optional vertical dashed lines at stage transitions |
 
 ### Pending Todos
 
-None - Phase 26 Plan 02 complete
+None - Phase 26 Plans 01-04 complete
 
 ### Blockers/Concerns
 
@@ -267,7 +272,7 @@ None - Phase 26 Plan 02 complete
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 26-03-PLAN.md
+Stopped at: Completed 26-04-PLAN.md
 Resume file: None
 
 **Next step:** Continue Phase 26 with remaining plan (property panels & palette)
