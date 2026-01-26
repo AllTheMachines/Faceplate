@@ -24,6 +24,7 @@
     "react-hot-toast": "^2.6.0",
     "react-hotkeys-hook": "^5.2.3",
     "react-konva": "^18.2.14",
+    "svgo": "^4.0.0",
     "svgson": "^5.3.1",
     "zod": "^4.3.6",
     "zod-error": "^2.0.0",
