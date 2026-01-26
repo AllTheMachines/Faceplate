@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 21 - Buttons & Switches (IN PROGRESS)
-Plan: 2 of 4 complete (21-01 and 21-02)
-Status: In progress - Wave 1 complete (types and renderers)
-Last activity: 2026-01-26 — Completed 21-01-PLAN.md (Icon System and Basic Buttons)
+Plan: 3 of 4 complete (21-01, 21-02, 21-03)
+Status: In progress - Property panels and palette entries complete
+Last activity: 2026-01-26 — Completed 21-03-PLAN.md (Property Panels)
 
-Progress: [██████████] 100/110 plans complete (~91%)
+Progress: [██████████] 101/110 plans complete (~92%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [██████████] 100/110 plans complete (~91%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 12 plans (Phase 19: 6, Phase 20: 4, Phase 21: 2)
+- Completed: 13 plans (Phase 19: 6, Phase 20: 4, Phase 21: 3)
 
 ## Accumulated Context
 
@@ -56,11 +56,12 @@ All v1.1 decisions documented and outcomes verified.
 | Rocker position mapping 0=down, 1=center, 2=up | 21-02 | Intuitive mapping matching physical rocker switch behavior | Clear position semantics |
 | Rotary label layout threshold at 6 positions | 21-02 | Radial labels become crowded with many positions | radial for 2-6, legend for 7-12 |
 | Unicode symbols as icon fallback | 21-02 | Enables rendering before builtInIconSVG utility available | Graceful degradation |
+| Icons grouped by category in dropdowns | 21-03 | Easier navigation with 35 icons | Transport, Common, Audio, Additional groups |
+| Dynamic segment configuration | 21-03 | Flexible per-segment icon/text settings | useCallback for immutable updates |
 
 ### Pending Todos
 
-- Plan 21-03: Property panels for button/switch elements
-- Plan 21-04: Palette items for element toolbox
+- Plan 21-04: Verification and documentation
 
 ### Blockers/Concerns
 
@@ -69,18 +70,19 @@ All v1.1 decisions documented and outcomes verified.
 **Phase 21 Progress:**
 - Plan 21-01: Button types (Icon Button, Kick Button, Toggle Switch, Power Button) - COMPLETE
 - Plan 21-02: Switch types (Rocker Switch, Rotary Switch, Segment Button) - COMPLETE
-- 7 button/switch element types with configs, renderers, registry entries
+- Plan 21-03: Property panels and palette entries - COMPLETE
+- 7 button/switch element types with complete UI integration
 - Built-in icon system with 35 audio plugin icons
 - Export support in cssGenerator and htmlGenerator
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 21-01-PLAN.md (Icon System and Basic Buttons)
+Stopped at: Completed 21-03-PLAN.md (Property Panels)
 Resume file: None
 
-**Next step:** Continue with Plan 21-03 (Property Panels) and Plan 21-04 (Palette Items)
+**Next step:** Complete Plan 21-04 (Verification) or proceed to Phase 22
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing Plan 21-01*
+*Last updated: 2026-01-26 after completing Plan 21-03*
