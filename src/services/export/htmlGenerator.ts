@@ -5,6 +5,7 @@
 
 import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
+import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
@@ -400,6 +401,22 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'treeview':
       return generateTreeViewHTML(id, baseClass, positionStyle, element as TreeViewElementConfig)
+
+    // Visualization Elements
+    case 'scrollingwaveform':
+      return generateScrollingWaveformHTML(element as ScrollingWaveformElementConfig)
+
+    case 'spectrumanalyzer':
+      return generateSpectrumAnalyzerHTML(element as SpectrumAnalyzerElementConfig)
+
+    case 'spectrogram':
+      return generateSpectrogramHTML(element as SpectrogramElementConfig)
+
+    case 'goniometer':
+      return generateGoniometerHTML(element as GoniometerElementConfig)
+
+    case 'vectorscope':
+      return generateVectorscopeHTML(element as VectorscopeElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -1709,4 +1726,372 @@ function generateTreeViewHTML(
   return `<div id="${id}" class="${baseClass} treeview-element" data-type="treeview" data-selected-id="${element.selectedId || ''}" data-row-height="${element.rowHeight}" data-indent="${element.indent}" style="${positionStyle}">
   ${nodesHTML}
 </div>`
+}
+
+// ============================================================================
+// Visualization HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate Scrolling Waveform HTML with JavaScript draw function
+ */
+function generateScrollingWaveformHTML(config: ScrollingWaveformElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element viz-container" data-viz-type="scrollingwaveform" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  // HiDPI setup
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  // Draw function called by JUCE with waveform data
+  window.updateWaveform_${id.replace(/-/g, '_')} = function(waveformData) {
+    const width = ${config.width};
+    const height = ${config.height};
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 0.5;
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Waveform
+    ctx.strokeStyle = '${config.waveformColor}';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < waveformData.length; i++) {
+      const x = (i / waveformData.length) * width;
+      const y = (height / 2) - (waveformData[i] * height * 0.4);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ${config.displayMode === 'fill' ? `
+    ctx.lineTo(width, height / 2);
+    ctx.closePath();
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = '${config.waveformColor}';
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+    ` : 'ctx.stroke();'}
+  };
+
+  // Register with JUCE
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('waveform_${id}', (e) => {
+      window.updateWaveform_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+})();
+</script>`
+}
+
+/**
+ * Generate Spectrum Analyzer HTML with JavaScript draw function
+ */
+function generateSpectrumAnalyzerHTML(config: SpectrumAnalyzerElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element viz-container" data-viz-type="spectrumanalyzer" data-fft-size="${config.fftSize}" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  window.updateSpectrum_${id.replace(/-/g, '_')} = function(frequencyData) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const barCount = frequencyData.length;
+    const barWidth = width / barCount;
+    const gapWidth = ${config.barGap};
+
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    for (let i = 0; i < barCount; i++) {
+      const magnitude = frequencyData[i];
+      const x = i * barWidth;
+      const barHeight = magnitude * height * 0.9;
+      const y = height - barHeight;
+
+      // Color gradient
+      const hue = (1 - magnitude) * 240;
+      ctx.fillStyle = \`hsl(\${hue}, 100%, \${40 + magnitude * 20}%)\`;
+      ctx.fillRect(x + gapWidth / 2, y, barWidth - gapWidth, barHeight);
+    }
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('fftData_${id}', (e) => {
+      window.updateSpectrum_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+})();
+</script>`
+}
+
+/**
+ * Generate Spectrogram HTML with JavaScript draw function
+ */
+function generateSpectrogramHTML(config: SpectrogramElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element viz-container" data-viz-type="spectrogram" data-fft-size="${config.fftSize}" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  window.updateSpectrogram_${id.replace(/-/g, '_')} = function(spectrogramData) {
+    const width = ${config.width};
+    const height = ${config.height};
+
+    // Shift existing pixel buffer left by 1px
+    const imageData = ctx.getImageData(1, 0, width - 1, height);
+    ctx.putImageData(imageData, 0, 0);
+
+    // Draw new line at rightmost column
+    const x = width - 1;
+    for (let y = 0; y < spectrogramData.length; y++) {
+      const magnitude = spectrogramData[y];
+      const hue = (1 - magnitude) * 240;
+      ctx.fillStyle = \`hsl(\${hue}, 100%, \${40 + magnitude * 20}%)\`;
+      const pixelY = height - (y / spectrogramData.length) * height;
+      ctx.fillRect(x, pixelY, 1, height / spectrogramData.length);
+    }
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('spectrogramData_${id}', (e) => {
+      window.updateSpectrogram_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+})();
+</script>`
+}
+
+/**
+ * Generate Goniometer HTML with JavaScript draw function
+ */
+function generateGoniometerHTML(config: GoniometerElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element viz-container" data-viz-type="goniometer" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  window.updateGoniometer_${id.replace(/-/g, '_')} = function(stereoData) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = Math.min(width, height) / 2 - 10;
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid circles
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.3;
+    for (let r = 0.25; r <= 1.0; r += 0.25) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    ${config.showAxisLines ? `
+    // L/R and M/S axes
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    // L/R diagonal axes
+    ctx.beginPath();
+    ctx.moveTo(cx - radius * 0.707, cy + radius * 0.707);
+    ctx.lineTo(cx + radius * 0.707, cy - radius * 0.707);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - radius * 0.707, cy - radius * 0.707);
+    ctx.lineTo(cx + radius * 0.707, cy + radius * 0.707);
+    ctx.stroke();
+    // M/S axes
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - radius);
+    ctx.lineTo(cx, cy + radius);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - radius, cy);
+    ctx.lineTo(cx + radius, cy);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Draw stereo trace
+    ctx.strokeStyle = '${config.traceColor}';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    for (let i = 0; i < stereoData.length; i += 2) {
+      const l = stereoData[i];
+      const r = stereoData[i + 1];
+      const x = cx + (l - r) * radius * 0.707;
+      const y = cy - (l + r) * radius * 0.707;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('stereoData_${id}', (e) => {
+      window.updateGoniometer_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+})();
+</script>`
+}
+
+/**
+ * Generate Vectorscope HTML with JavaScript draw function
+ */
+function generateVectorscopeHTML(config: VectorscopeElementConfig): string {
+  const id = toKebabCase(config.id)
+  const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
+
+  return `<div id="${id}" class="element viz-container" data-viz-type="vectorscope" style="${positionStyle}">
+  <canvas id="${id}-canvas"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.width = ${config.width} * dpr;
+  canvas.height = ${config.height} * dpr;
+  canvas.style.width = '${config.width}px';
+  canvas.style.height = '${config.height}px';
+  ctx.scale(dpr, dpr);
+
+  window.updateVectorscope_${id.replace(/-/g, '_')} = function(stereoData) {
+    const width = ${config.width};
+    const height = ${config.height};
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = Math.min(width, height) / 2 - 10;
+
+    // Clear
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    // Grid circles
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.3;
+    for (let r = 0.25; r <= 1.0; r += 0.25) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius * r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    ${config.showAxisLines ? `
+    // L/R axes
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - radius, cy);
+    ctx.lineTo(cx + radius, cy);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - radius);
+    ctx.lineTo(cx, cy + radius);
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+    ` : ''}
+
+    // Draw Lissajous trace
+    ctx.strokeStyle = '${config.traceColor}';
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    for (let i = 0; i < stereoData.length; i += 2) {
+      const l = stereoData[i];
+      const r = stereoData[i + 1];
+      const x = cx + l * radius;
+      const y = cy - r * radius;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1.0;
+  };
+
+  if (window.__JUCE__) {
+    window.__JUCE__.backend.addEventListener('stereoData_${id}', (e) => {
+      window.updateVectorscope_${id.replace(/-/g, '_')}(e.data);
+    });
+  }
+})();
+</script>`
 }
