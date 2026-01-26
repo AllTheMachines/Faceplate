@@ -114,6 +114,16 @@ const paletteCategories = [
     ],
   },
   {
+    name: 'Visualizations',
+    items: [
+      { id: 'scrollingwaveform', type: 'scrollingwaveform', name: 'Scrolling Waveform' },
+      { id: 'spectrumanalyzer', type: 'spectrumanalyzer', name: 'Spectrum Analyzer' },
+      { id: 'spectrogram', type: 'spectrogram', name: 'Spectrogram' },
+      { id: 'goniometer', type: 'goniometer', name: 'Goniometer' },
+      { id: 'vectorscope', type: 'vectorscope', name: 'Vectorscope' },
+    ],
+  },
+  {
     name: 'Form Controls',
     items: [
       { id: 'dropdown', type: 'dropdown', name: 'Dropdown' },
