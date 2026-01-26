@@ -14,6 +14,7 @@ import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
 import { snapValue } from './store/canvasSlice'
+import { getSVGNaturalSize } from './services/svg'
 import {
   createKnob,
   createSlider,
@@ -39,6 +40,7 @@ import {
   createWaveform,
   createOscilloscope,
   createPresetBrowser,
+  createSvgGraphic,
 } from './types/elements'
 
 function DragPreview({
@@ -237,13 +239,15 @@ function App() {
       const canvasX = (finalX - viewportRect.left - offsetX) / scale
       const canvasY = (finalY - viewportRect.top - offsetY) / scale
 
-      // Create image element with asset reference
-      const newElement = createImage({
+      // Create SvgGraphic element with asset reference and natural size
+      const naturalSize = getSVGNaturalSize(asset.svgContent) || { width: 100, height: 100 }
+      const newElement = createSvgGraphic({
         x: canvasX,
         y: canvasY,
         assetId: assetId,
-        src: '',
         name: asset.name,
+        width: naturalSize.width,
+        height: naturalSize.height,
       })
 
       // Center element on drop position
@@ -368,6 +372,9 @@ function App() {
         break
       case 'presetbrowser':
         newElement = createPresetBrowser({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'svggraphic':
+        newElement = createSvgGraphic({ x: canvasX, y: canvasY, ...variant })
         break
       default:
         return

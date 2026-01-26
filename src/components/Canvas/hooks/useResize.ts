@@ -52,7 +52,13 @@ export function useResize(): UseResizeReturn {
       const deltaX = (e.clientX - startPos.current.x) / scale
       const deltaY = (e.clientY - startPos.current.y) / scale
 
-      const MIN_SIZE = 20
+      // Get element to check type
+      const element = getElement(elementId)
+      if (!element) return
+
+      // Minimum size: 8 for svggraphic (per CONTEXT.md), 20 for others
+      const MIN_SIZE = element.type === 'svggraphic' ? 8 : 20
+
       let updates: Partial<{ x: number; y: number; width: number; height: number }> = {}
 
       // Calculate new bounds based on handle position
@@ -115,19 +121,72 @@ export function useResize(): UseResizeReturn {
           break
       }
 
-      // Get current element state for complete live values
-      const element = getElement(elementId)
-      if (element) {
-        // Broadcast live values for property panel (updates in real-time)
-        setLiveDragValues({
-          [elementId]: {
-            x: updates.x ?? element.x,
-            y: updates.y ?? element.y,
-            width: updates.width ?? element.width,
-            height: updates.height ?? element.height,
+      // Apply aspect ratio constraint for SVG Graphic elements
+      // Aspect ratio is LOCKED by default, Shift UNLOCKS it (inverted from typical)
+      if (element.type === 'svggraphic' && !e.shiftKey) {
+        const originalAspect = startBounds.current.width / startBounds.current.height
+
+        // Determine which dimension to constrain based on handle and movement
+        if (activeHandle === 'e' || activeHandle === 'w') {
+          // Horizontal-only handles: adjust height to match
+          const newWidth = updates.width ?? element.width
+          updates.height = newWidth / originalAspect
+        } else if (activeHandle === 'n' || activeHandle === 's') {
+          // Vertical-only handles: adjust width to match
+          const newHeight = updates.height ?? element.height
+          updates.width = newHeight * originalAspect
+        } else {
+          // Corner handles: constrain to preserve aspect ratio
+          const newWidth = updates.width ?? element.width
+          const newHeight = updates.height ?? element.height
+
+          // Calculate which dimension changed more proportionally
+          const widthChange = Math.abs(newWidth - startBounds.current.width) / startBounds.current.width
+          const heightChange = Math.abs(newHeight - startBounds.current.height) / startBounds.current.height
+
+          if (widthChange > heightChange) {
+            // Width changed more - adjust height
+            updates.height = newWidth / originalAspect
+          } else {
+            // Height changed more - adjust width
+            updates.width = newHeight * originalAspect
           }
-        })
+
+          // Also need to adjust position for nw, ne, sw handles
+          if (activeHandle === 'nw' || activeHandle === 'sw') {
+            // Left side moved - recalculate x based on new width
+            updates.x = startBounds.current.x + startBounds.current.width - (updates.width ?? element.width)
+          }
+          if (activeHandle === 'nw' || activeHandle === 'ne') {
+            // Top moved - recalculate y based on new height
+            updates.y = startBounds.current.y + startBounds.current.height - (updates.height ?? element.height)
+          }
+        }
+
+        // Re-apply minimum size after aspect ratio calculation
+        if ((updates.width ?? element.width) < MIN_SIZE || (updates.height ?? element.height) < MIN_SIZE) {
+          // Enforce minimum on both dimensions while preserving aspect
+          if (originalAspect >= 1) {
+            // Wide: width is limiting
+            updates.width = Math.max(MIN_SIZE, updates.width ?? element.width)
+            updates.height = (updates.width ?? element.width) / originalAspect
+          } else {
+            // Tall: height is limiting
+            updates.height = Math.max(MIN_SIZE, updates.height ?? element.height)
+            updates.width = (updates.height ?? element.height) * originalAspect
+          }
+        }
       }
+
+      // Broadcast live values for property panel (updates in real-time)
+      setLiveDragValues({
+        [elementId]: {
+          x: updates.x ?? element.x,
+          y: updates.y ?? element.y,
+          width: updates.width ?? element.width,
+          height: updates.height ?? element.height,
+        }
+      })
 
       updateElement(elementId, updates)
     }

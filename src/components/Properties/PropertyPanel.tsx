@@ -24,6 +24,7 @@ import {
   isCollapsible,
   isRangeSlider,
   isModulationMatrix,
+  isSvgGraphic,
   ElementConfig,
 } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection } from './'
@@ -51,6 +52,7 @@ import { TextFieldProperties } from './TextFieldProperties'
 import { CollapsibleProperties } from './CollapsibleProperties'
 import { RangeSliderProperties } from './RangeSliderProperties'
 import { ModulationMatrixProperties } from './ModulationMatrixProperties'
+import { SvgGraphicProperties } from './SvgGraphicProperties'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -199,6 +201,7 @@ export function PropertyPanel() {
       {isCollapsible(element) && <CollapsibleProperties element={element} onUpdate={update} />}
       {isRangeSlider(element) && <RangeSliderProperties element={element} onUpdate={update} />}
       {isModulationMatrix(element) && <ModulationMatrixProperties element={element} onUpdate={update} />}
+      {isSvgGraphic(element) && <SvgGraphicProperties element={element} onUpdate={update} />}
     </div>
   )
 }
