@@ -71,6 +71,8 @@ export {
 
 // Interactive Curves
 export {
+  CompressorCurveRenderer,
+  EnvelopeDisplayRenderer,
   EQCurveRenderer,
   FilterResponseRenderer,
   LFODisplayRenderer,

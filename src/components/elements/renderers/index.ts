@@ -218,7 +218,9 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['goniometer', GoniometerRenderer as RendererComponent],
   ['vectorscope', VectorscopeRenderer as RendererComponent],
 
-  // Curve Displays
+  // Interactive Curves
+  ['eqcurve', EQCurveRenderer as RendererComponent],
+  ['filterresponse', FilterResponseRenderer as RendererComponent],
   ['lfodisplay', LFODisplayRenderer as RendererComponent],
 
   // Containers
@@ -329,6 +331,8 @@ export {
   SpectrogramRenderer,
   GoniometerRenderer,
   VectorscopeRenderer,
+  EQCurveRenderer,
+  FilterResponseRenderer,
   LFODisplayRenderer,
   // Containers
   PanelRenderer,
