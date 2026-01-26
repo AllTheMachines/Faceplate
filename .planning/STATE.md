@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Phase 16 - Static SVG Graphics (v1.1 SVG Asset Management)
+**Current focus:** Phase 17 - Interactive SVG Knobs (v1.1 Custom Knob Designs)
 
 ## Current Position
 
-Phase: 16 of 18 (Static SVG Graphics) — COMPLETE
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-01-26 — Completed 16-05-PLAN.md (SVG Graphic Aspect Ratio Locking)
+Phase: 17 of 18 (Interactive SVG Knobs) — IN PROGRESS
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-01-26 — Completed 17-01-PLAN.md (KnobStyle Type System and State Management)
 
-Progress: [█████████░] 86% (75/87 total plans estimated)
+Progress: [█████████░] 87% (76/87 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,10 +38,11 @@ Progress: [█████████░] 86% (75/87 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 12 (14-01 through 16-05)
+- Plans completed: 13 (14-01 through 17-01)
 - Phase 14: 4 plans, ~100 minutes total (Security foundations)
 - Phase 15: 5 plans, ~12 minutes total (Asset library complete)
 - Phase 16: 5 plans, ~8 minutes total (SVG Graphics COMPLETE)
+- Phase 17: 1 plan so far, ~3 minutes (Type system and state management)
 
 ## Accumulated Context
 
@@ -95,6 +96,10 @@ Recent decisions affecting current work:
 - **v1.1 (16-04)**: Export missing assets as empty div with comment (graceful degradation)
 - **v1.1 (16-05)**: Aspect ratio LOCKED by default for SVG Graphics (Shift unlocks) - prevents accidental distortion
 - **v1.1 (16-05)**: 8x8 minimum size for SVG Graphics (vs 20 for other elements) - allows small icons
+- **v1.1 (17-01)**: KnobStyleLayers with optional layer mappings (flexible SVG structure support)
+- **v1.1 (17-01)**: ColorOverrides as sparse object (only store explicit overrides)
+- **v1.1 (17-01)**: Knob styles included in undo/redo history (user may undo style deletion)
+- **v1.1 (17-01)**: Optional styleId in KnobElementConfig (undefined = default CSS knob)
 
 ### Pending Todos
 
@@ -124,17 +129,21 @@ None yet.
 - ✓ 16-05: Aspect ratio locking during resize
 - Phase 16 complete - SVG Graphics fully functional
 
-**Phase 17 considerations (from research):**
-- Performance with 50+ animated knobs may need optimization
-- Transform origin calculation for SVG rotation needs testing
-- Color override strategy (CSS vars vs attribute replacement) TBD
+**Phase 17 IN PROGRESS (Interactive SVG Knobs):**
+- ✓ 17-01: KnobStyle type system and KnobStylesSlice state management
+- TODO: 17-02: SVG layer detection and manipulation utilities
+- TODO: 17-03: Knob style library UI (import, browse, map layers)
+- TODO: 17-04: SVG knob renderer with rotation and color overrides
+- TODO: 17-05: Interactive knob behavior (drag-to-rotate, value updates)
+- Note: Performance with 50+ animated knobs may need optimization
+- Note: Transform origin calculation for SVG rotation needs testing
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 16-05-PLAN.md (SVG Graphic Aspect Ratio Locking) - Phase 16 COMPLETE
+Stopped at: Completed 17-01-PLAN.md (KnobStyle Type System and State Management)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 16-05 completion*
+*Last updated: 2026-01-26 after 17-01 completion*
