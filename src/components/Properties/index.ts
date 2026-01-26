@@ -39,6 +39,8 @@ import { CenterDetentKnobProperties } from './CenterDetentKnobProperties'
 import { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
 import { BipolarSliderProperties } from './BipolarSliderProperties'
 import { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
+import { NotchedSliderProperties } from './NotchedSliderProperties'
+import { ArcSliderProperties } from './ArcSliderProperties'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -72,6 +74,8 @@ export { CenterDetentKnobProperties } from './CenterDetentKnobProperties'
 export { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
 export { BipolarSliderProperties } from './BipolarSliderProperties'
 export { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
+export { NotchedSliderProperties } from './NotchedSliderProperties'
+export { ArcSliderProperties } from './ArcSliderProperties'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -99,6 +103,8 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['dotindicatorknob', DotIndicatorKnobProperties],
   ['bipolarslider', BipolarSliderProperties],
   ['crossfadeslider', CrossfadeSliderProperties],
+  ['notchedslider', NotchedSliderProperties],
+  ['arcslider', ArcSliderProperties],
 
   // Displays
   ['label', LabelProperties],

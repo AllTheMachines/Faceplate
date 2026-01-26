@@ -22,6 +22,8 @@ const paletteCategories = [
       { id: 'multislider', type: 'multislider', name: 'Multi-Slider' },
       { id: 'bipolarslider', type: 'bipolarslider', name: 'Bipolar Slider' },
       { id: 'crossfadeslider', type: 'crossfadeslider', name: 'Crossfade' },
+      { id: 'notchedslider', type: 'notchedslider', name: 'Notched Slider' },
+      { id: 'arcslider', type: 'arcslider', name: 'Arc Slider' },
     ],
   },
   {
