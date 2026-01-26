@@ -188,6 +188,312 @@ export interface ModulationMatrixElementConfig extends BaseElementConfig {
   previewActiveConnections: Array<[number, number]> // [sourceIndex, destinationIndex] pairs
 }
 
+export interface NumericDisplayElementConfig extends BaseElementConfig {
+  type: 'numericdisplay'
+
+  // Value
+  value: number // 0-1 normalized
+  min: number
+  max: number
+  decimalPlaces: number
+  unit?: string // Optional unit label
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+  fontStyle: '7segment' | 'modern'
+  bezelStyle: 'inset' | 'flat' | 'none'
+  showGhostSegments: boolean // Only for 7-segment style
+  unitDisplay: 'suffix' | 'label' // suffix inline, label separate
+  borderColor: string
+}
+
+export interface TimeDisplayElementConfig extends BaseElementConfig {
+  type: 'timedisplay'
+
+  // Value (normalized 0-1, mapped to ms range)
+  value: number
+  min: number // Time range in ms
+  max: number // Time range in ms
+  decimalPlaces: number
+
+  // Time format settings
+  bpm: number // For bars calculation
+  timeSignature: number // Beats per bar
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+  fontStyle: '7segment' | 'modern'
+  bezelStyle: 'inset' | 'flat' | 'none'
+  showGhostSegments: boolean
+  borderColor: string
+}
+
+export interface PercentageDisplayElementConfig extends BaseElementConfig {
+  type: 'percentagedisplay'
+
+  // Value (0-1, displayed as 0-100%)
+  value: number
+  decimalPlaces: number
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+  fontStyle: '7segment' | 'modern'
+  bezelStyle: 'inset' | 'flat' | 'none'
+  showGhostSegments: boolean
+  borderColor: string
+}
+
+export interface RatioDisplayElementConfig extends BaseElementConfig {
+  type: 'ratiodisplay'
+
+  // Value
+  value: number // 0-1 normalized
+  min: number // Ratio range (e.g., 1)
+  max: number // Ratio range (e.g., 20)
+  decimalPlaces: number
+  infinityThreshold: number // Default 20, shows ∞:1 at this ratio
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+  fontStyle: '7segment' | 'modern'
+  bezelStyle: 'inset' | 'flat' | 'none'
+  showGhostSegments: boolean
+  borderColor: string
+}
+
+export interface NoteDisplayElementConfig extends BaseElementConfig {
+  type: 'notedisplay'
+
+  // Value
+  value: number // 0-1 normalized
+  min: number // MIDI range (e.g., 0)
+  max: number // MIDI range (e.g., 127)
+  preferSharps: boolean // A# vs Bb
+  showMidiNumber: boolean // Show MIDI number below note name
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+  fontStyle: '7segment' | 'modern'
+  bezelStyle: 'inset' | 'flat' | 'none'
+  borderColor: string
+}
+
+export interface BpmDisplayElementConfig extends BaseElementConfig {
+  type: 'bpmdisplay'
+
+  // Value
+  value: number // 0-1 normalized
+  min: number // BPM range (e.g., 20)
+  max: number // BPM range (e.g., 300)
+  decimalPlaces: number
+  showLabel: boolean // Show "BPM" suffix
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  padding: number
+  fontStyle: '7segment' | 'modern'
+  bezelStyle: 'inset' | 'flat' | 'none'
+  showGhostSegments: boolean
+  borderColor: string
+}
+
+export interface EditableDisplayElementConfig extends BaseElementConfig {
+  type: 'editabledisplay'
+
+  // Value
+  value: number // 0-1 normalized
+  min: number
+  max: number
+  format: 'numeric' | 'percentage' | 'db' // What format to display/edit
+  decimalPlaces: number
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  borderColor: string
+  padding: number
+}
+
+export interface MultiValueDisplayElementConfig extends BaseElementConfig {
+  type: 'multivaluedisplay'
+
+  // Values
+  values: Array<{
+    value: number
+    min: number
+    max: number
+    format: string
+    label?: string
+    decimalPlaces?: number
+  }>
+  layout: 'vertical' | 'horizontal'
+
+  // Appearance
+  fontSize: number
+  fontFamily: string
+  textColor: string
+  backgroundColor: string
+  borderColor: string
+  padding: number
+}
+
+// ============================================================================
+// LED Indicator Configurations
+// ============================================================================
+
+export interface SingleLEDElementConfig extends BaseElementConfig {
+  type: 'singleled'
+
+  // State
+  state: 'on' | 'off'
+
+  // Colors
+  onColor: string
+  offColor: string
+
+  // Appearance
+  shape: 'round' | 'square'
+  cornerRadius: number // Only for square shape, 0-20px
+  glowEnabled: boolean
+  glowRadius: number // Default: size * 0.3
+  glowIntensity: number // Default: glowRadius / 2
+  colorPalette: 'classic' | 'modern' | 'neon' | 'custom'
+}
+
+export interface BiColorLEDElementConfig extends BaseElementConfig {
+  type: 'bicolorled'
+
+  // State
+  state: 'green' | 'red'
+
+  // Colors
+  greenColor: string
+  redColor: string
+  offColor: string // Dim when off (shown briefly during state transitions)
+
+  // Appearance
+  shape: 'round' | 'square'
+  cornerRadius: number
+  glowEnabled: boolean
+  glowRadius: number
+  glowIntensity: number
+  colorPalette: 'classic' | 'modern' | 'neon' | 'custom'
+}
+
+export interface TriColorLEDElementConfig extends BaseElementConfig {
+  type: 'tricolorled'
+
+  // State
+  state: 'off' | 'yellow' | 'red'
+
+  // Colors
+  offColor: string
+  yellowColor: string
+  redColor: string
+
+  // Appearance
+  shape: 'round' | 'square'
+  cornerRadius: number
+  glowEnabled: boolean
+  glowRadius: number
+  glowIntensity: number
+  colorPalette: 'classic' | 'modern' | 'neon' | 'custom'
+}
+
+export interface LEDArrayElementConfig extends BaseElementConfig {
+  type: 'ledarray'
+
+  // Value
+  value: number // 0-1, determines how many LEDs lit
+
+  // Configuration
+  segmentCount: number // 8-24
+  orientation: 'horizontal' | 'vertical'
+  spacing: number // Gap between LEDs
+
+  // Colors
+  onColor: string
+  offColor: string
+
+  // Appearance
+  shape: 'round' | 'square'
+  cornerRadius: number
+  glowEnabled: boolean
+  glowRadius: number
+  glowIntensity: number
+  colorPalette: 'classic' | 'modern' | 'neon' | 'custom'
+}
+
+export interface LEDRingElementConfig extends BaseElementConfig {
+  type: 'ledring'
+
+  // Value
+  value: number // 0-1, determines arc length lit
+
+  // Configuration
+  segmentCount: number // 12-36
+  diameter: number // Computed from width/height
+  thickness: number // LED segment thickness
+  startAngle: number // Degrees, default -135
+  endAngle: number // Degrees, default 135
+
+  // Colors
+  onColor: string
+  offColor: string
+
+  // Appearance
+  glowEnabled: boolean
+  glowRadius: number
+  colorPalette: 'classic' | 'modern' | 'neon' | 'custom'
+}
+
+export interface LEDMatrixElementConfig extends BaseElementConfig {
+  type: 'ledmatrix'
+
+  // Configuration
+  rows: number // Preset: 4, 8, 16 or custom 2-32
+  columns: number // Preset: 4, 8, 16 or custom 2-32
+  states: boolean[][] // 2D array of on/off states
+  spacing: number // Gap between LEDs
+
+  // Colors
+  onColor: string
+  offColor: string
+
+  // Appearance
+  shape: 'round' | 'square'
+  cornerRadius: number
+  glowEnabled: boolean
+  glowRadius: number
+  glowIntensity: number
+  colorPalette: 'classic' | 'modern' | 'neon' | 'custom'
+}
+
 // ============================================================================
 // Display Element Union
 // ============================================================================
@@ -202,6 +508,20 @@ export type DisplayElement =
   | WaveformElementConfig
   | OscilloscopeElementConfig
   | ModulationMatrixElementConfig
+  | SingleLEDElementConfig
+  | BiColorLEDElementConfig
+  | TriColorLEDElementConfig
+  | LEDArrayElementConfig
+  | LEDRingElementConfig
+  | LEDMatrixElementConfig
+  | NumericDisplayElementConfig
+  | TimeDisplayElementConfig
+  | PercentageDisplayElementConfig
+  | RatioDisplayElementConfig
+  | NoteDisplayElementConfig
+  | BpmDisplayElementConfig
+  | EditableDisplayElementConfig
+  | MultiValueDisplayElementConfig
 
 // ============================================================================
 // Type Guards
@@ -241,6 +561,62 @@ export function isOscilloscope(element: { type: string }): element is Oscillosco
 
 export function isModulationMatrix(element: { type: string }): element is ModulationMatrixElementConfig {
   return element.type === 'modulationmatrix'
+}
+
+export function isNumericDisplay(element: { type: string }): element is NumericDisplayElementConfig {
+  return element.type === 'numericdisplay'
+}
+
+export function isTimeDisplay(element: { type: string }): element is TimeDisplayElementConfig {
+  return element.type === 'timedisplay'
+}
+
+export function isPercentageDisplay(element: { type: string }): element is PercentageDisplayElementConfig {
+  return element.type === 'percentagedisplay'
+}
+
+export function isRatioDisplay(element: { type: string }): element is RatioDisplayElementConfig {
+  return element.type === 'ratiodisplay'
+}
+
+export function isNoteDisplay(element: { type: string }): element is NoteDisplayElementConfig {
+  return element.type === 'notedisplay'
+}
+
+export function isBpmDisplay(element: { type: string }): element is BpmDisplayElementConfig {
+  return element.type === 'bpmdisplay'
+}
+
+export function isEditableDisplay(element: { type: string }): element is EditableDisplayElementConfig {
+  return element.type === 'editabledisplay'
+}
+
+export function isMultiValueDisplay(element: { type: string }): element is MultiValueDisplayElementConfig {
+  return element.type === 'multivaluedisplay'
+}
+
+export function isSingleLED(element: { type: string }): element is SingleLEDElementConfig {
+  return element.type === 'singleled'
+}
+
+export function isBiColorLED(element: { type: string }): element is BiColorLEDElementConfig {
+  return element.type === 'bicolorled'
+}
+
+export function isTriColorLED(element: { type: string }): element is TriColorLEDElementConfig {
+  return element.type === 'tricolorled'
+}
+
+export function isLEDArray(element: { type: string }): element is LEDArrayElementConfig {
+  return element.type === 'ledarray'
+}
+
+export function isLEDRing(element: { type: string }): element is LEDRingElementConfig {
+  return element.type === 'ledring'
+}
+
+export function isLEDMatrix(element: { type: string }): element is LEDMatrixElementConfig {
+  return element.type === 'ledmatrix'
 }
 
 // ============================================================================
@@ -487,6 +863,429 @@ export function createModulationMatrix(overrides?: Partial<ModulationMatrixEleme
     headerColor: '#ffffff',
     headerFontSize: 11,
     previewActiveConnections: [[0, 1], [2, 0]], // LFO 1 -> Filter, ENV 1 -> Pitch
+    ...overrides,
+  }
+}
+
+export function createSingleLED(overrides?: Partial<SingleLEDElementConfig>): SingleLEDElementConfig {
+  const defaultSize = 20
+  return {
+    id: crypto.randomUUID(),
+    type: 'singleled',
+    name: 'Single LED',
+    x: 0,
+    y: 0,
+    width: defaultSize,
+    height: defaultSize,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    state: 'on',
+    onColor: '#00ff00',
+    offColor: '#003300',
+    shape: 'round',
+    cornerRadius: 4,
+    glowEnabled: true,
+    glowRadius: defaultSize * 0.3,
+    glowIntensity: defaultSize * 0.15,
+    colorPalette: 'classic',
+    ...overrides,
+  }
+}
+
+export function createBiColorLED(overrides?: Partial<BiColorLEDElementConfig>): BiColorLEDElementConfig {
+  const defaultSize = 20
+  return {
+    id: crypto.randomUUID(),
+    type: 'bicolorled',
+    name: 'Bi-Color LED',
+    x: 0,
+    y: 0,
+    width: defaultSize,
+    height: defaultSize,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    state: 'green',
+    greenColor: '#00ff00',
+    redColor: '#ff0000',
+    offColor: '#003300',
+    shape: 'round',
+    cornerRadius: 4,
+    glowEnabled: true,
+    glowRadius: defaultSize * 0.3,
+    glowIntensity: defaultSize * 0.15,
+    colorPalette: 'classic',
+    ...overrides,
+  }
+}
+
+export function createTriColorLED(overrides?: Partial<TriColorLEDElementConfig>): TriColorLEDElementConfig {
+  const defaultSize = 20
+  return {
+    id: crypto.randomUUID(),
+    type: 'tricolorled',
+    name: 'Tri-Color LED',
+    x: 0,
+    y: 0,
+    width: defaultSize,
+    height: defaultSize,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    state: 'off',
+    offColor: '#003300',
+    yellowColor: '#ffff00',
+    redColor: '#ff0000',
+    shape: 'round',
+    cornerRadius: 4,
+    glowEnabled: true,
+    glowRadius: defaultSize * 0.3,
+    glowIntensity: defaultSize * 0.15,
+    colorPalette: 'classic',
+    ...overrides,
+  }
+}
+
+export function createLEDArray(overrides?: Partial<LEDArrayElementConfig>): LEDArrayElementConfig {
+  const segmentSize = 12
+  const segmentCount = 12
+  const spacing = 2
+  return {
+    id: crypto.randomUUID(),
+    type: 'ledarray',
+    name: 'LED Array',
+    x: 0,
+    y: 0,
+    width: segmentCount * segmentSize + (segmentCount - 1) * spacing,
+    height: segmentSize,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.7,
+    segmentCount,
+    orientation: 'horizontal',
+    spacing,
+    onColor: '#00ff00',
+    offColor: '#003300',
+    shape: 'round',
+    cornerRadius: 4,
+    glowEnabled: true,
+    glowRadius: segmentSize * 0.3,
+    glowIntensity: segmentSize * 0.15,
+    colorPalette: 'classic',
+    ...overrides,
+  }
+}
+
+export function createLEDRing(overrides?: Partial<LEDRingElementConfig>): LEDRingElementConfig {
+  const diameter = 80
+  return {
+    id: crypto.randomUUID(),
+    type: 'ledring',
+    name: 'LED Ring',
+    x: 0,
+    y: 0,
+    width: diameter,
+    height: diameter,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    segmentCount: 24,
+    diameter,
+    thickness: 8,
+    startAngle: -135,
+    endAngle: 135,
+    onColor: '#00ff00',
+    offColor: '#003300',
+    glowEnabled: true,
+    glowRadius: 4,
+    colorPalette: 'classic',
+    ...overrides,
+  }
+}
+
+export function createLEDMatrix(overrides?: Partial<LEDMatrixElementConfig>): LEDMatrixElementConfig {
+  const rows = 8
+  const columns = 8
+  const ledSize = 8
+  const spacing = 2
+
+  // Initialize all LEDs to off
+  const states: boolean[][] = Array.from({ length: rows }, () =>
+    Array.from({ length: columns }, () => false)
+  )
+
+  return {
+    id: crypto.randomUUID(),
+    type: 'ledmatrix',
+    name: 'LED Matrix',
+    x: 0,
+    y: 0,
+    width: columns * ledSize + (columns - 1) * spacing,
+    height: rows * ledSize + (rows - 1) * spacing,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    rows,
+    columns,
+    states,
+    spacing,
+    onColor: '#00ff00',
+    offColor: '#003300',
+    shape: 'round',
+    cornerRadius: 2,
+    glowEnabled: true,
+    glowRadius: ledSize * 0.3,
+    glowIntensity: ledSize * 0.15,
+    colorPalette: 'classic',
+    ...overrides,
+  }
+}
+
+export function createNumericDisplay(overrides?: Partial<NumericDisplayElementConfig>): NumericDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'numericdisplay',
+    name: 'Numeric Display',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    min: 0,
+    max: 100,
+    decimalPlaces: 2,
+    unit: '',
+    fontSize: 18,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    fontStyle: 'modern',
+    bezelStyle: 'inset',
+    showGhostSegments: false,
+    unitDisplay: 'suffix',
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createTimeDisplay(overrides?: Partial<TimeDisplayElementConfig>): TimeDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'timedisplay',
+    name: 'Time Display',
+    x: 0,
+    y: 0,
+    width: 120,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    min: 0,
+    max: 1000,
+    decimalPlaces: 2,
+    bpm: 120,
+    timeSignature: 4,
+    fontSize: 18,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    fontStyle: 'modern',
+    bezelStyle: 'inset',
+    showGhostSegments: false,
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createPercentageDisplay(overrides?: Partial<PercentageDisplayElementConfig>): PercentageDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'percentagedisplay',
+    name: 'Percentage Display',
+    x: 0,
+    y: 0,
+    width: 90,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    decimalPlaces: 0,
+    fontSize: 18,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    fontStyle: 'modern',
+    bezelStyle: 'inset',
+    showGhostSegments: false,
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createRatioDisplay(overrides?: Partial<RatioDisplayElementConfig>): RatioDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'ratiodisplay',
+    name: 'Ratio Display',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.2,
+    min: 1,
+    max: 20,
+    decimalPlaces: 1,
+    infinityThreshold: 20,
+    fontSize: 18,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    fontStyle: 'modern',
+    bezelStyle: 'inset',
+    showGhostSegments: false,
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createNoteDisplay(overrides?: Partial<NoteDisplayElementConfig>): NoteDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'notedisplay',
+    name: 'Note Display',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.47,
+    min: 0,
+    max: 127,
+    preferSharps: true,
+    showMidiNumber: false,
+    fontSize: 20,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    fontStyle: 'modern',
+    bezelStyle: 'inset',
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createBpmDisplay(overrides?: Partial<BpmDisplayElementConfig>): BpmDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'bpmdisplay',
+    name: 'BPM Display',
+    x: 0,
+    y: 0,
+    width: 120,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    min: 20,
+    max: 300,
+    decimalPlaces: 2,
+    showLabel: true,
+    fontSize: 18,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    padding: 8,
+    fontStyle: 'modern',
+    bezelStyle: 'inset',
+    showGhostSegments: false,
+    borderColor: '#374151',
+    ...overrides,
+  }
+}
+
+export function createEditableDisplay(overrides?: Partial<EditableDisplayElementConfig>): EditableDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'editabledisplay',
+    name: 'Editable Display',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    min: 0,
+    max: 100,
+    format: 'numeric',
+    decimalPlaces: 2,
+    fontSize: 18,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+    padding: 8,
+    ...overrides,
+  }
+}
+
+export function createMultiValueDisplay(overrides?: Partial<MultiValueDisplayElementConfig>): MultiValueDisplayElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'multivaluedisplay',
+    name: 'Multi-Value Display',
+    x: 0,
+    y: 0,
+    width: 150,
+    height: 80,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    values: [
+      { value: 0.5, min: 0, max: 100, format: 'numeric', label: 'Value 1', decimalPlaces: 1 },
+      { value: 0.75, min: 0, max: 100, format: 'numeric', label: 'Value 2', decimalPlaces: 1 },
+    ],
+    layout: 'vertical',
+    fontSize: 16,
+    fontFamily: 'Roboto Mono, monospace',
+    textColor: '#10b981',
+    backgroundColor: '#1f2937',
+    borderColor: '#374151',
+    padding: 8,
     ...overrides,
   }
 }

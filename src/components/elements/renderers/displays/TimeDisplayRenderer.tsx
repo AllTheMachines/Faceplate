@@ -1,0 +1,62 @@
+import type { TimeDisplayElementConfig } from '../../../../types/elements'
+import { formatDisplayValue, truncateValue } from '../../../../utils/valueFormatters'
+
+interface TimeDisplayRendererProps {
+  config: TimeDisplayElementConfig
+}
+
+export function TimeDisplayRenderer({ config }: TimeDisplayRendererProps) {
+  const formattedValue = formatDisplayValue(
+    config.value,
+    config.min,
+    config.max,
+    'time',
+    { decimals: config.decimalPlaces, bpm: config.bpm, timeSignature: config.timeSignature }
+  )
+
+  const truncatedText = truncateValue(formattedValue, config.width - config.padding * 2, config.fontSize)
+
+  // Apply bezel style
+  const bezelStyle = config.bezelStyle === 'inset'
+    ? { boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.3)' }
+    : config.bezelStyle === 'flat'
+    ? { border: `1px solid ${config.borderColor}` }
+    : {}
+
+  return (
+    <div
+      className="timedisplay-element"
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: config.backgroundColor,
+        padding: `0 ${config.padding}px`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: config.fontStyle === '7segment' ? 'monospace' : config.fontFamily,
+        fontSize: `${config.fontSize}px`,
+        color: config.textColor,
+        borderRadius: 0,
+        boxSizing: 'border-box',
+        position: 'relative',
+        ...bezelStyle,
+      }}
+    >
+      {config.showGhostSegments && config.fontStyle === '7segment' && (
+        <div
+          style={{
+            position: 'absolute',
+            opacity: 0.25,
+            color: config.borderColor,
+          }}
+        >
+          888.88
+        </div>
+      )}
+      <span style={{ position: 'relative', zIndex: 1 }}>
+        {truncatedText}
+      </span>
+    </div>
+  )
+}

@@ -45,6 +45,20 @@ import {
   OscilloscopeRenderer,
   PresetBrowserRenderer,
   ModulationMatrixRenderer,
+  SingleLEDRenderer,
+  BiColorLEDRenderer,
+  TriColorLEDRenderer,
+  LEDArrayRenderer,
+  LEDRingRenderer,
+  LEDMatrixRenderer,
+  NumericDisplayRenderer,
+  TimeDisplayRenderer,
+  PercentageDisplayRenderer,
+  RatioDisplayRenderer,
+  NoteDisplayRenderer,
+  BpmDisplayRenderer,
+  EditableDisplayRenderer,
+  MultiValueDisplayRenderer,
 } from './displays'
 
 import {
@@ -105,6 +119,24 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['presetbrowser', PresetBrowserRenderer as RendererComponent],
   ['modulationmatrix', ModulationMatrixRenderer as RendererComponent],
 
+  // LED Indicators
+  ['singleled', SingleLEDRenderer as RendererComponent],
+  ['bicolorled', BiColorLEDRenderer as RendererComponent],
+  ['tricolorled', TriColorLEDRenderer as RendererComponent],
+  ['ledarray', LEDArrayRenderer as RendererComponent],
+  ['ledring', LEDRingRenderer as RendererComponent],
+  ['ledmatrix', LEDMatrixRenderer as RendererComponent],
+
+  // Value Displays
+  ['numericdisplay', NumericDisplayRenderer as RendererComponent],
+  ['timedisplay', TimeDisplayRenderer as RendererComponent],
+  ['percentagedisplay', PercentageDisplayRenderer as RendererComponent],
+  ['ratiodisplay', RatioDisplayRenderer as RendererComponent],
+  ['notedisplay', NoteDisplayRenderer as RendererComponent],
+  ['bpmdisplay', BpmDisplayRenderer as RendererComponent],
+  ['editabledisplay', EditableDisplayRenderer as RendererComponent],
+  ['multivaluedisplay', MultiValueDisplayRenderer as RendererComponent],
+
   // Containers
   ['panel', PanelRenderer as RendererComponent],
   ['frame', FrameRenderer as RendererComponent],
@@ -162,6 +194,20 @@ export {
   OscilloscopeRenderer,
   PresetBrowserRenderer,
   ModulationMatrixRenderer,
+  SingleLEDRenderer,
+  BiColorLEDRenderer,
+  TriColorLEDRenderer,
+  LEDArrayRenderer,
+  LEDRingRenderer,
+  LEDMatrixRenderer,
+  NumericDisplayRenderer,
+  TimeDisplayRenderer,
+  PercentageDisplayRenderer,
+  RatioDisplayRenderer,
+  NoteDisplayRenderer,
+  BpmDisplayRenderer,
+  EditableDisplayRenderer,
+  MultiValueDisplayRenderer,
   // Containers
   PanelRenderer,
   FrameRenderer,
