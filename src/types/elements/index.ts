@@ -13,12 +13,14 @@ export * from './controls'
 export * from './displays'
 export * from './containers'
 export * from './decorative'
+export * from './visualizations'
 
 // Import category unions for ElementConfig composition
 import { ControlElement } from './controls'
 import { DisplayElement } from './displays'
 import { ContainerElement } from './containers'
 import { DecorativeElement } from './decorative'
+import { VisualizationElement } from './visualizations'
 
 // ============================================================================
 // Unified ElementConfig Union
@@ -29,6 +31,7 @@ export type ElementConfig =
   | DisplayElement
   | ContainerElement
   | DecorativeElement
+  | VisualizationElement
 
 // Re-export category type aliases for registry use
-export type { ControlElement, DisplayElement, ContainerElement, DecorativeElement }
+export type { ControlElement, DisplayElement, ContainerElement, DecorativeElement, VisualizationElement }
