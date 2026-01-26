@@ -4,6 +4,7 @@
  */
 
 import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig } from '../../types/elements'
+import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
@@ -327,6 +328,53 @@ export function generateElementHTML(element: ElementConfig): string {
 
     case 'ledmatrix':
       return generateLedMatrixHTML(id, baseClass, positionStyle, element)
+
+    // Professional Meters - Level Meters (mono)
+    case 'rmsmetermo':
+    case 'vumetermono':
+    case 'ppmtype1mono':
+    case 'ppmtype2mono':
+    case 'truepeakmetermono':
+    case 'lufsmomomo':
+    case 'lufsshortmono':
+    case 'lufsintmono':
+    case 'k12metermono':
+    case 'k14metermono':
+    case 'k20metermono': {
+      const config = element as BaseProfessionalMeterConfig
+      const innerHTML = generateSegmentedMeterHTML(config, false)
+      return `<div id="${id}" class="${baseClass} ${element.type}-element" data-type="${element.type}" style="${positionStyle}">
+  ${innerHTML}
+</div>`
+    }
+
+    // Professional Meters - Level Meters (stereo)
+    case 'rmsmeterstereo':
+    case 'vumeterstereo':
+    case 'ppmtype1stereo':
+    case 'ppmtype2stereo':
+    case 'truepeakmeterstereo':
+    case 'lufsmomostereo':
+    case 'lufsshortstereo':
+    case 'lufsintstereo':
+    case 'k12meterstereo':
+    case 'k14meterstereo':
+    case 'k20meterstereo': {
+      const config = element as BaseProfessionalMeterConfig
+      const innerHTML = generateSegmentedMeterHTML(config, true)
+      return `<div id="${id}" class="${baseClass} ${element.type}-element" data-type="${element.type}" style="${positionStyle}">
+  ${innerHTML}
+</div>`
+    }
+
+    // Professional Meters - Analysis Meters
+    case 'correlationmeter':
+    case 'stereowidthmeter': {
+      const innerHTML = generateHorizontalBarMeterHTML(element as CorrelationMeterElementConfig | StereoWidthMeterElementConfig)
+      return `<div id="${id}" class="${baseClass} ${element.type}-element" data-type="${element.type}" style="${positionStyle}">
+  ${innerHTML}
+</div>`
+    }
 
     default:
       // TypeScript exhaustiveness check
@@ -1133,6 +1181,99 @@ function generateMultiValueDisplayHTML(
   return `<div id="${id}" class="${baseClass} multivaluedisplay-element" data-type="multivaluedisplay" data-layout="${element.layout}" style="${positionStyle}">
   ${valuesHTML}
 </div>`
+}
+
+// ============================================================================
+// Professional Meter HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate HTML for segmented meters (RMS, VU, PPM, True Peak, LUFS, K-System)
+ */
+function generateSegmentedMeterHTML(
+  element: BaseProfessionalMeterConfig,
+  isStereo: boolean
+): string {
+  const { segmentCount, orientation, showPeakHold, scalePosition, minDb, maxDb } = element
+  const isVertical = orientation === 'vertical'
+
+  // Generate segment HTML
+  const segments = Array.from({ length: segmentCount }, (_, i) =>
+    `<div class="meter-segment" data-segment="${i}"></div>`
+  ).join('\n    ')
+
+  const peakHold = showPeakHold
+    ? `<div class="peak-hold" data-peak-hold></div>`
+    : ''
+
+  // Generate scale marks (simplified for export)
+  const scale = scalePosition !== 'none' ? `
+  <div class="meter-scale" data-min="${minDb}" data-max="${maxDb}">
+    <span>${minDb}</span>
+    <span>${maxDb > 0 ? '+' + maxDb : maxDb}</span>
+  </div>` : ''
+
+  if (isStereo) {
+    const channelL = `
+  <div class="meter-channel" data-channel="L">
+    ${segments}
+    ${peakHold}
+  </div>`
+    const channelR = `
+  <div class="meter-channel" data-channel="R">
+    ${segments}
+    ${peakHold}
+  </div>`
+
+    return `
+<div class="stereo-wrapper">
+  ${scale}
+  ${channelL}
+  ${channelR}
+  <div class="channel-labels">
+    <span>L</span>
+    <span>R</span>
+  </div>
+</div>`
+  }
+
+  return `
+${scale}
+<div class="meter-segments" data-orientation="${orientation}">
+  ${segments}
+  ${peakHold}
+</div>`
+}
+
+/**
+ * Generate HTML for horizontal bar meters (Correlation, Stereo Width)
+ */
+function generateHorizontalBarMeterHTML(
+  element: CorrelationMeterElementConfig | StereoWidthMeterElementConfig
+): string {
+  const { showScale, scalePosition, showNumericReadout } = element
+  const isCorrelation = element.type === 'correlationmeter'
+
+  const scaleLabels = isCorrelation
+    ? ['<span>-1</span>', '<span>0</span>', '<span>+1</span>']
+    : ['<span>0%</span>', '<span>100%</span>', '<span>200%</span>']
+
+  const scale = showScale
+    ? `<div class="meter-scale" data-position="${scalePosition}">${scaleLabels.join('')}</div>`
+    : ''
+
+  const readout = showNumericReadout
+    ? `<div class="meter-readout" data-readout></div>`
+    : ''
+
+  return `
+${scalePosition === 'above' ? scale : ''}
+<div class="meter-track">
+  <div class="center-marker"></div>
+  <div class="meter-indicator" data-indicator></div>
+</div>
+${scalePosition === 'below' ? scale : ''}
+${readout}`
 }
 
 // ============================================================================
