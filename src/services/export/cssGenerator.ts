@@ -77,6 +77,26 @@ export function generateCSS(
   padding: 0;
 }`
 
+  // Responsive scaling wrapper
+  const responsiveScaling = `/* Responsive Scaling */
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
+}
+
+#plugin-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}`
+
   // Container styles
   const container = `/* Container */
 #plugin-container {
@@ -85,6 +105,7 @@ export function generateCSS(
   height: ${canvasHeight}px;
   background-color: ${backgroundColor};
   overflow: hidden;
+  transform-origin: center center;
 }`
 
   // Base element styles
@@ -204,6 +225,8 @@ export function generateCSS(
 }`
 
   return `${fontSection}${reset}
+
+${responsiveScaling}
 
 ${container}
 
