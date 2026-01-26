@@ -970,3 +970,58 @@ if (typeof window.__JUCE__ === 'undefined') {
 }
 `
 }
+
+// ============================================================================
+// Responsive Scaling Generator
+// ============================================================================
+
+/**
+ * Generate responsive scaling JavaScript for exported HTML
+ * Maintains aspect ratio with min/max limits when plugin window resizes
+ *
+ * @param canvasWidth - Original canvas width in pixels
+ * @param canvasHeight - Original canvas height in pixels
+ * @param minScale - Minimum scale factor (default 0.25)
+ * @param maxScale - Maximum scale factor (default 2.0)
+ * @returns JavaScript code as string
+ *
+ * @example
+ * const scaleJS = generateResponsiveScaleJS(800, 600)
+ * // Generates updateScale function with resize listener
+ */
+export function generateResponsiveScaleJS(
+  canvasWidth: number,
+  canvasHeight: number,
+  minScale: number = 0.25,
+  maxScale: number = 2.0
+): string {
+  return `// Responsive scaling for plugin window resize
+(function() {
+  const CANVAS_WIDTH = ${canvasWidth};
+  const CANVAS_HEIGHT = ${canvasHeight};
+  const MIN_SCALE = ${minScale};
+  const MAX_SCALE = ${maxScale};
+
+  function updateScale() {
+    const container = document.getElementById('plugin-container');
+    const wrapper = document.getElementById('plugin-wrapper');
+    if (!container || !wrapper) return;
+
+    const scaleX = wrapper.clientWidth / CANVAS_WIDTH;
+    const scaleY = wrapper.clientHeight / CANVAS_HEIGHT;
+
+    // Maintain aspect ratio - use smaller scale
+    let scale = Math.min(scaleX, scaleY);
+
+    // Apply min/max limits
+    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+
+    container.style.transform = \`scale(\${scale})\`;
+  }
+
+  window.addEventListener('resize', updateScale);
+  window.addEventListener('load', updateScale);
+  updateScale();
+})();
+`
+}
