@@ -41,6 +41,13 @@ import { BipolarSliderProperties } from './BipolarSliderProperties'
 import { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 import { NotchedSliderProperties } from './NotchedSliderProperties'
 import { ArcSliderProperties } from './ArcSliderProperties'
+import { IconButtonProperties } from './IconButtonProperties'
+import { KickButtonProperties } from './KickButtonProperties'
+import { ToggleSwitchProperties } from './ToggleSwitchProperties'
+import { PowerButtonProperties } from './PowerButtonProperties'
+import { RockerSwitchProperties } from './RockerSwitchProperties'
+import { RotarySwitchProperties } from './RotarySwitchProperties'
+import { SegmentButtonProperties } from './SegmentButtonProperties'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -76,6 +83,13 @@ export { BipolarSliderProperties } from './BipolarSliderProperties'
 export { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 export { NotchedSliderProperties } from './NotchedSliderProperties'
 export { ArcSliderProperties } from './ArcSliderProperties'
+export { IconButtonProperties } from './IconButtonProperties'
+export { KickButtonProperties } from './KickButtonProperties'
+export { ToggleSwitchProperties } from './ToggleSwitchProperties'
+export { PowerButtonProperties } from './PowerButtonProperties'
+export { RockerSwitchProperties } from './RockerSwitchProperties'
+export { RotarySwitchProperties } from './RotarySwitchProperties'
+export { SegmentButtonProperties } from './SegmentButtonProperties'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -105,6 +119,13 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['crossfadeslider', CrossfadeSliderProperties],
   ['notchedslider', NotchedSliderProperties],
   ['arcslider', ArcSliderProperties],
+  ['iconbutton', IconButtonProperties],
+  ['kickbutton', KickButtonProperties],
+  ['toggleswitch', ToggleSwitchProperties],
+  ['powerbutton', PowerButtonProperties],
+  ['rockerswitch', RockerSwitchProperties],
+  ['rotaryswitch', RotarySwitchProperties],
+  ['segmentbutton', SegmentButtonProperties],
 
   // Displays
   ['label', LabelProperties],
