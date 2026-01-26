@@ -1054,6 +1054,34 @@ ${selector} .oscilloscope-placeholder {
   user-select: none;
 }`
 
+    case 'iconbutton':
+      return `${selector} {
+  /* Icon Button styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'kickbutton':
+      return `${selector} {
+  /* Kick Button styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'toggleswitch':
+      return `${selector} {
+  /* Toggle Switch styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
+    case 'powerbutton':
+      return `${selector} {
+  /* Power Button styles - SVG handles visual rendering */
+  cursor: pointer;
+  user-select: none;
+}`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

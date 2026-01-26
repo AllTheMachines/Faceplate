@@ -272,6 +272,18 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'segmentbutton':
       return `<div id="${id}" class="${baseClass} button-element segmentbutton-element" data-type="segmentbutton" data-segment-count="${element.segmentCount}" data-selection-mode="${element.selectionMode}" data-selected="${element.selectedIndices.join(',')}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
 
+    case 'iconbutton':
+      return `<div id="${id}" class="${baseClass} button-element iconbutton-element" data-type="iconbutton" data-icon-source="${element.iconSource}" data-mode="${element.mode}" data-pressed="${element.pressed}" style="${positionStyle}"></div>`
+
+    case 'kickbutton':
+      return `<div id="${id}" class="${baseClass} button-element kickbutton-element" data-type="kickbutton" data-pressed="${element.pressed}" style="${positionStyle}"></div>`
+
+    case 'toggleswitch':
+      return `<div id="${id}" class="${baseClass} switch-element toggleswitch-element" data-type="toggleswitch" data-is-on="${element.isOn}" style="${positionStyle}"></div>`
+
+    case 'powerbutton':
+      return `<div id="${id}" class="${baseClass} button-element powerbutton-element" data-type="powerbutton" data-is-on="${element.isOn}" data-led-position="${element.ledPosition}" style="${positionStyle}"></div>`
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element

@@ -5,6 +5,7 @@
 
 import { BaseElementConfig } from './base'
 import { ColorOverrides } from '../knobStyle'
+import { BuiltInIcon } from '../../utils/builtInIcons'
 
 // ============================================================================
 // Control Element Configurations
@@ -587,6 +588,88 @@ export interface SegmentButtonElementConfig extends BaseElementConfig {
 }
 
 // ============================================================================
+// Button Element Configurations
+// ============================================================================
+
+export interface IconButtonElementConfig extends BaseElementConfig {
+  type: 'iconbutton'
+
+  // Icon source
+  iconSource: 'builtin' | 'asset'
+  builtInIcon?: BuiltInIcon // When iconSource === 'builtin'
+  assetId?: string // When iconSource === 'asset'
+
+  // Behavior
+  mode: 'momentary' | 'toggle'
+  pressed: boolean
+
+  // Colors
+  backgroundColor: string
+  iconColor: string
+  borderColor: string
+  borderRadius: number
+}
+
+export interface KickButtonElementConfig extends BaseElementConfig {
+  type: 'kickbutton'
+
+  // State (momentary only)
+  pressed: boolean
+
+  // Label
+  label: string
+
+  // Colors
+  backgroundColor: string
+  textColor: string
+  borderColor: string
+  borderRadius: number
+}
+
+export interface ToggleSwitchElementConfig extends BaseElementConfig {
+  type: 'toggleswitch'
+
+  // State
+  isOn: boolean
+
+  // Track colors
+  onColor: string
+  offColor: string
+
+  // Thumb
+  thumbColor: string
+  borderColor: string
+
+  // Labels
+  showLabels: boolean
+  onLabel: string
+  offLabel: string
+  labelColor: string
+}
+
+export interface PowerButtonElementConfig extends BaseElementConfig {
+  type: 'powerbutton'
+
+  // State
+  isOn: boolean
+
+  // LED indicator
+  ledPosition: 'top' | 'bottom' | 'left' | 'right' | 'center'
+  ledSize: number
+  ledOnColor: string
+  ledOffColor: string
+
+  // Label
+  label: string
+
+  // Colors
+  backgroundColor: string
+  textColor: string
+  borderColor: string
+  borderRadius: number
+}
+
+// ============================================================================
 // Control Element Union
 // ============================================================================
 
@@ -610,6 +693,10 @@ export type ControlElement =
   | RockerSwitchElementConfig
   | RotarySwitchElementConfig
   | SegmentButtonElementConfig
+  | IconButtonElementConfig
+  | KickButtonElementConfig
+  | ToggleSwitchElementConfig
+  | PowerButtonElementConfig
 
 // ============================================================================
 // Type Guards
@@ -689,6 +776,22 @@ export function isRotarySwitch(element: { type: string }): element is RotarySwit
 
 export function isSegmentButton(element: { type: string }): element is SegmentButtonElementConfig {
   return element.type === 'segmentbutton'
+}
+
+export function isIconButton(element: { type: string }): element is IconButtonElementConfig {
+  return element.type === 'iconbutton'
+}
+
+export function isKickButton(element: { type: string }): element is KickButtonElementConfig {
+  return element.type === 'kickbutton'
+}
+
+export function isToggleSwitch(element: { type: string }): element is ToggleSwitchElementConfig {
+  return element.type === 'toggleswitch'
+}
+
+export function isPowerButton(element: { type: string }): element is PowerButtonElementConfig {
+  return element.type === 'powerbutton'
 }
 
 // ============================================================================
@@ -1320,6 +1423,107 @@ export function createSegmentButton(overrides?: Partial<SegmentButtonElementConf
     textColor: '#888888',
     selectedTextColor: '#ffffff',
     borderColor: '#6b7280',
+    ...overrides,
+  }
+}
+
+export function createIconButton(overrides?: Partial<IconButtonElementConfig>): IconButtonElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'iconbutton',
+    name: 'Icon Button',
+    x: 0,
+    y: 0,
+    width: 40,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    iconSource: 'builtin',
+    builtInIcon: BuiltInIcon.Play,
+    mode: 'momentary',
+    pressed: false,
+    backgroundColor: '#374151',
+    iconColor: '#ffffff',
+    borderColor: '#6b7280',
+    borderRadius: 4,
+    ...overrides,
+  }
+}
+
+export function createKickButton(overrides?: Partial<KickButtonElementConfig>): KickButtonElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'kickbutton',
+    name: 'Kick Button',
+    x: 0,
+    y: 0,
+    width: 60,
+    height: 40,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    pressed: false,
+    label: 'KICK',
+    backgroundColor: '#374151',
+    textColor: '#ffffff',
+    borderColor: '#6b7280',
+    borderRadius: 4,
+    ...overrides,
+  }
+}
+
+export function createToggleSwitch(overrides?: Partial<ToggleSwitchElementConfig>): ToggleSwitchElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'toggleswitch',
+    name: 'Toggle Switch',
+    x: 0,
+    y: 0,
+    width: 50,
+    height: 26,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    isOn: false,
+    onColor: '#22c55e',
+    offColor: '#374151',
+    thumbColor: '#ffffff',
+    borderColor: '#6b7280',
+    showLabels: false,
+    onLabel: 'ON',
+    offLabel: 'OFF',
+    labelColor: '#888888',
+    ...overrides,
+  }
+}
+
+export function createPowerButton(overrides?: Partial<PowerButtonElementConfig>): PowerButtonElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'powerbutton',
+    name: 'Power Button',
+    x: 0,
+    y: 0,
+    width: 60,
+    height: 60,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    isOn: false,
+    ledPosition: 'top',
+    ledSize: 6,
+    ledOnColor: '#22c55e',
+    ledOffColor: '#374151',
+    label: 'POWER',
+    backgroundColor: '#374151',
+    textColor: '#ffffff',
+    borderColor: '#6b7280',
+    borderRadius: 4,
     ...overrides,
   }
 }
