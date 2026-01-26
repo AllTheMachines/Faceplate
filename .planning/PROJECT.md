@@ -48,13 +48,110 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-**v1.2 Focus: Extended SVG Controls**
+**v1.2 Focus: Complete Element Taxonomy**
 
-- [ ] Interactive SVG Sliders with track and thumb mapping
-- [ ] Interactive SVG Buttons with pressed state mapping
-- [ ] SVG Meters with fill animation
-- [ ] Batch import multiple SVGs at once
-- [ ] Asset search/filter in library
+All 78 remaining elements from docs/SPECIFICATION.md:
+
+**Rotary Controls (5 remaining):**
+- [ ] Endless Encoder (360° continuous rotation)
+- [ ] Stepped Knob (discrete detent positions)
+- [ ] Center-Detented Knob (snaps to center)
+- [ ] Concentric Dual Knob (nested controls)
+- [ ] Dot Indicator Knob (minimal indicator style)
+
+**Linear Controls (5 remaining):**
+- [ ] Bipolar Slider (center-zero)
+- [ ] Crossfade Slider (A/B balance)
+- [ ] Notched Slider (detent positions)
+- [ ] Arc Slider (curved path)
+- [ ] Multi-Slider (parallel sliders for EQ/multi-band)
+
+**Buttons & Switches (7 remaining):**
+- [ ] Icon Button (toolbar style)
+- [ ] Toggle Switch (iOS-style slide)
+- [ ] Rocker Switch (3-position up/center/down)
+- [ ] Rotary Switch (vintage rotating selector)
+- [ ] Kick Button (momentary with animation)
+- [ ] Segment Button (multi-segment mode selection)
+- [ ] Power Button (on/off with indicator)
+
+**Value Displays (8 remaining):**
+- [ ] Numeric Display (raw number)
+- [ ] Time Display (ms/s/bars)
+- [ ] Percentage Display (0-100%)
+- [ ] Ratio Display (compression ratio)
+- [ ] Note Display (musical note)
+- [ ] BPM Display (tempo)
+- [ ] Editable Display (double-click to edit)
+- [ ] Multi-Value Display (stacked values)
+
+**LED Indicators (6 new):**
+- [ ] Single LED (on/off)
+- [ ] Bi-Color LED (green/red)
+- [ ] Tri-Color LED (off/yellow/red)
+- [ ] LED Array (row of LEDs)
+- [ ] LED Ring (around knob)
+- [ ] LED Matrix (grid pattern)
+
+**Meters (13 remaining):**
+- [ ] RMS Meter
+- [ ] VU Meter
+- [ ] PPM Type I (IEC 60268-10)
+- [ ] PPM Type II (BBC standard)
+- [ ] True Peak Meter
+- [ ] LUFS Momentary
+- [ ] LUFS Short-term
+- [ ] LUFS Integrated
+- [ ] K-12 Meter
+- [ ] K-14 Meter
+- [ ] K-20 Meter
+- [ ] Correlation Meter
+- [ ] Stereo Width Meter
+
+**Visualizations (10 remaining):**
+- [ ] Scrolling Waveform
+- [ ] Spectrum Analyzer
+- [ ] Spectrogram
+- [ ] Goniometer
+- [ ] Vectorscope
+- [ ] EQ Curve
+- [ ] Compressor Curve
+- [ ] Envelope Display
+- [ ] LFO Display
+- [ ] Filter Response
+
+**Selection & Navigation (8 remaining):**
+- [ ] Multi-Select Dropdown
+- [ ] Combo Box
+- [ ] Tab Bar
+- [ ] Menu Button
+- [ ] Breadcrumb
+- [ ] Stepper
+- [ ] Tag Selector
+- [ ] Tree View
+
+**Containers & Decorative (3 remaining):**
+- [ ] Tooltip
+- [ ] Spacer
+- [ ] Window Chrome
+
+**Specialized Audio (12 remaining):**
+- [ ] Piano Keyboard
+- [ ] Drum Pad
+- [ ] Pad Grid
+- [ ] Step Sequencer
+- [ ] XY Pad
+- [ ] Wavetable Display
+- [ ] Harmonic Editor
+- [ ] Envelope Editor
+- [ ] Sample Display
+- [ ] Loop Points
+- [ ] Patch Bay
+- [ ] Signal Flow
+
+**UX Improvements:**
+- [ ] Visible undo/redo buttons in toolbar (near logo)
+- [ ] Keyboard shortcut detection for non-US layouts (QWERTZ support)
 
 ### Out of Scope
 
@@ -140,5 +237,23 @@ Pattern discovered and refined January 24-25, 2026 through extensive debugging.
 | SVGO with safe defaults | Preserve viewBox, cleanupIds: false | Good - no visual regressions |
 | Optimization enabled by default | Better default experience | Good - smaller bundles |
 
+## Current Milestone: v1.2 Complete Element Taxonomy
+
+**Goal:** Implement all 78 remaining UI elements from the specification plus UX improvements for undo/redo visibility and keyboard layout support.
+
+**Target features:**
+- All rotary control variants (endless encoder, stepped, center-detented, concentric, dot indicator)
+- All linear control variants (bipolar, crossfade, notched, arc, multi-slider)
+- All button/switch types (icon, toggle switch, rocker, rotary switch, kick, segment, power)
+- All value displays (numeric, time, percentage, ratio, note, BPM, editable, multi-value)
+- LED indicators (single, bi-color, tri-color, array, ring, matrix)
+- Professional meters (RMS, VU, PPM, True Peak, LUFS, K-meters, correlation, stereo width)
+- Audio visualizations (spectrum, spectrogram, goniometer, vectorscope, EQ/compressor curves, envelope/LFO displays)
+- Navigation components (multi-select dropdown, combo box, tab bar, menu, breadcrumb, stepper, tag selector, tree view)
+- Remaining containers (tooltip, spacer, window chrome)
+- Specialized audio elements (piano keyboard, drum pad, pad grid, step sequencer, XY pad, wavetable, harmonic editor, envelope editor, sample display, loop points, patch bay, signal flow)
+- Visible undo/redo buttons in toolbar
+- QWERTZ keyboard layout support
+
 ---
-*Last updated: 2026-01-26 after v1.1 milestone complete*
+*Last updated: 2026-01-26 after v1.2 milestone started*
