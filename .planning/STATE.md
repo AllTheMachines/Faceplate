@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 19 - Architecture Refactoring
-Plan: 3 of 6 complete
+Plan: 4 of 6 complete
 Status: In progress
-Last activity: 2026-01-26 — Completed 19-03-PLAN.md (Property Component Registry)
+Last activity: 2026-01-26 — Completed 19-04-PLAN.md (Undo/Redo Toolbar Buttons)
 
-Progress: [█████████░] 91/94 plans complete (97%)
+Progress: [█████████░] 92/94 plans complete (98%)
 
 ## Performance Metrics
 
@@ -39,7 +39,7 @@ Progress: [█████████░] 91/94 plans complete (97%)
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
 - Total plans: 6 (Phase 19 Architecture Refactoring)
-- Completed: 3 plans (19-01 Type System, 19-02 Renderer Registry, 19-03 Property Registry)
+- Completed: 4 plans (19-01 Type System, 19-02 Renderer Registry, 19-03 Property Registry, 19-04 Undo/Redo Buttons)
 
 ## Accumulated Context
 
@@ -59,6 +59,8 @@ All v1.1 decisions documented and outcomes verified.
 | Keep defensive fallback for unknown types | 19-02 | Catches runtime edge cases during development | Console warning alerts developers without breaking production |
 | Re-export individual renderers from registry | 19-02 | Maintains backward compatibility | Zero breaking changes for direct imports |
 | Map-based property component registry | 19-03 | O(1) lookup vs O(n) conditional chain | PropertyPanel reduced from 207 to 130 LOC (37% reduction) |
+| Use experimental Keyboard API for layout detection | 19-04 | Ensure correct shortcut labels for QWERTZ/QWERTY keyboards | Tooltips show correct shortcuts based on user's keyboard layout |
+| Subscribe to temporal store for reactive UI | 19-04 | Undo/redo buttons need to update when history changes | Buttons enable/disable automatically when state changes |
 
 ### Pending Todos
 
@@ -76,7 +78,7 @@ None — v1.2 roadmap validated.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 19-03-PLAN.md (Property Component Registry)
+Stopped at: Completed 19-04-PLAN.md (Undo/Redo Toolbar Buttons)
 Resume file: None
 
 **Next step:** Continue Phase 19 remaining plans (19-04 through 19-06)
