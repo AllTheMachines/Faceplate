@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-25)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Phase 15 - Asset Library Storage & UI (v1.1 SVG Asset Management)
+**Current focus:** Phase 16 - Static SVG Graphics (v1.1 SVG Asset Management)
 
 ## Current Position
 
-Phase: 15 of 18 (Asset Library Storage & UI) — COMPLETE
-Plan: 5 of 5 in current phase (all plans complete)
-Status: Phase 15 verified and complete
-Last activity: 2026-01-26 — Completed 15-05-PLAN.md (Gap closure: Wire ImageRenderer)
+Phase: 16 of 18 (Static SVG Graphics) — IN PROGRESS
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-01-26 — Completed 16-01-PLAN.md (SVG Graphic Element Foundation)
 
-Progress: [█████████░] 82% (71/87 total plans estimated)
+Progress: [█████████░] 83% (72/87 total plans estimated)
 
 ## Performance Metrics
 
@@ -38,9 +38,10 @@ Progress: [█████████░] 82% (71/87 total plans estimated)
 - Trend: Stable velocity with good momentum
 
 **v1.1 Velocity:**
-- Plans completed: 8 (14-01 through 15-04)
-- Phase 14: 4 plans, ~100 minutes total
-- Phase 15: 4 plans, ~10.5 minutes total (Phase complete)
+- Plans completed: 9 (14-01 through 16-01)
+- Phase 14: 4 plans, ~100 minutes total (Security foundations)
+- Phase 15: 5 plans, ~12 minutes total (Asset library complete)
+- Phase 16: 1 plan so far, ~2 minutes (SVG Graphics in progress)
 
 ## Accumulated Context
 
@@ -80,6 +81,9 @@ Recent decisions affecting current work:
 - **v1.1 (15-04)**: useAssetUsage hook co-located in DeleteAssetDialog (keeps logic close)
 - **v1.1 (15-04)**: 'library-asset' drag type distinct from palette (enables different drop handling)
 - **v1.1 (15-04)**: ImageElement.assetId for asset references (backward compatible with src)
+- **v1.1 (16-01)**: 100x100 default size for SVG Graphic elements (icon-sized graphics)
+- **v1.1 (16-01)**: Rotation handled by BaseElement, only flipH/flipV in renderer (avoid double-rotation)
+- **v1.1 (16-01)**: Three-state placeholder UI (unassigned, valid, missing) for SVG Graphics
 
 ### Pending Todos
 
@@ -97,20 +101,13 @@ None yet.
 - TODO: ESLint rules needed to enforce SafeSVG component usage
 
 **Phase 15 COMPLETE:**
-- ✓ AssetsSlice created with normalized storage (15-01)
-- ✓ Asset type defined with all required fields (15-01)
-- ✓ Store integration complete with undo/redo support (15-01)
-- ✓ crypto.randomUUID() established as project standard (15-01)
-- ✓ ImportAssetDialog with file upload and preview (15-02)
-- ✓ getSVGMetadata helper for element counting (15-02)
-- ✓ Asset browser UI with category filtering (15-03)
-- ✓ AssetLibraryPanel with search, categories, thumbnails (15-03)
-- ✓ Tab switching between Elements and Assets panels (15-03)
-- ✓ InlineEditName, DeleteAssetDialog, drag-to-canvas (15-04)
-- ✓ ImageRenderer wired to render assetId-based SVGs (15-05)
-- ✓ Asset persistence in project save/load (15-05)
-- ✓ All 6/6 success criteria verified
-- NEXT: Phase 16 (Static SVG Graphics)
+- ✓ All 5 plans executed successfully
+- ✓ Asset library fully functional with import, browse, drag-to-canvas
+- ✓ Asset persistence and undo/redo support
+
+**Phase 16 IN PROGRESS (Static SVG Graphics):**
+- ✓ 16-01: SvgGraphicElementConfig type and SvgGraphicRenderer component
+- NEXT: 16-02 (Property Panel Integration)
 
 **Phase 17 considerations (from research):**
 - Performance with 50+ animated knobs may need optimization
@@ -120,9 +117,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Phase 15 complete - All 5 plans executed and verified
+Stopped at: Completed 16-01-PLAN.md (SVG Graphic Element Foundation)
 Resume file: None
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 15 completion*
+*Last updated: 2026-01-26 after 16-01 completion*
