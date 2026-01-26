@@ -381,6 +381,14 @@ Plans:
 **Goal**: Users can add interactive curve editors for EQ, dynamics, and modulation
 **Dependencies**: Phase 19 (requires registry pattern)
 **Requirements**: VIZ-06, VIZ-07, VIZ-08, VIZ-09, VIZ-10
+**Plans**: 5 plans
+
+Plans:
+- [ ] 26-01-PLAN.md — Types, audio math utilities, curve rendering utilities
+- [ ] 26-02-PLAN.md — EQ Curve and Filter Response renderers
+- [ ] 26-03-PLAN.md — Compressor Curve and Envelope Display renderers
+- [ ] 26-04-PLAN.md — LFO Display renderer, property panels, palette entries
+- [ ] 26-05-PLAN.md — Export support (CSS/HTML/JS generation)
 
 **Success Criteria:**
 1. User can add EQ Curve with draggable frequency/gain/Q handles
@@ -463,7 +471,7 @@ Plans:
 | 23. Professional Meters | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 24. Navigation & Selection | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 25. Real-Time Visualizations | v1.2 | 5/5 | Complete | 2026-01-26 |
-| 26. Interactive Curves | v1.2 | 0/? | Pending | — |
+| 26. Interactive Curves | v1.2 | 0/5 | Planned | — |
 | 27. Containers & Polish | v1.2 | 0/? | Pending | — |
 | 28. Specialized Audio (Part 1) | v1.2 | 0/? | Pending | — |
 | 29. Specialized Audio (Part 2) | v1.2 | 0/? | Pending | — |
@@ -471,4 +479,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 25 execution complete*
+*Last updated: 2026-01-26 after Phase 26 planning complete*
