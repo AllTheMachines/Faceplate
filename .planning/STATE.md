@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 21 - Buttons & Switches (IN PROGRESS)
-Plan: 2 of 4 complete
-Status: In progress - executing Phase 21 plans
-Last activity: 2026-01-26 — Completed 21-02-PLAN.md (Multi-Position Switches)
+Plan: 2 of 4 complete (21-01 and 21-02)
+Status: In progress - Wave 1 complete (types and renderers)
+Last activity: 2026-01-26 — Completed 21-01-PLAN.md (Icon System and Basic Buttons)
 
 Progress: [██████████] 100/110 plans complete (~91%)
 
@@ -51,6 +51,8 @@ All v1.1 decisions documented and outcomes verified.
 
 | Decision | Phase | Rationale | Outcome |
 |----------|-------|-----------|---------|
+| Icons as inline SVG strings | 21-01 | Compact storage, no external dependencies, currentColor support | 35 icons in enum map |
+| transition: none on all buttons | 21-01 | Audio plugin UIs need instant visual feedback | Immediate state changes |
 | Rocker position mapping 0=down, 1=center, 2=up | 21-02 | Intuitive mapping matching physical rocker switch behavior | Clear position semantics |
 | Rotary label layout threshold at 6 positions | 21-02 | Radial labels become crowded with many positions | radial for 2-6, legend for 7-12 |
 | Unicode symbols as icon fallback | 21-02 | Enables rendering before builtInIconSVG utility available | Graceful degradation |
@@ -65,19 +67,20 @@ All v1.1 decisions documented and outcomes verified.
 **Pre-existing build errors:** TypeScript errors in SVG utilities and dialog components from v1.1 code. Not blocking Phase 21 functionality.
 
 **Phase 21 Progress:**
-- Plan 21-01: Button types (Icon Button, Kick Button, Toggle Switch, Power Button) - parallel execution
+- Plan 21-01: Button types (Icon Button, Kick Button, Toggle Switch, Power Button) - COMPLETE
 - Plan 21-02: Switch types (Rocker Switch, Rotary Switch, Segment Button) - COMPLETE
 - 7 button/switch element types with configs, renderers, registry entries
+- Built-in icon system with 35 audio plugin icons
 - Export support in cssGenerator and htmlGenerator
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 21-02-PLAN.md (Multi-Position Switches)
+Stopped at: Completed 21-01-PLAN.md (Icon System and Basic Buttons)
 Resume file: None
 
 **Next step:** Continue with Plan 21-03 (Property Panels) and Plan 21-04 (Palette Items)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing Plan 21-02*
+*Last updated: 2026-01-26 after completing Plan 21-01*
