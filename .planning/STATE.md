@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 25 - Real-Time Visualizations
-Plan: 2 of 4 complete
+Plan: 3 of 4 complete
 Status: In progress
-Last activity: 2026-01-26 - Completed 25-02-PLAN.md (Visualization Renderers)
+Last activity: 2026-01-26 - Completed 25-03-PLAN.md (Spectrogram, Goniometer, Vectorscope)
 
-Progress: [██████████] 120/122 plans complete (98.4%)
+Progress: [██████████] 121/122 plans complete (99.2%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [██████████] 120/122 plans complete (98.4%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 32 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 2)
+- Completed: 33 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 3)
 
 ## Accumulated Context
 
@@ -143,10 +143,14 @@ All v1.1 decisions documented and outcomes verified.
 | HiDPI Canvas scaling | 25-01 | Prevent blur on retina displays | canvas.width/height *= dpr, ctx.scale(dpr, dpr) |
 | useLayoutEffect for Canvas | 25-01 | Prevent rAF timing issues per RESEARCH.md | Memory leak prevention, synchronous setup |
 | Mono signal for stereo displays | 25-01 | Show perfect L/R correlation per CONTEXT.md | Centered vertical line in goniometer/vectorscope |
+| Spectrogram waterfall direction | 25-03 | Industry convention for time progression | Time flows left to right (older → newer) |
+| Goniometer diagonal axes | 25-03 | M/S mode per industry standard | L/R axes at 45° with M vertical, S horizontal |
+| Vectorscope standard axes | 25-03 | Standard Lissajous display convention | L on horizontal (X), R on vertical (Y) |
+| Circular grid intervals | 25-03 | Clear phase correlation reference | Rings at 0.25, 0.5, 0.75, 1.0 radius (25% intervals) |
 
 ### Pending Todos
 
-None - Phase 25 Plan 01 complete
+None - Phase 25 Plans 01-03 complete
 
 ### Blockers/Concerns
 
@@ -210,22 +214,27 @@ None - Phase 25 Plan 01 complete
 **Phase 25 In Progress:**
 - Plan 25-01: Visualization Foundation (types, mock data, Canvas hook) - COMPLETE
 - Plan 25-02: Visualization Renderers (ScrollingWaveform, SpectrumAnalyzer) - COMPLETE
-- TypeScript types for 5 Canvas visualizations (ScrollingWaveform, SpectrumAnalyzer, Spectrogram, Goniometer, Vectorscope)
+- Plan 25-03: Remaining Visualizations (Spectrogram, Goniometer, Vectorscope) - COMPLETE
+- **Total:** 5 Canvas visualization renderers across 3 plans
+- TypeScript types for all 5 Canvas visualizations (ScrollingWaveform, SpectrumAnalyzer, Spectrogram, Goniometer, Vectorscope)
 - Mock audio data utilities: pink noise spectrum, static waveform, spectrogram frame, mono signal
 - Canvas setup hook with HiDPI scaling using useLayoutEffect
-- ScrollingWaveformRenderer with line/fill modes, grid overlay
-- SpectrumAnalyzerRenderer with pink noise spectrum, color gradients, frequency/dB labels
-- Both renderers registered in rendererRegistry for O(1) lookup
-- Static mock data per CONTEXT.md (no animation loops)
+- ScrollingWaveformRenderer with line/fill display modes, grid overlay, waveform tracing
+- SpectrumAnalyzerRenderer with pink noise spectrum, color gradients, frequency/dB scale labels
+- SpectrogramRenderer with waterfall time-frequency color map, toggleable frequency/time labels
+- GoniometerRenderer with circular L/R phase display, diagonal M/S axes, mono signal trace
+- VectorscopeRenderer with Lissajous X/Y display, standard axes, mono signal trace
+- All 5 renderers registered in rendererRegistry for O(1) lookup
+- Static mock data per CONTEXT.md (frozen snapshots, no animation loops)
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 25-02-PLAN.md (Visualization Renderers)
+Stopped at: Completed 25-03-PLAN.md (Spectrogram, Goniometer, Vectorscope)
 Resume file: None
 
-**Next step:** Plan 25-03 (Remaining Visualizations: Spectrogram, Goniometer, Vectorscope)
+**Next step:** Plan 25-04 (Property Panels & Palette)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 25-02-PLAN.md complete*
+*Last updated: 2026-01-26 after 25-03-PLAN.md complete*
