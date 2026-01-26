@@ -11,6 +11,8 @@ export function ExportPanel() {
   const [isExporting, setIsExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastExport, setLastExport] = useState<string | null>(null)
+  const [optimizeSVG, setOptimizeSVG] = useState(true)
+  const [enableResponsiveScaling, setEnableResponsiveScaling] = useState(true)
 
   // Get state from store
   const elements = useStore((state) => state.elements)
@@ -31,12 +33,18 @@ export function ExportPanel() {
       canvasWidth,
       canvasHeight,
       backgroundColor,
+      optimizeSVG,
+      enableResponsiveScaling,
     })
 
     setIsExporting(false)
 
     if (result.success) {
-      setLastExport('JUCE bundle exported successfully')
+      let message = 'JUCE bundle exported successfully'
+      if (result.sizeSavings && result.sizeSavings.percent > 0) {
+        message += ` (SVG optimized: ${result.sizeSavings.percent.toFixed(1)}% smaller)`
+      }
+      setLastExport(message)
     } else {
       setError(result.error)
     }
@@ -52,12 +60,18 @@ export function ExportPanel() {
       canvasWidth,
       canvasHeight,
       backgroundColor,
+      optimizeSVG,
+      enableResponsiveScaling,
     })
 
     setIsExporting(false)
 
     if (result.success) {
-      setLastExport('HTML preview exported successfully')
+      let message = 'HTML preview exported successfully'
+      if (result.sizeSavings && result.sizeSavings.percent > 0) {
+        message += ` (SVG optimized: ${result.sizeSavings.percent.toFixed(1)}% smaller)`
+      }
+      setLastExport(message)
     } else {
       setError(result.error)
     }
@@ -98,6 +112,28 @@ export function ExportPanel() {
             </ul>
           </div>
         )}
+
+        {/* Export Options */}
+        <div className="mb-3 space-y-2">
+          <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={optimizeSVG}
+              onChange={(e) => setOptimizeSVG(e.target.checked)}
+              className="rounded border-gray-600 bg-gray-700 text-blue-500"
+            />
+            Optimize SVG assets
+          </label>
+          <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={enableResponsiveScaling}
+              onChange={(e) => setEnableResponsiveScaling(e.target.checked)}
+              className="rounded border-gray-600 bg-gray-700 text-blue-500"
+            />
+            Enable responsive scaling
+          </label>
+        </div>
 
         {/* Export buttons */}
         <div className="space-y-2">
