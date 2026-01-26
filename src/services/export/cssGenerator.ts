@@ -918,9 +918,33 @@ ${selector} .oscilloscope-placeholder {
   user-select: none;
 }`
 
+    case 'svggraphic':
+      return generateSvgGraphicCSS(id)
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
       throw new Error(`Unknown element type: ${(_exhaustive as ElementConfig).type}`)
   }
+}
+
+/**
+ * Generate SVG Graphic CSS with containment styles
+ */
+function generateSvgGraphicCSS(id: string): string {
+  return `/* SVG Graphic: ${id} */
+#${id} {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#${id} svg {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}`
 }
