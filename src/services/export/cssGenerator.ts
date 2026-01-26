@@ -52,11 +52,17 @@ export function generateCSS(
 ): string {
   const { canvasWidth, canvasHeight, backgroundColor } = options
 
-  // Collect unique fonts from label elements
+  // Collect unique fonts from label elements and value displays
   const usedFonts = new Set<string>()
+  let uses7Segment = false
+
   elements.forEach(el => {
     if (el.type === 'label' && el.fontFamily) {
       usedFonts.add(el.fontFamily)
+    }
+    // Check for 7-segment font usage in displays
+    if ('fontStyle' in el && el.fontStyle === '7segment') {
+      uses7Segment = true
     }
   })
 
@@ -67,7 +73,17 @@ export function generateCSS(
     .map(generateFontFace)
     .join('\n\n')
 
-  const fontSection = fontFaces ? `/* Embedded Fonts */\n${fontFaces}\n\n` : ''
+  // Add DSEG7 font if any display uses 7-segment style
+  const dseg7Font = uses7Segment ? `@font-face {
+  font-family: 'DSEG7';
+  src: url('./fonts/DSEG7-Classic-MINI.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}` : ''
+
+  const allFonts = [fontFaces, dseg7Font].filter(Boolean).join('\n\n')
+  const fontSection = allFonts ? `/* Embedded Fonts */\n${allFonts}\n\n` : ''
 
   // CSS reset
   const reset = `/* Reset */
@@ -1055,28 +1071,46 @@ ${selector} .oscilloscope-placeholder {
       return generatePowerButtonCSS(selector, element)
 
     case 'numericdisplay':
+      return generateNumericDisplayCSS(selector, element)
+
     case 'timedisplay':
+      return generateTimeDisplayCSS(selector, element)
+
     case 'percentagedisplay':
+      return generatePercentageDisplayCSS(selector, element)
+
     case 'ratiodisplay':
+      return generateRatioDisplayCSS(selector, element)
+
     case 'notedisplay':
+      return generateNoteDisplayCSS(selector, element)
+
     case 'bpmdisplay':
+      return generateBpmDisplayCSS(selector, element)
+
     case 'editabledisplay':
+      return generateEditableDisplayCSS(selector, element)
+
     case 'multivaluedisplay':
-      // Value displays use similar CSS to dbdisplay/frequencydisplay
-      return `${selector} {
-  /* Value Display */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${element.fontFamily};
-  font-size: ${element.fontSize}px;
-  color: ${element.textColor};
-  background-color: ${element.backgroundColor};
-  padding: ${element.padding}px;
-  border-radius: 4px;
-  box-sizing: border-box;
-  user-select: none;
-}`
+      return generateMultiValueDisplayCSS(selector, element)
+
+    case 'singleled':
+      return generateSingleLedCSS(selector, element)
+
+    case 'bicolorled':
+      return generateBiColorLedCSS(selector, element)
+
+    case 'tricolorled':
+      return generateTriColorLedCSS(selector, element)
+
+    case 'ledarray':
+      return generateLedArrayCSS(selector, element)
+
+    case 'ledring':
+      return generateLedRingCSS(selector, element)
+
+    case 'ledmatrix':
+      return generateLedMatrixCSS(selector, element)
 
     default:
       // TypeScript exhaustiveness check
@@ -1559,5 +1593,354 @@ ${selector} .segment-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}`
+}
+
+// ============================================================================
+// Value Display CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate base display CSS (shared across display types)
+ */
+function generateBaseDisplayCSS(
+  selector: string,
+  element: { fontSize: number; fontFamily: string; fontStyle?: '7segment' | 'modern'; textColor: string; backgroundColor: string; padding: number; bezelStyle?: 'inset' | 'flat' | 'none'; borderColor?: string }
+): string {
+  const fontFamily = element.fontStyle === '7segment' ? 'DSEG7, monospace' : element.fontFamily
+
+  let bezelCSS = ''
+  if (element.bezelStyle === 'inset') {
+    bezelCSS = `
+${selector}[data-bezel="inset"] {
+  box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5);
+  border-radius: 4px;
+}`
+  } else if (element.bezelStyle === 'flat') {
+    bezelCSS = `
+${selector}[data-bezel="flat"] {
+  border: 2px solid ${element.borderColor || '#374151'};
+  border-radius: 4px;
+}`
+  } else if (element.bezelStyle === 'none') {
+    bezelCSS = `
+${selector}[data-bezel="none"] {
+  border: none;
+  border-radius: 0;
+}`
+  }
+
+  const ghostSegmentCSS = element.fontStyle === '7segment' ? `
+${selector}[data-font-style="7segment"] {
+  position: relative;
+}
+
+${selector} .ghost {
+  position: absolute;
+  opacity: 0.25;
+  letter-spacing: 0.05em;
+}
+
+${selector} .value {
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.05em;
+}` : `
+${selector} .value {
+  position: relative;
+  z-index: 1;
+}`
+
+  return `${selector} {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ${fontFamily};
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  background-color: ${element.backgroundColor};
+  padding: ${element.padding}px;
+  box-sizing: border-box;
+  user-select: none;
+}
+${bezelCSS}
+${ghostSegmentCSS}`
+}
+
+/**
+ * Generate Numeric Display CSS
+ */
+function generateNumericDisplayCSS(selector: string, element: ElementConfig & { type: 'numericdisplay' }): string {
+  return `/* Numeric Display */
+${generateBaseDisplayCSS(selector, element)}
+
+${selector} .unit {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: ${element.fontSize * 0.6}px;
+  opacity: 0.7;
+}`
+}
+
+/**
+ * Generate Time Display CSS
+ */
+function generateTimeDisplayCSS(selector: string, element: ElementConfig & { type: 'timedisplay' }): string {
+  return `/* Time Display */
+${generateBaseDisplayCSS(selector, element)}`
+}
+
+/**
+ * Generate Percentage Display CSS
+ */
+function generatePercentageDisplayCSS(selector: string, element: ElementConfig & { type: 'percentagedisplay' }): string {
+  return `/* Percentage Display */
+${generateBaseDisplayCSS(selector, element)}`
+}
+
+/**
+ * Generate Ratio Display CSS
+ */
+function generateRatioDisplayCSS(selector: string, element: ElementConfig & { type: 'ratiodisplay' }): string {
+  return `/* Ratio Display */
+${generateBaseDisplayCSS(selector, element)}`
+}
+
+/**
+ * Generate Note Display CSS
+ */
+function generateNoteDisplayCSS(selector: string, element: ElementConfig & { type: 'notedisplay' }): string {
+  return `/* Note Display */
+${generateBaseDisplayCSS(selector, element)}
+
+${selector} {
+  flex-direction: column;
+}
+
+${selector} .note {
+  font-weight: 600;
+}
+
+${selector} .midi {
+  font-size: ${element.fontSize * 0.5}px;
+  opacity: 0.6;
+  margin-top: 2px;
+}`
+}
+
+/**
+ * Generate BPM Display CSS
+ */
+function generateBpmDisplayCSS(selector: string, element: ElementConfig & { type: 'bpmdisplay' }): string {
+  return `/* BPM Display */
+${generateBaseDisplayCSS(selector, element)}
+
+${selector} .label {
+  margin-left: 4px;
+  font-size: ${element.fontSize * 0.7}px;
+  opacity: 0.7;
+}`
+}
+
+/**
+ * Generate Editable Display CSS
+ */
+function generateEditableDisplayCSS(selector: string, element: ElementConfig & { type: 'editabledisplay' }): string {
+  return `/* Editable Display */
+${selector} {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ${element.fontFamily};
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  background-color: ${element.backgroundColor};
+  padding: ${element.padding}px;
+  box-sizing: border-box;
+  user-select: none;
+  cursor: pointer;
+  border: 2px solid ${element.borderColor};
+  border-radius: 4px;
+}`
+}
+
+/**
+ * Generate Multi-Value Display CSS
+ */
+function generateMultiValueDisplayCSS(selector: string, element: ElementConfig & { type: 'multivaluedisplay' }): string {
+  return `/* Multi-Value Display */
+${selector} {
+  display: flex;
+  flex-direction: ${element.layout === 'vertical' ? 'column' : 'row'};
+  justify-content: space-around;
+  gap: 4px;
+  font-family: ${element.fontFamily};
+  font-size: ${element.fontSize}px;
+  color: ${element.textColor};
+  background-color: ${element.backgroundColor};
+  padding: ${element.padding}px;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+${selector} .value-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+${selector} .label {
+  font-size: ${element.fontSize * 0.7}px;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}`
+}
+
+// ============================================================================
+// LED Indicator CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate Single LED CSS
+ */
+function generateSingleLedCSS(selector: string, element: ElementConfig & { type: 'singleled' }): string {
+  return `/* Single LED */
+${selector} {
+  border-radius: ${element.shape === 'round' ? '50%' : `${element.cornerRadius}px`};
+  transition: none;
+}
+
+${selector}[data-state="off"] {
+  background-color: ${element.offColor};
+}
+
+${selector}[data-state="on"] {
+  background-color: ${element.onColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.onColor};` : ''}
+}`
+}
+
+/**
+ * Generate Bi-Color LED CSS
+ */
+function generateBiColorLedCSS(selector: string, element: ElementConfig & { type: 'bicolorled' }): string {
+  return `/* Bi-Color LED */
+${selector} {
+  border-radius: ${element.shape === 'round' ? '50%' : `${element.cornerRadius}px`};
+  transition: none;
+}
+
+${selector}[data-state="green"] {
+  background-color: ${element.greenColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.greenColor};` : ''}
+}
+
+${selector}[data-state="red"] {
+  background-color: ${element.redColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.redColor};` : ''}
+}`
+}
+
+/**
+ * Generate Tri-Color LED CSS
+ */
+function generateTriColorLedCSS(selector: string, element: ElementConfig & { type: 'tricolorled' }): string {
+  return `/* Tri-Color LED */
+${selector} {
+  border-radius: ${element.shape === 'round' ? '50%' : `${element.cornerRadius}px`};
+  transition: none;
+}
+
+${selector}[data-state="off"] {
+  background-color: ${element.offColor};
+}
+
+${selector}[data-state="yellow"] {
+  background-color: ${element.yellowColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.yellowColor};` : ''}
+}
+
+${selector}[data-state="red"] {
+  background-color: ${element.redColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.redColor};` : ''}
+}`
+}
+
+/**
+ * Generate LED Array CSS
+ */
+function generateLedArrayCSS(selector: string, element: ElementConfig & { type: 'ledarray' }): string {
+  const isHorizontal = element.orientation === 'horizontal'
+  return `/* LED Array */
+${selector} {
+  display: flex;
+  flex-direction: ${isHorizontal ? 'row' : 'column'};
+  gap: ${element.spacing}px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+${selector} .led-segment {
+  flex: 1;
+  max-width: ${isHorizontal ? `${element.width / element.segmentCount - element.spacing}px` : '100%'};
+  max-height: ${!isHorizontal ? `${element.height / element.segmentCount - element.spacing}px` : '100%'};
+  border-radius: ${element.shape === 'round' ? '50%' : `${element.cornerRadius}px`};
+  transition: none;
+}
+
+${selector} .led-segment[data-lit="false"] {
+  background-color: ${element.offColor};
+}
+
+${selector} .led-segment[data-lit="true"] {
+  background-color: ${element.onColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.onColor};` : ''}
+}`
+}
+
+/**
+ * Generate LED Ring CSS
+ */
+function generateLedRingCSS(selector: string, _element: ElementConfig & { type: 'ledring' }): string {
+  return `/* LED Ring */
+${selector} {
+  overflow: visible;
+}
+
+${selector} svg {
+  overflow: visible;
+}`
+}
+
+/**
+ * Generate LED Matrix CSS
+ */
+function generateLedMatrixCSS(selector: string, element: ElementConfig & { type: 'ledmatrix' }): string {
+  return `/* LED Matrix */
+${selector} {
+  display: grid;
+  grid-template-rows: repeat(${element.rows}, 1fr);
+  grid-template-columns: repeat(${element.columns}, 1fr);
+  gap: ${element.spacing}px;
+  padding: ${element.spacing}px;
+}
+
+${selector} .led-cell {
+  border-radius: ${element.shape === 'round' ? '50%' : `${element.cornerRadius}px`};
+  justify-self: center;
+  align-self: center;
+  width: calc(100% - ${element.spacing}px);
+  height: calc(100% - ${element.spacing}px);
+  transition: none;
+}
+
+${selector} .led-cell[data-lit="false"] {
+  background-color: ${element.offColor};
+}
+
+${selector} .led-cell[data-lit="true"] {
+  background-color: ${element.onColor};
+  ${element.glowEnabled ? `box-shadow: 0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.onColor};` : ''}
 }`
 }

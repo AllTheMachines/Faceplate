@@ -10,6 +10,7 @@ import { sanitizeSVG } from '../../lib/svg-sanitizer'
 import { extractLayer, applyAllColorOverrides } from '../knobLayers'
 import type { KnobStyle } from '../../types/knobStyle'
 import { builtInIconSVG, BuiltInIcon } from '../../utils/builtInIcons'
+import { formatDisplayValue } from '../../utils/valueFormatters'
 
 // ============================================================================
 // Value Formatting Utility
@@ -286,15 +287,46 @@ export function generateElementHTML(element: ElementConfig): string {
       return generatePowerButtonHTML(id, baseClass, positionStyle, element)
 
     case 'numericdisplay':
+      return generateNumericDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'timedisplay':
+      return generateTimeDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'percentagedisplay':
+      return generatePercentageDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'ratiodisplay':
+      return generateRatioDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'notedisplay':
+      return generateNoteDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'bpmdisplay':
+      return generateBpmDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'editabledisplay':
+      return generateEditableDisplayHTML(id, baseClass, positionStyle, element)
+
     case 'multivaluedisplay':
-      // Value displays use placeholder HTML (real value comes from plugin)
-      return `${positionStyle}<div id="${id}" class="${baseClass}">0.00</div>`
+      return generateMultiValueDisplayHTML(id, baseClass, positionStyle, element)
+
+    case 'singleled':
+      return generateSingleLedHTML(id, baseClass, positionStyle, element)
+
+    case 'bicolorled':
+      return generateBiColorLedHTML(id, baseClass, positionStyle, element)
+
+    case 'tricolorled':
+      return generateTriColorLedHTML(id, baseClass, positionStyle, element)
+
+    case 'ledarray':
+      return generateLedArrayHTML(id, baseClass, positionStyle, element)
+
+    case 'ledring':
+      return generateLedRingHTML(id, baseClass, positionStyle, element)
+
+    case 'ledmatrix':
+      return generateLedMatrixHTML(id, baseClass, positionStyle, element)
 
     default:
       // TypeScript exhaustiveness check
@@ -898,5 +930,340 @@ function generateSegmentButtonHTML(
 
   return `<div id="${id}" class="${baseClass} segmentbutton-element" data-type="segmentbutton" data-mode="${element.selectionMode}" data-orientation="${element.orientation}" style="${positionStyle}">
   ${segmentsHTML}
+</div>`
+}
+
+// ============================================================================
+// Value Display HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate Numeric Display HTML
+ */
+function generateNumericDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'numericdisplay' }
+): string {
+  const formattedValue = formatDisplayValue(element.value, element.min, element.max, 'numeric', { decimals: element.decimalPlaces })
+  const ghostPattern = '8'.repeat(formattedValue.replace(/[^0-9.-]/g, '').length)
+  const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
+    ? `<span class="ghost">${ghostPattern}</span>`
+    : ''
+  const unitHTML = element.unitDisplay === 'label' && element.unit
+    ? `<span class="unit">${escapeHTML(element.unit)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} numericdisplay-element" data-type="numericdisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  ${ghostHTML}
+  <span class="value">${escapeHTML(formattedValue)}</span>
+  ${unitHTML}
+</div>`
+}
+
+/**
+ * Generate Time Display HTML
+ */
+function generateTimeDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'timedisplay' }
+): string {
+  const formattedTime = formatDisplayValue(element.value, element.min, element.max, 'time', {
+    decimals: element.decimalPlaces,
+    bpm: element.bpm,
+    timeSignature: element.timeSignature
+  })
+  const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
+    ? `<span class="ghost">88:88:88</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} timedisplay-element" data-type="timedisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  ${ghostHTML}
+  <span class="value">${escapeHTML(formattedTime)}</span>
+</div>`
+}
+
+/**
+ * Generate Percentage Display HTML
+ */
+function generatePercentageDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'percentagedisplay' }
+): string {
+  const formattedPercentage = formatDisplayValue(element.value, 0, 1, 'percentage', { decimals: element.decimalPlaces })
+  const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
+    ? `<span class="ghost">888%</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} percentagedisplay-element" data-type="percentagedisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  ${ghostHTML}
+  <span class="value">${escapeHTML(formattedPercentage)}</span>
+</div>`
+}
+
+/**
+ * Generate Ratio Display HTML
+ */
+function generateRatioDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'ratiodisplay' }
+): string {
+  const formattedRatio = formatDisplayValue(element.value, element.min, element.max, 'ratio', { decimals: element.decimalPlaces })
+  const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
+    ? `<span class="ghost">88:1</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} ratiodisplay-element" data-type="ratiodisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  ${ghostHTML}
+  <span class="value">${escapeHTML(formattedRatio)}</span>
+</div>`
+}
+
+/**
+ * Generate Note Display HTML
+ */
+function generateNoteDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'notedisplay' }
+): string {
+  // Calculate note from MIDI number
+  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+  const midiNumber = Math.round(element.min + element.value * (element.max - element.min))
+  const octave = Math.floor(midiNumber / 12) - 1
+  const noteName = noteNames[midiNumber % 12]
+  const midiHTML = element.showMidiNumber
+    ? `<span class="midi">${midiNumber}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} notedisplay-element" data-type="notedisplay" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  <span class="note">${noteName}${octave}</span>
+  ${midiHTML}
+</div>`
+}
+
+/**
+ * Generate BPM Display HTML
+ */
+function generateBpmDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'bpmdisplay' }
+): string {
+  const formattedBpm = formatDisplayValue(element.value, element.min, element.max, 'bpm', { decimals: element.decimalPlaces })
+  const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
+    ? `<span class="ghost">888.88</span>`
+    : ''
+  const labelHTML = element.showLabel
+    ? `<span class="label">BPM</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} bpmdisplay-element" data-type="bpmdisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  ${ghostHTML}
+  <span class="value">${escapeHTML(formattedBpm.replace(' BPM', ''))}</span>
+  ${labelHTML}
+</div>`
+}
+
+/**
+ * Generate Editable Display HTML
+ */
+function generateEditableDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'editabledisplay' }
+): string {
+  // For editable display, we format the value based on its format type
+  // db format requires special handling (not in formatDisplayValue)
+  let formattedValue: string
+  if (element.format === 'db') {
+    const actual = element.min + element.value * (element.max - element.min)
+    formattedValue = `${actual.toFixed(element.decimalPlaces)} dB`
+  } else {
+    // Cast format to the union type expected by formatDisplayValue
+    const displayFormat = element.format as 'numeric' | 'percentage'
+    formattedValue = formatDisplayValue(element.value, element.min, element.max, displayFormat, { decimals: element.decimalPlaces })
+  }
+
+  return `<div id="${id}" class="${baseClass} editabledisplay-element" data-type="editabledisplay" data-format="${element.format}" data-min="${element.min}" data-max="${element.max}" style="${positionStyle}">
+  <span class="value">${escapeHTML(formattedValue)}</span>
+</div>`
+}
+
+/**
+ * Generate Multi-Value Display HTML
+ */
+function generateMultiValueDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'multivaluedisplay' }
+): string {
+  const valuesHTML = element.values.slice(0, 4).map((v) => {
+    // Multi-value format is a generic string, handle known formats
+    let formattedValue: string
+    const knownFormats = ['numeric', 'time', 'percentage', 'ratio', 'note', 'bpm']
+    if (knownFormats.includes(v.format)) {
+      formattedValue = formatDisplayValue(v.value, v.min, v.max, v.format as any, { decimals: v.decimalPlaces })
+    } else if (v.format === 'db') {
+      const actual = v.min + v.value * (v.max - v.min)
+      formattedValue = `${actual.toFixed(v.decimalPlaces || 2)} dB`
+    } else {
+      // Default to numeric
+      const actual = v.min + v.value * (v.max - v.min)
+      formattedValue = actual.toFixed(v.decimalPlaces || 2)
+    }
+    const labelHTML = v.label ? `<span class="label">${escapeHTML(v.label)}</span>` : ''
+    return `<div class="value-item">
+      ${labelHTML}
+      <span class="value">${escapeHTML(formattedValue)}</span>
+    </div>`
+  }).join('')
+
+  return `<div id="${id}" class="${baseClass} multivaluedisplay-element" data-type="multivaluedisplay" data-layout="${element.layout}" style="${positionStyle}">
+  ${valuesHTML}
+</div>`
+}
+
+// ============================================================================
+// LED Indicator HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate Single LED HTML
+ */
+function generateSingleLedHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'singleled' }
+): string {
+  return `<div id="${id}" class="${baseClass} singleled-element" data-type="singleled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}"></div>`
+}
+
+/**
+ * Generate Bi-Color LED HTML
+ */
+function generateBiColorLedHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'bicolorled' }
+): string {
+  return `<div id="${id}" class="${baseClass} bicolorled-element" data-type="bicolorled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}"></div>`
+}
+
+/**
+ * Generate Tri-Color LED HTML
+ */
+function generateTriColorLedHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'tricolorled' }
+): string {
+  return `<div id="${id}" class="${baseClass} tricolorled-element" data-type="tricolorled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}"></div>`
+}
+
+/**
+ * Generate LED Array HTML
+ */
+function generateLedArrayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'ledarray' }
+): string {
+  const litCount = Math.round(element.value * element.segmentCount)
+  const segmentsHTML = Array.from({ length: element.segmentCount }, (_, i) => {
+    const isLit = i < litCount
+    return `<div class="led-segment" data-index="${i}" data-lit="${isLit}"></div>`
+  }).join('')
+
+  return `<div id="${id}" class="${baseClass} ledarray-element" data-type="ledarray" data-orientation="${element.orientation}" data-count="${element.segmentCount}" style="${positionStyle}">
+  ${segmentsHTML}
+</div>`
+}
+
+/**
+ * Generate LED Ring HTML with SVG
+ */
+function generateLedRingHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'ledring' }
+): string {
+  const diameter = element.diameter
+  const cx = diameter / 2
+  const cy = diameter / 2
+  const radius = (diameter - element.thickness) / 2
+
+  // Calculate arc parameters
+  const totalAngle = element.endAngle - element.startAngle
+  const litAngle = element.startAngle + totalAngle * element.value
+
+  // Calculate dash array for segments (using small gap to create discrete segments)
+  const circumference = 2 * Math.PI * radius
+  const segmentAngle = totalAngle / element.segmentCount
+  const segmentArc = (segmentAngle / 360) * circumference
+  const gapArc = 2 // Fixed 2px gap between segments
+  const dashLength = segmentArc - gapArc
+  const gapLength = gapArc
+
+  // Calculate lit segments dash array
+  const litSegments = Math.floor((litAngle - element.startAngle) / segmentAngle)
+  const litDashArray = litSegments > 0 ? `${dashLength} ${gapLength}`.repeat(litSegments) : '0 9999'
+
+  const glowFilter = element.glowEnabled ? `<defs>
+    <filter id="led-glow-${id}">
+      <feGaussianBlur stdDeviation="${element.glowRadius / 3}" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>` : ''
+
+  return `<div id="${id}" class="${baseClass} ledring-element" data-type="ledring" style="${positionStyle}">
+  <svg width="${diameter}" height="${diameter}" viewBox="0 0 ${diameter} ${diameter}">
+    ${glowFilter}
+    <circle class="ring-bg" cx="${cx}" cy="${cy}" r="${radius}" fill="none"
+      stroke="${element.offColor}" stroke-width="${element.thickness}"
+      stroke-dasharray="${dashLength} ${gapLength}" opacity="0.3"/>
+    <circle class="ring-lit" cx="${cx}" cy="${cy}" r="${radius}" fill="none"
+      stroke="${element.onColor}" stroke-width="${element.thickness}"
+      stroke-dasharray="${litDashArray}"
+      transform="rotate(${element.startAngle} ${cx} ${cy})"
+      ${element.glowEnabled ? `filter="url(#led-glow-${id})"` : ''}/>
+  </svg>
+</div>`
+}
+
+/**
+ * Generate LED Matrix HTML
+ */
+function generateLedMatrixHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  element: ElementConfig & { type: 'ledmatrix' }
+): string {
+  const cellsHTML = element.states.flat().map((isLit, i) => {
+    return `<div class="led-cell" data-index="${i}" data-lit="${isLit}"></div>`
+  }).join('')
+
+  return `<div id="${id}" class="${baseClass} ledmatrix-element" data-type="ledmatrix" data-rows="${element.rows}" data-cols="${element.columns}" style="${positionStyle}">
+  ${cellsHTML}
 </div>`
 }
