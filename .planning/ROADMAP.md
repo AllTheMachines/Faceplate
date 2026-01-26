@@ -359,6 +359,14 @@ Plans:
 **Goal**: Users can add real-time audio visualizations with Canvas rendering
 **Dependencies**: Phase 19 (requires code splitting infrastructure)
 **Requirements**: VIZ-01, VIZ-02, VIZ-03, VIZ-04, VIZ-05
+**Plans**: 5 plans
+
+Plans:
+- [ ] 25-01-PLAN.md — Types, mock data utilities, Canvas setup hook
+- [ ] 25-02-PLAN.md — Scrolling Waveform and Spectrum Analyzer renderers
+- [ ] 25-03-PLAN.md — Spectrogram, Goniometer, Vectorscope renderers
+- [ ] 25-04-PLAN.md — Property panels and palette entries
+- [ ] 25-05-PLAN.md — Export support (CSS/HTML/JS generation)
 
 **Success Criteria:**
 1. User can add Scrolling Waveform (time-domain with moving display)
