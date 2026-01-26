@@ -63,6 +63,29 @@ export interface CollapsibleContainerElementConfig extends BaseElementConfig {
   borderRadius: number
 }
 
+export interface TooltipElementConfig extends BaseElementConfig {
+  type: 'tooltip'
+
+  // Trigger & timing
+  hoverDelay: number  // 300-500ms recommended (default: 400ms)
+
+  // Content (rich content support - HTML sanitized with DOMPurify)
+  content: string  // HTML string
+
+  // Position
+  position: 'top' | 'bottom' | 'left' | 'right'
+  showArrow: boolean
+  offset: number  // Distance from trigger element (default: 8px)
+
+  // Styling
+  backgroundColor: string
+  textColor: string
+  fontSize: number
+  padding: number
+  borderRadius: number
+  maxWidth: number
+}
+
 // ============================================================================
 // Container Element Union
 // ============================================================================
@@ -72,6 +95,7 @@ export type ContainerElement =
   | FrameElementConfig
   | GroupBoxElementConfig
   | CollapsibleContainerElementConfig
+  | TooltipElementConfig
 
 // ============================================================================
 // Type Guards
@@ -91,6 +115,10 @@ export function isGroupBox(element: { type: string }): element is GroupBoxElemen
 
 export function isCollapsible(element: { type: string }): element is CollapsibleContainerElementConfig {
   return element.type === 'collapsible'
+}
+
+export function isTooltip(element: { type: string }): element is TooltipElementConfig {
+  return element.type === 'tooltip'
 }
 
 // ============================================================================
@@ -191,6 +219,34 @@ export function createCollapsible(overrides?: Partial<CollapsibleContainerElemen
     borderWidth: 1,
     borderColor: '#374151',
     borderRadius: 0,
+    ...overrides,
+  }
+}
+
+export function createTooltip(overrides?: Partial<TooltipElementConfig>): TooltipElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'tooltip',
+    name: 'Tooltip',
+    x: 0,
+    y: 0,
+    width: 100,   // Trigger area width
+    height: 30,   // Trigger area height
+    rotation: 0,
+    zIndex: 1000, // High z-index for overlay
+    locked: false,
+    visible: true,
+    hoverDelay: 400,
+    content: '<p>Tooltip text</p>',
+    position: 'top',
+    showArrow: true,
+    offset: 8,
+    backgroundColor: '#1f2937',
+    textColor: '#ffffff',
+    fontSize: 12,
+    padding: 8,
+    borderRadius: 4,
+    maxWidth: 200,
     ...overrides,
   }
 }
