@@ -52,6 +52,9 @@ All v1.1 decisions documented and outcomes verified.
 
 | Decision | Phase | Rationale | Outcome |
 |----------|-------|-----------|---------|
+| Stepped Knob quantizes display value | 20-01 | Visual feedback should match discrete step positions | Value snaps to nearest step in display |
+| Center Detent uses bipolar fill | 20-01 | Bipolar controls fill from center, not minimum | Clear visual indication of deviation from center |
+| Dot Indicator omits fill arc | 20-01 | Minimal style for cleaner appearance | Track + dot only, no fill |
 | Fixed band count presets (3,4,5,7,10,31) | 20-04 | Common EQ configurations in audio plugins | Easy selection with custom option for flexibility |
 | Frequency labels per band count | 20-04 | Standard frequency bands for graphic EQs | Professional appearance matching industry standards |
 | Link mode as runtime hint only | 20-04 | Linking is runtime behavior not design-time | Clear separation of concerns |
@@ -73,18 +76,19 @@ None — Architecture foundation solid from Phase 19.
 - Code splitting infrastructure (Suspense + Vite chunks)
 
 **Phase 20 Progress:**
-- Plan 01-03: Rotary control variants (Stepped, Center Detent, Dot Indicator)
+- Plan 01: Rotary control variants - Stepped, Center Detent, Dot Indicator (COMPLETE)
+- Plan 02-03: Additional rotary variants
 - Plan 04: Multi-Slider (COMPLETE)
 - Plans 05-08: Additional linear controls (Bipolar, Crossfade, Notched, Arc)
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 20-04-PLAN.md (Multi-Slider)
+Stopped at: Completed 20-01-PLAN.md (Rotary Control Variants)
 Resume file: None
 
-**Next step:** Continue Phase 20 plans 05-08
+**Next step:** Continue Phase 20 plans 02-03, 05-08
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing plan 20-04*
+*Last updated: 2026-01-26 after completing plan 20-01*
