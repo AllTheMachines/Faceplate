@@ -72,6 +72,7 @@ export function SaveLoadPanel() {
   const gridSize = useStore((state) => state.gridSize)
   const selectedIds = useStore((state) => state.selectedIds)
   const assets = useStore((state) => state.assets)
+  const knobStyles = useStore((state) => state.knobStyles)
 
   // Get actions for load
   const setElements = useStore((state) => state.setElements)
@@ -83,6 +84,7 @@ export function SaveLoadPanel() {
   const setGridSize = useStore((state) => state.setGridSize)
   const selectMultiple = useStore((state) => state.selectMultiple)
   const setAssets = useStore((state) => state.setAssets)
+  const setKnobStyles = useStore((state) => state.setKnobStyles)
 
   const handleSave = async () => {
     setLoading(true)
@@ -101,6 +103,7 @@ export function SaveLoadPanel() {
         gridSize,
         selectedIds,
         assets,
+        knobStyles,
       })
 
       // Save to file
@@ -166,6 +169,11 @@ export function SaveLoadPanel() {
       // Restore assets if present
       if (data.assets) {
         setAssets(data.assets)
+      }
+
+      // Restore knob styles if present
+      if (data.knobStyles) {
+        setKnobStyles(data.knobStyles)
       }
 
       // Clear error on success

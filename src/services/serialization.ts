@@ -8,6 +8,7 @@ import { ProjectSchema, type ProjectData } from '../schemas/project'
 import type { ElementConfig } from '../types/elements'
 import type { GradientConfig } from '../store/canvasSlice'
 import type { Asset } from '../types/asset'
+import type { KnobStyle } from '../types/knobStyle'
 import { sanitizeSVG } from '../lib/svg-sanitizer'
 
 // ============================================================================
@@ -25,6 +26,7 @@ export interface SerializationInput {
   gridSize: number
   selectedIds: string[]
   assets: Asset[]
+  knobStyles: KnobStyle[]
 }
 
 /**
@@ -48,6 +50,7 @@ export function serializeProject(state: SerializationInput): string {
     elements: state.elements as ProjectData['elements'],
     selectedIds: state.selectedIds,
     assets: state.assets,
+    knobStyles: state.knobStyles,
   }
 
   // JSON.stringify with 2-space indent for human readability
@@ -129,6 +132,21 @@ export function deserializeProject(json: string): DeserializeResult {
       }
       return {
         ...asset,
+        svgContent: resanitized
+      }
+    })
+  }
+
+  // Re-sanitize all knob style SVGs (SEC-02: tampering protection)
+  if (data.knobStyles && data.knobStyles.length > 0) {
+    data.knobStyles = data.knobStyles.map(style => {
+      const resanitized = sanitizeSVG(style.svgContent)
+      // Log if content changed during re-sanitization (possible tampering)
+      if (resanitized !== style.svgContent) {
+        console.warn(`Knob style "${style.name}" was modified during re-sanitization (possible tampering)`)
+      }
+      return {
+        ...style,
         svgContent: resanitized
       }
     })
