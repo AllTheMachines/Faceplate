@@ -1,58 +1,6 @@
 import { useStore } from '../../store'
-import {
-  isKnob,
-  isSlider,
-  isButton,
-  isLabel,
-  isMeter,
-  isImage,
-  isDropdown,
-  isCheckbox,
-  isRadioGroup,
-  isPanel,
-  isFrame,
-  isGroupBox,
-  isRectangle,
-  isLine,
-  isDbDisplay,
-  isFrequencyDisplay,
-  isGainReductionMeter,
-  isPresetBrowser,
-  isWaveform,
-  isOscilloscope,
-  isTextField,
-  isCollapsible,
-  isRangeSlider,
-  isModulationMatrix,
-  isSvgGraphic,
-  ElementConfig,
-} from '../../types/elements'
-import { NumberInput, TextInput, PropertySection } from './'
-import { KnobProperties } from './KnobProperties'
-import { SliderProperties } from './SliderProperties'
-import { ButtonProperties } from './ButtonProperties'
-import { LabelProperties } from './LabelProperties'
-import { MeterProperties } from './MeterProperties'
-import { ImageProperties } from './ImageProperties'
-import { PanelProperties } from './PanelProperties'
-import { FrameProperties } from './FrameProperties'
-import { GroupBoxProperties } from './GroupBoxProperties'
-import { RectangleProperties } from './RectangleProperties'
-import { LineProperties } from './LineProperties'
-import { DbDisplayProperties } from './DbDisplayProperties'
-import { FrequencyDisplayProperties } from './FrequencyDisplayProperties'
-import { GainReductionMeterProperties } from './GainReductionMeterProperties'
-import { PresetBrowserProperties } from './PresetBrowserProperties'
-import { WaveformProperties } from './WaveformProperties'
-import { OscilloscopeProperties } from './OscilloscopeProperties'
-import { DropdownProperties } from './DropdownProperties'
-import { CheckboxProperties } from './CheckboxProperties'
-import { RadioGroupProperties } from './RadioGroupProperties'
-import { TextFieldProperties } from './TextFieldProperties'
-import { CollapsibleProperties } from './CollapsibleProperties'
-import { RangeSliderProperties } from './RangeSliderProperties'
-import { ModulationMatrixProperties } from './ModulationMatrixProperties'
-import { SvgGraphicProperties } from './SvgGraphicProperties'
+import { ElementConfig } from '../../types/elements'
+import { NumberInput, TextInput, PropertySection, getPropertyComponent } from './'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -171,37 +119,12 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Type-specific properties */}
-      {isKnob(element) && <KnobProperties element={element} onUpdate={update} />}
-      {isSlider(element) && <SliderProperties element={element} onUpdate={update} />}
-      {isButton(element) && <ButtonProperties element={element} onUpdate={update} />}
-      {isLabel(element) && <LabelProperties element={element} onUpdate={update} />}
-      {isMeter(element) && <MeterProperties element={element} onUpdate={update} />}
-      {isImage(element) && <ImageProperties element={element} onUpdate={update} />}
-      {isPanel(element) && <PanelProperties element={element} onUpdate={update} />}
-      {isFrame(element) && <FrameProperties element={element} onUpdate={update} />}
-      {isGroupBox(element) && <GroupBoxProperties element={element} onUpdate={update} />}
-      {isRectangle(element) && <RectangleProperties element={element} onUpdate={update} />}
-      {isLine(element) && <LineProperties element={element} onUpdate={update} />}
-      {isDbDisplay(element) && <DbDisplayProperties element={element} onUpdate={update} />}
-      {isFrequencyDisplay(element) && (
-        <FrequencyDisplayProperties element={element} onUpdate={update} />
-      )}
-      {isGainReductionMeter(element) && (
-        <GainReductionMeterProperties element={element} onUpdate={update} />
-      )}
-      {isPresetBrowser(element) && (
-        <PresetBrowserProperties element={element} onUpdate={update} />
-      )}
-      {isWaveform(element) && <WaveformProperties element={element} onUpdate={update} />}
-      {isOscilloscope(element) && <OscilloscopeProperties element={element} onUpdate={update} />}
-      {isDropdown(element) && <DropdownProperties element={element} onUpdate={update} />}
-      {isCheckbox(element) && <CheckboxProperties element={element} onUpdate={update} />}
-      {isRadioGroup(element) && <RadioGroupProperties element={element} onUpdate={update} />}
-      {isTextField(element) && <TextFieldProperties element={element} onUpdate={update} />}
-      {isCollapsible(element) && <CollapsibleProperties element={element} onUpdate={update} />}
-      {isRangeSlider(element) && <RangeSliderProperties element={element} onUpdate={update} />}
-      {isModulationMatrix(element) && <ModulationMatrixProperties element={element} onUpdate={update} />}
-      {isSvgGraphic(element) && <SvgGraphicProperties element={element} onUpdate={update} />}
+      {(() => {
+        const TypeSpecificProperties = getPropertyComponent(element.type)
+        return TypeSpecificProperties ? (
+          <TypeSpecificProperties element={element} onUpdate={update} />
+        ) : null
+      })()}
     </div>
   )
 }
