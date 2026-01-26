@@ -3,6 +3,8 @@
  * Discriminated unions for type-safe element configuration
  */
 
+import { ColorOverrides } from './knobStyle'
+
 // ============================================================================
 // Base Element Configuration
 // ============================================================================
@@ -69,6 +71,12 @@ export interface KnobElementConfig extends BaseElementConfig {
   valueDecimalPlaces: number
   valueFontSize: number
   valueColor: string
+
+  // SVG Knob Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface SliderElementConfig extends BaseElementConfig {
