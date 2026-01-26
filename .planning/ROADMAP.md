@@ -362,11 +362,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 25-01-PLAN.md — Types, mock data utilities, Canvas setup hook
-- [ ] 25-02-PLAN.md — Scrolling Waveform and Spectrum Analyzer renderers
-- [ ] 25-03-PLAN.md — Spectrogram, Goniometer, Vectorscope renderers
-- [ ] 25-04-PLAN.md — Property panels and palette entries
-- [ ] 25-05-PLAN.md — Export support (CSS/HTML/JS generation)
+- [x] 25-01-PLAN.md — Types, mock data utilities, Canvas setup hook
+- [x] 25-02-PLAN.md — Scrolling Waveform and Spectrum Analyzer renderers
+- [x] 25-03-PLAN.md — Spectrogram, Goniometer, Vectorscope renderers
+- [x] 25-04-PLAN.md — Property panels and palette entries
+- [x] 25-05-PLAN.md — Export support (CSS/HTML/JS generation)
 
 **Success Criteria:**
 1. User can add Scrolling Waveform (time-domain with moving display)
@@ -462,7 +462,7 @@ Plans:
 | 22. Value Displays & LEDs | v1.2 | 4/4 | Complete | 2026-01-26 |
 | 23. Professional Meters | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 24. Navigation & Selection | v1.2 | 6/6 | Complete | 2026-01-26 |
-| 25. Real-Time Visualizations | v1.2 | 0/? | Pending | — |
+| 25. Real-Time Visualizations | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 26. Interactive Curves | v1.2 | 0/? | Pending | — |
 | 27. Containers & Polish | v1.2 | 0/? | Pending | — |
 | 28. Specialized Audio (Part 1) | v1.2 | 0/? | Pending | — |
@@ -471,4 +471,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 24 execution complete*
+*Last updated: 2026-01-26 after Phase 25 execution complete*
