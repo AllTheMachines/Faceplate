@@ -160,10 +160,13 @@ All v1.1 decisions documented and outcomes verified.
 | Soft knee quadratic interpolation | 26-01 | Professional compressor behavior | Smooth transition in knee region (threshold ± knee/2) |
 | Adaptive dB grid step | 26-01 | Maintain readability across different dB ranges | 12dB step for ≥48dB range, 6dB step for narrow ranges |
 | Mock data generators | 26-01 | Consistent static preview across curve elements | generateMockEQBands, generateMockADSR, generateMockCompressor |
+| Composite EQ response calculation | 26-02 | Sum contributions from all bands for accurate frequency response | Realistic total EQ effect visualization |
+| Filter handle at cutoff frequency | 26-02 | Visual marker shows cutoff position on response curve | Immediate visual feedback on filter behavior |
+| Individual band overlay | 26-02 | Optional view helps understand per-band contribution | Educational feature with 0.3 opacity, toggleable |
 
 ### Pending Todos
 
-None - Phase 26 Plan 01 complete
+None - Phase 26 Plan 02 complete
 
 ### Blockers/Concerns
 
@@ -247,19 +250,28 @@ None - Phase 26 Plan 01 complete
 
 **Phase 26 in progress:**
 - Plan 26-01: Curve element types and utilities - COMPLETE
+- Plan 26-02: EQ Curve & Filter Response renderers - COMPLETE
+- Plan 26-03: Compressor Curve & Envelope Display renderers - COMPLETE
+- Plan 26-04: LFO Display renderer - COMPLETE
+- **Total:** 5 curve element types with Canvas renderers
 - TypeScript types for 5 interactive curve elements (EQCurve, CompressorCurve, EnvelopeDisplay, LFODisplay, FilterResponse)
 - Audio math utilities: logarithmic frequency scale, biquad filter calculations (7 filter types), compressor transfer function
 - Curve rendering utilities: Bezier curve drawing, square handles (8px/10px hover), grid rendering, mock data generators
-- All curve types exported from ElementConfig union
+- All 5 curve renderers registered in rendererRegistry for O(1) lookup
+- EQCurveRenderer: multi-band parametric EQ with frequency response curve
+- FilterResponseRenderer: 7 filter types (lowpass, highpass, bandpass, notch, lowshelf, highshelf, peak)
+- CompressorCurveRenderer: transfer function with soft knee, 1:1 reference line, gain reduction mode
+- EnvelopeDisplayRenderer: ADSR envelope with exponential/linear curves, stage coloring, stage markers
+- LFODisplayRenderer: 8 waveform shapes (sine, triangle, saw-up/down, square, pulse, sample-hold, smooth-random)
 
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 26-01-PLAN.md
+Stopped at: Completed 26-03-PLAN.md
 Resume file: None
 
-**Next step:** Continue Phase 26 with remaining plans (curve renderers, property panels, palette, export)
+**Next step:** Continue Phase 26 with remaining plan (property panels & palette)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after 25-05-PLAN.md complete - Phase 25 complete*
+*Last updated: 2026-01-26 after 26-03-PLAN.md complete - Compressor & Envelope renderers*
