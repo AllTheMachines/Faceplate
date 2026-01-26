@@ -41,6 +41,11 @@ import {
   createOscilloscope,
   createPresetBrowser,
   createSvgGraphic,
+  createEQCurve,
+  createCompressorCurve,
+  createEnvelopeDisplay,
+  createLFODisplay,
+  createFilterResponse,
 } from './types/elements'
 
 function DragPreview({
@@ -375,6 +380,21 @@ function App() {
         break
       case 'svggraphic':
         newElement = createSvgGraphic({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'eqcurve':
+        newElement = createEQCurve({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'compressorcurve':
+        newElement = createCompressorCurve({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'envelopedisplay':
+        newElement = createEnvelopeDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'lfodisplay':
+        newElement = createLFODisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'filterresponse':
+        newElement = createFilterResponse({ x: canvasX, y: canvasY, ...variant })
         break
       default:
         return
