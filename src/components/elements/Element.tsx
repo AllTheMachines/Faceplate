@@ -2,31 +2,7 @@ import React from 'react'
 import { ElementConfig } from '../../types/elements'
 import { useStore } from '../../store'
 import { BaseElement } from './BaseElement'
-import { KnobRenderer } from './renderers/KnobRenderer'
-import { SliderRenderer } from './renderers/SliderRenderer'
-import { ButtonRenderer } from './renderers/ButtonRenderer'
-import { LabelRenderer } from './renderers/LabelRenderer'
-import { MeterRenderer } from './renderers/MeterRenderer'
-import { ImageRenderer } from './renderers/ImageRenderer'
-import { DropdownRenderer } from './renderers/DropdownRenderer'
-import { CheckboxRenderer } from './renderers/CheckboxRenderer'
-import { RadioGroupRenderer } from './renderers/RadioGroupRenderer'
-import { ModulationMatrixRenderer } from './renderers/ModulationMatrixRenderer'
-import { RangeSliderRenderer } from './renderers/RangeSliderRenderer'
-import { RectangleRenderer } from './renderers/RectangleRenderer'
-import { LineRenderer } from './renderers/LineRenderer'
-import { PanelRenderer } from './renderers/PanelRenderer'
-import { FrameRenderer } from './renderers/FrameRenderer'
-import { GroupBoxRenderer } from './renderers/GroupBoxRenderer'
-import { DbDisplayRenderer } from './renderers/DbDisplayRenderer'
-import { FrequencyDisplayRenderer } from './renderers/FrequencyDisplayRenderer'
-import { GainReductionMeterRenderer } from './renderers/GainReductionMeterRenderer'
-import { PresetBrowserRenderer } from './renderers/PresetBrowserRenderer'
-import { WaveformRenderer } from './renderers/WaveformRenderer'
-import { OscilloscopeRenderer } from './renderers/OscilloscopeRenderer'
-import { TextFieldRenderer } from './renderers/TextFieldRenderer'
-import { CollapsibleRenderer } from './renderers/CollapsibleRenderer'
-import { SvgGraphicRenderer } from './renderers/SvgGraphicRenderer'
+import { getRenderer } from './renderers'
 
 interface ElementProps {
   element: ElementConfig
@@ -63,69 +39,18 @@ function ElementComponent({ element }: ElementProps) {
     }
   }
 
-  const renderContent = () => {
-    switch (element.type) {
-      case 'knob':
-        return <KnobRenderer config={element} />
-      case 'slider':
-        return <SliderRenderer config={element} />
-      case 'button':
-        return <ButtonRenderer config={element} />
-      case 'label':
-        return <LabelRenderer config={element} />
-      case 'meter':
-        return <MeterRenderer config={element} />
-      case 'image':
-        return <ImageRenderer config={element} />
-      case 'dropdown':
-        return <DropdownRenderer config={element} />
-      case 'checkbox':
-        return <CheckboxRenderer config={element} />
-      case 'radiogroup':
-        return <RadioGroupRenderer config={element} />
-      case 'modulationmatrix':
-        return <ModulationMatrixRenderer config={element} />
-      case 'rangeslider':
-        return <RangeSliderRenderer config={element} />
-      case 'rectangle':
-        return <RectangleRenderer config={element} />
-      case 'line':
-        return <LineRenderer config={element} />
-      case 'panel':
-        return <PanelRenderer config={element} />
-      case 'frame':
-        return <FrameRenderer config={element} />
-      case 'groupbox':
-        return <GroupBoxRenderer config={element} />
-      case 'dbdisplay':
-        return <DbDisplayRenderer config={element} />
-      case 'frequencydisplay':
-        return <FrequencyDisplayRenderer config={element} />
-      case 'gainreductionmeter':
-        return <GainReductionMeterRenderer config={element} />
-      case 'presetbrowser':
-        return <PresetBrowserRenderer config={element} />
-      case 'waveform':
-        return <WaveformRenderer config={element} />
-      case 'oscilloscope':
-        return <OscilloscopeRenderer config={element} />
-      case 'textfield':
-        return <TextFieldRenderer config={element} />
-      case 'collapsible':
-        return <CollapsibleRenderer config={element} />
-      case 'svggraphic':
-        return <SvgGraphicRenderer config={element} />
-      default:
-        // TypeScript exhaustive check
-        const exhaustive: never = element
-        void exhaustive
-        return null
-    }
+  // Get renderer from registry (O(1) lookup)
+  const Renderer = getRenderer(element.type)
+
+  // Fallback for unknown types (defensive - should never happen with proper typing)
+  if (!Renderer) {
+    console.warn(`No renderer found for element type: ${element.type}`)
+    return null
   }
 
   return (
     <BaseElement element={element} onClick={handleClick}>
-      {renderContent()}
+      <Renderer config={element} />
     </BaseElement>
   )
 }
