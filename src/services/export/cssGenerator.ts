@@ -6,6 +6,13 @@
 import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
+import type {
+  EQCurveElementConfig,
+  CompressorCurveElementConfig,
+  EnvelopeDisplayElementConfig,
+  LFODisplayElementConfig,
+  FilterResponseElementConfig,
+} from '../../types/elements/curves'
 import { toKebabCase } from './utils'
 import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
 
@@ -1202,6 +1209,14 @@ ${selector} .channel-label {
     case 'goniometer':
     case 'vectorscope':
       return generateVisualizationCSS(element as ScrollingWaveformElementConfig | SpectrumAnalyzerElementConfig | SpectrogramElementConfig | GoniometerElementConfig | VectorscopeElementConfig)
+
+    // Curve Elements
+    case 'eqcurve':
+    case 'compressorcurve':
+    case 'envelopedisplay':
+    case 'lfodisplay':
+    case 'filterresponse':
+      return generateCurveCSS(element as EQCurveElementConfig | CompressorCurveElementConfig | EnvelopeDisplayElementConfig | LFODisplayElementConfig | FilterResponseElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -2697,6 +2712,37 @@ ${selector} .tree-node-name {
  */
 function generateVisualizationCSS(
   config: ScrollingWaveformElementConfig | SpectrumAnalyzerElementConfig | SpectrogramElementConfig | GoniometerElementConfig | VectorscopeElementConfig
+): string {
+  const id = toKebabCase(config.id)
+
+  return `/* ${config.name || config.type} */
+#${id} {
+  position: absolute;
+  left: ${config.x}px;
+  top: ${config.y}px;
+  width: ${config.width}px;
+  height: ${config.height}px;
+  background-color: ${config.backgroundColor};
+  overflow: hidden;
+}
+
+#${id} canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+`
+}
+
+// ============================================================================
+// Curve Element CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate CSS for Canvas-based curve element containers
+ */
+function generateCurveCSS(
+  config: EQCurveElementConfig | CompressorCurveElementConfig | EnvelopeDisplayElementConfig | LFODisplayElementConfig | FilterResponseElementConfig
 ): string {
   const id = toKebabCase(config.id)
 
