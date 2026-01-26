@@ -200,11 +200,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 16-01-PLAN.md — Element type & renderer (SvgGraphicElementConfig, SvgGraphicRenderer)
-- [ ] 16-02-PLAN.md — Property panel (SvgGraphicProperties, getSVGNaturalSize utility)
-- [ ] 16-03-PLAN.md — Integration (palette, Element.tsx, PropertyPanel, drag-drop)
-- [ ] 16-04-PLAN.md — Export support (HTML/CSS generators)
-- [ ] 16-05-PLAN.md — Aspect ratio locking (resize hook modification)
+- [x] 16-01-PLAN.md — Element type & renderer (SvgGraphicElementConfig, SvgGraphicRenderer)
+- [x] 16-02-PLAN.md — Property panel (SvgGraphicProperties, getSVGNaturalSize utility)
+- [x] 16-03-PLAN.md — Integration (palette, Element.tsx, PropertyPanel, drag-drop)
+- [x] 16-04-PLAN.md — Export support (HTML/CSS generators)
+- [x] 16-05-PLAN.md — Aspect ratio locking (resize hook modification)
 
 #### Phase 17: Interactive SVG Knobs
 **Goal**: Users can import custom knob designs with rotation animation mapped to parameter values
@@ -261,10 +261,10 @@ Phases execute in numeric order: 14 -> 15 -> 16 -> 17 -> 18
 | 13. Project Persistence & Polish | v1.0 | 16/16 | Complete | 2026-01-25 |
 | 14. Security Foundation & Upload Pipeline | v1.1 | 4/4 | Complete | 2026-01-25 |
 | 15. Asset Library Storage & UI | v1.1 | 5/5 | Complete | 2026-01-26 |
-| 16. Static SVG Graphics | v1.1 | 0/TBD | Not started | - |
+| 16. Static SVG Graphics | v1.1 | 5/5 | Complete | 2026-01-26 |
 | 17. Interactive SVG Knobs | v1.1 | 0/TBD | Not started | - |
 | 18. Export & Polish | v1.1 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 15 complete*
+*Last updated: 2026-01-26 after Phase 16 complete*
