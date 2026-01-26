@@ -7,6 +7,19 @@ import {
   validateForExport,
 } from '../../services/export'
 
+function ChevronIcon({ expanded }: { expanded: boolean }) {
+  return (
+    <svg
+      className={`w-4 h-4 text-gray-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+    </svg>
+  )
+}
+
 interface ExportDetails {
   timestamp: string
   fileCount: number
@@ -16,6 +29,7 @@ interface ExportDetails {
 }
 
 export function ExportPanel() {
+  const [expanded, setExpanded] = useState(true)
   const [isExporting, setIsExporting] = useState(false)
   const [exportStatus, setExportStatus] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
@@ -139,10 +153,16 @@ export function ExportPanel() {
 
   return (
     <div className="border-b border-gray-700">
-      <div className="p-3">
-        <h3 className="text-sm font-medium text-gray-200 mb-3">Export</h3>
-
-        {/* Validation errors (blocking) */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between p-3 hover:bg-gray-700/50 transition-colors"
+      >
+        <span className="text-sm font-medium text-gray-200">Export</span>
+        <ChevronIcon expanded={expanded} />
+      </button>
+      {expanded && (
+        <div className="p-3 pt-0">
+          {/* Validation errors (blocking) */}
         {!validationResult.valid && validationResult.errors.length > 0 && (
           <div className="mb-3 p-2 bg-red-900/30 border border-red-700 rounded text-xs text-red-200">
             <div className="font-medium mb-1">Fix these errors before exporting:</div>
@@ -274,17 +294,18 @@ export function ExportPanel() {
           </div>
         )}
 
-        {/* Info text */}
-        <div className="pt-3 border-t border-gray-700">
-          <p className="text-xs text-gray-400 leading-relaxed">
-            <span className="font-medium text-gray-300">JUCE Bundle:</span> Complete package with HTML/CSS/JS + integration README
-            <br />
-            <span className="font-medium text-gray-300">Preview:</span> Test in browser with mock interactivity
-            <br />
-            <span className="font-medium text-gray-300">HTML Only:</span> Standalone preview bundle
-          </p>
+          {/* Info text */}
+          <div className="pt-3 border-t border-gray-700">
+            <p className="text-xs text-gray-400 leading-relaxed">
+              <span className="font-medium text-gray-300">JUCE Bundle:</span> Complete package with HTML/CSS/JS + integration README
+              <br />
+              <span className="font-medium text-gray-300">Preview:</span> Test in browser with mock interactivity
+              <br />
+              <span className="font-medium text-gray-300">HTML Only:</span> Standalone preview bundle
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
