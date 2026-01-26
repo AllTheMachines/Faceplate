@@ -11,10 +11,10 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 Phase: 22 - Value Displays & LEDs (COMPLETE)
 Plan: 4 of 4 complete (22-01, 22-02, 22-03, 22-04)
-Status: Complete - Export support for displays/LEDs
-Last activity: 2026-01-26 - Completed 22-04-PLAN.md (Export Support)
+Status: Complete - All property panels and export support implemented
+Last activity: 2026-01-26 - Completed 22-03-PLAN.md (Property Panels & Palette)
 
-Progress: [█████████░] 105/110 plans complete (~95%)
+Progress: [█████████░] 106/110 plans complete (~96%)
 
 ## Performance Metrics
 
@@ -38,7 +38,7 @@ Progress: [█████████░] 105/110 plans complete (~95%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 17 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4)
+- Completed: 18 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4)
 
 ## Accumulated Context
 
@@ -76,6 +76,9 @@ All v1.1 decisions documented and outcomes verified.
 | LED Ring fixed 2px gap | 22-04 | No spacing property in config | Consistent discrete segment appearance |
 | EditableDisplay db format handling | 22-04 | Format outside formatDisplayValue type | Separate formatting for type safety |
 | DSEG7 font conditional loading | 22-04 | Only load when 7-segment used | Avoids unnecessary font loading |
+| Ghost segments only for 7-segment | 22-03 | Notes don't typically use 7-segment displays | Cleaner UI, contextual property display |
+| MultiValueDisplay max 4 values | 22-03 | Prevents overcrowding, maintains readability | User-facing limit enforced in UI |
+| LEDMatrix preset system | 22-03 | Common sizes readily accessible | 4×4, 8×8, 16×8, 16×16 presets + custom |
 
 ### Pending Todos
 
@@ -110,11 +113,11 @@ None - Phase 22 complete
 ## Session Continuity
 
 Last session: 2026-01-26
-Stopped at: Completed 22-04-PLAN.md (Export Support)
+Stopped at: Completed 22-03-PLAN.md (Property Panels & Palette)
 Resume file: None
 
-**Next step:** Proceed to Phase 23 (Metering & Visualization)
+**Next step:** Phase 22 complete. Ready for Phase 23 (Metering & Visualization)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after completing Phase 22 Plan 04*
+*Last updated: 2026-01-26 after completing Phase 22 Plan 03*
