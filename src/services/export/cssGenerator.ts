@@ -4,6 +4,7 @@
  */
 
 import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig } from '../../types/elements'
+import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import { toKebabCase } from './utils'
 import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
 
@@ -1112,6 +1113,51 @@ ${selector} .oscilloscope-placeholder {
     case 'ledmatrix':
       return generateLedMatrixCSS(selector, element)
 
+    // Professional Meters - Level Meters (segmented)
+    case 'rmsmetermo':
+    case 'rmsmeterstereo':
+    case 'vumetermono':
+    case 'vumeterstereo':
+    case 'ppmtype1mono':
+    case 'ppmtype1stereo':
+    case 'ppmtype2mono':
+    case 'ppmtype2stereo':
+    case 'truepeakmetermono':
+    case 'truepeakmeterstereo':
+    case 'lufsmomomo':
+    case 'lufsmomostereo':
+    case 'lufsshortmono':
+    case 'lufsshortstereo':
+    case 'lufsintmono':
+    case 'lufsintstereo':
+    case 'k12metermono':
+    case 'k12meterstereo':
+    case 'k14metermono':
+    case 'k14meterstereo':
+    case 'k20metermono':
+    case 'k20meterstereo': {
+      const config = element as BaseProfessionalMeterConfig
+      let css = generateSegmentedMeterCSS(config, selector)
+
+      // For stereo meters, add wrapper styles
+      if (element.type.includes('stereo')) {
+        css += `
+${selector} .stereo-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+${selector} .channel-label {
+  font-size: 10px;
+  color: #999999;
+  text-align: center;
+}
+`
+      }
+
+      return css
+    }
+
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = element
@@ -1795,6 +1841,60 @@ ${selector} .label {
   opacity: 0.7;
   margin-bottom: 2px;
 }`
+}
+
+// ============================================================================
+// Professional Meter CSS Generation Functions
+// ============================================================================
+
+/**
+ * Generate CSS for segmented meters (RMS, VU, PPM, True Peak, LUFS, K-System)
+ */
+function generateSegmentedMeterCSS(
+  element: BaseProfessionalMeterConfig,
+  selector: string
+): string {
+  const isVertical = element.orientation === 'vertical'
+  const { segmentCount, segmentGap, colorZones, minDb, maxDb } = element
+
+  // Generate color zone CSS variables
+  const zoneColors = colorZones.map((zone, i) =>
+    `--meter-zone-${i}: ${zone.color};`
+  ).join('\n  ')
+
+  // Generate segment styles
+  const gridTemplate = isVertical
+    ? `grid-template-rows: repeat(${segmentCount}, 1fr);`
+    : `grid-template-columns: repeat(${segmentCount}, 1fr);`
+
+  return `
+${selector} {
+  display: grid;
+  ${gridTemplate}
+  gap: ${segmentGap}px;
+  background-color: #000000;
+  ${zoneColors}
+}
+
+${selector} .meter-segment {
+  border-radius: 1px;
+  transition: none;
+}
+
+${selector} .meter-segment.off {
+  opacity: 0.3;
+}
+
+${selector} .meter-segment.on {
+  opacity: 1;
+}
+
+${selector} .peak-hold {
+  position: absolute;
+  background-color: #ffffff;
+  transition: none;
+}
+`
 }
 
 // ============================================================================
