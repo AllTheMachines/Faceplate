@@ -24,6 +24,8 @@ import {
   DotIndicatorKnobRenderer,
   BipolarSliderRenderer,
   CrossfadeSliderRenderer,
+  NotchedSliderRenderer,
+  ArcSliderRenderer,
 } from './controls'
 
 import {
@@ -75,6 +77,8 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['dotindicatorknob', DotIndicatorKnobRenderer as RendererComponent],
   ['bipolarslider', BipolarSliderRenderer as RendererComponent],
   ['crossfadeslider', CrossfadeSliderRenderer as RendererComponent],
+  ['notchedslider', NotchedSliderRenderer as RendererComponent],
+  ['arcslider', ArcSliderRenderer as RendererComponent],
 
   // Displays
   ['label', LabelRenderer as RendererComponent],
@@ -125,6 +129,8 @@ export {
   DotIndicatorKnobRenderer,
   BipolarSliderRenderer,
   CrossfadeSliderRenderer,
+  NotchedSliderRenderer,
+  ArcSliderRenderer,
   // Displays
   LabelRenderer,
   MeterRenderer,
