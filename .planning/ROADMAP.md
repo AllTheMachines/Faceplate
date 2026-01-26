@@ -278,6 +278,13 @@ Plans:
 **Goal**: Users can display formatted parameter values and status indicators
 **Dependencies**: Phase 19 (requires registry pattern)
 **Requirements**: DISP-01, DISP-02, DISP-03, DISP-04, DISP-05, DISP-06, DISP-07, DISP-08, LED-01, LED-02, LED-03, LED-04, LED-05, LED-06
+**Plans**: 4 plans
+
+Plans:
+- [ ] 22-01-PLAN.md — Value display types + renderers (Numeric, Time, %, Ratio, Note, BPM, Editable, Multi-Value)
+- [ ] 22-02-PLAN.md — LED types + renderers (Single, Bi-Color, Tri-Color, Array, Ring, Matrix)
+- [ ] 22-03-PLAN.md — Property panels for all 14 types + palette entries
+- [ ] 22-04-PLAN.md — Export support (HTML/CSS generators)
 
 **Success Criteria:**
 1. User can add Numeric Display with decimal precision control
@@ -426,7 +433,7 @@ Plans:
 | 19. Architecture Refactoring | v1.2 | 6/6 | Complete | 2026-01-26 |
 | 20. Simple Controls | v1.2 | 4/4 | Complete | 2026-01-26 |
 | 21. Buttons & Switches | v1.2 | 4/4 | Complete | 2026-01-26 |
-| 22. Value Displays & LEDs | v1.2 | 0/? | Pending | — |
+| 22. Value Displays & LEDs | v1.2 | 0/4 | Planned | — |
 | 23. Professional Meters | v1.2 | 0/? | Pending | — |
 | 24. Navigation & Selection | v1.2 | 0/? | Pending | — |
 | 25. Real-Time Visualizations | v1.2 | 0/? | Pending | — |
