@@ -276,52 +276,75 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
       }
     }
 
-    // Generate all files
-    const htmlContent = generateHTML(options.elements, {
-      canvasWidth: options.canvasWidth,
-      canvasHeight: options.canvasHeight,
-      backgroundColor: options.backgroundColor,
-      isPreviewMode: false,
-    })
+    // Collect and optimize SVG assets (default: enabled)
+    const shouldOptimizeSVG = options.optimizeSVG !== false
+    const svgAssets = collectSVGAssets(options.elements)
+    const { optimizedMap, sizeSavings } = optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
 
-    const cssContent = generateCSS(options.elements, {
-      canvasWidth: options.canvasWidth,
-      canvasHeight: options.canvasHeight,
-      backgroundColor: options.backgroundColor,
-    })
+    // Temporarily apply optimized SVGs to store for export generation
+    const restoreSVGs = applyOptimizedSVGs(optimizedMap)
 
-    const componentsJS = generateComponentsJS(options.elements)
+    try {
+      // Generate all files (with optimized SVGs if enabled)
+      const htmlContent = generateHTML(options.elements, {
+        canvasWidth: options.canvasWidth,
+        canvasHeight: options.canvasHeight,
+        backgroundColor: options.backgroundColor,
+        isPreviewMode: false,
+      })
 
-    const bindingsJS = generateBindingsJS(options.elements, {
-      isPreviewMode: false,
-    })
+      const cssContent = generateCSS(options.elements, {
+        canvasWidth: options.canvasWidth,
+        canvasHeight: options.canvasHeight,
+        backgroundColor: options.backgroundColor,
+      })
 
-    // Generate README with integration instructions
-    const readme = generateREADME()
+      const componentsJS = generateComponentsJS(options.elements)
 
-    // Create ZIP bundle (4 web files + README + assets, no C++)
-    const zip = new JSZip()
-    zip.file('index.html', htmlContent)
-    zip.file('style.css', cssContent)
-    zip.file('components.js', componentsJS)
-    zip.file('bindings.js', bindingsJS)
-    zip.file('README.md', readme)
+      const bindingsJS = generateBindingsJS(options.elements, {
+        isPreviewMode: false,
+      })
 
-    // Bundle image assets
-    const imageAssets = collectImageAssets(options.elements)
-    await bundleImageAssets(zip, imageAssets)
+      // Add responsive scaling script if enabled (default: enabled)
+      const shouldIncludeResponsiveScaling = options.enableResponsiveScaling !== false
+      const responsiveScaleJS = shouldIncludeResponsiveScaling
+        ? generateResponsiveScaleJS(options.canvasWidth, options.canvasHeight)
+        : ''
 
-    // Generate ZIP blob
-    const blob = await zip.generateAsync({ type: 'blob' })
+      const bindingsWithScaling = responsiveScaleJS
+        ? `${bindingsJS}\n\n${responsiveScaleJS}`
+        : bindingsJS
 
-    // Trigger download using browser-fs-access
-    const filename = `${options.projectName || 'webview-ui'}-juce.zip`
-    await fileSave(blob, {
-      fileName: filename,
-      extensions: ['.zip'],
-    })
+      // Generate README with integration instructions
+      const readme = generateREADME()
 
-    return { success: true }
+      // Create ZIP bundle (4 web files + README + assets, no C++)
+      const zip = new JSZip()
+      zip.file('index.html', htmlContent)
+      zip.file('style.css', cssContent)
+      zip.file('components.js', componentsJS)
+      zip.file('bindings.js', bindingsWithScaling)
+      zip.file('README.md', readme)
+
+      // Bundle image assets
+      const imageAssets = collectImageAssets(options.elements)
+      await bundleImageAssets(zip, imageAssets)
+
+      // Generate ZIP blob
+      const blob = await zip.generateAsync({ type: 'blob' })
+
+      // Trigger download using browser-fs-access
+      const filename = `${options.projectName || 'webview-ui'}-juce.zip`
+      await fileSave(blob, {
+        fileName: filename,
+        extensions: ['.zip'],
+      })
+
+      return { success: true, sizeSavings }
+    } finally {
+      // Always restore original SVG content
+      restoreSVGs()
+    }
   } catch (error) {
     // User cancelled save dialog is not an error
     if (error instanceof Error && error.name === 'AbortError') {
@@ -373,60 +396,82 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
       }
     }
 
-    // Generate all files (preview mode)
-    const htmlContent = generateHTML(options.elements, {
-      canvasWidth: options.canvasWidth,
-      canvasHeight: options.canvasHeight,
-      backgroundColor: options.backgroundColor,
-      isPreviewMode: true,
-    })
+    // Collect and optimize SVG assets (default: enabled)
+    const shouldOptimizeSVG = options.optimizeSVG !== false
+    const svgAssets = collectSVGAssets(options.elements)
+    const { optimizedMap, sizeSavings } = optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
 
-    const cssContent = generateCSS(options.elements, {
-      canvasWidth: options.canvasWidth,
-      canvasHeight: options.canvasHeight,
-      backgroundColor: options.backgroundColor,
-    })
+    // Temporarily apply optimized SVGs to store for export generation
+    const restoreSVGs = applyOptimizedSVGs(optimizedMap)
 
-    const componentsJS = generateComponentsJS(options.elements)
+    try {
+      // Generate all files (preview mode, with optimized SVGs if enabled)
+      const htmlContent = generateHTML(options.elements, {
+        canvasWidth: options.canvasWidth,
+        canvasHeight: options.canvasHeight,
+        backgroundColor: options.backgroundColor,
+        isPreviewMode: true,
+      })
 
-    // Bindings.js with mock JUCE backend prepended
-    const mockJUCE = generateMockJUCE()
-    const bindingsJS = generateBindingsJS(options.elements, {
-      isPreviewMode: true,
-    })
-    const bindingsWithMock = `${mockJUCE}\n\n${bindingsJS}`
+      const cssContent = generateCSS(options.elements, {
+        canvasWidth: options.canvasWidth,
+        canvasHeight: options.canvasHeight,
+        backgroundColor: options.backgroundColor,
+      })
 
-    // Generate README documentation
-    const readme = generateReadme({
-      projectName: options.projectName || 'Plugin UI',
-      elements: options.elements,
-      includeHtmlPreview: true,
-      includeJuceBundle: false,
-    })
+      const componentsJS = generateComponentsJS(options.elements)
 
-    // Create ZIP bundle (4 web files + README + assets)
-    const zip = new JSZip()
-    zip.file('index.html', htmlContent)
-    zip.file('style.css', cssContent)
-    zip.file('components.js', componentsJS)
-    zip.file('bindings.js', bindingsWithMock)
-    zip.file('README.md', readme)
+      // Bindings.js with mock JUCE backend prepended
+      const mockJUCE = generateMockJUCE()
+      const bindingsJS = generateBindingsJS(options.elements, {
+        isPreviewMode: true,
+      })
 
-    // Bundle image assets
-    const imageAssets = collectImageAssets(options.elements)
-    await bundleImageAssets(zip, imageAssets)
+      // Add responsive scaling script if enabled (default: enabled)
+      const shouldIncludeResponsiveScaling = options.enableResponsiveScaling !== false
+      const responsiveScaleJS = shouldIncludeResponsiveScaling
+        ? generateResponsiveScaleJS(options.canvasWidth, options.canvasHeight)
+        : ''
 
-    // Generate ZIP blob
-    const blob = await zip.generateAsync({ type: 'blob' })
+      const bindingsWithMockAndScaling = responsiveScaleJS
+        ? `${mockJUCE}\n\n${bindingsJS}\n\n${responsiveScaleJS}`
+        : `${mockJUCE}\n\n${bindingsJS}`
 
-    // Trigger download using browser-fs-access
-    const filename = `${options.projectName || 'webview-ui'}-preview.zip`
-    await fileSave(blob, {
-      fileName: filename,
-      extensions: ['.zip'],
-    })
+      // Generate README documentation
+      const readme = generateReadme({
+        projectName: options.projectName || 'Plugin UI',
+        elements: options.elements,
+        includeHtmlPreview: true,
+        includeJuceBundle: false,
+      })
 
-    return { success: true }
+      // Create ZIP bundle (4 web files + README + assets)
+      const zip = new JSZip()
+      zip.file('index.html', htmlContent)
+      zip.file('style.css', cssContent)
+      zip.file('components.js', componentsJS)
+      zip.file('bindings.js', bindingsWithMockAndScaling)
+      zip.file('README.md', readme)
+
+      // Bundle image assets
+      const imageAssets = collectImageAssets(options.elements)
+      await bundleImageAssets(zip, imageAssets)
+
+      // Generate ZIP blob
+      const blob = await zip.generateAsync({ type: 'blob' })
+
+      // Trigger download using browser-fs-access
+      const filename = `${options.projectName || 'webview-ui'}-preview.zip`
+      await fileSave(blob, {
+        fileName: filename,
+        extensions: ['.zip'],
+      })
+
+      return { success: true, sizeSavings }
+    } finally {
+      // Always restore original SVG content
+      restoreSVGs()
+    }
   } catch (error) {
     // User cancelled save dialog is not an error
     if (error instanceof Error && error.name === 'AbortError') {
