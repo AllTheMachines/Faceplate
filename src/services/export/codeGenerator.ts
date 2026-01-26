@@ -5,7 +5,7 @@
 
 import JSZip from 'jszip'
 import { fileSave } from 'browser-fs-access'
-import type { ElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig } from '../../types/elements'
 import { validateForExport } from './validators'
 import { generateHTML } from './htmlGenerator'
 import { generateCSS } from './cssGenerator'
@@ -120,9 +120,9 @@ function collectSVGAssets(elements: ElementConfig[]): SVGAssetInfo[] {
   }
 
   // Collect Knob Styles (used in styled knobs)
-  const styledKnobs = elements.filter((el) => el.type === 'knob' && el.styleId)
+  const styledKnobs = elements.filter((el) => el.type === 'knob' && el.styleId) as KnobElementConfig[]
   for (const knob of styledKnobs) {
-    const style = store.knobStyles.find((s) => s.id === knob.styleId)
+    const style = store.knobStyles.find((s) => s.id === knob.styleId!)
     if (style && style.svgContent) {
       // Only add if not already collected
       if (!svgAssets.find((a) => a.type === 'knob-style' && a.id === style.id)) {
