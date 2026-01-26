@@ -469,6 +469,54 @@ export interface TruePeakMeterStereoElementConfig extends BaseProfessionalMeterC
   showChannelLabels: boolean
 }
 
+// LUFS Momentary - EBU R128, -60 to 0 LUFS, 400ms window
+export interface LUFSMomentaryMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'lufsmomomo' // lufs-momentary-mono
+  ballisticsType: 'LUFS_M' // 400ms window
+  unit: 'LUFS' // Display unit
+}
+
+export interface LUFSMomentaryStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'lufsmomostereo'
+  ballisticsType: 'LUFS_M'
+  unit: 'LUFS'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// LUFS Short-term - EBU R128, -60 to 0 LUFS, 3s window
+export interface LUFSShorttermMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'lufsshortmono'
+  ballisticsType: 'LUFS_S' // 3s window
+  unit: 'LUFS'
+}
+
+export interface LUFSShorttermStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'lufsshortstereo'
+  ballisticsType: 'LUFS_S'
+  unit: 'LUFS'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
+// LUFS Integrated - EBU R128, -60 to 0 LUFS, full program with gating
+export interface LUFSIntegratedMonoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'lufsintmono'
+  ballisticsType: 'LUFS_I' // Full program with gating
+  unit: 'LUFS'
+}
+
+export interface LUFSIntegratedStereoElementConfig extends BaseProfessionalMeterConfig {
+  type: 'lufsintstereo'
+  ballisticsType: 'LUFS_I'
+  unit: 'LUFS'
+  valueL: number
+  valueR: number
+  showChannelLabels: boolean
+}
+
 // ============================================================================
 // K-12 Meter - Bob Katz standard, -32 to +12 dB, 600ms ballistics
 export interface K12MeterMonoElementConfig extends BaseProfessionalMeterConfig {
@@ -743,6 +791,12 @@ export type DisplayElement =
   | StereoWidthMeterElementConfig
   | TruePeakMeterMonoElementConfig
   | TruePeakMeterStereoElementConfig
+  | LUFSMomentaryMonoElementConfig
+  | LUFSMomentaryStereoElementConfig
+  | LUFSShorttermMonoElementConfig
+  | LUFSShorttermStereoElementConfig
+  | LUFSIntegratedMonoElementConfig
+  | LUFSIntegratedStereoElementConfig
 
 // ============================================================================
 // Type Guards
@@ -878,6 +932,30 @@ export function isTruePeakMeterMono(element: { type: string }): element is TrueP
 
 export function isTruePeakMeterStereo(element: { type: string }): element is TruePeakMeterStereoElementConfig {
   return element.type === 'truepeakmeterstereo'
+}
+
+export function isLUFSMomentaryMono(element: { type: string }): element is LUFSMomentaryMonoElementConfig {
+  return element.type === 'lufsmomomo'
+}
+
+export function isLUFSMomentaryStereo(element: { type: string }): element is LUFSMomentaryStereoElementConfig {
+  return element.type === 'lufsmomostereo'
+}
+
+export function isLUFSShorttermMono(element: { type: string }): element is LUFSShorttermMonoElementConfig {
+  return element.type === 'lufsshortmono'
+}
+
+export function isLUFSShorttermStereo(element: { type: string }): element is LUFSShorttermStereoElementConfig {
+  return element.type === 'lufsshortstereo'
+}
+
+export function isLUFSIntegratedMono(element: { type: string }): element is LUFSIntegratedMonoElementConfig {
+  return element.type === 'lufsintmono'
+}
+
+export function isLUFSIntegratedStereo(element: { type: string }): element is LUFSIntegratedStereoElementConfig {
+  return element.type === 'lufsintstereo'
 }
 
 // ============================================================================
@@ -1935,6 +2013,214 @@ export function createTruePeakMeterStereo(overrides?: Partial<TruePeakMeterStere
     peakHoldStyle: 'line',
     peakHoldDuration: 2000,
     ballisticsType: 'TRUE_PEAK',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+// LUFS uses -60 to 0 LUFS range with 60 segments
+export function createLUFSMomentaryMono(overrides?: Partial<LUFSMomentaryMonoElementConfig>): LUFSMomentaryMonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'lufsmomomo',
+    name: 'LUFS Momentary',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8, // -12 LUFS
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'LUFS_M',
+    unit: 'LUFS',
+    ...overrides,
+  }
+}
+
+export function createLUFSMomentaryStereo(overrides?: Partial<LUFSMomentaryStereoElementConfig>): LUFSMomentaryStereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'lufsmomostereo',
+    name: 'LUFS Momentary Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8,
+    valueL: 0.8,
+    valueR: 0.78,
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'LUFS_M',
+    unit: 'LUFS',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+export function createLUFSShorttermMono(overrides?: Partial<LUFSShorttermMonoElementConfig>): LUFSShorttermMonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'lufsshortmono',
+    name: 'LUFS Short-term',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8, // -12 LUFS
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'LUFS_S',
+    unit: 'LUFS',
+    ...overrides,
+  }
+}
+
+export function createLUFSShorttermStereo(overrides?: Partial<LUFSShorttermStereoElementConfig>): LUFSShorttermStereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'lufsshortstereo',
+    name: 'LUFS Short-term Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8,
+    valueL: 0.8,
+    valueR: 0.78,
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'LUFS_S',
+    unit: 'LUFS',
+    showChannelLabels: true,
+    ...overrides,
+  }
+}
+
+export function createLUFSIntegratedMono(overrides?: Partial<LUFSIntegratedMonoElementConfig>): LUFSIntegratedMonoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'lufsintmono',
+    name: 'LUFS Integrated',
+    x: 0,
+    y: 0,
+    width: 30,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8, // -12 LUFS
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'LUFS_I',
+    unit: 'LUFS',
+    ...overrides,
+  }
+}
+
+export function createLUFSIntegratedStereo(overrides?: Partial<LUFSIntegratedStereoElementConfig>): LUFSIntegratedStereoElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'lufsintstereo',
+    name: 'LUFS Integrated Stereo',
+    x: 0,
+    y: 0,
+    width: 80,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.8,
+    valueL: 0.8,
+    valueR: 0.78,
+    minDb: -60,
+    maxDb: 0,
+    orientation: 'vertical',
+    segmentCount: 60,
+    segmentGap: 1,
+    scalePosition: 'outside',
+    showMajorTicks: true,
+    showMinorTicks: true,
+    showNumericReadout: false,
+    colorZones: defaultMeterColorZones,
+    showPeakHold: true,
+    peakHoldStyle: 'line',
+    peakHoldDuration: 2000,
+    ballisticsType: 'LUFS_I',
+    unit: 'LUFS',
     showChannelLabels: true,
     ...overrides,
   }
