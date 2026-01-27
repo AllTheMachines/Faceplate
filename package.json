@@ -14,6 +14,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/utilities": "^3.2.2",
     "browser-fs-access": "^0.38.0",
+    "date-fns": "^4.1.0",
     "isomorphic-dompurify": "^2.35.0",
     "jszip": "^3.10.1",
     "konva": "^9.3.22",
