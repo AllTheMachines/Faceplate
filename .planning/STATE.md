@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 37 - Font Management System (in progress)
-Plan: 2 of 5 (40% complete)
+Plan: 1 of 5 (20% complete)
 Status: In progress
-Last activity: 2026-01-27 - Completed 37-02-PLAN.md (Font State Management)
+Last activity: 2026-01-27 - Completed 37-01-PLAN.md (Font Management Service Layer)
 
 Previous: Phase 35 - Container Overflow & Scrollbars ✓ (2026-01-27)
 
-Progress: [██████████░] 145/148 plans complete (98%)
+Progress: [██████████░] 144/148 plans complete (97%)
 
 ## Performance Metrics
 
@@ -433,6 +433,13 @@ None - Phase 26 complete
 - All 6 success criteria met
 
 **Phase 37 In Progress:**
+- Plan 37-01: Font Management Service Layer - COMPLETE (2026-01-27, 6min)
+  - Installed opentype.js for font metadata extraction
+  - Created fontStorage.ts with IndexedDB operations (8 functions)
+  - Created fontParser.ts for TTF/OTF/WOFF/WOFF2 parsing
+  - Created fontScanner.ts for recursive directory scanning
+  - Created fontManager.ts singleton for orchestration
+  - Service layer complete with File System Access API integration
 - Plan 37-02: Font State Management - COMPLETE (2026-01-27, 3min)
   - Created FontsSlice with CustomFont type for UI consumption
   - State fields: customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime
@@ -443,6 +450,10 @@ None - Phase 26 complete
 
 | Decision | Phase | Rationale | Outcome |
 |----------|-------|-----------|---------|
+| Native File System Access API | 37-01 | browser-fs-access returns files array, not directory handle | Use window.showDirectoryPicker() for handle persistence |
+| IndexedDB for font storage | 37-01 | Custom fonts need to persist across sessions | Store font data as ArrayBuffer with metadata |
+| opentype.js for parsing | 37-01 | Industry-standard font metadata extraction | Reliable name table parsing for TTF/OTF/WOFF/WOFF2 |
+| Singleton FontManager | 37-01 | Single source of truth for loaded fonts | Prevents duplicate FontFace objects in document.fonts |
 | CustomFont distinct from StoredFont | 37-02 | UI needs simplified view without ArrayBuffer data | CustomFont has family/name/format/category fields only |
 | All font state excluded from undo | 37-02 | Font loading is project-level operation, not design action | customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime in temporal partialize exclusions |
 | State slice contains only setters | 37-02 | Keep slice simple, orchestration in fontManager service | All actions are synchronous setters, no async logic in slice |
@@ -450,11 +461,11 @@ None - Phase 26 complete
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 37-02-PLAN.md (Font State Management)
+Stopped at: Completed 37-01-PLAN.md (Font Management Service Layer)
 Resume file: None
 
-**Next step:** Phase 37 plan 03 (Font Selection UI) or plan 01 (Font Services - can run in parallel)
+**Next step:** Phase 37 plan 02 (Font State Management) - already complete, continue to plan 03 (Font Selection UI)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 37 plan 02 complete*
+*Last updated: 2026-01-27 after Phase 37 plan 01 complete*
