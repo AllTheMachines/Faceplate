@@ -1,4 +1,4 @@
-import { useStore } from 'zustand'
+import { useStore } from 'zustand/react'
 import { useStore as useAppStore, type Store } from '../../store'
 import { HistoryEntry } from './HistoryEntry'
 import { useRef, useEffect } from 'react'

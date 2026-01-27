@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useStore } from 'zustand'
+import { useStore } from 'zustand/react'
 import { formatDistanceToNow } from 'date-fns'
 import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
