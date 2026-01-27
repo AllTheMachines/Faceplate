@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 27.1 - Post-Phase Bug Fixes
-Plan: 2 of 2 (100% complete)
-Status: Plan 27.1-02 complete
-Last activity: 2026-01-27 - Completed 27.1-02-PLAN.md (Navigation category & logo timestamp fixes)
+Phase: 27.1 - Post-Phase Bug Fixes (COMPLETE)
+Plan: 4 of 4 (100% complete)
+Status: All bug fixes complete
+Last activity: 2026-01-27 - Completed 27.1-04-PLAN.md (Switch styling & button font fixes)
 
 Previous: Phase 27 - Containers & Polish ✓ (verified 2026-01-26)
 
-Progress: [████████░░] 134/140 plans complete (96%)
+Progress: [█████████░] 137/140 plans complete (98%)
 
 ## Performance Metrics
 
@@ -197,6 +197,9 @@ All v1.1 decisions documented and outcomes verified.
 |----------|-------|-----------|---------|
 | Error boundaries per palette item | 27.1-02 | Prevents single broken preview from crashing entire category | PaletteItemErrorBoundary wraps each item with red error indicator fallback |
 | lastModified timestamp in elementsSlice | 27.1-02 | Track actual project activity, not page load time | Timestamp updates on add/remove/update operations, persists via Zustand |
+| SVG for Rotary Switch export | 27.1-04 | Match canvas renderer's circle/pointer/marks appearance | Replaced div-based layout with full SVG generation |
+| Default Inter font on body | 27.1-04 | Ensure button font consistency via inheritance | All buttons use Inter font matching canvas without explicit declarations |
+| Position indicators in Rocker Switch | 27.1-04 | Show current position with Unicode symbols | Added ↑, ─, ↓ symbols to paddle matching canvas renderer |
 
 ### Pending Todos
 
@@ -321,13 +324,20 @@ None - Phase 26 complete
 - Spacers export with data-sizing-mode (fixed/flexible) and dimension attributes
 - Window Chrome exports with -webkit-app-region:drag and data-button-style (macos/windows/neutral)
 
+**Phase 27.1 Complete:**
+- Plan 27.1-01: Canvas rendering bug (useState hook fix) - COMPLETE
+- Plan 27.1-02: Navigation category & logo timestamp fixes - COMPLETE
+- Plan 27.1-03: Crossfade Slider & LED Ring export fixes - COMPLETE
+- Plan 27.1-04: Switch styling & button font fixes - COMPLETE
+- **Total:** Post-phase bug fixes complete, export system consistent
+
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 27.1-02-PLAN.md (Navigation category & logo timestamp fixes)
+Stopped at: Completed 27.1-04-PLAN.md (Switch styling & button font fixes)
 Resume file: None
 
-**Next step:** Continue Phase 27.1 bug fixes or `/gsd:discuss-phase 28` (Specialized Audio Part 1)
+**Next step:** `/gsd:discuss-phase 28` (Specialized Audio Part 1)
 
 ---
 *State initialized: 2026-01-25*
