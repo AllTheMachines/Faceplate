@@ -488,23 +488,24 @@ Plans:
 
 </details>
 
-### Phase 31: Undo/Redo History Panel
+### Phase 31: Undo/Redo History Panel ✓
 **Goal**: Visible debug panel showing every state change for debugging and transparency
 **Dependencies**: None
 **Milestone**: v1.3
 **Plans**: 2 plans
+**Completed**: 2026-01-27
 
 Plans:
-- [ ] 31-01-PLAN.md — Install react-resizable-panels, create layout infrastructure, history panel components
-- [ ] 31-02-PLAN.md — Keyboard shortcut toggle, action inference, time-travel navigation
+- [x] 31-01-PLAN.md — Install react-resizable-panels, create layout infrastructure, history panel components
+- [x] 31-02-PLAN.md — Keyboard shortcut toggle, action inference, time-travel navigation
 
 **Success Criteria:**
-1. Bottom panel with scrollable list showing all state changes
-2. Each entry shows: timestamp, action type, affected element(s), before/after summary
-3. Clicking an entry jumps to that state (time travel debugging)
-4. Keyboard shortcut to toggle panel visibility (e.g., Ctrl+Shift+H)
-5. Panel is collapsible/resizable
-6. Clear visual distinction between undo-able and redo-able entries
+1. ✓ Bottom panel with scrollable list showing all state changes
+2. ✓ Each entry shows: timestamp, action type, affected element(s), before/after summary
+3. ✓ Clicking an entry jumps to that state (time travel debugging)
+4. ✓ Keyboard shortcut to toggle panel visibility (Ctrl+Shift+H)
+5. ✓ Panel is collapsible/resizable
+6. ✓ Clear visual distinction between undo-able and redo-able entries
 
 ### Phase 32: Unsaved Changes Protection
 **Goal**: Users never accidentally lose work due to navigation or browser close
@@ -618,7 +619,7 @@ Plans:
 | 28. Specialized Audio (Part 1) | v1.2 | 3/3 | Complete | 2026-01-27 |
 | 29. Specialized Audio (Part 2) | v1.2 | 3/3 | Complete | 2026-01-27 |
 | 30. Specialized Audio (Part 3) | v1.2 | 6/6 | Complete | 2026-01-27 |
-| 31. Undo/Redo History Panel | v1.3 | 0/2 | Planned | - |
+| 31. Undo/Redo History Panel | v1.3 | 2/2 | Complete | 2026-01-27 |
 | 32. Unsaved Changes Protection | v1.3 | 0/? | Planned | - |
 | 33. Adjustable Snap Grid | v1.3 | 0/? | Planned | - |
 | 34. Container Element Editor | v1.4 | 0/? | Planned | - |
@@ -628,4 +629,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 31 planning*
+*Last updated: 2026-01-27 after Phase 31 complete*

@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** v1.2 Complete Element Taxonomy - Phases 19-30
+**Current focus:** v1.3 Workflow & Protection - Phases 31-33
 
 ## Current Position
 
-Phase: 31 - Undo/Redo History Panel (in progress)
-Plan: 2 of 3 (67% complete)
-Status: In progress
-Last activity: 2026-01-27 - Completed 31-02-PLAN.md (Keyboard Shortcuts & Time-Travel)
+Phase: 31 - Undo/Redo History Panel ✓ (verified 2026-01-27)
+Plan: 2 of 2 (100% complete)
+Status: Phase verified complete
+Last activity: 2026-01-27 - Phase 31 verified complete, all 6 success criteria met
 
 Previous: Phase 27.1 - Post-Phase Bug Fixes ✓ (verified 2026-01-27)
 
@@ -43,7 +43,7 @@ Progress: [█████████░] 139/141 plans complete (99%)
 - Completed: 49 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 4, Phase 27.1: 5)
 
 **v1.3 scope:**
-- Phase 31: Undo/Redo History Panel (3 plans) - In progress (2/3 complete)
+- Phase 31: Undo/Redo History Panel (2 plans) - Complete 2026-01-27
 
 ## Accumulated Context
 
@@ -353,12 +353,12 @@ None - Phase 26 complete
 - Documented spacer invisibility as intentional design (visible in designer, invisible in preview/export)
 - Fixed preview interactivity with DOMContentLoaded check before JUCE bridge initialization
 
-**Phase 31 In Progress:**
+**Phase 31 Complete:**
 - Plan 31-01: History Panel Infrastructure - COMPLETE
   - Installed react-resizable-panels for vertical panel layout
   - Created HistoryPanel with reactive temporal subscriptions
   - Created HistoryEntry component with visual state distinction
-  - Created useHistoryPanel hook for visibility management (foundation for Plan 02)
+  - Created useHistoryPanel hook for visibility management
   - Bottom panel resizable (20% default, 10-50% range) and collapsible
 - Plan 31-02: Keyboard Shortcuts & Time-Travel - COMPLETE
   - Added Ctrl+Shift+H (Cmd+Shift+H) keyboard shortcut to toggle history panel
@@ -366,16 +366,27 @@ None - Phase 26 complete
   - Time-travel navigation with click-to-jump functionality
   - Auto-scroll to current entry during navigation
   - Visual distinction: past (gray), current (green border + blue bg), future (blue border + faded)
-- Plan 31-03: Export Support - PENDING
+- **Total:** 2 plans complete, all 6 success criteria met
+- Phase verified complete 2026-01-27
+
+**Phase 31 decisions:**
+
+| Decision | Phase | Rationale | Outcome |
+|----------|-------|-----------|---------|
+| react-resizable-panels Group/Separator imports | 31-01 | Library v4 uses different export names than v2/v3 | Aliased as PanelGroup/PanelResizeHandle for familiar API |
+| Reactive temporal subscriptions | 31-01 | Follow established pattern from LeftPanel.tsx | useStore(useAppStore.temporal, selector) for auto re-renders |
+| Imperative undo/redo for time-travel | 31-02 | Avoid subscription overhead for one-time action | getState().undo(n)/redo(n) for jump navigation |
+| 7 action types for history inference | 31-02 | Cover common element operations | add/delete/move/resize/update/canvas/initial with color coding |
+| Auto-scroll to current entry | 31-02 | UX improvement for time-travel | scrollIntoView with smooth behavior and center alignment |
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 31-02-PLAN.md
+Stopped at: Phase 31 verified complete
 Resume file: None
 
-**Next step:** `/gsd:execute-phase 31 03` (Export Support)
+**Next step:** `/gsd:discuss-phase 32` (Unsaved Changes Protection)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after completing 31-02-PLAN.md*
+*Last updated: 2026-01-27 after Phase 31 complete*
