@@ -414,6 +414,42 @@ Plans:
 2. User can add Spacer (invisible layout element with fixed/flexible sizing)
 3. User can add Window Chrome (title bar with close/minimize buttons, resize handles)
 
+### Phase 27.1: Post-Phase Bug Fixes
+**Goal**: Fix all rendering, drag-drop, and UI bugs discovered during v1.2 testing
+**Dependencies**: Phase 27 (issues found during verification)
+**Plans**: 5 plans
+
+Plans:
+- [ ] 27.1-01-PLAN.md — Fix Canvas visualizations and curves not rendering (BUG-08, BUG-09)
+- [ ] 27.1-02-PLAN.md — Fix Navigation category blank page and logo timestamp (BUG-10, BUG-12)
+- [ ] 27.1-03-PLAN.md — Fix Crossfade Slider, LED Ring, and meters in preview (BUG-01, BUG-05, BUG-06)
+- [ ] 27.1-04-PLAN.md — Fix switch styling and button fonts in preview (BUG-02, BUG-03, BUG-04)
+- [ ] 27.1-05-PLAN.md — Verify spacer behavior and element interactivity (BUG-07, BUG-11)
+
+**Bug List:**
+- BUG-01: Crossfade Slider not showing track in preview
+- BUG-02: Rocker Switch looks different in preview vs canvas
+- BUG-03: Rotary Switch looks different in preview vs canvas
+- BUG-04: Some buttons have different fonts in preview
+- BUG-05: LED Ring not centered + messed up in HTML preview
+- BUG-06: All new professional meters not rendered correctly in preview
+- BUG-07: Spacers not shown in HTML preview (verify if intentional)
+- BUG-08: All visualizations cannot be dragged to canvas
+- BUG-09: All curves invisible on canvas (elements exist but lines not visible)
+- BUG-10: Navigation & Selection category causes blank page
+- BUG-11: Many/all elements have no interactivity (needs investigation)
+- BUG-12: Logo shows current time on reload instead of last project update time
+
+**Success Criteria:**
+1. All 5 visualization types can be dragged to canvas and render visibly
+2. All 5 curve types can be dragged to canvas with visible lines
+3. Navigation & Selection category opens normally
+4. All professional meters render correctly in HTML preview
+5. Crossfade slider shows track gradient in preview
+6. LED Ring is centered and renders correctly
+7. Switch elements match between canvas and preview
+8. Logo shows project last-modified time
+
 ### Phase 28: Specialized Audio (Part 1)
 **Goal**: Users can add MIDI input and trigger controls
 **Dependencies**: Phase 19 (requires registry pattern)
@@ -480,6 +516,7 @@ Plans:
 | 25. Real-Time Visualizations | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 26. Interactive Curves | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 27. Containers & Polish | v1.2 | 4/4 | Complete | 2026-01-26 |
+| 27.1. Post-Phase Bug Fixes | v1.2 | 0/5 | Pending | — |
 | 28. Specialized Audio (Part 1) | v1.2 | 0/? | Pending | — |
 | 29. Specialized Audio (Part 2) | v1.2 | 0/? | Pending | — |
 | 30. Specialized Audio (Part 3) | v1.2 | 0/? | Pending | — |
