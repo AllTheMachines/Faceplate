@@ -1830,47 +1830,48 @@ function generateLedRingHTML(
   element: ElementConfig & { type: 'ledring' }
 ): string {
   const diameter = element.diameter
-  const cx = diameter / 2
-  const cy = diameter / 2
-  const radius = (diameter - element.thickness) / 2
+  const radius = diameter / 2
+  const cx = radius
+  const cy = radius
+  const circleRadius = radius - element.thickness / 2
 
-  // Calculate arc parameters
-  const totalAngle = element.endAngle - element.startAngle
-  const litAngle = element.startAngle + totalAngle * element.value
+  // Calculate arc parameters matching the renderer
+  const circumference = 2 * Math.PI * circleRadius
+  const totalArc = element.endAngle - element.startAngle
+  const litArcAngle = element.value * totalArc
 
-  // Calculate dash array for segments (using small gap to create discrete segments)
-  const circumference = 2 * Math.PI * radius
-  const segmentAngle = totalAngle / element.segmentCount
-  const segmentArc = (segmentAngle / 360) * circumference
-  const gapArc = 2 // Fixed 2px gap between segments
-  const dashLength = segmentArc - gapArc
-  const gapLength = gapArc
+  // Calculate dash array for segments
+  const segmentLength = circumference / element.segmentCount
+  const gapLength = segmentLength * 0.2 // 20% gap between segments
+  const dashLength = segmentLength - gapLength
 
-  // Calculate lit segments dash array
-  const litSegments = Math.floor((litAngle - element.startAngle) / segmentAngle)
-  const litDashArray = litSegments > 0 ? `${dashLength} ${gapLength}`.repeat(litSegments) : '0 9999'
+  // Calculate stroke-dashoffset to show only lit portion
+  const litSegments = Math.round((litArcAngle / totalArc) * element.segmentCount)
+  const totalLitLength = litSegments * segmentLength
+
+  // SVG rotation angle
+  const rotationAngle = element.startAngle + 90 // SVG rotation (0° is at top)
 
   const glowFilter = element.glowEnabled ? `<defs>
-    <filter id="led-glow-${id}">
-      <feGaussianBlur stdDeviation="${element.glowRadius / 3}" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
+    <filter id="led-ring-glow-${id}">
+      <feGaussianBlur stdDeviation="${element.glowRadius / 2}" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="1.5" />
+      </feComponentTransfer>
     </filter>
   </defs>` : ''
 
   return `<div id="${id}" class="${baseClass} ledring-element" data-type="ledring" style="${positionStyle}">
-  <svg width="${diameter}" height="${diameter}" viewBox="0 0 ${diameter} ${diameter}">
+  <svg width="${diameter}" height="${diameter}" viewBox="0 0 ${diameter} ${diameter}" style="transform: rotate(${rotationAngle}deg);">
     ${glowFilter}
-    <circle class="ring-bg" cx="${cx}" cy="${cy}" r="${radius}" fill="none"
+    <circle class="ring-bg" cx="${cx}" cy="${cy}" r="${circleRadius}" fill="none"
       stroke="${element.offColor}" stroke-width="${element.thickness}"
-      stroke-dasharray="${dashLength} ${gapLength}" opacity="0.3"/>
-    <circle class="ring-lit" cx="${cx}" cy="${cy}" r="${radius}" fill="none"
+      stroke-dasharray="${dashLength} ${gapLength}" opacity="0.8"/>
+    ${litSegments > 0 ? `<circle class="ring-lit" cx="${cx}" cy="${cy}" r="${circleRadius}" fill="none"
       stroke="${element.onColor}" stroke-width="${element.thickness}"
-      stroke-dasharray="${litDashArray}"
-      transform="rotate(${element.startAngle} ${cx} ${cy})"
-      ${element.glowEnabled ? `filter="url(#led-glow-${id})"` : ''}/>
+      stroke-dasharray="${totalLitLength} ${circumference - totalLitLength}"
+      stroke-dashoffset="0"
+      ${element.glowEnabled ? `filter="url(#led-ring-glow-${id})"` : ''}/>` : ''}
   </svg>
 </div>`
 }
