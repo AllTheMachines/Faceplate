@@ -420,11 +420,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 27.1-01-PLAN.md — Fix Canvas visualizations and curves not rendering (BUG-08, BUG-09)
-- [ ] 27.1-02-PLAN.md — Fix Navigation category blank page and logo timestamp (BUG-10, BUG-12)
-- [ ] 27.1-03-PLAN.md — Fix Crossfade Slider, LED Ring, and meters in preview (BUG-01, BUG-05, BUG-06)
-- [ ] 27.1-04-PLAN.md — Fix switch styling and button fonts in preview (BUG-02, BUG-03, BUG-04)
-- [ ] 27.1-05-PLAN.md — Verify spacer behavior and element interactivity (BUG-07, BUG-11)
+- [x] 27.1-01-PLAN.md — Fix Canvas visualizations and curves not rendering (BUG-08, BUG-09)
+- [x] 27.1-02-PLAN.md — Fix Navigation category blank page and logo timestamp (BUG-10, BUG-12)
+- [x] 27.1-03-PLAN.md — Fix Crossfade Slider, LED Ring, and meters in preview (BUG-01, BUG-05, BUG-06)
+- [x] 27.1-04-PLAN.md — Fix switch styling and button fonts in preview (BUG-02, BUG-03, BUG-04)
+- [x] 27.1-05-PLAN.md — Verify spacer behavior and element interactivity (BUG-07, BUG-11)
 
 **Bug List:**
 - BUG-01: Crossfade Slider not showing track in preview
@@ -516,11 +516,11 @@ Plans:
 | 25. Real-Time Visualizations | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 26. Interactive Curves | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 27. Containers & Polish | v1.2 | 4/4 | Complete | 2026-01-26 |
-| 27.1. Post-Phase Bug Fixes | v1.2 | 0/5 | Pending | — |
+| 27.1. Post-Phase Bug Fixes | v1.2 | 5/5 | Complete | 2026-01-27 |
 | 28. Specialized Audio (Part 1) | v1.2 | 0/? | Pending | — |
 | 29. Specialized Audio (Part 2) | v1.2 | 0/? | Pending | — |
 | 30. Specialized Audio (Part 3) | v1.2 | 0/? | Pending | — |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 27 execution complete*
+*Last updated: 2026-01-27 after Phase 27.1 execution complete*
