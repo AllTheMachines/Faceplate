@@ -1,5 +1,7 @@
 import { TagSelectorElementConfig, Tag } from '../../../../types/elements'
 import { useState, useRef, useEffect } from 'react'
+import { DEFAULT_SCROLLBAR_CONFIG } from '../../../../types/elements/containers'
+import { CustomScrollbar } from '../containers/CustomScrollbar'
 
 interface TagSelectorRendererProps {
   config: TagSelectorElementConfig
@@ -35,6 +37,20 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [filterText, setFilterText] = useState('')
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // Scrollbar config with defaults
+  const scrollbarConfig = {
+    width: config.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth,
+    thumbColor: config.scrollbarThumbColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbColor,
+    thumbHoverColor: config.scrollbarThumbHoverColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbHoverColor,
+    trackColor: config.scrollbarTrackColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarTrackColor,
+    borderRadius: config.scrollbarBorderRadius ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarBorderRadius,
+    thumbBorder: config.scrollbarThumbBorder ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbBorder,
+  }
+
+  // Unique class for scoped dropdown scrollbar styling
+  const dropdownClass = `tagselector-dropdown-${config.id?.replace(/-/g, '') || 'default'}`
 
   // Click outside to close dropdown
   useEffect(() => {
@@ -72,17 +88,30 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
       style={{
         width: '100%',
         height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        padding: '8px',
+        position: 'relative',
         backgroundColor: inputBackgroundColor,
         border: `1px solid ${inputBorderColor}`,
         borderRadius: '4px',
-        overflow: 'auto',
+        overflow: 'hidden',
         userSelect: 'none',
       }}
     >
+      {/* Scrollable content */}
+      <div
+        ref={contentRef}
+        className={`tagselector-content-${config.id?.replace(/-/g, '') || 'default'}`}
+        style={{
+          width: `calc(100% - ${scrollbarConfig.width}px)`,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          padding: '8px',
+          overflow: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
       {/* Selected tags as chips */}
       <div
         style={{
@@ -102,8 +131,9 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
               backgroundColor: chipBackgroundColor,
               color: chipTextColor,
               borderRadius: `${chipBorderRadius}px`,
-              fontSize: '13px',
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontSize: `${config.fontSize}px`,
+              fontFamily: config.fontFamily,
+              fontWeight: config.fontWeight,
               whiteSpace: 'nowrap',
             }}
           >
@@ -156,8 +186,9 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
               color: inputTextColor,
               border: `1px solid ${inputBorderColor}`,
               borderRadius: '4px',
-              fontSize: '13px',
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontSize: `${config.fontSize}px`,
+              fontFamily: config.fontFamily,
+              fontWeight: config.fontWeight,
               outline: 'none',
               transition: 'none',
             }}
@@ -166,6 +197,7 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
           {/* Dropdown list */}
           {dropdownOpen && filteredAvailable.length > 0 && (
             <div
+              className={dropdownClass}
               style={{
                 position: 'absolute',
                 top: '100%',
@@ -206,6 +238,42 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
           )}
         </div>
       )}
+      </div>
+
+      {/* Custom scrollbar */}
+      <CustomScrollbar
+        contentRef={contentRef}
+        config={scrollbarConfig}
+        orientation="vertical"
+      />
+
+      {/* Hide webkit scrollbar for main content */}
+      <style>{`
+        .tagselector-content-${config.id?.replace(/-/g, '') || 'default'}::-webkit-scrollbar {
+          display: none;
+          width: 0;
+          height: 0;
+        }
+        /* Dropdown scrollbar styling */
+        .${dropdownClass}::-webkit-scrollbar {
+          width: ${scrollbarConfig.width}px;
+        }
+        .${dropdownClass}::-webkit-scrollbar-track {
+          background: ${scrollbarConfig.trackColor};
+          border-radius: ${scrollbarConfig.borderRadius}px;
+        }
+        .${dropdownClass}::-webkit-scrollbar-thumb {
+          background: ${scrollbarConfig.thumbColor};
+          border-radius: ${scrollbarConfig.borderRadius}px;
+        }
+        .${dropdownClass}::-webkit-scrollbar-thumb:hover {
+          background: ${scrollbarConfig.thumbHoverColor};
+        }
+        .${dropdownClass} {
+          scrollbar-width: thin;
+          scrollbar-color: ${scrollbarConfig.thumbColor} ${scrollbarConfig.trackColor};
+        }
+      `}</style>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { TagSelectorElementConfig, Tag, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
+import { ScrollbarStyleSection } from './shared/ScrollbarStyleSection'
 
 interface TagSelectorPropertiesProps {
   element: TagSelectorElementConfig
@@ -186,6 +187,8 @@ export function TagSelectorProperties({ element, onUpdate }: TagSelectorProperti
           max={20}
         />
       </PropertySection>
+
+      <ScrollbarStyleSection config={element} onUpdate={onUpdate} />
     </>
   )
 }

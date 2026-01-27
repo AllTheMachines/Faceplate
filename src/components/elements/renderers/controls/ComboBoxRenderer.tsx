@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { ComboBoxElementConfig } from '../../../../types/elements'
+import { DEFAULT_SCROLLBAR_CONFIG } from '../../../../types/elements/containers'
 
 interface ComboBoxRendererProps {
   config: ComboBoxElementConfig
@@ -11,6 +12,16 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
   const [highlightedIndex, setHighlightedIndex] = useState(0)
   const comboBoxRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Scrollbar config with defaults for CSS styling
+  const scrollbarWidth = config.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
+  const scrollbarThumbColor = config.scrollbarThumbColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbColor
+  const scrollbarThumbHoverColor = config.scrollbarThumbHoverColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbHoverColor
+  const scrollbarTrackColor = config.scrollbarTrackColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarTrackColor
+  const scrollbarBorderRadius = config.scrollbarBorderRadius ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarBorderRadius
+
+  // Unique class for scoped scrollbar styling
+  const dropdownClass = `combobox-dropdown-${config.id?.replace(/-/g, '') || 'default'}`
 
   // Filter options based on input
   const filteredOptions = config.options.filter((option) =>
@@ -87,7 +98,7 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
         width: '100%',
         height: '100%',
         position: 'relative',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: config.fontFamily,
       }}
     >
       {/* Input field */}
@@ -109,7 +120,8 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
           border: `1px solid ${config.borderColor}`,
           borderRadius: `${config.borderRadius}px`,
           padding: '0 32px 0 8px',
-          fontSize: '14px',
+          fontSize: `${config.fontSize}px`,
+          fontWeight: config.fontWeight,
           outline: 'none',
           transition: 'none',
         }}
@@ -135,6 +147,7 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
       {/* Dropdown menu */}
       {isOpen && (
         <div
+          className={dropdownClass}
           style={{
             position: 'absolute',
             top: '100%',
@@ -186,6 +199,28 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
           )}
         </div>
       )}
+
+      {/* CSS scrollbar styling for dropdown */}
+      <style>{`
+        .${dropdownClass}::-webkit-scrollbar {
+          width: ${scrollbarWidth}px;
+        }
+        .${dropdownClass}::-webkit-scrollbar-track {
+          background: ${scrollbarTrackColor};
+          border-radius: ${scrollbarBorderRadius}px;
+        }
+        .${dropdownClass}::-webkit-scrollbar-thumb {
+          background: ${scrollbarThumbColor};
+          border-radius: ${scrollbarBorderRadius}px;
+        }
+        .${dropdownClass}::-webkit-scrollbar-thumb:hover {
+          background: ${scrollbarThumbHoverColor};
+        }
+        .${dropdownClass} {
+          scrollbar-width: thin;
+          scrollbar-color: ${scrollbarThumbColor} ${scrollbarTrackColor};
+        }
+      `}</style>
     </div>
   )
 }

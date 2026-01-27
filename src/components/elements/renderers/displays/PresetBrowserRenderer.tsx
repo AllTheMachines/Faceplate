@@ -1,4 +1,7 @@
+import { useRef } from 'react'
 import type { PresetBrowserElementConfig } from '../../../../types/elements'
+import { DEFAULT_SCROLLBAR_CONFIG } from '../../../../types/elements/containers'
+import { CustomScrollbar } from '../containers/CustomScrollbar'
 
 interface PresetBrowserRendererProps {
   config: PresetBrowserElementConfig
@@ -12,6 +15,18 @@ interface PresetItem {
 }
 
 export function PresetBrowserRenderer({ config }: PresetBrowserRendererProps) {
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // Scrollbar config with defaults
+  const scrollbarConfig = {
+    width: config.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth,
+    thumbColor: config.scrollbarThumbColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbColor,
+    thumbHoverColor: config.scrollbarThumbHoverColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbHoverColor,
+    trackColor: config.scrollbarTrackColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarTrackColor,
+    borderRadius: config.scrollbarBorderRadius ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarBorderRadius,
+    thumbBorder: config.scrollbarThumbBorder ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbBorder,
+  }
+
   // Parse presets into structured list
   const parsePresets = (): PresetItem[] => {
     if (!config.showFolders) {
@@ -110,42 +125,74 @@ export function PresetBrowserRenderer({ config }: PresetBrowserRendererProps) {
         </div>
       )}
 
-      {/* Preset list */}
+      {/* Preset list container */}
       <div
         style={{
           flex: 1,
-          overflow: 'auto',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        {items.map((item, idx) => {
-          const isSelected = idx === selectedItemIndex
+        {/* Scrollable content */}
+        <div
+          ref={contentRef}
+          className={`presetbrowser-content-${config.id?.replace(/-/g, '') || 'default'}`}
+          style={{
+            width: `calc(100% - ${scrollbarConfig.width}px)`,
+            height: '100%',
+            overflow: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          {items.map((item, idx) => {
+            const isSelected = idx === selectedItemIndex
 
-          return (
-            <div
-              key={idx}
-              style={{
-                height: `${config.itemHeight}px`,
-                display: 'flex',
-                alignItems: 'center',
-                paddingLeft: `${8 + item.depth * 16}px`,
-                paddingRight: '8px',
-                backgroundColor: isSelected ? config.selectedColor : config.itemColor,
-                color: isSelected ? config.selectedTextColor : config.textColor,
-                fontSize: `${config.fontSize}px`,
-                cursor: 'pointer',
-                userSelect: 'none',
-              }}
-            >
-              {item.isFolder && (
-                <span style={{ marginRight: '6px', opacity: 0.7 }}>📁</span>
-              )}
-              {!item.isFolder && item.depth > 0 && (
-                <span style={{ marginRight: '6px', opacity: 0.5 }}>♪</span>
-              )}
-              {item.name}
-            </div>
-          )
-        })}
+            return (
+              <div
+                key={idx}
+                style={{
+                  height: `${config.itemHeight}px`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  paddingLeft: `${8 + item.depth * 16}px`,
+                  paddingRight: '8px',
+                  backgroundColor: isSelected ? config.selectedColor : config.itemColor,
+                  color: isSelected ? config.selectedTextColor : config.textColor,
+                  fontSize: `${config.fontSize}px`,
+                  fontFamily: config.fontFamily,
+                  fontWeight: config.fontWeight,
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                }}
+              >
+                {item.isFolder && (
+                  <span style={{ marginRight: '6px', opacity: 0.7 }}>📁</span>
+                )}
+                {!item.isFolder && item.depth > 0 && (
+                  <span style={{ marginRight: '6px', opacity: 0.5 }}>♪</span>
+                )}
+                {item.name}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Custom scrollbar */}
+        <CustomScrollbar
+          contentRef={contentRef}
+          config={scrollbarConfig}
+          orientation="vertical"
+        />
+
+        {/* Hide webkit scrollbar */}
+        <style>{`
+          .presetbrowser-content-${config.id?.replace(/-/g, '') || 'default'}::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+          }
+        `}</style>
       </div>
     </div>
   )

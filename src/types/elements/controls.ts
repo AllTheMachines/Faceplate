@@ -6,6 +6,7 @@
 import { BaseElementConfig } from './base'
 import { ColorOverrides } from '../knobStyle'
 import { BuiltInIcon } from '../../utils/builtInIcons'
+import { ScrollbarConfig } from './containers'
 
 // ============================================================================
 // Control Element Configurations
@@ -38,6 +39,8 @@ export interface KnobElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -47,6 +50,8 @@ export interface KnobElementConfig extends BaseElementConfig {
   valueSuffix: string  // For custom format
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 
   // SVG Knob Style (optional - if undefined, render default CSS knob)
@@ -70,6 +75,7 @@ export interface SliderElementConfig extends BaseElementConfig {
   // Track
   trackColor: string
   trackFillColor: string
+  trackWidth: number
 
   // Thumb
   thumbColor: string
@@ -81,6 +87,8 @@ export interface SliderElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -90,6 +98,8 @@ export interface SliderElementConfig extends BaseElementConfig {
   valueSuffix: string  // For custom format
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -100,6 +110,11 @@ export interface ButtonElementConfig extends BaseElementConfig {
   mode: 'momentary' | 'toggle'
   label: string
   pressed: boolean
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Colors
   backgroundColor: string
@@ -139,6 +154,11 @@ export interface DropdownElementConfig extends BaseElementConfig {
   // State
   selectedIndex: number
 
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
+
   // Style
   backgroundColor: string
   textColor: string
@@ -156,6 +176,11 @@ export interface CheckboxElementConfig extends BaseElementConfig {
   // Layout
   labelPosition: 'left' | 'right'
 
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
+
   // Style
   checkColor: string
   borderColor: string
@@ -172,6 +197,11 @@ export interface RadioGroupElementConfig extends BaseElementConfig {
 
   // Layout
   orientation: 'vertical' | 'horizontal'
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Style
   radioColor: string
@@ -192,6 +222,7 @@ export interface TextFieldElementConfig extends BaseElementConfig {
   // Text
   fontSize: number
   fontFamily: string
+  fontWeight: string
   textColor: string
   textAlign: 'left' | 'center' | 'right'
 
@@ -235,6 +266,8 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -244,6 +277,8 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   valueSuffix: string
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -277,6 +312,8 @@ export interface CenterDetentKnobElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -286,6 +323,8 @@ export interface CenterDetentKnobElementConfig extends BaseElementConfig {
   valueSuffix: string
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -317,6 +356,8 @@ export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -326,6 +367,8 @@ export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
   valueSuffix: string
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -358,6 +401,8 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -367,6 +412,8 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   valueSuffix: string
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -383,6 +430,8 @@ export interface CrossfadeSliderElementConfig extends BaseElementConfig {
   labelB: string
   labelColor: string
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
 
   // Track
   trackColor: string
@@ -408,6 +457,8 @@ export interface MultiSliderElementConfig extends BaseElementConfig {
   customLabels: string[] | null // If provided, overrides labelStyle
   labelColor: string
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
 
   // Link behavior (runtime hint)
   linkMode: 'always-linked' | 'modifier-linked' | 'independent'
@@ -452,6 +503,8 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -461,6 +514,8 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   valueSuffix: string
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -493,6 +548,8 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 
   // Value Display
@@ -502,6 +559,8 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
   valueSuffix: string
   valueDecimalPlaces: number
   valueFontSize: number
+  valueFontFamily: string
+  valueFontWeight: string
   valueColor: string
 }
 
@@ -522,6 +581,9 @@ export interface RockerSwitchElementConfig extends BaseElementConfig {
   showLabels: boolean
   upLabel: string
   downLabel: string
+  labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
 
   // Colors
   backgroundColor: string
@@ -551,6 +613,8 @@ export interface RotarySwitchElementConfig extends BaseElementConfig {
   pointerColor: string
   labelColor: string
   labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   borderColor: string
 }
 
@@ -578,6 +642,11 @@ export interface SegmentButtonElementConfig extends BaseElementConfig {
 
   // Layout
   orientation: 'horizontal' | 'vertical'
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Colors
   backgroundColor: string
@@ -618,6 +687,9 @@ export interface KickButtonElementConfig extends BaseElementConfig {
 
   // Label
   label: string
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Colors
   backgroundColor: string
@@ -644,6 +716,9 @@ export interface ToggleSwitchElementConfig extends BaseElementConfig {
   showLabels: boolean
   onLabel: string
   offLabel: string
+  labelFontSize: number
+  labelFontFamily: string
+  labelFontWeight: string
   labelColor: string
 }
 
@@ -661,6 +736,9 @@ export interface PowerButtonElementConfig extends BaseElementConfig {
 
   // Label
   label: string
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Colors
   backgroundColor: string
@@ -683,7 +761,7 @@ export interface MenuItem {
   divider?: boolean
 }
 
-export interface MultiSelectDropdownElementConfig extends BaseElementConfig {
+export interface MultiSelectDropdownElementConfig extends BaseElementConfig, ScrollbarConfig {
   type: 'multiselectdropdown'
 
   // Options
@@ -692,6 +770,11 @@ export interface MultiSelectDropdownElementConfig extends BaseElementConfig {
 
   // Selection limit
   maxSelections: number // 0 = unlimited
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Visual style
   backgroundColor: string
@@ -703,13 +786,18 @@ export interface MultiSelectDropdownElementConfig extends BaseElementConfig {
   dropdownMaxHeight: number // Max height of dropdown menu in pixels
 }
 
-export interface ComboBoxElementConfig extends BaseElementConfig {
+export interface ComboBoxElementConfig extends BaseElementConfig, ScrollbarConfig {
   type: 'combobox'
 
   // Options
   options: string[]
   selectedValue: string
   placeholder: string
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Visual style
   backgroundColor: string
@@ -730,6 +818,11 @@ export interface MenuButtonElementConfig extends BaseElementConfig {
   // Menu items
   menuItems: MenuItem[]
 
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
+
   // Visual style
   backgroundColor: string
   textColor: string
@@ -745,6 +838,11 @@ export interface StepperElementConfig extends BaseElementConfig {
   min: number
   max: number
   step: number
+
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Visual style
   buttonColor: string
@@ -785,6 +883,8 @@ export interface BreadcrumbElementConfig extends BaseElementConfig {
   separatorColor: string
   hoverColor: string
   fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Layout
   maxVisibleItems: number // 0 = show all, >0 = truncate with ellipsis
@@ -812,6 +912,11 @@ export interface TabBarElementConfig extends BaseElementConfig {
   orientation: 'horizontal' | 'vertical'
   tabHeight: number
 
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
+
   // Visual
   indicatorStyle: 'background' | 'underline' | 'accent-bar'
   indicatorColor: string
@@ -829,7 +934,7 @@ export interface Tag {
   label: string
 }
 
-export interface TagSelectorElementConfig extends BaseElementConfig {
+export interface TagSelectorElementConfig extends BaseElementConfig, ScrollbarConfig {
   type: 'tagselector'
 
   // Tags
@@ -843,6 +948,11 @@ export interface TagSelectorElementConfig extends BaseElementConfig {
   inputTextColor: string
   inputBorderColor: string
 
+  // Text
+  fontSize: number
+  fontFamily: string
+  fontWeight: string
+
   // Chips
   chipBackgroundColor: string
   chipTextColor: string
@@ -853,6 +963,7 @@ export interface TagSelectorElementConfig extends BaseElementConfig {
   dropdownBackgroundColor: string
   dropdownTextColor: string
   dropdownHoverColor: string
+}
 
 export interface TreeNode {
   id: string
@@ -860,7 +971,7 @@ export interface TreeNode {
   children?: TreeNode[]
 }
 
-export interface TreeViewElementConfig extends BaseElementConfig {
+export interface TreeViewElementConfig extends BaseElementConfig, ScrollbarConfig {
   type: 'treeview'
 
   // Tree data (designer defines, JUCE can modify at runtime)
@@ -883,11 +994,12 @@ export interface TreeViewElementConfig extends BaseElementConfig {
   selectedTextColor: string
   hoverBackgroundColor: string
   fontSize: number
+  fontFamily: string
+  fontWeight: string
 
   // Interaction (always true in designer mode)
   disableEdit: boolean
   disableDrag: boolean
-}
 }
 
 // ============================================================================
@@ -1055,8 +1167,6 @@ export function isTreeView(element: { type: string }): element is TreeViewElemen
   return element.type === 'treeview'
 }
 
-}
-
 // ============================================================================
 // Factory Functions
 // ============================================================================
@@ -1089,6 +1199,8 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     labelText: 'Knob',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1096,6 +1208,8 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1120,6 +1234,7 @@ export function createSlider(overrides?: Partial<SliderElementConfig>): SliderEl
     max: 1,
     trackColor: '#374151',
     trackFillColor: '#949494',
+    trackWidth: 6,
     thumbColor: '#ffffff',
     thumbWidth: 20,
     thumbHeight: 20,
@@ -1127,6 +1242,8 @@ export function createSlider(overrides?: Partial<SliderElementConfig>): SliderEl
     labelText: 'Slider',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1134,6 +1251,8 @@ export function createSlider(overrides?: Partial<SliderElementConfig>): SliderEl
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1155,6 +1274,9 @@ export function createButton(overrides?: Partial<ButtonElementConfig>): ButtonEl
     mode: 'momentary',
     label: 'Button',
     pressed: false,
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '500',
     backgroundColor: '#949494',
     textColor: '#ffffff',
     borderColor: '#6b7280',
@@ -1205,6 +1327,9 @@ export function createDropdown(overrides?: Partial<DropdownElementConfig>): Drop
     visible: true,
     options: ['Option 1', 'Option 2', 'Option 3'],
     selectedIndex: 0,
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     backgroundColor: '#1f2937',
     textColor: '#ffffff',
     borderColor: '#374151',
@@ -1229,6 +1354,9 @@ export function createCheckbox(overrides?: Partial<CheckboxElementConfig>): Chec
     checked: false,
     label: 'Checkbox',
     labelPosition: 'right',
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     checkColor: '#949494',
     borderColor: '#374151',
     backgroundColor: '#1f2937',
@@ -1253,6 +1381,9 @@ export function createRadioGroup(overrides?: Partial<RadioGroupElementConfig>): 
     options: ['Option 1', 'Option 2', 'Option 3'],
     selectedIndex: 0,
     orientation: 'vertical',
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     radioColor: '#949494',
     borderColor: '#374151',
     backgroundColor: 'transparent',
@@ -1280,6 +1411,7 @@ export function createTextField(overrides?: Partial<TextFieldElementConfig>): Te
     maxLength: 0,
     fontSize: 14,
     fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     textColor: '#ffffff',
     textAlign: 'left',
     backgroundColor: '#1f2937',
@@ -1315,6 +1447,8 @@ export function createMultiSlider(overrides?: Partial<MultiSliderElementConfig>)
     customLabels: null,
     labelColor: '#888888',
     labelFontSize: 10,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     linkMode: 'independent',
     trackColor: '#374151',
     fillColor: '#949494',
@@ -1360,6 +1494,8 @@ export function createSteppedKnob(overrides?: Partial<SteppedKnobElementConfig>)
     labelText: 'Stepped',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1367,6 +1503,8 @@ export function createSteppedKnob(overrides?: Partial<SteppedKnobElementConfig>)
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1401,6 +1539,8 @@ export function createCenterDetentKnob(overrides?: Partial<CenterDetentKnobEleme
     labelText: 'Pan',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1408,6 +1548,8 @@ export function createCenterDetentKnob(overrides?: Partial<CenterDetentKnobEleme
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1440,6 +1582,8 @@ export function createDotIndicatorKnob(overrides?: Partial<DotIndicatorKnobEleme
     labelText: 'Dot',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1447,6 +1591,8 @@ export function createDotIndicatorKnob(overrides?: Partial<DotIndicatorKnobEleme
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1480,6 +1626,8 @@ export function createBipolarSlider(overrides?: Partial<BipolarSliderElementConf
     labelText: 'Pan',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1487,6 +1635,8 @@ export function createBipolarSlider(overrides?: Partial<BipolarSliderElementConf
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1512,6 +1662,8 @@ export function createCrossfadeSlider(overrides?: Partial<CrossfadeSliderElement
     labelB: 'B',
     labelColor: '#888888',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     trackColor: '#374151',
     trackFillColor: '#949494',
     thumbColor: '#ffffff',
@@ -1551,6 +1703,8 @@ export function createNotchedSlider(overrides?: Partial<NotchedSliderElementConf
     labelText: 'Notched',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1558,6 +1712,8 @@ export function createNotchedSlider(overrides?: Partial<NotchedSliderElementConf
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1591,6 +1747,8 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     labelText: 'Arc',
     labelPosition: 'bottom',
     labelFontSize: 12,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
@@ -1598,6 +1756,8 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     valueSuffix: '',
     valueDecimalPlaces: 2,
     valueFontSize: 12,
+    valueFontFamily: 'Inter, system-ui, sans-serif',
+    valueFontWeight: '400',
     valueColor: '#a0a0a0',
     ...overrides,
   }
@@ -1621,6 +1781,9 @@ export function createRockerSwitch(overrides?: Partial<RockerSwitchElementConfig
     showLabels: true,
     upLabel: 'UP',
     downLabel: 'DN',
+    labelFontSize: 10,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     backgroundColor: '#374151',
     switchColor: '#949494',
     borderColor: '#6b7280',
@@ -1651,6 +1814,8 @@ export function createRotarySwitch(overrides?: Partial<RotarySwitchElementConfig
     pointerColor: '#ffffff',
     labelColor: '#888888',
     labelFontSize: 10,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     borderColor: '#6b7280',
     ...overrides,
   }
@@ -1681,6 +1846,9 @@ export function createSegmentButton(overrides?: Partial<SegmentButtonElementConf
     selectionMode: 'single',
     selectedIndices: [0],
     orientation: 'horizontal',
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '500',
     backgroundColor: '#374151',
     selectedColor: '#949494',
     textColor: '#888888',
@@ -1710,7 +1878,7 @@ export function createIconButton(overrides?: Partial<IconButtonElementConfig>): 
     backgroundColor: '#374151',
     iconColor: '#ffffff',
     borderColor: '#6b7280',
-    borderRadius: 4,
+    borderRadius: 0,
     ...overrides,
   }
 }
@@ -1730,10 +1898,13 @@ export function createKickButton(overrides?: Partial<KickButtonElementConfig>): 
     visible: true,
     pressed: false,
     label: 'KICK',
+    fontSize: 12,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '600',
     backgroundColor: '#374151',
     textColor: '#ffffff',
     borderColor: '#6b7280',
-    borderRadius: 4,
+    borderRadius: 0,
     ...overrides,
   }
 }
@@ -1759,6 +1930,9 @@ export function createToggleSwitch(overrides?: Partial<ToggleSwitchElementConfig
     showLabels: false,
     onLabel: 'ON',
     offLabel: 'OFF',
+    labelFontSize: 10,
+    labelFontFamily: 'Inter, system-ui, sans-serif',
+    labelFontWeight: '400',
     labelColor: '#888888',
     ...overrides,
   }
@@ -1783,10 +1957,13 @@ export function createPowerButton(overrides?: Partial<PowerButtonElementConfig>)
     ledOnColor: '#22c55e',
     ledOffColor: '#374151',
     label: 'POWER',
+    fontSize: 10,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '600',
     backgroundColor: '#374151',
     textColor: '#ffffff',
     borderColor: '#6b7280',
-    borderRadius: 4,
+    borderRadius: 0,
     ...overrides,
   }
 }
@@ -1808,12 +1985,15 @@ export function createStepper(overrides?: Partial<StepperElementConfig>): Steppe
     min: 0,
     max: 100,
     step: 1,
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     buttonColor: '#374151',
     buttonHoverColor: '#4b5563',
     textColor: '#ffffff',
     backgroundColor: '#1f2937',
     borderColor: '#6b7280',
-    borderRadius: 4,
+    borderRadius: 0,
     showValue: true,
     valueFormat: 'numeric',
     valueSuffix: '',
@@ -1848,6 +2028,8 @@ export function createBreadcrumb(overrides?: Partial<BreadcrumbElementConfig>): 
     separatorColor: '#6b7280',
     hoverColor: '#60a5fa',
     fontSize: 12,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     maxVisibleItems: 0,
     ...overrides,
   }
@@ -1874,6 +2056,9 @@ export function createTabBar(overrides?: Partial<TabBarElementConfig>): TabBarEl
     activeTabIndex: 0,
     orientation: 'horizontal',
     tabHeight: 40,
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '500',
     indicatorStyle: 'background',
     indicatorColor: '#949494',
     backgroundColor: '#1f2937',
@@ -1910,6 +2095,9 @@ export function createTagSelector(overrides?: Partial<TagSelectorElementConfig>)
     inputBackgroundColor: '#1f2937',
     inputTextColor: '#ffffff',
     inputBorderColor: '#374151',
+    fontSize: 12,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     chipBackgroundColor: '#374151',
     chipTextColor: '#ffffff',
     chipRemoveColor: '#ef4444',
@@ -1981,6 +2169,8 @@ export function createTreeView(overrides?: Partial<TreeViewElementConfig>): Tree
     selectedTextColor: '#ffffff',
     hoverBackgroundColor: '#2d3748',
     fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     disableEdit: true,
     disableDrag: true,
     ...overrides,
@@ -2003,6 +2193,9 @@ export function createMultiSelectDropdown(overrides?: Partial<MultiSelectDropdow
     options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
     selectedIndices: [],
     maxSelections: 0,
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     backgroundColor: '#1f2937',
     textColor: '#ffffff',
     borderColor: '#374151',
@@ -2028,6 +2221,9 @@ export function createComboBox(overrides?: Partial<ComboBoxElementConfig>): Comb
     options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
     selectedValue: '',
     placeholder: 'Type or select...',
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     backgroundColor: '#1f2937',
     textColor: '#ffffff',
     borderColor: '#374151',
@@ -2057,10 +2253,13 @@ export function createMenuButton(overrides?: Partial<MenuButtonElementConfig>): 
       { id: '3', label: 'Item 3', divider: true },
       { id: '4', label: 'Item 4' },
     ],
+    fontSize: 14,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '500',
     backgroundColor: '#374151',
     textColor: '#ffffff',
     borderColor: '#6b7280',
-    borderRadius: 4,
+    borderRadius: 0,
     ...overrides,
   }
 }

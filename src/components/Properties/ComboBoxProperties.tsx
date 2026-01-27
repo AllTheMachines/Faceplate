@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { ComboBoxElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { ScrollbarStyleSection } from './shared/ScrollbarStyleSection'
 
 interface ComboBoxPropertiesProps {
   element: ComboBoxElementConfig
@@ -151,6 +152,8 @@ export function ComboBoxProperties({ element, onUpdate }: ComboBoxPropertiesProp
           max={20}
         />
       </PropertySection>
+
+      <ScrollbarStyleSection config={element} onUpdate={onUpdate} />
     </>
   )
 }

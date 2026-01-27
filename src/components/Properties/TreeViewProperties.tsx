@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { TreeViewElementConfig, TreeNode, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
+import { ScrollbarStyleSection } from './shared/ScrollbarStyleSection'
 
 interface TreeViewPropertiesProps {
   element: TreeViewElementConfig
@@ -207,6 +208,8 @@ export function TreeViewProperties({ element, onUpdate }: TreeViewPropertiesProp
           onChange={(selectedTextColor) => onUpdate({ selectedTextColor })}
         />
       </PropertySection>
+
+      <ScrollbarStyleSection config={element} onUpdate={onUpdate} />
     </>
   )
 }

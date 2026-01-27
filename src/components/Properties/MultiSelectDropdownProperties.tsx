@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { MultiSelectDropdownElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { ScrollbarStyleSection } from './shared/ScrollbarStyleSection'
 
 interface MultiSelectDropdownPropertiesProps {
   element: MultiSelectDropdownElementConfig
@@ -162,6 +163,8 @@ export function MultiSelectDropdownProperties({
           max={20}
         />
       </PropertySection>
+
+      <ScrollbarStyleSection config={element} onUpdate={onUpdate} />
     </>
   )
 }

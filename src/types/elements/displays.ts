@@ -5,6 +5,7 @@
  */
 
 import { BaseElementConfig } from './base'
+import { ScrollbarConfig } from './containers'
 
 // ============================================================================
 // Display Element Configurations
@@ -59,6 +60,7 @@ export interface DbDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -78,6 +80,7 @@ export interface FrequencyDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -100,10 +103,12 @@ export interface GainReductionMeterElementConfig extends BaseElementConfig {
   // Display
   showValue: boolean
   fontSize: number
+  fontFamily: string
+  fontWeight: string
   textColor: string
 }
 
-export interface PresetBrowserElementConfig extends BaseElementConfig {
+export interface PresetBrowserElementConfig extends BaseElementConfig, ScrollbarConfig {
   type: 'presetbrowser'
 
   // Sample presets for placeholder display
@@ -124,6 +129,8 @@ export interface PresetBrowserElementConfig extends BaseElementConfig {
   textColor: string
   selectedTextColor: string
   fontSize: number
+  fontFamily: string
+  fontWeight: string
   itemHeight: number
   borderColor: string
   borderRadius: number
@@ -166,7 +173,7 @@ export interface OscilloscopeElementConfig extends BaseElementConfig {
   triggerLevel: number  // 0-1 normalized
 }
 
-export interface ModulationMatrixElementConfig extends BaseElementConfig {
+export interface ModulationMatrixElementConfig extends BaseElementConfig, ScrollbarConfig {
   type: 'modulationmatrix'
 
   // Matrix Configuration
@@ -183,6 +190,11 @@ export interface ModulationMatrixElementConfig extends BaseElementConfig {
   headerBackground: string
   headerColor: string
   headerFontSize: number
+  headerFontFamily: string
+  headerFontWeight: string
+
+  // Overflow
+  allowScroll?: boolean // Enable scrollbars when matrix exceeds bounds
 
   // Design Preview (shows active connections for visualization)
   previewActiveConnections: Array<[number, number]> // [sourceIndex, destinationIndex] pairs
@@ -201,6 +213,7 @@ export interface NumericDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   padding: number
@@ -227,6 +240,7 @@ export interface TimeDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   padding: number
@@ -246,6 +260,7 @@ export interface PercentageDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   padding: number
@@ -268,6 +283,7 @@ export interface RatioDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   padding: number
@@ -290,6 +306,7 @@ export interface NoteDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   padding: number
@@ -311,6 +328,7 @@ export interface BpmDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   padding: number
@@ -333,6 +351,7 @@ export interface EditableDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   borderColor: string
@@ -356,6 +375,7 @@ export interface MultiValueDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
+  fontWeight: number
   textColor: string
   backgroundColor: string
   borderColor: string
@@ -1065,6 +1085,7 @@ export function createDbDisplay(overrides?: Partial<DbDisplayElementConfig>): Db
     showUnit: true,
     fontSize: 16,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1091,6 +1112,7 @@ export function createFrequencyDisplay(overrides?: Partial<FrequencyDisplayEleme
     showUnit: true,
     fontSize: 16,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: '400',
     textColor: '#949494',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1118,6 +1140,8 @@ export function createGainReductionMeter(overrides?: Partial<GainReductionMeterE
     backgroundColor: '#1f2937',
     showValue: true,
     fontSize: 10,
+    fontFamily: 'Inter',
+    fontWeight: '400',
     textColor: '#9ca3af',
     ...overrides,
   }
@@ -1153,6 +1177,8 @@ export function createPresetBrowser(overrides?: Partial<PresetBrowserElementConf
     textColor: '#e5e7eb',
     selectedTextColor: '#ffffff',
     fontSize: 13,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     itemHeight: 28,
     borderColor: '#374151',
     borderRadius: 0,
@@ -1233,6 +1259,8 @@ export function createModulationMatrix(overrides?: Partial<ModulationMatrixEleme
     headerBackground: '#1f2937',
     headerColor: '#ffffff',
     headerFontSize: 11,
+    headerFontFamily: 'Inter',
+    headerFontWeight: '500',
     previewActiveConnections: [[0, 1], [2, 0]], // LFO 1 -> Filter, ENV 1 -> Pitch
     ...overrides,
   }
@@ -1256,7 +1284,7 @@ export function createSingleLED(overrides?: Partial<SingleLEDElementConfig>): Si
     onColor: '#00ff00',
     offColor: '#003300',
     shape: 'round',
-    cornerRadius: 4,
+    cornerRadius: 0,
     glowEnabled: true,
     glowRadius: defaultSize * 0.3,
     glowIntensity: defaultSize * 0.15,
@@ -1284,7 +1312,7 @@ export function createBiColorLED(overrides?: Partial<BiColorLEDElementConfig>): 
     redColor: '#ff0000',
     offColor: '#003300',
     shape: 'round',
-    cornerRadius: 4,
+    cornerRadius: 0,
     glowEnabled: true,
     glowRadius: defaultSize * 0.3,
     glowIntensity: defaultSize * 0.15,
@@ -1312,7 +1340,7 @@ export function createTriColorLED(overrides?: Partial<TriColorLEDElementConfig>)
     yellowColor: '#ffff00',
     redColor: '#ff0000',
     shape: 'round',
-    cornerRadius: 4,
+    cornerRadius: 0,
     glowEnabled: true,
     glowRadius: defaultSize * 0.3,
     glowIntensity: defaultSize * 0.15,
@@ -1344,7 +1372,7 @@ export function createLEDArray(overrides?: Partial<LEDArrayElementConfig>): LEDA
     onColor: '#00ff00',
     offColor: '#003300',
     shape: 'round',
-    cornerRadius: 4,
+    cornerRadius: 0,
     glowEnabled: true,
     glowRadius: segmentSize * 0.3,
     glowIntensity: segmentSize * 0.15,
@@ -1412,7 +1440,7 @@ export function createLEDMatrix(overrides?: Partial<LEDMatrixElementConfig>): LE
     onColor: '#00ff00',
     offColor: '#003300',
     shape: 'round',
-    cornerRadius: 2,
+    cornerRadius: 0,
     glowEnabled: true,
     glowRadius: ledSize * 0.3,
     glowIntensity: ledSize * 0.15,
@@ -1441,6 +1469,7 @@ export function createNumericDisplay(overrides?: Partial<NumericDisplayElementCo
     unit: '',
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1474,6 +1503,7 @@ export function createTimeDisplay(overrides?: Partial<TimeDisplayElementConfig>)
     timeSignature: 4,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1502,6 +1532,7 @@ export function createPercentageDisplay(overrides?: Partial<PercentageDisplayEle
     decimalPlaces: 0,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1533,6 +1564,7 @@ export function createRatioDisplay(overrides?: Partial<RatioDisplayElementConfig
     infinityThreshold: 20,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1564,6 +1596,7 @@ export function createNoteDisplay(overrides?: Partial<NoteDisplayElementConfig>)
     showMidiNumber: false,
     fontSize: 20,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1594,6 +1627,7 @@ export function createBpmDisplay(overrides?: Partial<BpmDisplayElementConfig>): 
     showLabel: true,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1625,6 +1659,7 @@ export function createEditableDisplay(overrides?: Partial<EditableDisplayElement
     decimalPlaces: 2,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     borderColor: '#374151',
@@ -1653,6 +1688,7 @@ export function createMultiValueDisplay(overrides?: Partial<MultiValueDisplayEle
     layout: 'vertical',
     fontSize: 16,
     fontFamily: 'Roboto Mono, monospace',
+    fontWeight: 400,
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     borderColor: '#374151',
