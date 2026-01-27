@@ -2293,14 +2293,19 @@ ${selector} .led-segment[data-lit="true"] {
 /**
  * Generate LED Ring CSS
  */
-function generateLedRingCSS(selector: string, _element: ElementConfig & { type: 'ledring' }): string {
+function generateLedRingCSS(selector: string, element: ElementConfig & { type: 'ledring' }): string {
   return `/* LED Ring */
 ${selector} {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: visible;
 }
 
 ${selector} svg {
   overflow: visible;
+  width: ${element.diameter}px;
+  height: ${element.diameter}px;
 }`
 }
 
