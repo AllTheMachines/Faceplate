@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 31 - Undo/Redo History Panel (in progress)
-Plan: 1 of 3 (33% complete)
+Plan: 2 of 3 (67% complete)
 Status: In progress
-Last activity: 2026-01-27 - Completed 31-01-PLAN.md (History Panel Infrastructure)
+Last activity: 2026-01-27 - Completed 31-02-PLAN.md (Keyboard Shortcuts & Time-Travel)
 
 Previous: Phase 27.1 - Post-Phase Bug Fixes ✓ (verified 2026-01-27)
 
-Progress: [█████████░] 138/141 plans complete (98%)
+Progress: [█████████░] 139/141 plans complete (99%)
 
 ## Performance Metrics
 
@@ -43,7 +43,7 @@ Progress: [█████████░] 138/141 plans complete (98%)
 - Completed: 49 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 4, Phase 27.1: 5)
 
 **v1.3 scope:**
-- Phase 31: Undo/Redo History Panel (3 plans) - In progress (1/3 complete)
+- Phase 31: Undo/Redo History Panel (3 plans) - In progress (2/3 complete)
 
 ## Accumulated Context
 
@@ -211,6 +211,9 @@ All v1.1 decisions documented and outcomes verified.
 | Used established zustand pattern | 31-01 | LeftPanel.tsx already demonstrates reactive temporal subscriptions | useStore(useAppStore.temporal, selector) provides automatic re-renders |
 | Bottom panel sizing configuration | 31-01 | 20% default provides adequate space without overwhelming canvas | defaultSize=20%, minSize=10%, maxSize=50%, collapsible to 0 |
 | Visual state distinction | 31-01 | Clear visual feedback for history position | Past (gray), Current (green + blue bg), Future (blue) |
+| Action inference via state diff | 31-02 | Semantic action types provide meaningful context vs generic "state changed" | 7 action types: add/delete/move/resize/update/canvas/initial |
+| Time-travel with imperative undo/redo | 31-02 | Direct jump to any history state using temporal.getState() | jumpToHistoryIndex calculates step difference and calls undo(n) or redo(n) |
+| Auto-scroll to current entry | 31-02 | Current entry moves during time-travel, needs to stay visible | scrollIntoView with smooth behavior on currentIndex change |
 
 ### Pending Todos
 
@@ -357,17 +360,22 @@ None - Phase 26 complete
   - Created HistoryEntry component with visual state distinction
   - Created useHistoryPanel hook for visibility management (foundation for Plan 02)
   - Bottom panel resizable (20% default, 10-50% range) and collapsible
-- Plan 31-02: Keyboard Shortcuts - PENDING
-- Plan 31-03: Time-Travel Navigation - PENDING
+- Plan 31-02: Keyboard Shortcuts & Time-Travel - COMPLETE
+  - Added Ctrl+Shift+H (Cmd+Shift+H) keyboard shortcut to toggle history panel
+  - Implemented action inference (add/delete/move/resize/update/canvas/initial)
+  - Time-travel navigation with click-to-jump functionality
+  - Auto-scroll to current entry during navigation
+  - Visual distinction: past (gray), current (green border + blue bg), future (blue border + faded)
+- Plan 31-03: Export Support - PENDING
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 31-01-PLAN.md
+Stopped at: Completed 31-02-PLAN.md
 Resume file: None
 
-**Next step:** `/gsd:execute-phase 31 02` (Keyboard Shortcuts)
+**Next step:** `/gsd:execute-phase 31 03` (Export Support)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after completing 31-01-PLAN.md*
+*Last updated: 2026-01-27 after completing 31-02-PLAN.md*
