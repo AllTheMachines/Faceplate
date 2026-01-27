@@ -4,7 +4,10 @@
 
 - **v1.0 MVP** - Phases 1-13 (shipped 2026-01-25)
 - **v1.1 SVG Import System** - Phases 14-18 (shipped 2026-01-26)
-- **v1.2 Complete Element Taxonomy** - Phases 19-30 (in progress)
+- **v1.2 Complete Element Taxonomy** - Phases 19-30 (shipped 2026-01-27)
+- **v1.3 Workflow & Protection** - Phases 31-33
+- **v1.4 Container Editing System** - Phases 34-35
+- **v1.5 Export & Asset Management** - Phases 36-37
 
 ## Phases
 
@@ -205,8 +208,8 @@ Plans:
 
 </details>
 
-<details open>
-<summary>v1.2 Complete Element Taxonomy (Phases 19-30) - IN PROGRESS</summary>
+<details>
+<summary>v1.2 Complete Element Taxonomy (Phases 19-30) - SHIPPED 2026-01-27</summary>
 
 ### Phase 19: Architecture Refactoring
 **Goal**: Codebase scales gracefully from 25 to 103 element types without technical debt
@@ -485,6 +488,101 @@ Plans:
 
 </details>
 
+### Phase 31: Undo/Redo History Panel
+**Goal**: Visible debug panel showing every state change for debugging and transparency
+**Dependencies**: None
+**Milestone**: v1.3
+**Plans**: 2 plans
+
+Plans:
+- [ ] 31-01-PLAN.md — Install react-resizable-panels, create layout infrastructure, history panel components
+- [ ] 31-02-PLAN.md — Keyboard shortcut toggle, action inference, time-travel navigation
+
+**Success Criteria:**
+1. Bottom panel with scrollable list showing all state changes
+2. Each entry shows: timestamp, action type, affected element(s), before/after summary
+3. Clicking an entry jumps to that state (time travel debugging)
+4. Keyboard shortcut to toggle panel visibility (e.g., Ctrl+Shift+H)
+5. Panel is collapsible/resizable
+6. Clear visual distinction between undo-able and redo-able entries
+
+### Phase 32: Unsaved Changes Protection
+**Goal**: Users never accidentally lose work due to navigation or browser close
+**Dependencies**: None
+**Milestone**: v1.3
+
+**Success Criteria:**
+1. Visual indicator in UI when project has unsaved changes (e.g., dot on save button, asterisk in title)
+2. Browser beforeunload warning when closing/refreshing with unsaved changes
+3. Warning dialog when loading a new project or template with unsaved changes
+4. "Last saved: X minutes ago" indicator somewhere visible
+
+### Phase 33: Adjustable Snap Grid
+**Goal**: Visible background grid for precise element alignment
+**Dependencies**: None
+**Milestone**: v1.3
+
+**Success Criteria:**
+1. Visible grid lines on canvas background
+2. Adjustable grid spacing (e.g., 5px, 10px, 20px, 50px)
+3. Toggle to show/hide grid (keyboard shortcut)
+4. Grid respects zoom level (stays visually consistent)
+5. Option to snap to grid vs free positioning
+6. Grid color/opacity customizable or auto-adapts to canvas background
+
+### Phase 34: Container Element Editor
+**Goal**: Users can add child elements to containers via dedicated editing interface
+**Dependencies**: Phase 31 (benefits from history visibility for debugging)
+**Milestone**: v1.4
+
+**Success Criteria:**
+1. "Edit Contents" button in property panel for container elements (GroupBox, Collapsible, Panel, Frame, Window Chrome)
+2. Button opens popup/modal with dedicated canvas showing container interior
+3. Full palette available in popup - user can drag any element into container
+4. Container-in-container support (nested editing) with breadcrumb navigation
+5. Changes in container editor reflect immediately in main canvas
+6. Clear visual feedback showing which container is being edited
+
+### Phase 35: Container Overflow & Scrollbars
+**Goal**: Containers handle child elements that exceed their bounds gracefully
+**Dependencies**: Phase 34 (requires container editing to add overflowing content)
+**Milestone**: v1.4
+
+**Success Criteria:**
+1. Containers detect when children exceed bounds
+2. Automatic scrollbars appear (horizontal and/or vertical) when content overflows
+3. Per-container setting: overflow behavior (scroll, hidden, visible)
+4. Scrollbar styling matches overall theme
+5. Export generates correct CSS overflow properties
+6. Preview mode supports scrollable containers
+
+### Phase 36: SVG Export with Named Layers
+**Goal**: Export individual elements as SVG with meaningful layer names for re-import workflow
+**Dependencies**: None
+**Milestone**: v1.5
+
+**Success Criteria:**
+1. "Export as SVG" option for any element (context menu or property panel button)
+2. SVG layers have meaningful names based on element structure (e.g., `knob-body`, `knob-indicator`, `knob-shadow`, `slider-track`, `slider-thumb`)
+3. Consistent naming convention documented for each element type
+4. When importing SVG for an element, auto-match layers by name
+5. Validation on import: error if required layers missing, warning if extra layers present
+6. Layer naming convention ensures re-imported SVGs work immediately without manual mapping
+
+### Phase 37: Font Management System
+**Goal**: Centralized font management with automatic discovery and export bundling
+**Dependencies**: None
+**Milestone**: v1.5
+
+**Success Criteria:**
+1. Designer-managed fonts folder (configurable location, sensible default like `~/.vst-ui-designer/fonts/`)
+2. Auto-scan for `.ttf`, `.otf`, `.woff`, `.woff2` files on startup and folder change
+3. All discovered fonts appear in font selection dropdowns throughout the app
+4. Settings UI to configure fonts folder path and trigger rescan
+5. "Open Fonts Folder" button to reveal in file explorer
+6. Export only bundles fonts actually used in the project (not entire fonts folder)
+7. Font preview in dropdown (show font name in its own typeface)
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -517,10 +615,17 @@ Plans:
 | 26. Interactive Curves | v1.2 | 5/5 | Complete | 2026-01-26 |
 | 27. Containers & Polish | v1.2 | 4/4 | Complete | 2026-01-26 |
 | 27.1. Post-Phase Bug Fixes | v1.2 | 5/5 | Complete | 2026-01-27 |
-| 28. Specialized Audio (Part 1) | v1.2 | 0/? | Pending | — |
-| 29. Specialized Audio (Part 2) | v1.2 | 0/? | Pending | — |
-| 30. Specialized Audio (Part 3) | v1.2 | 0/? | Pending | — |
+| 28. Specialized Audio (Part 1) | v1.2 | 3/3 | Complete | 2026-01-27 |
+| 29. Specialized Audio (Part 2) | v1.2 | 3/3 | Complete | 2026-01-27 |
+| 30. Specialized Audio (Part 3) | v1.2 | 6/6 | Complete | 2026-01-27 |
+| 31. Undo/Redo History Panel | v1.3 | 0/2 | Planned | - |
+| 32. Unsaved Changes Protection | v1.3 | 0/? | Planned | - |
+| 33. Adjustable Snap Grid | v1.3 | 0/? | Planned | - |
+| 34. Container Element Editor | v1.4 | 0/? | Planned | - |
+| 35. Container Overflow & Scrollbars | v1.4 | 0/? | Planned | - |
+| 36. SVG Export with Named Layers | v1.5 | 0/? | Planned | - |
+| 37. Font Management System | v1.5 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 27.1 execution complete*
+*Last updated: 2026-01-27 after Phase 31 planning*
