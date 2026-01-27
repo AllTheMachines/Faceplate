@@ -552,18 +552,19 @@ Plans:
 5. ✓ Changes in container editor reflect immediately in main canvas
 6. ✓ Clear visual feedback showing which container is being edited
 
-### Phase 35: Container Overflow & Scrollbars
+### Phase 35: Container Overflow & Scrollbars ✓
 **Goal**: Containers handle child elements that exceed their bounds gracefully
 **Dependencies**: Phase 34 (requires container editing to add overflowing content)
 **Milestone**: v1.4
+**Completed**: 2026-01-27
 
 **Success Criteria:**
-1. Containers detect when children exceed bounds
-2. Automatic scrollbars appear (horizontal and/or vertical) when content overflows
-3. Per-container setting: overflow behavior (scroll, hidden, visible)
-4. Scrollbar styling matches overall theme
-5. Export generates correct CSS overflow properties
-6. Preview mode supports scrollable containers
+1. ✓ Containers detect when children exceed bounds
+2. ✓ Automatic scrollbars appear (horizontal and/or vertical) when content overflows
+3. ✓ Per-container setting: overflow behavior (scroll, hidden, visible)
+4. ✓ Scrollbar styling matches overall theme
+5. ✓ Export generates correct CSS overflow properties
+6. ✓ Preview mode supports scrollable containers
 
 ### Phase 36: SVG Export with Named Layers ✓
 **Goal**: Export individual elements as SVG with meaningful layer names for re-import workflow
@@ -632,7 +633,7 @@ Plans:
 | 32. Unsaved Changes Protection | v1.3 | 2/2 | Complete | 2026-01-27 |
 | 33. Adjustable Snap Grid | v1.3 | 1/1 | Complete | 2026-01-27 |
 | 34. Container Element Editor | v1.4 | 1/1 | Complete | 2026-01-27 |
-| 35. Container Overflow & Scrollbars | v1.4 | 0/? | Planned | - |
+| 35. Container Overflow & Scrollbars | v1.4 | 1/1 | Complete | 2026-01-27 |
 | 36. SVG Export with Named Layers | v1.5 | 1/1 | Complete | 2026-01-27 |
 | 37. Font Management System | v1.5 | 0/? | Planned | - |
 
