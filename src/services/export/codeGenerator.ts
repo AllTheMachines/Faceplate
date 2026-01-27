@@ -293,7 +293,7 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
         isPreviewMode: false,
       })
 
-      const cssContent = generateCSS(options.elements, {
+      const cssContent = await generateCSS(options.elements, {
         canvasWidth: options.canvasWidth,
         canvasHeight: options.canvasHeight,
         backgroundColor: options.backgroundColor,
@@ -418,7 +418,7 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
         isPreviewMode: true,
       })
 
-      const cssContent = generateCSS(options.elements, {
+      const cssContent = await generateCSS(options.elements, {
         canvasWidth: options.canvasWidth,
         canvasHeight: options.canvasHeight,
         backgroundColor: options.backgroundColor,

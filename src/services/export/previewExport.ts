@@ -40,7 +40,7 @@ export async function previewHTMLExport(options: PreviewOptions): Promise<{ succ
     });
 
     // Generate CSS
-    const css = generateCSS(elements, {
+    const css = await generateCSS(elements, {
       canvasWidth,
       canvasHeight,
       backgroundColor,
