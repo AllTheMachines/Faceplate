@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 37 - Font Management System (in progress)
-Plan: 1 of 5 (20% complete)
+Plan: 3 of 5 (60% complete)
 Status: In progress
-Last activity: 2026-01-27 - Completed 37-01-PLAN.md (Font Management Service Layer)
+Last activity: 2026-01-27 - Completed 37-03-PLAN.md (Font Selection UI)
 
 Previous: Phase 35 - Container Overflow & Scrollbars ✓ (2026-01-27)
 
-Progress: [██████████░] 144/148 plans complete (97%)
+Progress: [██████████░] 146/148 plans complete (99%)
 
 ## Performance Metrics
 
@@ -445,6 +445,12 @@ None - Phase 26 complete
   - State fields: customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime
   - Integrated into main Zustand store with temporal exclusions
   - All font state excluded from undo history
+- Plan 37-03: Font Selection UI - COMPLETE (2026-01-27, 3min)
+  - Created useFonts hook wrapping fontManager service with React state
+  - Created FontSettings modal dialog with folder picker, rescan, status display
+  - Integrated FontSettings into LeftPanel with "Fonts" button
+  - Implemented restoreOnMount to load cached fonts from IndexedDB
+  - Added clipboard copy functionality for folder path
 
 **Phase 37 decisions:**
 
@@ -457,15 +463,19 @@ None - Phase 26 complete
 | CustomFont distinct from StoredFont | 37-02 | UI needs simplified view without ArrayBuffer data | CustomFont has family/name/format/category fields only |
 | All font state excluded from undo | 37-02 | Font loading is project-level operation, not design action | customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime in temporal partialize exclusions |
 | State slice contains only setters | 37-02 | Keep slice simple, orchestration in fontManager service | All actions are synchronous setters, no async logic in slice |
+| useFonts hook pattern | 37-03 | Wrap fontManager service with React state management | Hook provides selectDirectory, rescanDirectory, clearDirectory, restoreOnMount operations |
+| restoreOnMount functionality | 37-03 | Fonts should persist across browser sessions | Restore directory access and load fonts from IndexedDB on mount |
+| FontSettings UI design | 37-03 | Dark theme matching app, conditional rendering based on state | Path display with copy button, status section, error display |
+| LeftPanel integration | 37-03 | Accessible location for font management | "Fonts" button below timestamp in logo area |
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 37-01-PLAN.md (Font Management Service Layer)
+Stopped at: Completed 37-03-PLAN.md (Font Selection UI)
 Resume file: None
 
-**Next step:** Phase 37 plan 02 (Font State Management) - already complete, continue to plan 03 (Font Selection UI)
+**Next step:** Phase 37 plan 04 (Font Dropdown Integration)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 37 plan 01 complete*
+*Last updated: 2026-01-27 after Phase 37 plan 03 complete*
