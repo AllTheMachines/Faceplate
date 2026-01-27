@@ -3300,6 +3300,12 @@ function generateTooltipHTML(
 
 /**
  * Generate Horizontal Spacer HTML
+ *
+ * DESIGN DECISION: Spacers are INTENTIONALLY INVISIBLE in HTML preview/export.
+ * - In Designer: Shows dashed border + sizing label for visibility
+ * - In Preview/Export: Renders as transparent element that creates space
+ *
+ * Spacers are pure layout aids - they have no visual representation in the final UI.
  */
 function generateHorizontalSpacerHTML(
   id: string,
@@ -3312,6 +3318,12 @@ function generateHorizontalSpacerHTML(
 
 /**
  * Generate Vertical Spacer HTML
+ *
+ * DESIGN DECISION: Spacers are INTENTIONALLY INVISIBLE in HTML preview/export.
+ * - In Designer: Shows dashed border + sizing label for visibility
+ * - In Preview/Export: Renders as transparent element that creates space
+ *
+ * Spacers are pure layout aids - they have no visual representation in the final UI.
  */
 function generateVerticalSpacerHTML(
   id: string,

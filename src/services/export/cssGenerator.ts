@@ -3004,15 +3004,20 @@ ${selector} .tooltip-arrow {
 
 /**
  * Generate Horizontal Spacer CSS
+ *
+ * DESIGN DECISION: Spacers are INTENTIONALLY INVISIBLE in preview/export.
+ * - Designer shows dashed border + sizing label for visibility
+ * - Exported HTML renders as transparent element that creates horizontal space
+ * - This is correct behavior - spacers are layout aids with no visual representation
  */
 function generateHorizontalSpacerCSS(selector: string, element: HorizontalSpacerElementConfig): string {
   const sizing = element.sizingMode === 'fixed'
     ? `width: ${element.fixedWidth}px;`
     : `flex-grow: ${element.flexGrow}; min-width: ${element.minWidth}px; max-width: ${element.maxWidth}px;`
 
-  return `/* Horizontal Spacer */
+  return `/* Horizontal Spacer (Intentionally Invisible) */
 ${selector} {
-  /* Invisible spacing element */
+  /* Invisible spacing element - creates horizontal space without visual representation */
   ${sizing}
   background: transparent;
 }`
@@ -3020,15 +3025,20 @@ ${selector} {
 
 /**
  * Generate Vertical Spacer CSS
+ *
+ * DESIGN DECISION: Spacers are INTENTIONALLY INVISIBLE in preview/export.
+ * - Designer shows dashed border + sizing label for visibility
+ * - Exported HTML renders as transparent element that creates vertical space
+ * - This is correct behavior - spacers are layout aids with no visual representation
  */
 function generateVerticalSpacerCSS(selector: string, element: VerticalSpacerElementConfig): string {
   const sizing = element.sizingMode === 'fixed'
     ? `height: ${element.fixedHeight}px;`
     : `flex-grow: ${element.flexGrow}; min-height: ${element.minHeight}px; max-height: ${element.maxHeight}px;`
 
-  return `/* Vertical Spacer */
+  return `/* Vertical Spacer (Intentionally Invisible) */
 ${selector} {
-  /* Invisible spacing element */
+  /* Invisible spacing element - creates vertical space without visual representation */
   ${sizing}
   background: transparent;
 }`
