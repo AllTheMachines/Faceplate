@@ -85,7 +85,7 @@ export function SaveLoadPanel() {
   const selectMultiple = useStore((state) => state.selectMultiple)
   const setAssets = useStore((state) => state.setAssets)
   const setKnobStyles = useStore((state) => state.setKnobStyles)
-  const setLastSavedTimestamp = useStore((state) => state.setLastSavedTimestamp)
+  const setLastModified = useStore((state) => state.setLastModified)
 
   const handleSave = async () => {
     setLoading(true)
@@ -111,7 +111,7 @@ export function SaveLoadPanel() {
       await saveProjectFile(json)
 
       // Update timestamp display after successful save
-      setLastSavedTimestamp(Date.now())
+      setLastModified(Date.now())
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save project')
     } finally {
@@ -180,8 +180,8 @@ export function SaveLoadPanel() {
         setKnobStyles(data.knobStyles)
       }
 
-      // Restore timestamp from project file
-      setLastSavedTimestamp(data.lastModified || null)
+      // Restore timestamp from project file (or null if old file without timestamp)
+      setLastModified(data.lastModified || null)
 
       // Clear error on success
       setError(null)
