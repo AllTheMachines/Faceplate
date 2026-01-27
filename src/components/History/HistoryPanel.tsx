@@ -1,6 +1,7 @@
 import { useStore } from 'zustand'
 import { useStore as useAppStore } from '../../store'
 import { HistoryEntry } from './HistoryEntry'
+import { useRef, useEffect } from 'react'
 
 export function HistoryPanel() {
   // Subscribe to pastStates and futureStates reactively using established pattern
@@ -11,10 +12,28 @@ export function HistoryPanel() {
   // Calculate current index (past states count)
   const currentIndex = pastStates.length
 
-  // Handle time-travel (will be implemented in Plan 02)
-  const handleEntryClick = (index: number) => {
-    // TODO: Plan 02 - Implement time-travel navigation
-    console.log('Time-travel to index:', index)
+  // Track creation timestamp for relative time calculation
+  const creationTimestampRef = useRef<number>(Date.now())
+
+  // Reset timestamp on mount
+  useEffect(() => {
+    creationTimestampRef.current = Date.now()
+  }, [])
+
+  // Time-travel navigation - jump to specific history index
+  // Uses imperative getState() for one-time read without re-render subscription
+  const jumpToHistoryIndex = (targetIndex: number) => {
+    const { pastStates: currentPastStates, undo, redo } = useAppStore.temporal.getState()
+    const currentIdx = currentPastStates.length
+
+    if (targetIndex < currentIdx) {
+      // Undo N steps to reach target
+      undo(currentIdx - targetIndex)
+    } else if (targetIndex > currentIdx) {
+      // Redo N steps to reach target
+      redo(targetIndex - currentIdx)
+    }
+    // If targetIndex === currentIdx, we're already there
   }
 
   // Empty state
@@ -31,13 +50,21 @@ export function HistoryPanel() {
     )
   }
 
+  // Get all states in order: past + current + future
+  // For beforeState comparison, we need to shift the states array
+  const allStates = [
+    ...pastStates,
+    useAppStore.getState(), // Current state
+    ...futureStates,
+  ]
+
   return (
     <div className="h-full flex flex-col bg-gray-800">
       {/* Header row */}
       <div className="p-3 border-b border-gray-700 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-300">History</h2>
         <span className="text-xs text-gray-500">
-          {pastStates.length} past / {futureStates.length} future
+          {pastStates.length} past | {futureStates.length} future
         </span>
       </div>
 
@@ -50,8 +77,10 @@ export function HistoryPanel() {
             index={i}
             isCurrent={false}
             isFuture={false}
-            elementCount={state.elements?.length || 0}
-            onClick={() => handleEntryClick(i)}
+            beforeState={i > 0 ? allStates[i - 1] : null}
+            afterState={state}
+            timestamp={creationTimestampRef.current - (pastStates.length - i) * 1000}
+            onClick={() => jumpToHistoryIndex(i)}
           />
         ))}
 
@@ -61,8 +90,10 @@ export function HistoryPanel() {
           index={currentIndex}
           isCurrent={true}
           isFuture={false}
-          elementCount={useAppStore.getState().elements?.length || 0}
-          onClick={() => handleEntryClick(currentIndex)}
+          beforeState={pastStates.length > 0 ? pastStates[pastStates.length - 1] : null}
+          afterState={useAppStore.getState()}
+          timestamp={creationTimestampRef.current}
+          onClick={() => jumpToHistoryIndex(currentIndex)}
         />
 
         {/* Future states */}
@@ -72,8 +103,10 @@ export function HistoryPanel() {
             index={currentIndex + 1 + i}
             isCurrent={false}
             isFuture={true}
-            elementCount={state.elements?.length || 0}
-            onClick={() => handleEntryClick(currentIndex + 1 + i)}
+            beforeState={allStates[currentIndex + i]}
+            afterState={state}
+            timestamp={creationTimestampRef.current + (i + 1) * 1000}
+            onClick={() => jumpToHistoryIndex(currentIndex + 1 + i)}
           />
         ))}
       </div>

@@ -14,6 +14,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { HistoryPanel } from './components/History'
+import { useHistoryPanel } from './hooks/useHistoryPanel'
 import { useStore } from './store'
 import { snapValue } from './store/canvasSlice'
 import { getSVGNaturalSize } from './services/svg'
@@ -159,6 +160,9 @@ function DragPreview({
 }
 
 function App() {
+  // History panel visibility controlled by Ctrl+Shift+H
+  const { isPanelVisible } = useHistoryPanel()
+
   // Configure sensors with activation constraint to prevent accidental drags
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -769,7 +773,7 @@ function App() {
     <>
       <PanelGroup direction="vertical" className="h-screen w-screen">
         {/* Main content panel (top) */}
-        <Panel defaultSize={80} minSize={40}>
+        <Panel defaultSize={isPanelVisible ? 80 : 100} minSize={40}>
           <DndContext
             sensors={sensors}
             onDragStart={handleDragStart}
@@ -790,19 +794,24 @@ function App() {
           </DndContext>
         </Panel>
 
-        {/* Resize handle */}
-        <PanelResizeHandle className="h-1 bg-gray-700 hover:bg-blue-500 cursor-ns-resize transition-colors" />
+        {/* Conditionally render resize handle and history panel */}
+        {isPanelVisible && (
+          <>
+            {/* Resize handle */}
+            <PanelResizeHandle className="h-1 bg-gray-700 hover:bg-blue-500 cursor-ns-resize transition-colors" />
 
-        {/* History panel (bottom) */}
-        <Panel
-          defaultSize={20}
-          minSize={10}
-          maxSize={50}
-          collapsible={true}
-          collapsedSize={0}
-        >
-          <HistoryPanel />
-        </Panel>
+            {/* History panel (bottom) */}
+            <Panel
+              defaultSize={20}
+              minSize={10}
+              maxSize={50}
+              collapsible={true}
+              collapsedSize={0}
+            >
+              <HistoryPanel />
+            </Panel>
+          </>
+        )}
       </PanelGroup>
 
       <Toaster
