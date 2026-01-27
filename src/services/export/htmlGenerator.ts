@@ -1372,7 +1372,8 @@ function generateRockerSwitchHTML(
 }
 
 /**
- * Generate Rotary Switch HTML with body, pointer, and position labels
+ * Generate Rotary Switch HTML with SVG body, pointer, and position labels
+ * Matches RotarySwitchRenderer.tsx implementation
  */
 function generateRotarySwitchHTML(
   id: string,
@@ -1380,24 +1381,81 @@ function generateRotarySwitchHTML(
   positionStyle: string,
   element: RotarySwitchElementConfig
 ): string {
+  // Calculate dimensions matching renderer
+  const size = Math.min(element.width, element.height)
+  const centerX = size / 2
+  const centerY = size / 2
+  const radius = size * 0.35
+  const pointerLength = radius * 0.7
+
+  // Calculate angle per position
+  const anglePerPosition = element.positionCount > 1 ? element.rotationAngle / (element.positionCount - 1) : 0
+  const startAngle = -element.rotationAngle / 2
+  const currentAngle = startAngle + element.currentPosition * anglePerPosition
+
   // Generate position labels
   const labels = element.positionLabels || Array.from({ length: element.positionCount }, (_, i) => String(i + 1))
-  const labelsHTML = labels
-    .map((label, i) => `<span class="label" data-index="${i}">${escapeHTML(label)}</span>`)
-    .join('')
 
-  // Calculate rotation angle for pointer based on current position
-  const rotationRange = element.rotationAngle
-  const startOffset = -rotationRange / 2
-  const anglePerPosition = element.positionCount > 1 ? rotationRange / (element.positionCount - 1) : 0
-  const pointerAngle = startOffset + element.currentPosition * anglePerPosition
+  // Convert degrees to radians
+  const degToRad = (deg: number) => (deg * Math.PI) / 180
 
-  return `<div id="${id}" class="${baseClass} rotaryswitch-element" data-type="rotaryswitch" data-position="${element.currentPosition}" data-count="${element.positionCount}" style="${positionStyle}">
-  <div class="body"></div>
-  <div class="pointer" style="transform: rotate(${pointerAngle}deg);"></div>
-  <div class="labels" data-layout="${element.labelLayout}">
-    ${labelsHTML}
-  </div>
+  // Calculate pointer end position
+  const pointerEndX = centerX + pointerLength * Math.sin(degToRad(currentAngle))
+  const pointerEndY = centerY - pointerLength * Math.cos(degToRad(currentAngle))
+
+  // Generate position indicator marks
+  const positionMarks = Array.from({ length: element.positionCount }, (_, i) => {
+    const angle = startAngle + i * anglePerPosition
+    const markStartRadius = radius - 6
+    const markEndRadius = radius - 2
+    const x1 = centerX + markStartRadius * Math.sin(degToRad(angle))
+    const y1 = centerY - markStartRadius * Math.cos(degToRad(angle))
+    const x2 = centerX + markEndRadius * Math.sin(degToRad(angle))
+    const y2 = centerY - markEndRadius * Math.cos(degToRad(angle))
+    const isActive = i === element.currentPosition
+    const strokeColor = isActive ? element.pointerColor : element.borderColor
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" />`
+  }).join('')
+
+  let labelsHTML = ''
+
+  if (element.labelLayout === 'radial') {
+    // Radial labels (inside SVG as text elements)
+    const labelRadius = radius + 20
+    const radialLabelsHTML = labels.slice(0, element.positionCount).map((label, i) => {
+      const angle = startAngle + i * anglePerPosition
+      const x = centerX + labelRadius * Math.sin(degToRad(angle))
+      const y = centerY - labelRadius * Math.cos(degToRad(angle))
+      const isActive = i === element.currentPosition
+      const opacity = isActive ? 1 : 0.6
+      const fontWeight = isActive ? 'bold' : 'normal'
+      return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${element.labelFontSize}" fill="${element.labelColor}" font-weight="${fontWeight}" opacity="${opacity}">${escapeHTML(label)}</text>`
+    }).join('')
+    labelsHTML = radialLabelsHTML
+  } else {
+    // Legend layout (outside SVG as HTML list)
+    const legendLabelsHTML = labels.slice(0, element.positionCount).map((label, i) => {
+      const isActive = i === element.currentPosition
+      return `<span class="label" data-active="${isActive}">${i + 1}. ${escapeHTML(label)}</span>`
+    }).join('')
+    labelsHTML = `</svg><div class="labels-legend">${legendLabelsHTML}</div>`
+  }
+
+  const svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <!-- Switch body -->
+    <circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${element.backgroundColor}" stroke="${element.borderColor}" stroke-width="2" />
+    <!-- Position indicator marks -->
+    ${positionMarks}
+    <!-- Pointer line -->
+    <line x1="${centerX}" y1="${centerY}" x2="${pointerEndX}" y2="${pointerEndY}" stroke="${element.pointerColor}" stroke-width="3" stroke-linecap="round" />
+    <!-- Center dot -->
+    <circle cx="${centerX}" cy="${centerY}" r="4" fill="${element.pointerColor}" />
+    <!-- Radial labels (if applicable) -->
+    ${element.labelLayout === 'radial' ? labelsHTML : ''}
+  </svg>${element.labelLayout === 'legend' ? labelsHTML.substring(6) : ''}`
+
+  return `<div id="${id}" class="${baseClass} rotaryswitch-element" data-type="rotaryswitch" data-position="${element.currentPosition}" data-count="${element.positionCount}" data-layout="${element.labelLayout}" style="${positionStyle}">
+  ${svgContent}
 </div>`
 }
 

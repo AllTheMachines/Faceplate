@@ -1746,61 +1746,54 @@ ${selector}:not([data-position="0"]) .label-down {
  * Generate Rotary Switch CSS
  */
 function generateRotarySwitchCSS(selector: string, element: RotarySwitchElementConfig): string {
+  // Match RotarySwitchRenderer.tsx flexbox + SVG layout
   return `/* Rotary Switch */
 ${selector} {
-  position: relative;
-}
-
-${selector} .body {
-  position: absolute;
-  width: 80%;
-  height: 80%;
-  left: 10%;
-  top: 10%;
-  border-radius: 50%;
-  background-color: ${element.backgroundColor};
-  border: 2px solid ${element.borderColor};
-  box-sizing: border-box;
-}
-
-${selector} .pointer {
-  position: absolute;
-  width: 4px;
-  height: 30%;
-  left: calc(50% - 2px);
-  top: 10%;
-  background-color: ${element.pointerColor};
-  transform-origin: center bottom;
-  transition: none;
-  border-radius: 2px;
-}
-
-${selector} .labels {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-${selector} .labels .label {
-  position: absolute;
-  font-size: ${element.labelFontSize}px;
-  color: ${element.labelColor};
+  display: flex;
+  flex-direction: ${element.labelLayout === 'legend' ? 'row' : 'column'};
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   user-select: none;
-  transform: translate(-50%, -50%);
 }
 
-/* Legend layout places labels in a list outside the knob */
-${selector} .labels[data-layout="legend"] {
-  left: 110%;
-  width: auto;
+${selector} svg {
+  width: ${element.labelLayout === 'legend' ? '60%' : '100%'};
+  height: ${element.labelLayout === 'legend' ? '60%' : '100%'};
+  overflow: visible;
+}
+
+${selector} svg circle,
+${selector} svg line {
+  transition: none;
+}
+
+${selector} svg text {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* Legend layout - labels displayed as list */
+${selector} .labels-legend {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  font-size: ${element.labelFontSize}px;
+  font-family: Inter, system-ui, sans-serif;
 }
 
-${selector} .labels[data-layout="legend"] .label {
-  position: static;
-  transform: none;
+${selector} .labels-legend .label {
+  color: ${element.labelColor};
+  user-select: none;
+}
+
+${selector} .labels-legend .label[data-active="true"] {
+  opacity: 1;
+  font-weight: bold;
+}
+
+${selector} .labels-legend .label[data-active="false"] {
+  opacity: 0.5;
+  font-weight: normal;
 }`
 }
 
