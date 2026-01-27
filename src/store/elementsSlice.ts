@@ -6,6 +6,7 @@ export interface ElementsSlice {
   elements: ElementConfig[]
   selectedIds: string[]
   lastSelectedId: string | null
+  lastModified: number | null // Unix timestamp of last modification
 
   // Actions
   addElement: (element: ElementConfig) => void
@@ -37,22 +38,26 @@ export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSl
   elements: [],
   selectedIds: [],
   lastSelectedId: null,
+  lastModified: null,
 
   // Actions
   addElement: (element) =>
     set((state) => ({
       elements: [...state.elements, element],
+      lastModified: Date.now(),
     })),
 
   addElements: (elements) =>
     set((state) => ({
       elements: [...state.elements, ...elements],
+      lastModified: Date.now(),
     })),
 
   removeElement: (id) =>
     set((state) => ({
       elements: state.elements.filter((el) => el.id !== id),
       selectedIds: state.selectedIds.filter((selectedId) => selectedId !== id),
+      lastModified: Date.now(),
     })),
 
   updateElement: (id, updates) =>
@@ -60,11 +65,13 @@ export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSl
       elements: state.elements.map((el) =>
         el.id === id ? ({ ...el, ...updates } as ElementConfig) : el
       ),
+      lastModified: Date.now(),
     })),
 
   setElements: (elements) =>
     set({
       elements,
+      lastModified: elements.length > 0 ? Date.now() : null,
     }),
 
   // Selector helper
