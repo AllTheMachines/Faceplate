@@ -1,13 +1,4 @@
-import { inferAction, getAffectedElements, ACTION_COLORS, formatTimestamp } from './historyUtils'
-import type { UIElement } from '../../types/elements'
-
-interface StoreState {
-  elements: UIElement[]
-  canvasWidth?: number
-  canvasHeight?: number
-  backgroundColor?: string
-  [key: string]: unknown
-}
+import { inferAction, getAffectedElements, ACTION_COLORS, formatTimestamp, type StoreState } from './historyUtils'
 
 interface HistoryEntryProps {
   index: number

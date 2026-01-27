@@ -1,4 +1,4 @@
-import type { UIElement } from '../../types/elements'
+import type { ElementConfig } from '../../types/elements'
 
 // Types
 export type HistoryAction = 'add' | 'delete' | 'move' | 'resize' | 'update' | 'canvas' | 'initial'
@@ -15,8 +15,8 @@ export const ACTION_COLORS: Record<HistoryAction, string> = {
 }
 
 // Store state shape for inference
-interface StoreState {
-  elements: UIElement[]
+export interface StoreState {
+  elements: ElementConfig[]
   canvasWidth?: number
   canvasHeight?: number
   backgroundColor?: string
@@ -53,9 +53,8 @@ export function inferAction(beforeState: StoreState | null, afterState: StoreSta
   }
 
   // Same count - check for property changes
-  // Create maps for O(1) lookup
+  // Create map for O(1) lookup
   const beforeMap = new Map(beforeElements.map(el => [el.id, el]))
-  const afterMap = new Map(afterElements.map(el => [el.id, el]))
 
   // Check each element for changes
   for (const afterEl of afterElements) {

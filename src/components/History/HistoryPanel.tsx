@@ -1,7 +1,8 @@
 import { useStore } from 'zustand'
-import { useStore as useAppStore } from '../../store'
+import { useStore as useAppStore, type Store } from '../../store'
 import { HistoryEntry } from './HistoryEntry'
 import { useRef, useEffect } from 'react'
+import type { StoreState } from './historyUtils'
 
 export function HistoryPanel() {
   // Subscribe to pastStates and futureStates reactively using established pattern
@@ -63,9 +64,11 @@ export function HistoryPanel() {
 
   // Get all states in order: past + current + future
   // For beforeState comparison, we need to shift the states array
-  const allStates = [
+  // Cast states to StoreState for comparison
+  const currentState = useAppStore.getState() as unknown as StoreState
+  const allStates: (Partial<Store> | StoreState)[] = [
     ...pastStates,
-    useAppStore.getState(), // Current state
+    currentState,
     ...futureStates,
   ]
 
@@ -93,8 +96,8 @@ export function HistoryPanel() {
             index={i}
             isCurrent={false}
             isFuture={false}
-            beforeState={i > 0 ? allStates[i - 1] : null}
-            afterState={state}
+            beforeState={(i > 0 ? allStates[i - 1] : null) as StoreState | null}
+            afterState={state as unknown as StoreState}
             timestamp={creationTimestampRef.current - (pastStates.length - i) * 1000}
             onClick={() => jumpToHistoryIndex(i)}
           />
@@ -107,8 +110,8 @@ export function HistoryPanel() {
             index={currentIndex}
             isCurrent={true}
             isFuture={false}
-            beforeState={pastStates.length > 0 ? pastStates[pastStates.length - 1] : null}
-            afterState={useAppStore.getState()}
+            beforeState={(pastStates.length > 0 ? pastStates[pastStates.length - 1] : null) as StoreState | null}
+            afterState={currentState}
             timestamp={creationTimestampRef.current}
             onClick={() => jumpToHistoryIndex(currentIndex)}
           />
@@ -121,8 +124,8 @@ export function HistoryPanel() {
             index={currentIndex + 1 + i}
             isCurrent={false}
             isFuture={true}
-            beforeState={allStates[currentIndex + i]}
-            afterState={state}
+            beforeState={allStates[currentIndex + i] as StoreState | null}
+            afterState={state as unknown as StoreState}
             timestamp={creationTimestampRef.current + (i + 1) * 1000}
             onClick={() => jumpToHistoryIndex(currentIndex + 1 + i)}
           />
