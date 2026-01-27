@@ -2,12 +2,12 @@
 
 ## Milestones
 
-- **v1.0 MVP** - Phases 1-13 (shipped 2026-01-25)
-- **v1.1 SVG Import System** - Phases 14-18 (shipped 2026-01-26)
-- **v1.2 Complete Element Taxonomy** - Phases 19-30 (shipped 2026-01-27)
-- **v1.3 Workflow & Protection** - Phases 31-33 (shipped 2026-01-27)
-- **v1.4 Container Editing System** - Phases 34-35
-- **v1.5 Export & Asset Management** - Phase 37 (Phase 36 shipped with v1.3)
+- ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-01-25)
+- ✅ **v1.1 SVG Import System** — Phases 14-18 (shipped 2026-01-26)
+- ✅ **v1.2 Complete Element Taxonomy** — Phases 19-30, 27.1 (shipped 2026-01-27)
+- ✅ **v1.3 Workflow & Protection** — Phases 31-33 (shipped 2026-01-27)
+- ✅ **v1.4 Container Editing System** — Phases 34-35 (shipped 2026-01-27)
+- ✅ **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
 
 ## Phases
 
@@ -488,121 +488,48 @@ Plans:
 
 </details>
 
+<details>
+<summary>✅ v1.3 Workflow & Protection (Phases 31-33) — SHIPPED 2026-01-27</summary>
+
 ### Phase 31: Undo/Redo History Panel ✓
 **Goal**: Visible debug panel showing every state change for debugging and transparency
-**Dependencies**: None
-**Milestone**: v1.3
-**Plans**: 2 plans
-**Completed**: 2026-01-27
-
-Plans:
-- [x] 31-01-PLAN.md — Install react-resizable-panels, create layout infrastructure, history panel components
-- [x] 31-02-PLAN.md — Keyboard shortcut toggle, action inference, time-travel navigation
-
-**Success Criteria:**
-1. ✓ Bottom panel with scrollable list showing all state changes
-2. ✓ Each entry shows: timestamp, action type, affected element(s), before/after summary
-3. ✓ Clicking an entry jumps to that state (time travel debugging)
-4. ✓ Keyboard shortcut to toggle panel visibility (Ctrl+Shift+H)
-5. ✓ Panel is collapsible/resizable
-6. ✓ Clear visual distinction between undo-able and redo-able entries
+**Plans**: 2 plans — completed 2026-01-27
 
 ### Phase 32: Unsaved Changes Protection ✓
 **Goal**: Users never accidentally lose work due to navigation or browser close
-**Dependencies**: None
-**Milestone**: v1.3
-**Plans**: 2 plans
-**Completed**: 2026-01-27
-
-Plans:
-- [x] 32-01-PLAN.md — Dirty state slice, hooks (useBeforeUnload, useDirtyState), document title asterisk, relative time display
-- [x] 32-02-PLAN.md — Orange save button indicator, UnsavedChangesDialog, integration with load flows
-
-**Success Criteria:**
-1. ✓ Visual indicator in UI when project has unsaved changes (orange save button, asterisk in title)
-2. ✓ Browser beforeunload warning when closing/refreshing with unsaved changes
-3. ✓ Warning dialog when loading a new project or template with unsaved changes
-4. ✓ "Last saved: X minutes ago" indicator somewhere visible
+**Plans**: 2 plans — completed 2026-01-27
 
 ### Phase 33: Adjustable Snap Grid ✓
 **Goal**: Visible background grid for precise element alignment
-**Dependencies**: None
-**Milestone**: v1.3
-**Completed**: 2026-01-27
+**Plans**: 1 plan — completed 2026-01-27
 
-**Success Criteria:**
-1. ✓ Visible grid lines on canvas background
-2. ✓ Adjustable grid spacing (e.g., 5px, 10px, 20px, 50px)
-3. ✓ Toggle to show/hide grid (keyboard shortcut Ctrl+G)
-4. ✓ Grid respects zoom level (stays visually consistent)
-5. ✓ Option to snap to grid vs free positioning
-6. ✓ Grid color/opacity customizable or auto-adapts to canvas background
+</details>
+
+<details>
+<summary>✅ v1.4 Container Editing System (Phases 34-35) — SHIPPED 2026-01-27</summary>
 
 ### Phase 34: Container Element Editor ✓
 **Goal**: Users can add child elements to containers via dedicated editing interface
-**Dependencies**: Phase 31 (benefits from history visibility for debugging)
-**Milestone**: v1.4
-**Completed**: 2026-01-27
-
-**Success Criteria:**
-1. ✓ "Edit Contents" button in property panel for container elements (GroupBox, Collapsible, Panel, Frame, Window Chrome)
-2. ✓ Button opens popup/modal with dedicated canvas showing container interior
-3. ✓ Full palette available in popup - user can drag any element into container
-4. ✓ Container-in-container support (nested editing) with breadcrumb navigation
-5. ✓ Changes in container editor reflect immediately in main canvas
-6. ✓ Clear visual feedback showing which container is being edited
+**Plans**: 1 plan — completed 2026-01-27
 
 ### Phase 35: Container Overflow & Scrollbars ✓
 **Goal**: Containers handle child elements that exceed their bounds gracefully
-**Dependencies**: Phase 34 (requires container editing to add overflowing content)
-**Milestone**: v1.4
-**Completed**: 2026-01-27
+**Plans**: 1 plan — completed 2026-01-27
 
-**Success Criteria:**
-1. ✓ Containers detect when children exceed bounds
-2. ✓ Automatic scrollbars appear (horizontal and/or vertical) when content overflows
-3. ✓ Per-container setting: overflow behavior (scroll, hidden, visible)
-4. ✓ Scrollbar styling matches overall theme
-5. ✓ Export generates correct CSS overflow properties
-6. ✓ Preview mode supports scrollable containers
+</details>
+
+<details>
+<summary>✅ v1.5 Export & Asset Management (Phases 36-37) — SHIPPED 2026-01-27</summary>
 
 ### Phase 36: SVG Export with Named Layers ✓
 **Goal**: Export individual elements as SVG with meaningful layer names for re-import workflow
-**Dependencies**: None
-**Milestone**: v1.5
-**Completed**: 2026-01-27
+**Plans**: 1 plan — completed 2026-01-27
 
-**Success Criteria:**
-1. ✓ "Export as SVG" option for any element (property panel button)
-2. ✓ SVG layers have meaningful names based on element structure (e.g., `knob-body`, `knob-indicator`, `knob-shadow`, `slider-track`, `slider-thumb`)
-3. ✓ Consistent naming convention documented for each element type (LAYER_CONVENTIONS in svgElementExport.ts)
-4. ✓ When importing SVG for an element, auto-match layers by name
-5. ✓ Validation on import: error if required layers missing, warning if extra layers present
-6. ✓ Layer naming convention ensures re-imported SVGs work immediately without manual mapping
-
-### Phase 37: Font Management System
+### Phase 37: Font Management System ✓
 **Goal**: Centralized font management with user directory selection and export bundling
-**Dependencies**: None
-**Milestone**: v1.5
-**Plans**: 5 plans
+**Plans**: 5 plans — completed 2026-01-27
 
-**Completed**: 2026-01-27
-
-Plans:
-- [x] 37-01-PLAN.md — Font services (storage, parser, scanner, manager)
-- [x] 37-02-PLAN.md — Fonts Zustand slice and store integration
-- [x] 37-03-PLAN.md — Settings UI (FontSettings dialog, useFonts hook)
-- [x] 37-04-PLAN.md — Custom font dropdown with preview
-- [x] 37-05-PLAN.md — Export integration (base64 font embedding)
-
-**Success Criteria (adjusted for browser constraints):**
-1. ✓ User-selected fonts folder via file picker (permission persisted in IndexedDB)
-2. ✓ Manual rescan on user request (no auto-watch - browser limitation)
-3. ✓ All discovered fonts appear in font selection dropdowns
-4. ✓ Settings UI with folder selection and rescan trigger
-5. ✓ Display selected folder path with copy button (no file explorer reveal - browser limitation)
-6. ✓ Export only bundles fonts actually used in the project
-7. ✓ Custom font dropdown with preview (fonts shown in their own typeface)
+</details>
 
 ## Progress
 
@@ -649,4 +576,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 37 execution complete*
+*Last updated: 2026-01-27 after v1.5 milestone complete*
