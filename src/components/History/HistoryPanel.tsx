@@ -15,10 +15,21 @@ export function HistoryPanel() {
   // Track creation timestamp for relative time calculation
   const creationTimestampRef = useRef<number>(Date.now())
 
+  // Ref for scrollable container to auto-scroll to current entry
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const currentEntryRef = useRef<HTMLDivElement>(null)
+
   // Reset timestamp on mount
   useEffect(() => {
     creationTimestampRef.current = Date.now()
   }, [])
+
+  // Auto-scroll to current entry when it changes
+  useEffect(() => {
+    if (currentEntryRef.current && scrollContainerRef.current) {
+      currentEntryRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }, [currentIndex])
 
   // Time-travel navigation - jump to specific history index
   // Uses imperative getState() for one-time read without re-render subscription
@@ -62,14 +73,19 @@ export function HistoryPanel() {
     <div className="h-full flex flex-col bg-gray-800">
       {/* Header row */}
       <div className="p-3 border-b border-gray-700 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-300">History</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-gray-300">History</h2>
+          <span className="text-xs text-gray-500 font-mono">
+            [{pastStates.length + futureStates.length + 1} states]
+          </span>
+        </div>
         <span className="text-xs text-gray-500">
           {pastStates.length} past | {futureStates.length} future
         </span>
       </div>
 
       {/* Scrollable history list */}
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto scroll-smooth">
         {/* Past states */}
         {pastStates.map((state, i) => (
           <HistoryEntry
@@ -85,16 +101,18 @@ export function HistoryPanel() {
         ))}
 
         {/* Current state indicator */}
-        <HistoryEntry
-          key="current"
-          index={currentIndex}
-          isCurrent={true}
-          isFuture={false}
-          beforeState={pastStates.length > 0 ? pastStates[pastStates.length - 1] : null}
-          afterState={useAppStore.getState()}
-          timestamp={creationTimestampRef.current}
-          onClick={() => jumpToHistoryIndex(currentIndex)}
-        />
+        <div ref={currentEntryRef}>
+          <HistoryEntry
+            key="current"
+            index={currentIndex}
+            isCurrent={true}
+            isFuture={false}
+            beforeState={pastStates.length > 0 ? pastStates[pastStates.length - 1] : null}
+            afterState={useAppStore.getState()}
+            timestamp={creationTimestampRef.current}
+            onClick={() => jumpToHistoryIndex(currentIndex)}
+          />
+        </div>
 
         {/* Future states */}
         {futureStates.map((state, i) => (
