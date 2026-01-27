@@ -10,13 +10,13 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 27.1 - Post-Phase Bug Fixes (COMPLETE)
-Plan: 4 of 4 (100% complete)
+Plan: 5 of 5 (100% complete)
 Status: All bug fixes complete
-Last activity: 2026-01-27 - Completed 27.1-03-PLAN.md (Export rendering fixes for sliders, LEDs, and meters)
+Last activity: 2026-01-27 - Completed 27.1-05-PLAN.md (Spacer visibility & element interactivity investigation)
 
 Previous: Phase 27 - Containers & Polish ✓ (verified 2026-01-26)
 
-Progress: [█████████░] 135/140 plans complete (96%)
+Progress: [█████████░] 136/140 plans complete (97%)
 
 ## Performance Metrics
 
@@ -40,7 +40,7 @@ Progress: [█████████░] 135/140 plans complete (96%)
 **v1.2 scope:**
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
-- Completed: 44 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 4)
+- Completed: 49 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 4, Phase 27.1: 5)
 
 ## Accumulated Context
 
@@ -328,19 +328,25 @@ None - Phase 26 complete
 - Plan 27.1-01: Canvas rendering bug (useState hook fix) - COMPLETE
 - Plan 27.1-02: Navigation category & logo timestamp fixes - COMPLETE
 - Plan 27.1-03: Export rendering fixes (Crossfade Slider, LED Ring, professional meters) - COMPLETE
-- **Total:** Post-phase bug fixes complete, export system consistent with canvas rendering
+- Plan 27.1-04: Switch & button export styling - COMPLETE
+- Plan 27.1-05: Spacer visibility & element interactivity - COMPLETE
+- **Total:** 5 post-phase bug fixes complete, all export issues resolved
 - Fixed Crossfade Slider track balance fill and center detent
 - Fixed LED Ring SVG centering and segment dasharray calculation
 - Fixed all 24 professional meter types with inline segment color calculation
+- Fixed Rotary Switch SVG export and Rocker Switch position indicators
+- Fixed button font inheritance via Inter on body element
+- Documented spacer invisibility as intentional design (visible in designer, invisible in preview/export)
+- Fixed preview interactivity with DOMContentLoaded check before JUCE bridge initialization
 
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 27.1-03-PLAN.md (Export rendering fixes)
+Stopped at: Completed 27.1-05-PLAN.md (Spacer visibility & element interactivity investigation)
 Resume file: None
 
 **Next step:** Phase 27.1 complete - ready to proceed to Phase 28 (Specialized Audio Part 1)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-26 after Phase 27 verified complete*
+*Last updated: 2026-01-27 after Phase 27.1 complete*
