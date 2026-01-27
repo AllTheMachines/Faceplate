@@ -5,7 +5,7 @@
  * Uses useLayoutEffect (not useEffect) to prevent timing issues per RESEARCH.md.
  */
 
-import { useRef, useLayoutEffect } from 'react'
+import { useRef, useLayoutEffect, useState } from 'react'
 
 /**
  * Setup Canvas with HiDPI scaling support
@@ -21,7 +21,7 @@ export function useCanvasSetup(
   scale?: number
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current
@@ -39,12 +39,12 @@ export function useCanvasSetup(
     canvas.style.height = `${height}px`
 
     // Get 2D context and scale all drawing operations
-    const ctx = canvas.getContext('2d')
-    if (ctx) {
-      ctx.scale(dpr, dpr)
-      ctxRef.current = ctx
+    const context = canvas.getContext('2d')
+    if (context) {
+      context.scale(dpr, dpr)
+      setCtx(context)
     }
   }, [width, height, scale])
 
-  return { canvasRef, ctx: ctxRef.current }
+  return { canvasRef, ctx }
 }
