@@ -1,5 +1,8 @@
 import { GroupBoxElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
+import { EditContentsButton } from './EditContentsButton'
+import { ScrollbarStyleSection } from './shared/ScrollbarStyleSection'
+import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 
 interface GroupBoxPropertiesProps {
   element: GroupBoxElementConfig
@@ -9,6 +12,9 @@ interface GroupBoxPropertiesProps {
 export function GroupBoxProperties({ element, onUpdate }: GroupBoxPropertiesProps) {
   return (
     <>
+      {/* Edit Contents Button */}
+      <EditContentsButton element={element} />
+
       {/* Header */}
       <PropertySection title="Header">
         <TextInput
@@ -16,6 +22,34 @@ export function GroupBoxProperties({ element, onUpdate }: GroupBoxPropertiesProp
           value={element.headerText}
           onChange={(headerText) => onUpdate({ headerText })}
         />
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
+          <select
+            value={element.headerFontFamily}
+            onChange={(e) => onUpdate({ headerFontFamily: e.target.value })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            {AVAILABLE_FONTS.map((font) => (
+              <option key={font.family} value={font.family}>
+                {font.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
+          <select
+            value={element.headerFontWeight}
+            onChange={(e) => onUpdate({ headerFontWeight: e.target.value })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            <option value="300">Light (300)</option>
+            <option value="400">Regular (400)</option>
+            <option value="500">Medium (500)</option>
+            <option value="600">Semi-Bold (600)</option>
+            <option value="700">Bold (700)</option>
+          </select>
+        </div>
         <NumberInput
           label="Font Size"
           value={element.headerFontSize}
@@ -67,7 +101,21 @@ export function GroupBoxProperties({ element, onUpdate }: GroupBoxPropertiesProp
           min={0}
           max={50}
         />
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={element.allowScroll ?? false}
+            onChange={(e) => onUpdate({ allowScroll: e.target.checked })}
+            className="rounded"
+          />
+          <span className="text-sm text-gray-300">Allow Scrolling</span>
+        </label>
       </PropertySection>
+
+      {/* Scrollbar Style (only shown when scrolling is enabled) */}
+      {element.allowScroll && (
+        <ScrollbarStyleSection config={element} onUpdate={onUpdate} />
+      )}
     </>
   )
 }

@@ -10,10 +10,10 @@ import {
 } from '@dnd-kit/core'
 import { useState, useRef, useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
-import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { HistoryPanel } from './components/History'
+import { ContainerEditorLayout } from './components/ContainerEditor'
 import { useHistoryPanel } from './hooks/useHistoryPanel'
 import { useBeforeUnload } from './hooks/useBeforeUnload'
 import { useStore } from './store'
@@ -165,7 +165,38 @@ function App() {
   const { isPanelVisible } = useHistoryPanel()
 
   // Dirty state tracking for unsaved changes warning
-  const isDirty = useStore((state) => state.isDirty())
+  // Subscribe to state that isDirty depends on, then compute
+  const savedStateSnapshot = useStore((state) => state.savedStateSnapshot)
+  const elements = useStore((state) => state.elements)
+  const canvasWidth = useStore((state) => state.canvasWidth)
+  const canvasHeight = useStore((state) => state.canvasHeight)
+  const backgroundColor = useStore((state) => state.backgroundColor)
+  const backgroundType = useStore((state) => state.backgroundType)
+  const gradientConfig = useStore((state) => state.gradientConfig)
+  const snapToGridState = useStore((state) => state.snapToGrid)
+  const gridSizeState = useStore((state) => state.gridSize)
+  const assets = useStore((state) => state.assets)
+  const knobStyles = useStore((state) => state.knobStyles)
+
+  // Compute isDirty from subscribed state
+  const isDirty = (() => {
+    if (savedStateSnapshot === null) {
+      return elements.length > 0
+    }
+    const currentSnapshot = JSON.stringify({
+      elements,
+      canvasWidth,
+      canvasHeight,
+      backgroundColor,
+      backgroundType,
+      gradientConfig,
+      snapToGrid: snapToGridState,
+      gridSize: gridSizeState,
+      assets,
+      knobStyles,
+    })
+    return currentSnapshot !== savedStateSnapshot
+  })()
 
   // Install beforeunload warning when project has unsaved changes
   useBeforeUnload(isDirty)
@@ -784,48 +815,27 @@ function App() {
 
   return (
     <>
-      <PanelGroup orientation="vertical" className="h-screen w-screen">
-        {/* Main content panel (top) */}
-        <Panel defaultSize={isPanelVisible ? 80 : 100} minSize={40}>
-          <DndContext
-            sensors={sensors}
-            onDragStart={handleDragStart}
-            onDragMove={handleDragMove}
-            onDragEnd={handleDragEnd}
-          >
-            <ThreePanelLayout>
-              <CanvasStage />
-            </ThreePanelLayout>
-            <DragOverlay dropAnimation={null}>
-              {activeDragData && (
-                <DragPreview
-                  elementType={activeDragData.elementType}
-                  variant={activeDragData.variant}
-                />
-              )}
-            </DragOverlay>
-          </DndContext>
-        </Panel>
-
-        {/* Conditionally render resize handle and history panel */}
-        {isPanelVisible && (
-          <>
-            {/* Resize handle */}
-            <PanelResizeHandle className="h-1 bg-gray-700 hover:bg-blue-500 cursor-ns-resize transition-colors" />
-
-            {/* History panel (bottom) */}
-            <Panel
-              defaultSize={20}
-              minSize={10}
-              maxSize={50}
-              collapsible={true}
-              collapsedSize={0}
-            >
-              <HistoryPanel />
-            </Panel>
-          </>
-        )}
-      </PanelGroup>
+      <DndContext
+        sensors={sensors}
+        onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
+        onDragEnd={handleDragEnd}
+      >
+        <ThreePanelLayout
+          bottomPanel={<HistoryPanel />}
+          showBottomPanel={isPanelVisible}
+        >
+          <CanvasStage />
+        </ThreePanelLayout>
+        <DragOverlay dropAnimation={null}>
+          {activeDragData && (
+            <DragPreview
+              elementType={activeDragData.elementType}
+              variant={activeDragData.variant}
+            />
+          )}
+        </DragOverlay>
+      </DndContext>
 
       <Toaster
         position="top-right"
@@ -851,6 +861,9 @@ function App() {
           },
         }}
       />
+
+      {/* Container Editor Layout - full-screen editor when editing container contents */}
+      <ContainerEditorLayout />
     </>
   )
 }

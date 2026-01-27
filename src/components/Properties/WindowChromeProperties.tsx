@@ -1,5 +1,8 @@
 import { WindowChromeElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, TextInput, PropertySection } from './'
+import { EditContentsButton } from './EditContentsButton'
+import { ScrollbarStyleSection } from './shared/ScrollbarStyleSection'
+import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 
 interface WindowChromePropertiesProps {
   element: WindowChromeElementConfig
@@ -9,6 +12,9 @@ interface WindowChromePropertiesProps {
 export function WindowChromeProperties({ element, onUpdate }: WindowChromePropertiesProps) {
   return (
     <>
+      {/* Edit Contents Button */}
+      <EditContentsButton element={element} />
+
       {/* Title Bar */}
       <PropertySection title="Title Bar">
         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -27,6 +33,34 @@ export function WindowChromeProperties({ element, onUpdate }: WindowChromeProper
               value={element.titleText}
               onChange={(titleText) => onUpdate({ titleText })}
             />
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Font Family</label>
+              <select
+                value={element.fontFamily}
+                onChange={(e) => onUpdate({ fontFamily: e.target.value })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                {AVAILABLE_FONTS.map((font) => (
+                  <option key={font.family} value={font.family}>
+                    {font.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
+              <select
+                value={element.fontWeight}
+                onChange={(e) => onUpdate({ fontWeight: e.target.value })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                <option value="300">Light (300)</option>
+                <option value="400">Regular (400)</option>
+                <option value="500">Medium (500)</option>
+                <option value="600">Semi-Bold (600)</option>
+                <option value="700">Bold (700)</option>
+              </select>
+            </div>
             <NumberInput
               label="Title Font Size"
               value={element.titleFontSize}
@@ -112,6 +146,24 @@ export function WindowChromeProperties({ element, onUpdate }: WindowChromeProper
           <span style={{ fontSize: '13px', color: '#d1d5db' }}>Show Maximize Button</span>
         </label>
       </PropertySection>
+
+      {/* Content */}
+      <PropertySection title="Content">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={element.allowScroll ?? false}
+            onChange={(e) => onUpdate({ allowScroll: e.target.checked })}
+            className="rounded"
+          />
+          <span className="text-sm text-gray-300">Allow Scrolling</span>
+        </label>
+      </PropertySection>
+
+      {/* Scrollbar Style (only shown when scrolling is enabled) */}
+      {element.allowScroll && (
+        <ScrollbarStyleSection config={element} onUpdate={onUpdate} />
+      )}
     </>
   )
 }

@@ -3,48 +3,77 @@
  * Structural containers: Panel, Frame, GroupBox, Collapsible
  */
 
-import { BaseElementConfig } from './base'
+import { BaseElementConfig, ContainerWithChildren } from './base'
+
+// ============================================================================
+// Scrollbar Configuration (shared by scrollable containers)
+// ============================================================================
+
+export interface ScrollbarConfig {
+  scrollbarWidth?: number           // 6-20px, default 12
+  scrollbarThumbColor?: string      // Thumb color, default #4a4a4a
+  scrollbarThumbHoverColor?: string // Thumb hover color, default #5a5a5a
+  scrollbarTrackColor?: string      // Track background, default #1a1a1a
+  scrollbarBorderRadius?: number    // 0-12px, default 0 (squared)
+  scrollbarThumbBorder?: number     // 0-4px, default 2
+}
+
+export const DEFAULT_SCROLLBAR_CONFIG: Required<ScrollbarConfig> = {
+  scrollbarWidth: 12,
+  scrollbarThumbColor: '#4a4a4a',
+  scrollbarThumbHoverColor: '#5a5a5a',
+  scrollbarTrackColor: '#1a1a1a',
+  scrollbarBorderRadius: 0,
+  scrollbarThumbBorder: 2,
+}
 
 // ============================================================================
 // Container Element Configurations
 // ============================================================================
 
-export interface PanelElementConfig extends BaseElementConfig {
+export interface PanelElementConfig extends BaseElementConfig, ContainerWithChildren, ScrollbarConfig {
   type: 'panel'
   backgroundColor: string
   borderRadius: number
   borderWidth: number
   borderColor: string
   padding: number
+  allowScroll?: boolean
 }
 
-export interface FrameElementConfig extends BaseElementConfig {
+export interface FrameElementConfig extends BaseElementConfig, ContainerWithChildren, ScrollbarConfig {
   type: 'frame'
   borderStyle: 'solid' | 'dashed' | 'dotted' | 'double' | 'groove' | 'ridge'
   borderWidth: number
   borderColor: string
   borderRadius: number
   padding: number
+  allowScroll?: boolean
 }
 
-export interface GroupBoxElementConfig extends BaseElementConfig {
+export interface GroupBoxElementConfig extends BaseElementConfig, ContainerWithChildren, ScrollbarConfig {
   type: 'groupbox'
   headerText: string
   headerFontSize: number
+  headerFontFamily: string
+  headerFontWeight: string
   headerColor: string
   headerBackground: string  // Background behind header text
   borderWidth: number
   borderColor: string
   borderRadius: number
   padding: number
+  allowScroll?: boolean
 }
 
-export interface CollapsibleContainerElementConfig extends BaseElementConfig {
+export interface CollapsibleContainerElementConfig extends BaseElementConfig, ContainerWithChildren, ScrollbarConfig {
   type: 'collapsible'
 
   // Header
   headerText: string
   headerFontSize: number
+  headerFontFamily: string
+  headerFontWeight: string
   headerColor: string
   headerBackground: string
   headerHeight: number
@@ -81,19 +110,24 @@ export interface TooltipElementConfig extends BaseElementConfig {
   backgroundColor: string
   textColor: string
   fontSize: number
+  fontFamily: string
+  fontWeight: string
   padding: number
   borderRadius: number
   maxWidth: number
 }
 
-export interface WindowChromeElementConfig extends BaseElementConfig {
+export interface WindowChromeElementConfig extends BaseElementConfig, ContainerWithChildren, ScrollbarConfig {
   type: 'windowchrome'
 
   // Title bar
   titleText: string
   showTitle: boolean
   titleFontSize: number
+  fontFamily: string
+  fontWeight: string
   titleColor: string
+  titleBarHeight?: number
 
   // Button style
   buttonStyle: 'macos' | 'windows' | 'neutral'
@@ -106,6 +140,7 @@ export interface WindowChromeElementConfig extends BaseElementConfig {
   // Appearance
   backgroundColor: string
   height: number
+  allowScroll?: boolean
 }
 
 export interface HorizontalSpacerElementConfig extends BaseElementConfig {
@@ -259,6 +294,8 @@ export function createGroupBox(overrides?: Partial<GroupBoxElementConfig>): Grou
     visible: true,
     headerText: 'Group',
     headerFontSize: 12,
+    headerFontFamily: 'Inter, system-ui, sans-serif',
+    headerFontWeight: '500',
     headerColor: '#ffffff',
     headerBackground: '#111827',
     borderWidth: 2,
@@ -284,6 +321,8 @@ export function createCollapsible(overrides?: Partial<CollapsibleContainerElemen
     visible: true,
     headerText: 'Collapsible',
     headerFontSize: 12,
+    headerFontFamily: 'Inter, system-ui, sans-serif',
+    headerFontWeight: '500',
     headerColor: '#ffffff',
     headerBackground: '#1f2937',
     headerHeight: 32,
@@ -319,8 +358,10 @@ export function createTooltip(overrides?: Partial<TooltipElementConfig>): Toolti
     backgroundColor: '#1f2937',
     textColor: '#ffffff',
     fontSize: 12,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '400',
     padding: 8,
-    borderRadius: 4,
+    borderRadius: 0,
     maxWidth: 200,
     ...overrides,
   }
@@ -342,6 +383,8 @@ export function createWindowChrome(overrides?: Partial<WindowChromeElementConfig
     titleText: 'Plugin Window',
     showTitle: true,
     titleFontSize: 13,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontWeight: '500',
     titleColor: '#ffffff',
     buttonStyle: 'macos',
     showCloseButton: true,
@@ -397,5 +440,69 @@ export function createVerticalSpacer(overrides?: Partial<VerticalSpacerElementCo
     showIndicator: true,
     indicatorColor: '#6b7280',
     ...overrides,
+  }
+}
+
+// ============================================================================
+// Container Helper Types & Functions
+// ============================================================================
+
+/** Container types that support child elements */
+export const EDITABLE_CONTAINER_TYPES = ['panel', 'frame', 'groupbox', 'collapsible', 'windowchrome'] as const
+export type EditableContainerType = typeof EDITABLE_CONTAINER_TYPES[number]
+
+/** Type for containers that can have children */
+export type EditableContainer =
+  | PanelElementConfig
+  | FrameElementConfig
+  | GroupBoxElementConfig
+  | CollapsibleContainerElementConfig
+  | WindowChromeElementConfig
+
+/** Check if an element type supports children */
+export function isEditableContainer(element: { type: string }): element is EditableContainer {
+  return EDITABLE_CONTAINER_TYPES.includes(element.type as EditableContainerType)
+}
+
+/** Get the content area offset for a container (accounts for headers, borders, padding) */
+export function getContainerContentOffset(element: EditableContainer): { top: number; left: number; right: number; bottom: number } {
+  switch (element.type) {
+    case 'panel':
+      return {
+        top: element.padding + element.borderWidth,
+        left: element.padding + element.borderWidth,
+        right: element.padding + element.borderWidth,
+        bottom: element.padding + element.borderWidth,
+      }
+    case 'frame':
+      return {
+        top: element.padding + element.borderWidth,
+        left: element.padding + element.borderWidth,
+        right: element.padding + element.borderWidth,
+        bottom: element.padding + element.borderWidth,
+      }
+    case 'groupbox':
+      return {
+        top: element.padding + element.headerFontSize / 2 + element.borderWidth,
+        left: element.padding + element.borderWidth,
+        right: element.padding + element.borderWidth,
+        bottom: element.padding + element.borderWidth,
+      }
+    case 'collapsible':
+      return {
+        top: element.headerHeight + element.borderWidth,
+        left: element.borderWidth,
+        right: element.borderWidth,
+        bottom: element.borderWidth,
+      }
+    case 'windowchrome':
+      return {
+        top: element.titleBarHeight || element.height || 32, // Title bar height
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }
+    default:
+      return { top: 0, left: 0, right: 0, bottom: 0 }
   }
 }

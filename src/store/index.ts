@@ -6,6 +6,7 @@ import { createElementsSlice, ElementsSlice } from './elementsSlice'
 import { createAssetsSlice, AssetsSlice } from './assetsSlice'
 import { createKnobStylesSlice, KnobStylesSlice } from './knobStylesSlice'
 import { createDirtyStateSlice, DirtyStateSlice } from './dirtyStateSlice'
+import { createContainerEditorSlice, ContainerEditorSlice } from './containerEditorSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -35,7 +36,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -48,6 +49,7 @@ export const useStore = create<Store>()(
       ...createAssetsSlice(...a),
       ...createKnobStylesSlice(...a),
       ...createDirtyStateSlice(...a),
+      ...createContainerEditorSlice(...a),
     }),
     {
       limit: 50,
@@ -56,11 +58,13 @@ export const useStore = create<Store>()(
       // - Selection changes should not be undoable (would cause confusion)
       // - Live drag values are transient UI state
       // - Dirty state tracking (savedStateSnapshot, lastSavedTimestamp) should not be undoable
+      // - Container editor state (editingContainerId, containerEditStack) is UI state
       partialize: (state) => {
         const {
           scale, offsetX, offsetY, isPanning, dragStart, lockAllMode,
           selectedIds, lastSelectedId, liveDragValues,
           savedStateSnapshot, lastSavedTimestamp,
+          editingContainerId, containerEditStack,
           ...rest
         } = state
         return rest
