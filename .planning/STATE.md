@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 35 - Container Overflow & Scrollbars ✓
-Plan: 1 of 1 (100% complete)
-Status: Complete
-Last activity: 2026-01-27 - Completed Phase 35 (Container Overflow & Scrollbars)
+Phase: 37 - Font Management System (in progress)
+Plan: 2 of 5 (40% complete)
+Status: In progress
+Last activity: 2026-01-27 - Completed 37-02-PLAN.md (Font State Management)
 
-Previous: Phase 34 - Container Element Editor ✓ (verified 2026-01-27)
+Previous: Phase 35 - Container Overflow & Scrollbars ✓ (2026-01-27)
 
-Progress: [██████████] 143/143 plans complete (100%)
+Progress: [██████████░] 145/148 plans complete (98%)
 
 ## Performance Metrics
 
@@ -432,14 +432,29 @@ None - Phase 26 complete
 - Preview mode integrates scrollbar JS
 - All 6 success criteria met
 
+**Phase 37 In Progress:**
+- Plan 37-02: Font State Management - COMPLETE (2026-01-27, 3min)
+  - Created FontsSlice with CustomFont type for UI consumption
+  - State fields: customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime
+  - Integrated into main Zustand store with temporal exclusions
+  - All font state excluded from undo history
+
+**Phase 37 decisions:**
+
+| Decision | Phase | Rationale | Outcome |
+|----------|-------|-----------|---------|
+| CustomFont distinct from StoredFont | 37-02 | UI needs simplified view without ArrayBuffer data | CustomFont has family/name/format/category fields only |
+| All font state excluded from undo | 37-02 | Font loading is project-level operation, not design action | customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime in temporal partialize exclusions |
+| State slice contains only setters | 37-02 | Keep slice simple, orchestration in fontManager service | All actions are synchronous setters, no async logic in slice |
+
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Phase 35 committed - v1.4 milestone complete
+Stopped at: Completed 37-02-PLAN.md (Font State Management)
 Resume file: None
 
-**Next step:** v1.5 (Phase 37: Font Management System) or new milestone
+**Next step:** Phase 37 plan 03 (Font Selection UI) or plan 01 (Font Services - can run in parallel)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 32 verified complete*
+*Last updated: 2026-01-27 after Phase 37 plan 02 complete*
