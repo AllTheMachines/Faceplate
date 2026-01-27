@@ -109,6 +109,7 @@ body {
   padding: 0;
   overflow: hidden;
   background: #000;
+  font-family: Inter, system-ui, sans-serif;
 }
 
 #plugin-wrapper {
@@ -1559,6 +1560,7 @@ ${selector} .label-on {
   top: 50%;
   transform: translateY(-50%);
   font-size: 10px;
+  font-family: Inter, system-ui, sans-serif;
   color: ${element.labelColor};
   user-select: none;
 }
