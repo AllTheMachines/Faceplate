@@ -1272,20 +1272,24 @@ ${selector} .arcslider-value-right {
     case 'k20metermono':
     case 'k20meterstereo': {
       const config = element as BaseProfessionalMeterConfig
-      let css = generateSegmentedMeterCSS(config, selector)
+      const isStereo = element.type.includes('stereo')
+      let css = generateSegmentedMeterCSS(config, selector, isStereo)
 
       // For stereo meters, add wrapper styles
-      if (element.type.includes('stereo')) {
+      if (isStereo) {
         css += `
 ${selector} .stereo-wrapper {
   display: flex;
   gap: 8px;
 }
 
-${selector} .channel-label {
+${selector} .channel-labels {
+  display: flex;
+  gap: 8px;
   font-size: 10px;
   color: #999999;
   text-align: center;
+  justify-content: space-around;
 }
 `
       }
@@ -2077,7 +2081,8 @@ ${selector} .label {
  */
 function generateSegmentedMeterCSS(
   element: BaseProfessionalMeterConfig,
-  selector: string
+  selector: string,
+  isStereo: boolean = false
 ): string {
   const isVertical = element.orientation === 'vertical'
   const { segmentCount, segmentGap, colorZones, minDb, maxDb } = element
@@ -2092,12 +2097,16 @@ function generateSegmentedMeterCSS(
     ? `grid-template-rows: repeat(${segmentCount}, 1fr);`
     : `grid-template-columns: repeat(${segmentCount}, 1fr);`
 
+  // For stereo, apply grid to .meter-channel; for mono, apply to root
+  const gridSelector = isStereo ? `${selector} .meter-channel` : selector
+
   return `
-${selector} {
+${gridSelector} {
   display: grid;
   ${gridTemplate}
   gap: ${segmentGap}px;
   background-color: #000000;
+  position: relative;
   ${zoneColors}
 }
 
@@ -2118,6 +2127,14 @@ ${selector} .peak-hold {
   position: absolute;
   background-color: #ffffff;
   transition: none;
+}
+
+${selector} .meter-segments {
+  display: grid;
+  ${gridTemplate}
+  gap: ${segmentGap}px;
+  background-color: #000000;
+  position: relative;
 }
 `
 }

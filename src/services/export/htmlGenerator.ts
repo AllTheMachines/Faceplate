@@ -1703,13 +1703,22 @@ function generateSegmentedMeterHTML(
   element: BaseProfessionalMeterConfig,
   isStereo: boolean
 ): string {
-  const { segmentCount, orientation, showPeakHold, scalePosition, minDb, maxDb } = element
+  const { segmentCount, orientation, showPeakHold, scalePosition, minDb, maxDb, colorZones } = element
   const isVertical = orientation === 'vertical'
 
-  // Generate segment HTML
-  const segments = Array.from({ length: segmentCount }, (_, i) =>
-    `<div class="meter-segment" data-segment="${i}"></div>`
-  ).join('\n    ')
+  // Helper to get segment color based on dB value
+  const getSegmentColor = (segmentIndex: number): string => {
+    const segmentDb = minDb + (segmentIndex / segmentCount) * (maxDb - minDb)
+    const zone = colorZones.find(z => segmentDb >= z.startDb && segmentDb < z.endDb)
+    return zone?.color || '#333333'
+  }
+
+  // Generate segment HTML with colors
+  const segments = Array.from({ length: segmentCount }, (_, i) => {
+    const displayIndex = isVertical ? segmentCount - 1 - i : i
+    const color = getSegmentColor(displayIndex)
+    return `<div class="meter-segment" data-segment="${i}" style="background-color: ${color};"></div>`
+  }).join('\n    ')
 
   const peakHold = showPeakHold
     ? `<div class="peak-hold" data-peak-hold></div>`
