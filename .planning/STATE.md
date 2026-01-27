@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 31 - Undo/Redo History Panel ✓ (verified 2026-01-27)
-Plan: 2 of 2 (100% complete)
-Status: Phase verified complete
-Last activity: 2026-01-27 - Phase 31 verified complete, all 6 success criteria met
+Phase: 32 - Unsaved Changes Protection
+Plan: 1 of 2 (50% complete)
+Status: In progress
+Last activity: 2026-01-27 - Completed 32-01-PLAN.md (Dirty State Infrastructure)
 
-Previous: Phase 27.1 - Post-Phase Bug Fixes ✓ (verified 2026-01-27)
+Previous: Phase 31 - Undo/Redo History Panel ✓ (verified 2026-01-27)
 
-Progress: [█████████░] 139/141 plans complete (99%)
+Progress: [█████████░] 140/141 plans complete (99%)
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [█████████░] 139/141 plans complete (99%)
 
 **v1.3 scope:**
 - Phase 31: Undo/Redo History Panel (2 plans) - Complete 2026-01-27
+- Phase 32: Unsaved Changes Protection (2 plans) - In progress 2026-01-27
 
 ## Accumulated Context
 
@@ -215,6 +216,15 @@ All v1.1 decisions documented and outcomes verified.
 | Time-travel with imperative undo/redo | 31-02 | Direct jump to any history state using temporal.getState() | jumpToHistoryIndex calculates step difference and calls undo(n) or redo(n) |
 | Auto-scroll to current entry | 31-02 | Current entry moves during time-travel, needs to stay visible | scrollIntoView with smooth behavior on currentIndex change |
 
+**Phase 32 decisions:**
+
+| Decision | Phase | Rationale | Outcome |
+|----------|-------|-----------|---------|
+| Exclude dirty state from undo | 32-01 | savedStateSnapshot/lastSavedTimestamp in undo history would corrupt snapshots | Added to temporal partialize exclusion list |
+| 60-second refresh interval | 32-01 | Balance between accuracy and performance for relative time display | Matches VS Code pattern, low overhead |
+| Never saved logic | 32-01 | Empty project should not show dirty state | isDirty returns true only if savedStateSnapshot null AND elements.length > 0 |
+| Compare serializable state only | 32-01 | Exclude viewport/selection from dirty detection | elements, canvas, assets, knobStyles only - matches project save format |
+
 ### Pending Todos
 
 None - Phase 26 complete
@@ -369,6 +379,17 @@ None - Phase 26 complete
 - **Total:** 2 plans complete, all 6 success criteria met
 - Phase verified complete 2026-01-27
 
+**Phase 32 In Progress:**
+- Plan 32-01: Dirty State Infrastructure - COMPLETE (2026-01-27, 4min)
+  - Created DirtyStateSlice with savedStateSnapshot and lastSavedTimestamp
+  - Implemented isDirty() selector with JSON snapshot comparison
+  - Added useBeforeUnload and useDirtyState hooks
+  - Document title shows asterisk when dirty
+  - LeftPanel displays "Never saved" or "Last saved: X ago"
+  - Installed date-fns for relative time formatting
+  - All fields excluded from undo history
+- Plan 32-02: Save Workflows (pending)
+
 **Phase 31 decisions:**
 
 | Decision | Phase | Rationale | Outcome |
@@ -382,10 +403,10 @@ None - Phase 26 complete
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Phase 31 verified complete
+Stopped at: Completed 32-01-PLAN.md
 Resume file: None
 
-**Next step:** `/gsd:discuss-phase 32` (Unsaved Changes Protection)
+**Next step:** `/gsd:execute-phase 32 --plan 02` (Save Workflows)
 
 ---
 *State initialized: 2026-01-25*
