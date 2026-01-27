@@ -7,6 +7,7 @@ import { createAssetsSlice, AssetsSlice } from './assetsSlice'
 import { createKnobStylesSlice, KnobStylesSlice } from './knobStylesSlice'
 import { createDirtyStateSlice, DirtyStateSlice } from './dirtyStateSlice'
 import { createContainerEditorSlice, ContainerEditorSlice } from './containerEditorSlice'
+import { createFontsSlice, FontsSlice } from './fontsSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -36,7 +37,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -50,6 +51,7 @@ export const useStore = create<Store>()(
       ...createKnobStylesSlice(...a),
       ...createDirtyStateSlice(...a),
       ...createContainerEditorSlice(...a),
+      ...createFontsSlice(...a),
     }),
     {
       limit: 50,
@@ -59,12 +61,14 @@ export const useStore = create<Store>()(
       // - Live drag values are transient UI state
       // - Dirty state tracking (savedStateSnapshot, lastSavedTimestamp) should not be undoable
       // - Container editor state (editingContainerId, containerEditStack) is UI state
+      // - Fonts state (customFonts, fontsDirectoryPath, etc.) is not undoable
       partialize: (state) => {
         const {
           scale, offsetX, offsetY, isPanning, dragStart, lockAllMode,
           selectedIds, lastSelectedId, liveDragValues,
           savedStateSnapshot, lastSavedTimestamp,
           editingContainerId, containerEditStack,
+          customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime,
           ...rest
         } = state
         return rest
