@@ -3,6 +3,7 @@ import { useStore } from '../../store'
 import { serializeProject, deserializeProject } from '../../services/serialization'
 import { saveProjectFile, loadProjectFile } from '../../services/fileSystem'
 import { BUILT_IN_TEMPLATES, loadBuiltInTemplate } from '../../services/templateLoader'
+import { UnsavedChangesDialog } from '../dialogs/UnsavedChangesDialog'
 
 function SaveIcon() {
   return (
@@ -60,6 +61,10 @@ export function SaveLoadPanel() {
   const [expanded, setExpanded] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [pendingAction, setPendingAction] = useState<{
+    type: 'load' | 'template'
+    execute: () => Promise<void>
+  } | null>(null)
 
   // Get state for save
   const elements = useStore((state) => state.elements)
@@ -73,6 +78,11 @@ export function SaveLoadPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
+
+  // Get dirty state
+  const isDirty = useStore((state) => state.isDirty())
+  const setSavedState = useStore((state) => state.setSavedState)
+  const clearSavedState = useStore((state) => state.clearSavedState)
 
   // Get actions for load
   const setElements = useStore((state) => state.setElements)
@@ -92,6 +102,20 @@ export function SaveLoadPanel() {
     setError(null)
 
     try {
+      // Capture current state snapshot BEFORE save
+      const currentSnapshot = JSON.stringify({
+        elements,
+        canvasWidth,
+        canvasHeight,
+        backgroundColor,
+        backgroundType,
+        gradientConfig,
+        snapToGrid,
+        gridSize,
+        assets,
+        knobStyles,
+      })
+
       // Serialize current state (adds lastModified timestamp)
       const json = serializeProject({
         elements,
@@ -110,8 +134,10 @@ export function SaveLoadPanel() {
       // Save to file
       await saveProjectFile(json)
 
-      // Update timestamp display after successful save
-      setLastModified(Date.now())
+      // After successful save, update saved state
+      const timestamp = Date.now()
+      setSavedState(currentSnapshot, timestamp)
+      setLastModified(timestamp)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save project')
     } finally {
@@ -183,6 +209,21 @@ export function SaveLoadPanel() {
       // Restore timestamp from project file (or null if old file without timestamp)
       setLastModified(data.lastModified || null)
 
+      // After successful load, capture saved state snapshot
+      const loadedSnapshot = JSON.stringify({
+        elements: data.elements,
+        canvasWidth: data.canvas.canvasWidth,
+        canvasHeight: data.canvas.canvasHeight,
+        backgroundColor: data.canvas.backgroundColor,
+        backgroundType: data.canvas.backgroundType,
+        gradientConfig: data.canvas.gradientConfig,
+        snapToGrid: data.canvas.snapToGrid,
+        gridSize: data.canvas.gridSize,
+        assets: data.assets,
+        knobStyles: data.knobStyles,
+      })
+      setSavedState(loadedSnapshot, data.lastModified || Date.now())
+
       // Clear error on success
       setError(null)
     } catch (err) {
@@ -210,12 +251,60 @@ export function SaveLoadPanel() {
       selectMultiple([])
       setElements(template.elements)
 
+      // Clear saved state after loading template (fresh template has no save)
+      clearSavedState()
+
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load template')
     } finally {
       setLoading(false)
     }
+  }
+
+  // Wrapped handlers to check dirty state
+  const handleLoadClick = () => {
+    if (isDirty) {
+      setPendingAction({
+        type: 'load',
+        execute: handleLoad,
+      })
+    } else {
+      handleLoad()
+    }
+  }
+
+  const handleLoadTemplateClick = async (templateId: string) => {
+    if (!templateId) return
+
+    if (isDirty) {
+      setPendingAction({
+        type: 'template',
+        execute: () => handleLoadTemplate(templateId),
+      })
+    } else {
+      handleLoadTemplate(templateId)
+    }
+  }
+
+  // Dialog handlers
+  const handleDialogSave = async () => {
+    await handleSave()
+    if (pendingAction) {
+      await pendingAction.execute()
+    }
+    setPendingAction(null)
+  }
+
+  const handleDialogDiscard = async () => {
+    if (pendingAction) {
+      await pendingAction.execute()
+    }
+    setPendingAction(null)
+  }
+
+  const handleDialogCancel = () => {
+    setPendingAction(null)
   }
 
   return (
@@ -234,13 +323,17 @@ export function SaveLoadPanel() {
             <button
               onClick={handleSave}
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+              className={`flex-1 flex items-center justify-center gap-2 ${
+                isDirty
+                  ? 'bg-amber-600 hover:bg-amber-700'  // Orange when dirty
+                  : 'bg-blue-600 hover:bg-blue-700'    // Blue when clean
+              } disabled:bg-gray-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors`}
             >
               <SaveIcon />
               <span>Save Project</span>
             </button>
             <button
-              onClick={handleLoad}
+              onClick={handleLoadClick}
               disabled={loading}
               className="flex-1 flex items-center justify-center gap-2 bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
             >
@@ -253,7 +346,7 @@ export function SaveLoadPanel() {
           <div className="flex items-center gap-2">
             <TemplateIcon />
             <select
-              onChange={(e) => handleLoadTemplate(e.target.value)}
+              onChange={(e) => handleLoadTemplateClick(e.target.value)}
               disabled={loading}
               value=""
               className="flex-1 bg-gray-700 text-gray-200 px-3 py-2 rounded text-sm border border-gray-600 hover:border-gray-500 disabled:opacity-50 cursor-pointer"
@@ -293,6 +386,19 @@ export function SaveLoadPanel() {
           )}
         </div>
       )}
+
+      {/* Unsaved Changes Dialog */}
+      <UnsavedChangesDialog
+        isOpen={pendingAction !== null}
+        onSave={handleDialogSave}
+        onDiscard={handleDialogDiscard}
+        onCancel={handleDialogCancel}
+        actionDescription={
+          pendingAction?.type === 'load'
+            ? 'loading a project'
+            : 'loading a template'
+        }
+      />
     </div>
   )
 }
