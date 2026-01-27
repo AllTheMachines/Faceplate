@@ -9,12 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 27 - Containers & Polish ✓
-Plan: 4 of 4 complete
-Status: Phase verified and complete
-Last activity: 2026-01-26 - Phase 27 verified (14/14 must-haves passed)
+Phase: 27.1 - Post-Phase Bug Fixes
+Plan: 2 of 2 (100% complete)
+Status: Plan 27.1-02 complete
+Last activity: 2026-01-27 - Completed 27.1-02-PLAN.md (Navigation category & logo timestamp fixes)
 
-Progress: [████████░░] 132/140 plans complete (94%)
+Previous: Phase 27 - Containers & Polish ✓ (verified 2026-01-26)
+
+Progress: [████████░░] 134/140 plans complete (96%)
 
 ## Performance Metrics
 
@@ -189,6 +191,13 @@ All v1.1 decisions documented and outcomes verified.
 | Window Chrome webkit drag regions | 27-04 | JUCE WebView2 supports webkit drag regions for native window movement | data-drag-region="drag" on title bar, "no-drag" on buttons |
 | OS-specific button styles | 27-04 | Users expect familiar window controls (macOS traffic lights, Windows icons) | data-button-style attribute with macos/windows/neutral variants |
 
+**Phase 27.1 decisions:**
+
+| Decision | Phase | Rationale | Outcome |
+|----------|-------|-----------|---------|
+| Error boundaries per palette item | 27.1-02 | Prevents single broken preview from crashing entire category | PaletteItemErrorBoundary wraps each item with red error indicator fallback |
+| lastModified timestamp in elementsSlice | 27.1-02 | Track actual project activity, not page load time | Timestamp updates on add/remove/update operations, persists via Zustand |
+
 ### Pending Todos
 
 None - Phase 26 complete
@@ -314,11 +323,11 @@ None - Phase 26 complete
 
 ## Session Continuity
 
-Last session: 2026-01-26
-Stopped at: Phase 27 verified complete
+Last session: 2026-01-27
+Stopped at: Completed 27.1-02-PLAN.md (Navigation category & logo timestamp fixes)
 Resume file: None
 
-**Next step:** `/gsd:discuss-phase 28` (Specialized Audio Part 1)
+**Next step:** Continue Phase 27.1 bug fixes or `/gsd:discuss-phase 28` (Specialized Audio Part 1)
 
 ---
 *State initialized: 2026-01-25*
