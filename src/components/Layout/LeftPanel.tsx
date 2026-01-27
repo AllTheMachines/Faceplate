@@ -4,10 +4,12 @@ import { formatDistanceToNow } from 'date-fns'
 import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
 import { TemplateImporter } from '../Import/TemplateImporter'
+import { FontSettings } from '../Settings/FontSettings'
 import { useStore as useAppStore } from '../../store'
 
 export function LeftPanel() {
   const [importerOpen, setImporterOpen] = useState(false)
+  const [fontSettingsOpen, setFontSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'elements' | 'assets'>('elements')
   const [, forceUpdate] = useState(0)
 
@@ -47,6 +49,13 @@ export function LeftPanel() {
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-gray-500">VST3 UI Designer</span>
           <span className="text-xs text-gray-500">{lastSavedText}</span>
+          <button
+            onClick={() => setFontSettingsOpen(true)}
+            className="text-xs text-gray-400 hover:text-blue-400 transition-colors text-left"
+            title="Manage custom fonts"
+          >
+            Fonts
+          </button>
         </div>
       </div>
 
@@ -126,6 +135,11 @@ export function LeftPanel() {
       <TemplateImporter
         isOpen={importerOpen}
         onClose={() => setImporterOpen(false)}
+      />
+
+      <FontSettings
+        isOpen={fontSettingsOpen}
+        onClose={() => setFontSettingsOpen(false)}
       />
     </div>
   )
