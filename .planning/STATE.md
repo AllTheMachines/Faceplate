@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 27.1 - Post-Phase Bug Fixes ✓ (verified 2026-01-27)
-Plan: 5 of 5 (100% complete)
-Status: Phase verified complete
-Last activity: 2026-01-27 - Phase 27.1 verified complete, all 12 bugs addressed
+Phase: 31 - Undo/Redo History Panel (in progress)
+Plan: 1 of 3 (33% complete)
+Status: In progress
+Last activity: 2026-01-27 - Completed 31-01-PLAN.md (History Panel Infrastructure)
 
-Previous: Phase 27 - Containers & Polish ✓ (verified 2026-01-26)
+Previous: Phase 27.1 - Post-Phase Bug Fixes ✓ (verified 2026-01-27)
 
-Progress: [█████████░] 137/140 plans complete (98%)
+Progress: [█████████░] 138/141 plans complete (98%)
 
 ## Performance Metrics
 
@@ -41,6 +41,9 @@ Progress: [█████████░] 137/140 plans complete (98%)
 - Total phases: 12 (Phases 19-30)
 - Total requirements: 78 (5 arch + 2 UX + 3 rot + 5 lin + 7 btn + 8 disp + 6 led + 13 mtr + 8 nav + 10 viz + 3 cont + 12 spec)
 - Completed: 49 plans (Phase 19: 6, Phase 20: 4, Phase 21: 4, Phase 22: 4, Phase 23: 6, Phase 24: 6, Phase 25: 5, Phase 26: 5, Phase 27: 4, Phase 27.1: 5)
+
+**v1.3 scope:**
+- Phase 31: Undo/Redo History Panel (3 plans) - In progress (1/3 complete)
 
 ## Accumulated Context
 
@@ -201,6 +204,14 @@ All v1.1 decisions documented and outcomes verified.
 | Default Inter font on body | 27.1-04 | Ensure button font consistency via inheritance | All buttons use Inter font matching canvas without explicit declarations |
 | Position indicators in Rocker Switch | 27.1-04 | Show current position with Unicode symbols | Added ↑, ─, ↓ symbols to paddle matching canvas renderer |
 
+**Phase 31 decisions:**
+
+| Decision | Phase | Rationale | Outcome |
+|----------|-------|-----------|---------|
+| Used established zustand pattern | 31-01 | LeftPanel.tsx already demonstrates reactive temporal subscriptions | useStore(useAppStore.temporal, selector) provides automatic re-renders |
+| Bottom panel sizing configuration | 31-01 | 20% default provides adequate space without overwhelming canvas | defaultSize=20%, minSize=10%, maxSize=50%, collapsible to 0 |
+| Visual state distinction | 31-01 | Clear visual feedback for history position | Past (gray), Current (green + blue bg), Future (blue) |
+
 ### Pending Todos
 
 None - Phase 26 complete
@@ -339,14 +350,24 @@ None - Phase 26 complete
 - Documented spacer invisibility as intentional design (visible in designer, invisible in preview/export)
 - Fixed preview interactivity with DOMContentLoaded check before JUCE bridge initialization
 
+**Phase 31 In Progress:**
+- Plan 31-01: History Panel Infrastructure - COMPLETE
+  - Installed react-resizable-panels for vertical panel layout
+  - Created HistoryPanel with reactive temporal subscriptions
+  - Created HistoryEntry component with visual state distinction
+  - Created useHistoryPanel hook for visibility management (foundation for Plan 02)
+  - Bottom panel resizable (20% default, 10-50% range) and collapsible
+- Plan 31-02: Keyboard Shortcuts - PENDING
+- Plan 31-03: Time-Travel Navigation - PENDING
+
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Phase 27.1 verified complete
+Stopped at: Completed 31-01-PLAN.md
 Resume file: None
 
-**Next step:** `/gsd:discuss-phase 28` (Specialized Audio Part 1)
+**Next step:** `/gsd:execute-phase 31 02` (Keyboard Shortcuts)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 27.1 verified complete*
+*Last updated: 2026-01-27 after completing 31-01-PLAN.md*
