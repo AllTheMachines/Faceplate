@@ -581,18 +581,26 @@ Plans:
 6. ✓ Layer naming convention ensures re-imported SVGs work immediately without manual mapping
 
 ### Phase 37: Font Management System
-**Goal**: Centralized font management with automatic discovery and export bundling
+**Goal**: Centralized font management with user directory selection and export bundling
 **Dependencies**: None
 **Milestone**: v1.5
+**Plans**: 5 plans
 
-**Success Criteria:**
-1. Designer-managed fonts folder (configurable location, sensible default like `~/.vst-ui-designer/fonts/`)
-2. Auto-scan for `.ttf`, `.otf`, `.woff`, `.woff2` files on startup and folder change
-3. All discovered fonts appear in font selection dropdowns throughout the app
-4. Settings UI to configure fonts folder path and trigger rescan
-5. "Open Fonts Folder" button to reveal in file explorer
-6. Export only bundles fonts actually used in the project (not entire fonts folder)
-7. Font preview in dropdown (show font name in its own typeface)
+Plans:
+- [ ] 37-01-PLAN.md — Font services (storage, parser, scanner, manager)
+- [ ] 37-02-PLAN.md — Fonts Zustand slice and store integration
+- [ ] 37-03-PLAN.md — Settings UI (FontSettings dialog, useFonts hook)
+- [ ] 37-04-PLAN.md — Custom font dropdown with preview
+- [ ] 37-05-PLAN.md — Export integration (base64 font embedding)
+
+**Success Criteria (adjusted for browser constraints):**
+1. User-selected fonts folder via file picker (permission persisted in IndexedDB)
+2. Manual rescan on user request (no auto-watch - browser limitation)
+3. All discovered fonts appear in font selection dropdowns
+4. Settings UI with folder selection and rescan trigger
+5. Display selected folder path with copy button (no file explorer reveal - browser limitation)
+6. Export only bundles fonts actually used in the project
+7. Custom font dropdown with preview (fonts shown in their own typeface)
 
 ## Progress
 
@@ -635,8 +643,8 @@ Plans:
 | 34. Container Element Editor | v1.4 | 1/1 | Complete | 2026-01-27 |
 | 35. Container Overflow & Scrollbars | v1.4 | 1/1 | Complete | 2026-01-27 |
 | 36. SVG Export with Named Layers | v1.5 | 1/1 | Complete | 2026-01-27 |
-| 37. Font Management System | v1.5 | 0/? | Planned | - |
+| 37. Font Management System | v1.5 | 0/5 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 33 and 36 complete*
+*Last updated: 2026-01-27 after Phase 37 planning complete*
