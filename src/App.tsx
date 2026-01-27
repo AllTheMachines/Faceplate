@@ -15,6 +15,7 @@ import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { HistoryPanel } from './components/History'
 import { useHistoryPanel } from './hooks/useHistoryPanel'
+import { useBeforeUnload } from './hooks/useBeforeUnload'
 import { useStore } from './store'
 import { snapValue } from './store/canvasSlice'
 import { getSVGNaturalSize } from './services/svg'
@@ -162,6 +163,18 @@ function DragPreview({
 function App() {
   // History panel visibility controlled by Ctrl+Shift+H
   const { isPanelVisible } = useHistoryPanel()
+
+  // Dirty state tracking for unsaved changes warning
+  const isDirty = useStore((state) => state.isDirty())
+
+  // Install beforeunload warning when project has unsaved changes
+  useBeforeUnload(isDirty)
+
+  // Update document title with asterisk when dirty
+  useEffect(() => {
+    const baseTitle = 'Faceplate - VST3 UI Designer'
+    document.title = isDirty ? `* ${baseTitle}` : baseTitle
+  }, [isDirty])
 
   // Configure sensors with activation constraint to prevent accidental drags
   const sensors = useSensors(
