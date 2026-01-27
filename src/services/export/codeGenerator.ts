@@ -9,7 +9,7 @@ import type { ElementConfig, KnobElementConfig } from '../../types/elements'
 import { validateForExport } from './validators'
 import { generateHTML } from './htmlGenerator'
 import { generateCSS } from './cssGenerator'
-import { generateBindingsJS, generateComponentsJS, generateMockJUCE, generateResponsiveScaleJS } from './jsGenerator'
+import { generateBindingsJS, generateComponentsJS, generateMockJUCE, generateResponsiveScaleJS, generateCustomScrollbarJS } from './jsGenerator'
 import { generateReadme, generateREADME } from './documentationGenerator'
 import { optimizeSVG } from './svgOptimizer'
 import { useStore } from '../../store'
@@ -142,10 +142,10 @@ function collectSVGAssets(elements: ElementConfig[]): SVGAssetInfo[] {
  * Optimize SVG assets and return mapping of original to optimized content
  * Also calculates total size savings
  */
-function optimizeSVGAssets(
+async function optimizeSVGAssets(
   svgAssets: SVGAssetInfo[],
   shouldOptimize: boolean
-): { optimizedMap: Map<string, string>; sizeSavings: SizeSavings | undefined } {
+): Promise<{ optimizedMap: Map<string, string>; sizeSavings: SizeSavings | undefined }> {
   const optimizedMap = new Map<string, string>()
 
   if (!shouldOptimize || svgAssets.length === 0) {
@@ -161,7 +161,7 @@ function optimizeSVGAssets(
   let totalOptimizedSize = 0
 
   for (const asset of svgAssets) {
-    const result = optimizeSVG(asset.svgContent)
+    const result = await optimizeSVG(asset.svgContent)
     optimizedMap.set(asset.id, result.optimizedSvg)
     totalOriginalSize += result.originalSize
     totalOptimizedSize += result.optimizedSize
@@ -279,7 +279,7 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
     // Collect and optimize SVG assets (default: enabled)
     const shouldOptimizeSVG = options.optimizeSVG !== false
     const svgAssets = collectSVGAssets(options.elements)
-    const { optimizedMap, sizeSavings } = optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
+    const { optimizedMap, sizeSavings } = await optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
 
     // Temporarily apply optimized SVGs to store for export generation
     const restoreSVGs = applyOptimizedSVGs(optimizedMap)
@@ -311,9 +311,14 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
         ? generateResponsiveScaleJS(options.canvasWidth, options.canvasHeight)
         : ''
 
-      const bindingsWithScaling = responsiveScaleJS
-        ? `${bindingsJS}\n\n${responsiveScaleJS}`
-        : bindingsJS
+      // Add custom scrollbar JavaScript
+      const customScrollbarJS = generateCustomScrollbarJS()
+
+      const bindingsWithScaling = [
+        bindingsJS,
+        responsiveScaleJS,
+        customScrollbarJS
+      ].filter(Boolean).join('\n\n')
 
       // Generate README with integration instructions
       const readme = generateREADME()
@@ -399,7 +404,7 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
     // Collect and optimize SVG assets (default: enabled)
     const shouldOptimizeSVG = options.optimizeSVG !== false
     const svgAssets = collectSVGAssets(options.elements)
-    const { optimizedMap, sizeSavings } = optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
+    const { optimizedMap, sizeSavings } = await optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
 
     // Temporarily apply optimized SVGs to store for export generation
     const restoreSVGs = applyOptimizedSVGs(optimizedMap)
@@ -433,9 +438,15 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
         ? generateResponsiveScaleJS(options.canvasWidth, options.canvasHeight)
         : ''
 
-      const bindingsWithMockAndScaling = responsiveScaleJS
-        ? `${mockJUCE}\n\n${bindingsJS}\n\n${responsiveScaleJS}`
-        : `${mockJUCE}\n\n${bindingsJS}`
+      // Add custom scrollbar JavaScript
+      const customScrollbarJS = generateCustomScrollbarJS()
+
+      const bindingsWithMockAndScaling = [
+        mockJUCE,
+        bindingsJS,
+        responsiveScaleJS,
+        customScrollbarJS
+      ].filter(Boolean).join('\n\n')
 
       // Generate README documentation
       const readme = generateReadme({

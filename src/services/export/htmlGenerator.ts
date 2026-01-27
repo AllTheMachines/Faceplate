@@ -13,8 +13,23 @@ import type {
   LFODisplayElementConfig,
   FilterResponseElementConfig,
 } from '../../types/elements/curves'
+import type {
+  PianoKeyboardElementConfig,
+  DrumPadElementConfig,
+  PadGridElementConfig,
+  StepSequencerElementConfig,
+  XYPadElementConfig,
+  WavetableDisplayElementConfig,
+  HarmonicEditorElementConfig,
+  LoopPointsElementConfig,
+  EnvelopeEditorElementConfig,
+  SampleDisplayElementConfig,
+  PatchBayElementConfig,
+  SignalFlowElementConfig,
+} from '../../types/elements/specialized'
 import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
+import { DEFAULT_SCROLLBAR_CONFIG, type ScrollbarConfig } from '../../types/elements/containers'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
 import { extractLayer, applyAllColorOverrides } from '../knobLayers'
 import type { KnobStyle } from '../../types/knobStyle'
@@ -48,6 +63,28 @@ function formatValue(
     default:
       return actual.toFixed(decimals)
   }
+}
+
+// ============================================================================
+// Scrollbar Config Helper
+// ============================================================================
+
+/**
+ * Generate scrollbar config data attribute value for custom scrollbar JS
+ * Returns JSON string safe for use in single-quoted HTML attribute
+ * Note: orientation is removed - JS will auto-detect and create both scrollbars as needed
+ */
+function getScrollbarConfigAttr(element: ScrollbarConfig): string {
+  const config = {
+    width: element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth,
+    thumbColor: element.scrollbarThumbColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbColor,
+    thumbHoverColor: element.scrollbarThumbHoverColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbHoverColor,
+    trackColor: element.scrollbarTrackColor ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarTrackColor,
+    borderRadius: element.scrollbarBorderRadius ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarBorderRadius,
+    thumbBorder: element.scrollbarThumbBorder ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarThumbBorder
+  }
+  // Don't HTML escape - we use single quotes around the attribute so double quotes in JSON are fine
+  return JSON.stringify(config)
 }
 
 // ============================================================================
@@ -89,6 +126,77 @@ export interface HTMLGeneratorOptions {
 }
 
 /**
+ * Generate HTML for children of a container element
+ * Children are positioned relative to the container's content area
+ */
+function generateChildrenHTML(
+  containerId: string,
+  allElements: ElementConfig[] | undefined,
+  contentOffset: { top: number; left: number }
+): string {
+  if (!allElements) return ''
+
+  // Find children of this container
+  const children = allElements.filter((el) => el.parentId === containerId)
+  if (children.length === 0) return ''
+
+  // Generate HTML for each child with adjusted position
+  return children
+    .map((child) => {
+      // Adjust position to be relative to container content area
+      const adjustedX = child.x + contentOffset.left
+      const adjustedY = child.y + contentOffset.top
+      const adjustedElement = { ...child, x: adjustedX, y: adjustedY }
+      // Use relative positioning within container
+      const childHTML = generateElementHTML(adjustedElement, allElements)
+      return childHTML
+    })
+    .join('\n      ')
+}
+
+/**
+ * Generate scrollable content with a sizer div
+ * The sizer div has position: relative and dimensions that encompass all children,
+ * which creates the scrollable area for absolutely positioned children
+ */
+function generateScrollableChildrenHTML(
+  containerId: string,
+  allElements: ElementConfig[] | undefined,
+  contentOffset: { top: number; left: number }
+): string {
+  if (!allElements) return ''
+
+  // Find children of this container
+  const children = allElements.filter((el) => el.parentId === containerId)
+  if (children.length === 0) return ''
+
+  // Calculate content bounds (max extent of all children)
+  let maxRight = 0
+  let maxBottom = 0
+  for (const child of children) {
+    const right = child.x + contentOffset.left + child.width
+    const bottom = child.y + contentOffset.top + child.height
+    maxRight = Math.max(maxRight, right)
+    maxBottom = Math.max(maxBottom, bottom)
+  }
+
+  // Generate HTML for each child
+  const childrenHTML = children
+    .map((child) => {
+      const adjustedX = child.x + contentOffset.left
+      const adjustedY = child.y + contentOffset.top
+      const adjustedElement = { ...child, x: adjustedX, y: adjustedY }
+      return generateElementHTML(adjustedElement, allElements)
+    })
+    .join('\n        ')
+
+  // Wrap in sizer div that creates the scrollable area
+  return `<div class="scroll-sizer" style="position: relative; width: ${maxRight}px; height: ${maxBottom}px; min-width: 100%; min-height: 100%;">
+        ${childrenHTML}
+      </div>`
+}
+
+/**
  * Generate complete HTML document with all elements
  *
  * Elements are sorted by array index (earlier = lower z-order) to ensure
@@ -102,13 +210,16 @@ export function generateHTML(
   elements: ElementConfig[],
   _options: HTMLGeneratorOptions
 ): string {
-  // Sort elements by array index to preserve z-order (earlier = lower in z)
-  const sortedElements = [...elements]
+  // Filter out child elements (they're rendered inside their parent containers)
+  const topLevelElements = elements.filter((el) => !el.parentId)
 
-  // Generate HTML for each element
+  // Sort elements by array index to preserve z-order (earlier = lower in z)
+  const sortedElements = [...topLevelElements]
+
+  // Generate HTML for each element (pass all elements for child lookup)
   const elementsHTML = sortedElements
     .map((element) => {
-      const html = generateElementHTML(element)
+      const html = generateElementHTML(element, elements)
       console.log(`[HTML] ${element.type} "${element.name}":`, html.substring(0, 100) + '...')
       return html
     })
@@ -142,9 +253,10 @@ export function generateHTML(
  * Type-specific visual styling is handled in CSS.
  *
  * @param element - Element configuration
+ * @param allElements - All elements (for looking up children)
  * @returns HTML string for the element
  */
-export function generateElementHTML(element: ElementConfig): string {
+export function generateElementHTML(element: ElementConfig, allElements?: ElementConfig[]): string {
   const id = toKebabCase(element.name)
   const baseClass = 'element'
 
@@ -207,17 +319,53 @@ export function generateElementHTML(element: ElementConfig): string {
         : `width: ${element.strokeWidth}px; height: 100%; background-color: ${element.strokeStyle === 'solid' ? element.strokeColor : 'transparent'}; border-left: ${element.strokeWidth}px ${element.strokeStyle} ${element.strokeColor};`
       return `<div id="${id}" class="${baseClass} line-element" data-type="line" style="${positionStyle}"><div style="${lineStyle}"></div></div>`
     }
-    case 'panel':
-      return `<div id="${id}" class="${baseClass} panel-element" data-type="panel" style="${positionStyle}"></div>`
+    case 'panel': {
+      const panelPadding = element.padding + element.borderWidth
+      if (element.allowScroll) {
+        const scrollbarConfig = getScrollbarConfigAttr(element)
+        const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: panelPadding, left: panelPadding })
+        return `<div id="${id}" class="${baseClass} panel-element" data-type="panel" style="${positionStyle} overflow: hidden;"><div class="panel-scroll-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
+      }
+      const panelChildren = generateChildrenHTML(element.id, allElements, { top: panelPadding, left: panelPadding })
+      return `<div id="${id}" class="${baseClass} panel-element" data-type="panel" style="${positionStyle} overflow: hidden;">${panelChildren}</div>`
+    }
 
-    case 'frame':
-      return `<div id="${id}" class="${baseClass} frame-element" data-type="frame" style="${positionStyle}"></div>`
+    case 'frame': {
+      const framePadding = element.padding + element.borderWidth
+      if (element.allowScroll) {
+        const scrollbarConfig = getScrollbarConfigAttr(element)
+        const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: framePadding, left: framePadding })
+        return `<div id="${id}" class="${baseClass} frame-element" data-type="frame" style="${positionStyle} overflow: hidden;"><div class="frame-scroll-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
+      }
+      const frameChildren = generateChildrenHTML(element.id, allElements, { top: framePadding, left: framePadding })
+      return `<div id="${id}" class="${baseClass} frame-element" data-type="frame" style="${positionStyle} overflow: hidden;">${frameChildren}</div>`
+    }
 
-    case 'groupbox':
-      return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle}"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div></div>`
+    case 'groupbox': {
+      const gbPadding = element.padding + element.borderWidth
+      const gbHeaderOffset = element.headerFontSize / 2
+      if (element.allowScroll) {
+        const scrollbarConfig = getScrollbarConfigAttr(element)
+        const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: gbPadding + gbHeaderOffset, left: gbPadding })
+        return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle} overflow: hidden;"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div><div class="groupbox-scroll-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); height: calc(100% - ${gbHeaderOffset}px); overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
+      }
+      const groupboxChildren = generateChildrenHTML(element.id, allElements, { top: gbPadding + gbHeaderOffset, left: gbPadding })
+      return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle} overflow: hidden;"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div>${groupboxChildren}</div>`
+    }
 
-    case 'collapsible':
-      return `<div id="${id}" class="${baseClass} collapsible-element" data-type="collapsible" data-collapsed="${element.collapsed}" style="${positionStyle}"><div class="collapsible-header"><span class="collapsible-arrow">▼</span><span>${escapeHTML(element.headerText)}</span></div><div class="collapsible-content"></div></div>`
+    case 'collapsible': {
+      if (element.scrollBehavior !== 'hidden') {
+        const scrollbarConfig = getScrollbarConfigAttr(element)
+        const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: element.headerHeight + element.borderWidth, left: element.borderWidth })
+        return `<div id="${id}" class="${baseClass} collapsible-element" data-type="collapsible" data-collapsed="${element.collapsed}" style="${positionStyle} overflow: hidden;"><div class="collapsible-header"><span class="collapsible-arrow">▼</span><span>${escapeHTML(element.headerText)}</span></div><div class="collapsible-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
+      }
+      const collapsibleChildren = generateChildrenHTML(element.id, allElements, { top: element.headerHeight + element.borderWidth, left: element.borderWidth })
+      return `<div id="${id}" class="${baseClass} collapsible-element" data-type="collapsible" data-collapsed="${element.collapsed}" style="${positionStyle} overflow: hidden;"><div class="collapsible-header"><span class="collapsible-arrow">▼</span><span>${escapeHTML(element.headerText)}</span></div><div class="collapsible-content">${collapsibleChildren}</div></div>`
+    }
 
     case 'dbdisplay':
       return generateDbDisplayHTML(id, baseClass, positionStyle, element)
@@ -455,8 +603,49 @@ export function generateElementHTML(element: ElementConfig): string {
     case 'verticalspacer':
       return generateVerticalSpacerHTML(id, baseClass, positionStyle, element as VerticalSpacerElementConfig)
 
-    case 'windowchrome':
-      return generateWindowChromeHTML(id, baseClass, positionStyle, element as WindowChromeElementConfig)
+    case 'windowchrome': {
+      const wcConfig = element as WindowChromeElementConfig
+      const wcTitleBarHeight = wcConfig.titleBarHeight || 32
+      const windowChromeChildren = generateChildrenHTML(element.id, allElements, { top: wcTitleBarHeight, left: 0 })
+      return generateWindowChromeHTML(id, baseClass, positionStyle, wcConfig, windowChromeChildren)
+    }
+
+    // Specialized Audio Elements
+    case 'pianokeyboard':
+      return generatePianoKeyboardHTML(id, baseClass, positionStyle, element as PianoKeyboardElementConfig)
+
+    case 'drumpad':
+      return generateDrumPadHTML(id, baseClass, positionStyle, element as DrumPadElementConfig)
+
+    case 'padgrid':
+      return generatePadGridHTML(id, baseClass, positionStyle, element as PadGridElementConfig)
+
+    case 'stepsequencer':
+      return generateStepSequencerHTML(id, baseClass, positionStyle, element as StepSequencerElementConfig)
+
+    case 'xypad':
+      return generateXYPadHTML(id, baseClass, positionStyle, element as XYPadElementConfig)
+
+    case 'wavetabledisplay':
+      return generateWavetableDisplayHTML(id, baseClass, positionStyle, element as WavetableDisplayElementConfig)
+
+    case 'harmoniceditor':
+      return generateHarmonicEditorHTML(id, baseClass, positionStyle, element as HarmonicEditorElementConfig)
+
+    case 'looppoints':
+      return generateLoopPointsHTML(id, baseClass, positionStyle, element as LoopPointsElementConfig)
+
+    case 'envelopeeditor':
+      return generateEnvelopeEditorHTML(id, baseClass, positionStyle, element as EnvelopeEditorElementConfig)
+
+    case 'sampledisplay':
+      return generateSampleDisplayHTML(id, baseClass, positionStyle, element as SampleDisplayElementConfig)
+
+    case 'patchbay':
+      return generatePatchBayHTML(id, baseClass, positionStyle, element as PatchBayElementConfig)
+
+    case 'signalflow':
+      return generateSignalFlowHTML(id, baseClass, positionStyle, element as SignalFlowElementConfig)
 
     default:
       // TypeScript exhaustiveness check
@@ -640,14 +829,19 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
     ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} knob-element steppedknob-element" data-type="steppedknob" data-value="${steppedValue}" style="${positionStyle}">
+  // Add class="knob-arc-fill" to value fill for JS interaction
+  const valueFillWithClass = steppedValue > 0.001
+    ? `<path class="knob-arc-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    : `<path class="knob-arc-fill" d="" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+
+  return `<div id="${id}" class="${baseClass} knob knob-element steppedknob-element" data-type="steppedknob" data-value="${steppedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
-        <path d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        <path class="knob-arc-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
         ${stepIndicatorsSVG}
-        ${valueFillSVG}
-        <line x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
+        ${valueFillWithClass}
+        <line class="knob-indicator" x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
       </svg>
     </div>`
 }
@@ -667,13 +861,13 @@ function generateCenterDetentKnobHTML(id: string, baseClass: string, positionSty
 
   const trackPath = describeArc(centerX, centerY, radius, config.startAngle, config.endAngle)
 
-  // Value fill from center
-  let valueFillSVG = ''
+  // Value fill from center - include class for JS interaction
+  let valueFillSVG = `<path class="knob-arc-fill" d="" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
   if (Math.abs(normalizedValue - 0.5) > 0.01) {
     const fillStart = normalizedValue > 0.5 ? centerAngle : valueAngle
     const fillEnd = normalizedValue > 0.5 ? valueAngle : centerAngle
     const valuePath = describeArc(centerX, centerY, radius, fillStart, fillEnd)
-    valueFillSVG = `<path d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    valueFillSVG = `<path class="knob-arc-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
   }
 
   // Center marker
@@ -691,14 +885,14 @@ function generateCenterDetentKnobHTML(id: string, baseClass: string, positionSty
     ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} knob-element centerdetentknob-element" data-type="centerdetentknob" data-value="${normalizedValue}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} knob knob-element centerdetentknob-element" data-type="centerdetentknob" data-value="${normalizedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
-        <path d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        <path class="knob-arc-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
         ${valueFillSVG}
         ${centerMarkerSVG}
-        <line x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
+        <line class="knob-indicator" x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
       </svg>
     </div>`
 }
@@ -718,13 +912,14 @@ function generateDotIndicatorKnobHTML(id: string, baseClass: string, positionSty
   const trackPath = describeArc(centerX, centerY, radius, config.startAngle, config.endAngle)
   const valuePath = describeArc(centerX, centerY, radius, config.startAngle, valueAngle)
 
+  // Include class for JS interaction
   const valueFillSVG = normalizedValue > 0.001
-    ? `<path d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
-    : ''
+    ? `<path class="knob-arc-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    : `<path class="knob-arc-fill" d="" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
 
-  // Dot indicator instead of line
+  // Dot indicator instead of line - include class for JS interaction
   const indicatorPos = polarToCartesian(centerX, centerY, radius * 0.7, valueAngle)
-  const indicatorSVG = `<circle cx="${indicatorPos.x}" cy="${indicatorPos.y}" r="${config.trackWidth / 2}" fill="${config.indicatorColor}" />`
+  const indicatorSVG = `<circle class="knob-indicator" cx="${indicatorPos.x}" cy="${indicatorPos.y}" r="${config.trackWidth / 2}" fill="${config.indicatorColor}" />`
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
@@ -734,11 +929,11 @@ function generateDotIndicatorKnobHTML(id: string, baseClass: string, positionSty
     ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} knob-element dotindicatorknob-element" data-type="dotindicatorknob" data-value="${normalizedValue}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} knob knob-element dotindicatorknob-element" data-type="dotindicatorknob" data-value="${normalizedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
-        <path d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        <path class="knob-arc-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
         ${valueFillSVG}
         ${indicatorSVG}
       </svg>
@@ -809,11 +1004,11 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
     ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} slider-element bipolarslider-element ${orientationClass}" data-type="bipolarslider" data-orientation="${config.orientation}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} slider slider-element bipolarslider-element ${orientationClass}" data-type="bipolarslider" data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <div class="slider-track" style="background: ${config.trackColor};"></div>
-      <div class="slider-center-mark" style="${centerStyle}; background: ${config.indicatorColor};"></div>
+      <div class="slider-center-mark" style="${centerStyle}; background: ${config.centerLineColor};"></div>
       <div class="slider-fill" style="${fillStyle}; background: ${config.fillColor};"></div>
       <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
     </div>`
@@ -834,7 +1029,7 @@ function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyl
     ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} slider-element crossfadeslider-element" data-type="crossfadeslider" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} slider slider-element crossfadeslider-element" data-type="crossfadeslider" data-value="${normalizedValue}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <div class="crossfade-labels">
@@ -881,7 +1076,7 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
     ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} slider-element notchedslider-element ${orientationClass}" data-type="notchedslider" data-orientation="${config.orientation}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} slider slider-element notchedslider-element ${orientationClass}" data-type="notchedslider" data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <div class="slider-track" style="background: ${config.trackColor};"></div>
@@ -959,7 +1154,7 @@ function generateArcSliderHTML(id: string, baseClass: string, positionStyle: str
     ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
-  return `<div id="${id}" class="${baseClass} slider-element arcslider-element" data-type="arcslider" data-min="${config.min}" data-max="${config.max}" data-value="${config.value}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} slider slider-element arcslider-element" data-type="arcslider" data-min="${config.min}" data-max="${config.max}" data-value="${config.value}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
@@ -1929,7 +2124,7 @@ function generateLedRingHTML(
   </defs>` : ''
 
   return `<div id="${id}" class="${baseClass} ledring-element" data-type="ledring" style="${positionStyle}">
-  <svg width="${diameter}" height="${diameter}" viewBox="0 0 ${diameter} ${diameter}" style="transform: rotate(${rotationAngle}deg);">
+  <svg viewBox="0 0 ${diameter} ${diameter}" style="transform: rotate(${rotationAngle}deg);">
     ${glowFilter}
     <circle class="ring-bg" cx="${cx}" cy="${cy}" r="${circleRadius}" fill="none"
       stroke="${element.offColor}" stroke-width="${element.thickness}"
@@ -2312,6 +2507,10 @@ function generateScrollingWaveformHTML(config: ScrollingWaveformElementConfig): 
       window.updateWaveform_${id.replace(/-/g, '_')}(e.data);
     });
   }
+
+  // Draw initial demo waveform for preview
+  const demoData = Array(100).fill(0).map((_, i) => Math.sin(i * 0.2) * 0.5 + (Math.random() - 0.5) * 0.2);
+  window.updateWaveform_${id.replace(/-/g, '_')}(demoData);
 })();
 </script>`
 }
@@ -2366,6 +2565,10 @@ function generateSpectrumAnalyzerHTML(config: SpectrumAnalyzerElementConfig): st
       window.updateSpectrum_${id.replace(/-/g, '_')}(e.data);
     });
   }
+
+  // Draw initial demo spectrum for preview
+  const demoFreqData = Array(${config.fftSize / 2}).fill(0).map((_, i) => Math.max(0, 0.8 - i / ${config.fftSize / 2} + (Math.random() - 0.5) * 0.3));
+  window.updateSpectrum_${id.replace(/-/g, '_')}(demoFreqData);
 })();
 </script>`
 }
@@ -2415,6 +2618,20 @@ function generateSpectrogramHTML(config: SpectrogramElementConfig): string {
     window.__JUCE__.backend.addEventListener('spectrogramData_${id}', (e) => {
       window.updateSpectrogram_${id.replace(/-/g, '_')}(e.data);
     });
+  }
+
+  // Draw initial demo spectrogram for preview (fill with color bars)
+  const width = ${config.width};
+  const height = ${config.height};
+  ctx.fillStyle = '${config.backgroundColor}';
+  ctx.fillRect(0, 0, width, height);
+  for (let x = 0; x < width; x += 2) {
+    for (let y = 0; y < height; y++) {
+      const magnitude = Math.max(0, 0.6 - (y / height) + (Math.random() - 0.5) * 0.2);
+      const hue = (1 - magnitude) * 240;
+      ctx.fillStyle = \`hsl(\${hue}, 100%, \${40 + magnitude * 20}%)\`;
+      ctx.fillRect(x, y, 2, 1);
+    }
   }
 })();
 </script>`
@@ -2514,6 +2731,15 @@ function generateGoniometerHTML(config: GoniometerElementConfig): string {
       window.updateGoniometer_${id.replace(/-/g, '_')}(e.data);
     });
   }
+
+  // Draw initial demo goniometer for preview
+  const demoStereo = { left: [], right: [] };
+  for (let i = 0; i < 256; i++) {
+    const t = i / 256;
+    demoStereo.left.push(Math.sin(t * Math.PI * 4) * 0.6 + (Math.random() - 0.5) * 0.2);
+    demoStereo.right.push(Math.sin(t * Math.PI * 4 + 0.3) * 0.6 + (Math.random() - 0.5) * 0.2);
+  }
+  window.updateGoniometer_${id.replace(/-/g, '_')}(demoStereo);
 })();
 </script>`
 }
@@ -2602,6 +2828,15 @@ function generateVectorscopeHTML(config: VectorscopeElementConfig): string {
       window.updateVectorscope_${id.replace(/-/g, '_')}(e.data);
     });
   }
+
+  // Draw initial demo vectorscope for preview
+  const demoVecStereo = { left: [], right: [] };
+  for (let i = 0; i < 256; i++) {
+    const t = i / 256;
+    demoVecStereo.left.push(Math.sin(t * Math.PI * 4) * 0.6 + (Math.random() - 0.5) * 0.2);
+    demoVecStereo.right.push(Math.sin(t * Math.PI * 4 + 0.3) * 0.6 + (Math.random() - 0.5) * 0.2);
+  }
+  window.updateVectorscope_${id.replace(/-/g, '_')}(demoVecStereo);
 })();
 </script>`
 }
@@ -3341,7 +3576,8 @@ function generateWindowChromeHTML(
   id: string,
   baseClass: string,
   positionStyle: string,
-  config: WindowChromeElementConfig
+  config: WindowChromeElementConfig,
+  childrenHTML: string = ''
 ): string {
   // Generate buttons based on style
   let buttonsHTML = ''
@@ -3370,9 +3606,1250 @@ function generateWindowChromeHTML(
   }
 
   const titleHTML = config.showTitle ? `<div class="chrome-title" data-drag-region="drag">${escapeHTML(config.titleText)}</div>` : ''
+  const titleBarHeight = config.titleBarHeight || 32
+  const wcOverflow = config.allowScroll ? 'auto' : 'hidden'
+  const contentHTML = childrenHTML ? `<div class="windowchrome-content" style="position:absolute;top:${titleBarHeight}px;left:0;right:0;bottom:0;overflow:${wcOverflow};">${childrenHTML}</div>` : ''
 
-  return `<div id="${id}" class="${baseClass} windowchrome-element" data-type="windowchrome" data-button-style="${config.buttonStyle}" data-drag-region="drag" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} windowchrome-element" data-type="windowchrome" data-button-style="${config.buttonStyle}" data-drag-region="drag" style="${positionStyle} overflow: hidden;">
   ${buttonsHTML}
   ${titleHTML}
+  ${contentHTML}
 </div>`
+}
+
+// ============================================================================
+// Specialized Audio Element HTML Generation Functions
+// ============================================================================
+
+/**
+ * Generate Piano Keyboard HTML
+ */
+function generatePianoKeyboardHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: PianoKeyboardElementConfig
+): string {
+  const isBlackKey = (note: number): boolean => [1, 3, 6, 8, 10].includes(note % 12)
+
+  const whiteKeys: number[] = []
+  const blackKeys: number[] = []
+  for (let note = config.startNote; note <= config.endNote; note++) {
+    if (isBlackKey(note)) blackKeys.push(note)
+    else whiteKeys.push(note)
+  }
+
+  const whiteKeyWidth = config.width / whiteKeys.length
+  const blackKeyWidth = whiteKeyWidth * config.blackKeyWidthRatio
+  const blackKeyHeight = config.height * 0.6
+
+  let keysHTML = ''
+  whiteKeys.forEach((note, index) => {
+    const x = index * whiteKeyWidth
+    keysHTML += `<div class="piano-key white" data-note="${note}" style="left:${x}px;width:${whiteKeyWidth - 1}px;height:100%;background:${config.whiteKeyColor};border:1px solid #333;"></div>`
+  })
+
+  blackKeys.forEach(note => {
+    let whiteKeyIndex = 0
+    for (let n = config.startNote; n < note; n++) {
+      if (!isBlackKey(n)) whiteKeyIndex++
+    }
+    const x = whiteKeyIndex * whiteKeyWidth - blackKeyWidth / 2
+    keysHTML += `<div class="piano-key black" data-note="${note}" style="left:${x}px;width:${blackKeyWidth}px;height:${blackKeyHeight}px;background:${config.blackKeyColor};z-index:1;"></div>`
+  })
+
+  return `<div id="${id}" class="${baseClass} pianokeyboard-element" data-type="pianokeyboard" style="${positionStyle}">${keysHTML}</div>`
+}
+
+/**
+ * Generate Drum Pad HTML
+ */
+function generateDrumPadHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: DrumPadElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} drumpad-element" data-type="drumpad" data-midi-note="${config.midiNote}" style="${positionStyle}; background-color:${config.backgroundColor}; border:${config.borderWidth}px solid ${config.borderColor}; border-radius:${config.borderRadius}px; display:flex; align-items:center; justify-content:center;">
+  <span style="color:${config.labelColor}; font-size:${config.fontSize}px; font-family:${config.fontFamily}; font-weight:${config.fontWeight};">${escapeHTML(config.label)}</span>
+</div>`
+}
+
+/**
+ * Generate Pad Grid HTML
+ */
+function generatePadGridHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: PadGridElementConfig
+): string {
+  const padWidth = (config.width - config.gridGap * (config.columns + 1)) / config.columns
+  const padHeight = (config.height - config.gridGap * (config.rows + 1)) / config.rows
+
+  let padsHTML = ''
+  for (let row = 0; row < config.rows; row++) {
+    for (let col = 0; col < config.columns; col++) {
+      const index = row * config.columns + col
+      const label = config.padLabels[index] || `${index + 1}`
+      const x = config.gridGap + col * (padWidth + config.gridGap)
+      const y = config.gridGap + row * (padHeight + config.gridGap)
+      const note = config.startNote + index
+      padsHTML += `<div class="pad" data-index="${index}" data-note="${note}" style="position:absolute;left:${x}px;top:${y}px;width:${padWidth}px;height:${padHeight}px;background:${config.padColor};border-radius:${config.padBorderRadius}px;display:flex;align-items:center;justify-content:center;">
+        <span style="color:${config.labelColor};font-size:${config.fontSize}px;font-family:${config.fontFamily};font-weight:${config.fontWeight};">${escapeHTML(label)}</span>
+      </div>`
+    }
+  }
+
+  return `<div id="${id}" class="${baseClass} padgrid-element" data-type="padgrid" style="${positionStyle}; background:${config.borderColor}; border-radius:4px;">${padsHTML}</div>`
+}
+
+/**
+ * Generate Step Sequencer HTML with Canvas
+ */
+function generateStepSequencerHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: StepSequencerElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} stepsequencer-element" data-type="stepsequencer" style="${positionStyle}" data-step-on-color="${config.stepOnColor}" data-step-off-color="${config.stepOffColor}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}" style="cursor: pointer;"></canvas>
+</div>
+<script>
+(function() {
+  const container = document.getElementById('${id}');
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const steps = ${JSON.stringify(config.steps)};
+  const stepCount = ${config.stepCount};
+  const rowCount = ${config.rowCount};
+  const beatsPerMeasure = ${config.beatsPerMeasure};
+  const showVelocity = ${config.showVelocity};
+  const velocityHeight = ${config.velocityHeight};
+  const mainHeight = showVelocity ? ${config.height} - velocityHeight : ${config.height};
+  const stepWidth = ${config.width} / stepCount;
+  const rowHeight = mainHeight / rowCount;
+
+  function draw() {
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, ${config.width}, ${config.height});
+
+    // Draw steps
+    for (let row = 0; row < rowCount; row++) {
+      for (let step = 0; step < stepCount; step++) {
+        const idx = row * stepCount + step;
+        const s = steps[idx] || {active: false, velocity: 0.75};
+        const isDownbeat = step % beatsPerMeasure === 0;
+        let color = s.active ? '${config.stepOnColor}' : (isDownbeat && ${config.highlightDownbeats} ? '${config.downbeatColor}' : '${config.stepOffColor}');
+        ctx.fillStyle = color;
+        ctx.globalAlpha = s.active ? 1 : 0.5;
+        ctx.fillRect(step * stepWidth + 2, row * rowHeight + 2, stepWidth - 4, rowHeight - 4);
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    // Draw velocity bars if enabled
+    if (showVelocity) {
+      for (let step = 0; step < stepCount; step++) {
+        const s = steps[step] || {active: false, velocity: 0.75};
+        if (s.active) {
+          const barHeight = s.velocity * (velocityHeight - 4);
+          ctx.fillStyle = '${config.stepOnColor}';
+          ctx.fillRect(step * stepWidth + 2, mainHeight + velocityHeight - barHeight - 2, stepWidth - 4, barHeight);
+        }
+      }
+    }
+  }
+
+  draw();
+
+  // Click to toggle steps
+  canvas.addEventListener('click', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const step = Math.floor(x / stepWidth);
+    const row = Math.floor(y / rowHeight);
+    if (step >= 0 && step < stepCount && row >= 0 && row < rowCount) {
+      const idx = row * stepCount + step;
+      if (steps[idx]) {
+        steps[idx].active = !steps[idx].active;
+      } else {
+        steps[idx] = {active: true, velocity: 0.75};
+      }
+      draw();
+    }
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate XY Pad HTML with Canvas
+ */
+function generateXYPadHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: XYPadElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} xypad-element" data-type="xypad" style="${positionStyle}" data-x-value="${config.xValue}" data-y-value="${config.yValue}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}" style="cursor: crosshair;"></canvas>
+</div>
+<script>
+(function() {
+  const container = document.getElementById('${id}');
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = ${config.width};
+  const height = ${config.height};
+  let xValue = ${config.xValue};
+  let yValue = ${config.yValue};
+  let isDragging = false;
+
+  function draw() {
+    // Background
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    // Border
+    ctx.strokeStyle = '${config.borderColor}';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, 0, width, height);
+
+    // Grid
+    ${config.showGrid ? `
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    for (let i = 1; i < ${config.gridDivisions}; i++) {
+      const pos = (i / ${config.gridDivisions});
+      ctx.beginPath();
+      ctx.moveTo(pos * width, 0);
+      ctx.lineTo(pos * width, height);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, pos * height);
+      ctx.lineTo(width, pos * height);
+      ctx.stroke();
+    }
+    ` : ''}
+
+    // Cursor position
+    const cursorX = xValue * width;
+    const cursorY = (1 - yValue) * height;
+
+    // Crosshair
+    ${config.showCrosshair ? `
+    ctx.strokeStyle = '${config.crosshairColor}';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cursorX, 0);
+    ctx.lineTo(cursorX, height);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, cursorY);
+    ctx.lineTo(width, cursorY);
+    ctx.stroke();
+    ` : ''}
+
+    // Cursor
+    ctx.fillStyle = '${config.cursorColor}';
+    ctx.beginPath();
+    ctx.arc(cursorX, cursorY, ${config.cursorSize / 2}, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  draw();
+
+  function updatePosition(e) {
+    const rect = canvas.getBoundingClientRect();
+    xValue = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    yValue = Math.max(0, Math.min(1, 1 - (e.clientY - rect.top) / rect.height));
+    container.dataset.xValue = xValue.toFixed(3);
+    container.dataset.yValue = yValue.toFixed(3);
+    draw();
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    updatePosition(e);
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      updatePosition(e);
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate Wavetable Display HTML with Canvas
+ */
+function generateWavetableDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: WavetableDisplayElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} wavetabledisplay-element" data-type="wavetabledisplay" style="${positionStyle}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = ${config.width};
+  const height = ${config.height};
+  const frameCount = ${config.frameCount};
+  const currentFrame = ${config.currentFrame};
+  const perspectiveAngle = ${config.perspectiveAngle};
+  const frameSpacing = ${config.frameSpacing};
+  const waveHeight = height * 0.4;
+  const baseY = height * 0.8;
+
+  ctx.fillStyle = '${config.backgroundColor}';
+  ctx.fillRect(0, 0, width, height);
+
+  for (let f = 0; f < frameCount; f++) {
+    const yOffset = -f * frameSpacing;
+    const xOffset = f * (perspectiveAngle / 90) * 20;
+    const opacity = 0.3 + (f / frameCount) * 0.7;
+    const isCurrent = f === currentFrame;
+
+    ctx.strokeStyle = isCurrent ? '${config.currentFrameColor}' : '${config.waveformColor}';
+    ctx.lineWidth = isCurrent ? 2 : 1;
+    ctx.globalAlpha = opacity;
+
+    ctx.beginPath();
+    for (let i = 0; i <= 64; i++) {
+      const t = i / 64;
+      const wave = Math.sin(t * Math.PI * 2) * (1 - f * 0.02);
+      const x = xOffset + (t * (width - xOffset * 2));
+      const y = baseY + yOffset + wave * waveHeight * -1;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+})();
+</script>`
+}
+
+/**
+ * Generate Harmonic Editor HTML with Canvas
+ */
+function generateHarmonicEditorHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: HarmonicEditorElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} harmoniceditor-element" data-type="harmoniceditor" style="${positionStyle}" data-harmonic-values="${config.harmonicValues.join(',')}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}" style="cursor: ns-resize;"></canvas>
+</div>
+<script>
+(function() {
+  const container = document.getElementById('${id}');
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = ${config.width};
+  const height = ${config.height};
+  const harmonicCount = ${config.harmonicCount};
+  const harmonicValues = ${JSON.stringify(config.harmonicValues)};
+  const labelHeight = ${config.showHarmonicNumbers ? 16 : 0};
+  const chartHeight = height - labelHeight;
+  const barGap = ${config.barGap};
+  const barWidth = (width - barGap * (harmonicCount + 1)) / harmonicCount;
+  let draggingBar = null;
+  let selectedHarmonic = -1;
+
+  function draw() {
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    // Grid
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.setLineDash([4, 4]);
+    for (let i = 1; i <= 4; i++) {
+      const y = (i / 4) * chartHeight;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(width, 0);
+    ctx.stroke();
+
+    // Bars
+    for (let i = 0; i < harmonicCount; i++) {
+      const value = harmonicValues[i] || 0;
+      const barHeight = value * chartHeight;
+      const x = barGap + i * (barWidth + barGap);
+      const y = chartHeight - barHeight;
+      const isSelected = i === selectedHarmonic;
+      const isFundamental = i === 0 && ${config.showFundamental};
+      ctx.fillStyle = isSelected ? '${config.selectedBarColor}' : '${config.barColor}';
+      ctx.globalAlpha = isFundamental ? 1 : 0.8;
+      ctx.fillRect(x, y, barWidth, barHeight);
+      ctx.globalAlpha = 1;
+
+      ${config.showHarmonicNumbers ? `
+      ctx.fillStyle = isFundamental ? '${config.selectedBarColor}' : '${config.labelColor}';
+      ctx.font = (isFundamental ? '600' : '${config.fontWeight}') + ' ${config.fontSize}px ${config.fontFamily}';
+      ctx.textAlign = 'center';
+      ctx.fillText(String(i + 1), x + barWidth / 2, chartHeight + labelHeight - 4);
+      ` : ''}
+    }
+  }
+
+  draw();
+
+  function getBarIndex(x) {
+    for (let i = 0; i < harmonicCount; i++) {
+      const barX = barGap + i * (barWidth + barGap);
+      if (x >= barX && x <= barX + barWidth) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  function updateValue(y, barIndex) {
+    const normalizedY = 1 - Math.max(0, Math.min(1, y / chartHeight));
+    harmonicValues[barIndex] = normalizedY;
+    selectedHarmonic = barIndex;
+    container.dataset.harmonicValues = harmonicValues.join(',');
+    draw();
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const barIndex = getBarIndex(x);
+    if (barIndex !== null) {
+      draggingBar = barIndex;
+      updateValue(y, barIndex);
+    }
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (draggingBar !== null) {
+      const rect = canvas.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      updateValue(y, draggingBar);
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    draggingBar = null;
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate Loop Points HTML with Canvas
+ */
+function generateLoopPointsHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: LoopPointsElementConfig
+): string {
+  // Generate consistent waveform data based on element id
+  const seed = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+
+  return `<div id="${id}" class="${baseClass} looppoints-element" data-type="looppoints" style="${positionStyle}" data-loop-start="${config.loopStart}" data-loop-end="${config.loopEnd}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}"></canvas>
+</div>
+<script>
+(function() {
+  const container = document.getElementById('${id}');
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = ${config.width};
+  const height = ${config.height};
+  const rulerHeight = ${config.showTimeRuler ? 20 : 0};
+  const waveformHeight = height - rulerHeight;
+  const centerY = rulerHeight + waveformHeight / 2;
+  let loopStart = ${config.loopStart};
+  let loopEnd = ${config.loopEnd};
+  const crossfadeLength = ${config.crossfadeLength};
+  const markerHandleSize = ${config.markerHandleSize};
+  let draggingMarker = null;
+
+  // Generate consistent waveform
+  const waveformData = [];
+  let rand = ${seed};
+  function pseudoRandom() {
+    rand = (rand * 1103515245 + 12345) & 0x7fffffff;
+    return rand / 0x7fffffff;
+  }
+  for (let i = 0; i < 200; i++) {
+    const t = i / 200;
+    const env = Math.sin(t * Math.PI) * 0.8 + 0.2;
+    const wave = (Math.sin(t * 50) * pseudoRandom() * 0.5 + Math.sin(t * 120) * 0.3) * env;
+    waveformData.push(wave);
+  }
+
+  function draw() {
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    // Time ruler
+    ${config.showTimeRuler ? `
+    ctx.strokeStyle = '${config.rulerColor}';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, rulerHeight);
+    ctx.lineTo(width, rulerHeight);
+    ctx.stroke();
+    for (let i = 0; i <= 10; i++) {
+      const x = (i / 10) * width;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, i % 5 === 0 ? 8 : 4);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '${config.labelColor}';
+    ctx.font = '${config.fontSize}px ${config.fontFamily}';
+    ctx.textAlign = 'left';
+    ctx.fillText('0.0s', 4, rulerHeight - 6);
+    ctx.textAlign = 'right';
+    ctx.fillText('1.0s', width - 4, rulerHeight - 6);
+    ` : ''}
+
+    // Loop region
+    ctx.fillStyle = '${config.loopRegionColor}';
+    ctx.fillRect(loopStart * width, rulerHeight, (loopEnd - loopStart) * width, waveformHeight);
+
+    // Crossfade regions
+    ${config.showCrossfade ? `
+    ctx.fillStyle = '${config.crossfadeColor}';
+    ctx.fillRect(loopStart * width, rulerHeight, crossfadeLength * width, waveformHeight);
+    ctx.fillRect((loopEnd - crossfadeLength) * width, rulerHeight, crossfadeLength * width, waveformHeight);
+    ` : ''}
+
+    // Waveform
+    ${config.showWaveform ? `
+    ctx.strokeStyle = '${config.waveformColor}';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let i = 0; i < waveformData.length; i++) {
+      const x = (i / waveformData.length) * width;
+      const y = centerY + waveformData[i] * (waveformHeight / 2 - 4);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ` : ''}
+
+    // Start marker
+    ctx.strokeStyle = '${config.startMarkerColor}';
+    ctx.lineWidth = ${config.markerWidth};
+    ctx.beginPath();
+    ctx.moveTo(loopStart * width, rulerHeight);
+    ctx.lineTo(loopStart * width, height);
+    ctx.stroke();
+    ctx.fillStyle = '${config.startMarkerColor}';
+    ctx.fillRect(loopStart * width - markerHandleSize / 2, rulerHeight, markerHandleSize, markerHandleSize);
+
+    // End marker
+    ctx.strokeStyle = '${config.endMarkerColor}';
+    ctx.beginPath();
+    ctx.moveTo(loopEnd * width, rulerHeight);
+    ctx.lineTo(loopEnd * width, height);
+    ctx.stroke();
+    ctx.fillStyle = '${config.endMarkerColor}';
+    ctx.fillRect(loopEnd * width - markerHandleSize / 2, rulerHeight, markerHandleSize, markerHandleSize);
+  }
+
+  draw();
+
+  function getMarkerAt(x, y) {
+    const startX = loopStart * width;
+    const endX = loopEnd * width;
+    // Check if within marker handle
+    if (y >= rulerHeight && y <= rulerHeight + markerHandleSize + 20) {
+      if (Math.abs(x - startX) <= markerHandleSize) return 'start';
+      if (Math.abs(x - endX) <= markerHandleSize) return 'end';
+    }
+    return null;
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const marker = getMarkerAt(x, y);
+    if (marker) {
+      draggingMarker = marker;
+      canvas.style.cursor = 'ew-resize';
+    }
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (draggingMarker) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const normalizedX = Math.max(0, Math.min(1, x / width));
+
+      if (draggingMarker === 'start') {
+        loopStart = Math.min(normalizedX, loopEnd - 0.01);
+      } else {
+        loopEnd = Math.max(normalizedX, loopStart + 0.01);
+      }
+
+      container.dataset.loopStart = loopStart.toFixed(3);
+      container.dataset.loopEnd = loopEnd.toFixed(3);
+      draw();
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    draggingMarker = null;
+    canvas.style.cursor = 'default';
+  });
+
+  // Show cursor hint on hover
+  canvas.addEventListener('mousemove', function(e) {
+    if (!draggingMarker) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const marker = getMarkerAt(x, y);
+      canvas.style.cursor = marker ? 'ew-resize' : 'default';
+    }
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate Envelope Editor HTML with Canvas
+ */
+function generateEnvelopeEditorHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: EnvelopeEditorElementConfig
+): string {
+  return `<div id="${id}" class="${baseClass} envelopeeditor-element" data-type="envelopeeditor" style="${positionStyle}" data-attack="${config.attack}" data-decay="${config.decay}" data-sustain="${config.sustain}" data-release="${config.release}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}"></canvas>
+</div>
+<script>
+(function() {
+  const container = document.getElementById('${id}');
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = ${config.width};
+  const height = ${config.height};
+  const padding = ${config.showLabels ? 24 : 8};
+  const chartWidth = width - padding * 2;
+  const chartHeight = height - padding * 2;
+  const pointSize = ${config.pointSize};
+  let attack = ${config.attack};
+  let decay = ${config.decay};
+  let sustain = ${config.sustain};
+  let release = ${config.release};
+  let draggingPoint = null;
+  const sustainHold = 0.3;
+
+  function applyCurve(t, curveType) {
+    switch(curveType) {
+      case 'exponential': return t * t;
+      case 'logarithmic': return Math.sqrt(t);
+      default: return t;
+    }
+  }
+
+  function timeToX(time) {
+    const totalTime = attack + decay + sustainHold + release;
+    return padding + (time / totalTime) * chartWidth;
+  }
+
+  function levelToY(level) {
+    return padding + (1 - level) * chartHeight;
+  }
+
+  function draw() {
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showGrid ? `
+    ctx.strokeStyle = '${config.gridColor}';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      ctx.setLineDash(i === 0 || i === 4 ? [] : [4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(padding, padding + (i / 4) * chartHeight);
+      ctx.lineTo(width - padding, padding + (i / 4) * chartHeight);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ` : ''}
+
+    const totalTime = attack + decay + sustainHold + release;
+    const attackEnd = attack;
+    const decayEnd = attack + decay;
+    const sustainEnd = attack + decay + sustainHold;
+
+    // Fill path
+    ctx.fillStyle = '${config.fillColor}';
+    ctx.beginPath();
+    ctx.moveTo(timeToX(0), levelToY(0));
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      ctx.lineTo(timeToX(t * attack), levelToY(applyCurve(t, '${config.attackCurve}')));
+    }
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      ctx.lineTo(timeToX(attackEnd + t * decay), levelToY(1 - applyCurve(t, '${config.decayCurve}') * (1 - sustain)));
+    }
+    ctx.lineTo(timeToX(sustainEnd), levelToY(sustain));
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      ctx.lineTo(timeToX(sustainEnd + t * release), levelToY(sustain * (1 - applyCurve(t, '${config.releaseCurve}'))));
+    }
+    ctx.lineTo(timeToX(totalTime), levelToY(0));
+    ctx.lineTo(timeToX(0), levelToY(0));
+    ctx.fill();
+
+    // Line
+    ctx.strokeStyle = '${config.lineColor}';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(timeToX(0), levelToY(0));
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      ctx.lineTo(timeToX(t * attack), levelToY(applyCurve(t, '${config.attackCurve}')));
+    }
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      ctx.lineTo(timeToX(attackEnd + t * decay), levelToY(1 - applyCurve(t, '${config.decayCurve}') * (1 - sustain)));
+    }
+    ctx.lineTo(timeToX(sustainEnd), levelToY(sustain));
+    for (let i = 1; i <= 20; i++) {
+      const t = i / 20;
+      ctx.lineTo(timeToX(sustainEnd + t * release), levelToY(sustain * (1 - applyCurve(t, '${config.releaseCurve}'))));
+    }
+    ctx.stroke();
+
+    // Control points
+    const points = [
+      { id: 'attack', x: timeToX(attackEnd), y: levelToY(1), label: 'A' },
+      { id: 'decay', x: timeToX(decayEnd), y: levelToY(sustain), label: 'D' },
+      { id: 'sustain', x: timeToX(sustainEnd), y: levelToY(sustain), label: 'S' },
+      { id: 'release', x: timeToX(totalTime), y: levelToY(0), label: 'R' }
+    ];
+    points.forEach(p => {
+      ctx.fillStyle = draggingPoint === p.id ? '${config.activePointColor}' : '${config.pointColor}';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, pointSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '${config.lineColor}';
+      ctx.stroke();
+      ${config.showLabels ? `
+      ctx.fillStyle = '${config.labelColor}';
+      ctx.font = '${config.fontSize}px ${config.fontFamily}';
+      ctx.textAlign = 'center';
+      ctx.fillText(p.label, p.x, height - 4);
+      ` : ''}
+    });
+
+    ${config.showValues ? `
+    ctx.fillStyle = '${config.labelColor}';
+    ctx.font = '${config.fontSize}px ${config.fontFamily}';
+    ctx.textAlign = 'left';
+    ctx.fillText('A:' + attack.toFixed(2) + ' D:' + decay.toFixed(2) + ' S:' + sustain.toFixed(2) + ' R:' + release.toFixed(2), padding, padding - 4);
+    ` : ''}
+  }
+
+  draw();
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const totalTime = attack + decay + sustainHold + release;
+    const pts = [
+      { id: 'attack', x: timeToX(attack), y: levelToY(1) },
+      { id: 'decay', x: timeToX(attack + decay), y: levelToY(sustain) },
+      { id: 'sustain', x: timeToX(attack + decay + sustainHold), y: levelToY(sustain) },
+      { id: 'release', x: timeToX(totalTime), y: levelToY(0) }
+    ];
+    for (const p of pts) {
+      if (Math.hypot(x - p.x, y - p.y) < pointSize + 4) {
+        draggingPoint = p.id;
+        canvas.style.cursor = 'pointer';
+        break;
+      }
+    }
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (draggingPoint) {
+      const rect = canvas.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const relY = 1 - Math.max(0, Math.min(1, (y - padding) / chartHeight));
+      if (draggingPoint === 'sustain') {
+        sustain = relY;
+        container.dataset.sustain = sustain.toFixed(3);
+      }
+      draw();
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    draggingPoint = null;
+    canvas.style.cursor = 'default';
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate Sample Display HTML with Canvas
+ */
+function generateSampleDisplayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: SampleDisplayElementConfig
+): string {
+  const seed = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+
+  return `<div id="${id}" class="${baseClass} sampledisplay-element" data-type="sampledisplay" style="${positionStyle}">
+  <canvas id="${id}-canvas" width="${config.width}" height="${config.height}"></canvas>
+</div>
+<script>
+(function() {
+  const canvas = document.getElementById('${id}-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = ${config.width};
+  const height = ${config.height};
+  const rulerHeight = ${config.showTimeRuler ? 20 : 0};
+  const waveformHeight = height - rulerHeight;
+  const centerY = waveformHeight / 2;
+  let viewStart = ${config.viewStart};
+  let viewEnd = ${config.viewEnd};
+
+  const waveformData = [];
+  let rand = ${seed};
+  function pseudoRandom() {
+    rand = (rand * 1103515245 + 12345) & 0x7fffffff;
+    return rand / 0x7fffffff;
+  }
+  for (let i = 0; i < 1000; i++) {
+    const t = i / 1000;
+    const env = Math.sin(t * Math.PI);
+    const freq = 4 + Math.sin(t * 6) * 2;
+    const wave = Math.sin(t * freq * Math.PI * 20) * env;
+    waveformData.push(wave + (pseudoRandom() - 0.5) * 0.1);
+  }
+
+  function draw() {
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, 0, width, height);
+
+    ${config.showSelection ? `
+    const selX = ((${config.selectionStart} - viewStart) / (viewEnd - viewStart)) * width;
+    const selW = ((${config.selectionEnd} - ${config.selectionStart}) / (viewEnd - viewStart)) * width;
+    ctx.fillStyle = '${config.selectionColor}';
+    ctx.fillRect(Math.max(0, selX), 0, Math.min(selW, width - selX), waveformHeight);
+    ` : ''}
+
+    ${config.showZeroLine ? `
+    ctx.strokeStyle = '${config.zeroLineColor}';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(width, centerY);
+    ctx.stroke();
+    ` : ''}
+
+    const visStart = Math.floor(viewStart * waveformData.length);
+    const visEnd = Math.ceil(viewEnd * waveformData.length);
+    const visSamples = visEnd - visStart;
+
+    ctx.strokeStyle = '${config.waveformColor}';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = 0; x < width; x++) {
+      const idx = visStart + Math.floor((x / width) * visSamples);
+      const y = centerY - (waveformData[idx] || 0) * (waveformHeight / 2 - 4);
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    for (let x = 0; x < width; x++) {
+      const idx = visStart + Math.floor((x / width) * visSamples);
+      const y = centerY + (waveformData[idx] || 0) * (waveformHeight / 2 - 4);
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    ${config.showTimeRuler ? `
+    ctx.fillStyle = '${config.backgroundColor}';
+    ctx.fillRect(0, waveformHeight, width, rulerHeight);
+    ctx.strokeStyle = '${config.rulerColor}';
+    ctx.beginPath();
+    ctx.moveTo(0, waveformHeight);
+    ctx.lineTo(width, waveformHeight);
+    ctx.stroke();
+    ctx.fillStyle = '${config.labelColor}';
+    ctx.font = '${config.fontSize}px ${config.fontFamily}';
+    [0, 0.5, 1].forEach(t => {
+      const x = t * width;
+      ctx.beginPath();
+      ctx.moveTo(x, waveformHeight);
+      ctx.lineTo(x, waveformHeight + 6);
+      ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.fillText(((viewStart + t * (viewEnd - viewStart)) * 100).toFixed(0) + '%', x, height - 4);
+    });
+    ` : ''}
+  }
+
+  draw();
+  canvas.style.cursor = 'grab';
+
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragViewStart = viewStart;
+
+  canvas.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragViewStart = viewStart;
+    canvas.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+      const dx = e.clientX - dragStartX;
+      const range = viewEnd - viewStart;
+      const newStart = Math.max(0, Math.min(1 - range, dragViewStart - (dx / width) * range));
+      viewStart = newStart;
+      viewEnd = newStart + range;
+      draw();
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+
+  canvas.addEventListener('wheel', function(e) {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const normX = (e.clientX - rect.left) / width;
+    const zoomPoint = viewStart + normX * (viewEnd - viewStart);
+    const factor = e.deltaY > 0 ? 1.1 : 0.9;
+    const newRange = Math.max(0.01, Math.min(1, (viewEnd - viewStart) * factor));
+    viewStart = Math.max(0, zoomPoint - normX * newRange);
+    viewEnd = Math.min(1, viewStart + newRange);
+    draw();
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate Patch Bay HTML with SVG
+ */
+function generatePatchBayHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: PatchBayElementConfig
+): string {
+  const pointsData = JSON.stringify(config.points)
+  const cablesData = JSON.stringify(config.cables)
+
+  return `<div id="${id}" class="${baseClass} patchbay-element" data-type="patchbay" style="${positionStyle}">
+  <svg id="${id}-svg" width="${config.width}" height="${config.height}" style="background: ${config.backgroundColor}"></svg>
+</div>
+<script>
+(function() {
+  const svg = document.getElementById('${id}-svg');
+  const width = ${config.width};
+  const height = ${config.height};
+  const pointSize = ${config.pointSize};
+  const cableWidth = ${config.cableWidth};
+  let points = ${pointsData};
+  let cables = ${cablesData};
+  const cableColors = ${JSON.stringify(config.cableColors)};
+  let draggingFrom = null;
+  let dragX = 0, dragY = 0;
+
+  function getPos(p) { return { x: p.x * width, y: p.y * height }; }
+  function cablePath(f, t) {
+    const dx = t.x - f.x;
+    const o = Math.abs(dx) * 0.5;
+    return 'M ' + f.x + ' ' + f.y + ' C ' + (f.x + o) + ' ' + f.y + ', ' + (t.x - o) + ' ' + t.y + ', ' + t.x + ' ' + t.y;
+  }
+
+  function draw() {
+    svg.innerHTML = '';
+
+    ${config.showGrid ? `
+    for (let x = 40; x < width; x += 40) {
+      const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', x); l.setAttribute('y1', 0); l.setAttribute('x2', x); l.setAttribute('y2', height);
+      l.setAttribute('stroke', '${config.gridColor}'); l.setAttribute('stroke-dasharray', '4 4');
+      svg.appendChild(l);
+    }
+    for (let y = 40; y < height; y += 40) {
+      const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', 0); l.setAttribute('y1', y); l.setAttribute('x2', width); l.setAttribute('y2', y);
+      l.setAttribute('stroke', '${config.gridColor}'); l.setAttribute('stroke-dasharray', '4 4');
+      svg.appendChild(l);
+    }
+    ` : ''}
+
+    cables.forEach(c => {
+      const fp = points.find(p => p.id === c.fromPointId);
+      const tp = points.find(p => p.id === c.toPointId);
+      if (!fp || !tp) return;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', cablePath(getPos(fp), getPos(tp)));
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', c.color);
+      path.setAttribute('stroke-width', cableWidth);
+      path.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(path);
+    });
+
+    if (draggingFrom) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', cablePath(getPos(draggingFrom), { x: dragX, y: dragY }));
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', cableColors[cables.length % cableColors.length]);
+      path.setAttribute('stroke-width', cableWidth);
+      path.setAttribute('stroke-dasharray', '8 4');
+      path.setAttribute('opacity', '0.6');
+      svg.appendChild(path);
+    }
+
+    points.forEach(pt => {
+      const pos = getPos(pt);
+      const isOut = pt.type === 'output';
+      const color = isOut ? '${config.outputColor}' : '${config.inputColor}';
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.style.cursor = 'pointer';
+      g.dataset.pointId = pt.id;
+
+      const c1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c1.setAttribute('cx', pos.x); c1.setAttribute('cy', pos.y); c1.setAttribute('r', pointSize / 2);
+      c1.setAttribute('fill', '${config.backgroundColor}'); c1.setAttribute('stroke', color); c1.setAttribute('stroke-width', 2);
+      g.appendChild(c1);
+
+      const c2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c2.setAttribute('cx', pos.x); c2.setAttribute('cy', pos.y); c2.setAttribute('r', pointSize / 4);
+      c2.setAttribute('fill', color);
+      g.appendChild(c2);
+
+      ${config.showLabels ? `
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', pos.x + (isOut ? -pointSize - 4 : pointSize + 4));
+      txt.setAttribute('y', pos.y + 4);
+      txt.setAttribute('text-anchor', isOut ? 'end' : 'start');
+      txt.setAttribute('fill', '${config.labelColor}');
+      txt.setAttribute('font-size', '${config.fontSize}');
+      txt.textContent = pt.label;
+      g.appendChild(txt);
+      ` : ''}
+
+      svg.appendChild(g);
+    });
+  }
+
+  draw();
+
+  svg.addEventListener('mousedown', function(e) {
+    const g = e.target.closest('g[data-point-id]');
+    if (g) {
+      const pt = points.find(p => p.id === g.dataset.pointId);
+      if (pt) {
+        draggingFrom = pt;
+        const rect = svg.getBoundingClientRect();
+        dragX = e.clientX - rect.left;
+        dragY = e.clientY - rect.top;
+      }
+    }
+  });
+
+  svg.addEventListener('mousemove', function(e) {
+    if (draggingFrom) {
+      const rect = svg.getBoundingClientRect();
+      dragX = e.clientX - rect.left;
+      dragY = e.clientY - rect.top;
+      draw();
+    }
+  });
+
+  svg.addEventListener('mouseup', function(e) {
+    if (draggingFrom) {
+      const g = e.target.closest('g[data-point-id]');
+      if (g) {
+        const toPoint = points.find(p => p.id === g.dataset.pointId);
+        if (toPoint && toPoint.id !== draggingFrom.id) {
+          const from = draggingFrom.type === 'output' ? draggingFrom : toPoint;
+          const to = draggingFrom.type === 'output' ? toPoint : draggingFrom;
+          if (from.type === 'output' && to.type === 'input') {
+            if (!cables.some(c => c.fromPointId === from.id && c.toPointId === to.id)) {
+              cables.push({ id: 'c' + Date.now(), fromPointId: from.id, toPointId: to.id, color: cableColors[cables.length % cableColors.length] });
+            }
+          }
+        }
+      }
+      draggingFrom = null;
+      draw();
+    }
+  });
+})();
+</script>`
+}
+
+/**
+ * Generate Signal Flow HTML with SVG
+ */
+function generateSignalFlowHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: SignalFlowElementConfig
+): string {
+  const blocksData = JSON.stringify(config.blocks)
+  const connsData = JSON.stringify(config.connections)
+
+  return `<div id="${id}" class="${baseClass} signalflow-element" data-type="signalflow" style="${positionStyle}">
+  <svg id="${id}-svg" width="${config.width}" height="${config.height}" style="background: ${config.backgroundColor}"></svg>
+</div>
+<script>
+(function() {
+  const svg = document.getElementById('${id}-svg');
+  const width = ${config.width};
+  const height = ${config.height};
+  const cellSize = ${config.gridCellSize};
+  const blocks = ${blocksData};
+  const connections = ${connsData};
+  const colors = { input: '${config.inputBlockColor}', output: '${config.outputBlockColor}', process: '${config.processBlockColor}', mixer: '${config.mixerBlockColor}', splitter: '${config.splitterBlockColor}' };
+
+  function getRect(b) { return { x: b.x * cellSize, y: b.y * cellSize, w: b.width * cellSize, h: b.height * cellSize }; }
+  function getPort(b, port) {
+    const r = getRect(b);
+    if (port === 'left') return { x: r.x, y: r.y + r.h / 2 };
+    if (port === 'right') return { x: r.x + r.w, y: r.y + r.h / 2 };
+    if (port === 'top') return { x: r.x + r.w / 2, y: r.y };
+    return { x: r.x + r.w / 2, y: r.y + r.h };
+  }
+
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', '${id}-arrow');
+  marker.setAttribute('markerWidth', '10'); marker.setAttribute('markerHeight', '10');
+  marker.setAttribute('refX', '9'); marker.setAttribute('refY', '3'); marker.setAttribute('orient', 'auto');
+  const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  arrow.setAttribute('d', 'M0,0 L0,6 L9,3 z');
+  arrow.setAttribute('fill', '${config.connectionColor}');
+  marker.appendChild(arrow);
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+
+  ${config.showGrid ? `
+  for (let x = 0; x <= width; x += cellSize) {
+    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', x); l.setAttribute('y1', 0); l.setAttribute('x2', x); l.setAttribute('y2', height);
+    l.setAttribute('stroke', '${config.gridColor}'); l.setAttribute('opacity', '0.3');
+    svg.appendChild(l);
+  }
+  for (let y = 0; y <= height; y += cellSize) {
+    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    l.setAttribute('x1', 0); l.setAttribute('y1', y); l.setAttribute('x2', width); l.setAttribute('y2', y);
+    l.setAttribute('stroke', '${config.gridColor}'); l.setAttribute('opacity', '0.3');
+    svg.appendChild(l);
+  }
+  ` : ''}
+
+  connections.forEach(conn => {
+    const fb = blocks.find(b => b.id === conn.fromBlockId);
+    const tb = blocks.find(b => b.id === conn.toBlockId);
+    if (!fb || !tb) return;
+    const f = getPort(fb, conn.fromPort);
+    const t = getPort(tb, conn.toPort);
+    const dx = t.x - f.x, dy = t.y - f.y;
+    const d = Math.abs(dx) > Math.abs(dy)
+      ? 'M ' + f.x + ' ' + f.y + ' C ' + (f.x + dx/2) + ' ' + f.y + ', ' + (f.x + dx/2) + ' ' + t.y + ', ' + t.x + ' ' + t.y
+      : 'M ' + f.x + ' ' + f.y + ' C ' + f.x + ' ' + (f.y + dy/2) + ', ' + t.x + ' ' + (f.y + dy/2) + ', ' + t.x + ' ' + t.y;
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', '${config.connectionColor}');
+    path.setAttribute('stroke-width', ${config.connectionWidth});
+    path.setAttribute('marker-end', 'url(#${id}-arrow)');
+    svg.appendChild(path);
+  });
+
+  blocks.forEach(b => {
+    const r = getRect(b);
+    const color = b.color || colors[b.type] || colors.process;
+
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', r.x); rect.setAttribute('y', r.y);
+    rect.setAttribute('width', r.w); rect.setAttribute('height', r.h);
+    rect.setAttribute('fill', '${config.backgroundColor}');
+    rect.setAttribute('stroke', color);
+    rect.setAttribute('stroke-width', ${config.blockBorderWidth});
+    svg.appendChild(rect);
+
+    const ind = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    ind.setAttribute('x', r.x); ind.setAttribute('y', r.y);
+    ind.setAttribute('width', 4); ind.setAttribute('height', r.h);
+    ind.setAttribute('fill', color);
+    svg.appendChild(ind);
+
+    ${config.showLabels ? `
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', r.x + r.w / 2);
+    txt.setAttribute('y', r.y + r.h / 2 + ${config.fontSize} / 3);
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('fill', '${config.labelColor}');
+    txt.setAttribute('font-size', '${config.fontSize}');
+    txt.setAttribute('font-family', '${config.fontFamily}');
+    txt.textContent = b.label;
+    svg.appendChild(txt);
+    ` : ''}
+
+    ['left', 'right'].forEach(port => {
+      const pos = getPort(b, port);
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', pos.x); c.setAttribute('cy', pos.y); c.setAttribute('r', 4);
+      const used = connections.some(cn => (cn.fromBlockId === b.id && cn.fromPort === port) || (cn.toBlockId === b.id && cn.toPort === port));
+      c.setAttribute('fill', used ? color : '${config.gridColor}');
+      svg.appendChild(c);
+    });
+  });
+})();
+</script>`
 }

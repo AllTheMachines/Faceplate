@@ -6,7 +6,7 @@
 import type { ElementConfig } from '../../types/elements';
 import { generateHTML } from './htmlGenerator';
 import { generateCSS } from './cssGenerator';
-import { generateBindingsJS, generateComponentsJS, generateMockJUCE, generateResponsiveScaleJS } from './jsGenerator';
+import { generateBindingsJS, generateComponentsJS, generateMockJUCE, generateResponsiveScaleJS, generateCustomScrollbarJS } from './jsGenerator';
 
 export interface PreviewOptions {
   elements: ElementConfig[];
@@ -24,6 +24,12 @@ export interface PreviewOptions {
 export async function previewHTMLExport(options: PreviewOptions): Promise<{ success: boolean; error?: string }> {
   try {
     const { elements, canvasWidth, canvasHeight, backgroundColor, enableResponsiveScaling = true } = options;
+
+    // Debug: Log elements being exported
+    console.log('[Preview] Exporting elements:', elements.length);
+    elements.forEach((el, i) => {
+      console.log(`  [${i}] ${el.type}: "${el.name}" at (${el.x}, ${el.y})`);
+    });
 
     // Generate HTML structure
     const html = generateHTML(elements, {
@@ -47,6 +53,7 @@ export async function previewHTMLExport(options: PreviewOptions): Promise<{ succ
     const responsiveJS = enableResponsiveScaling
       ? generateResponsiveScaleJS(canvasWidth, canvasHeight)
       : '';
+    const scrollbarJS = generateCustomScrollbarJS();
 
     // Build standalone HTML with all assets inline
     const standaloneHTML = buildStandaloneHTML({
@@ -56,6 +63,7 @@ export async function previewHTMLExport(options: PreviewOptions): Promise<{ succ
       componentsJS,
       mockJUCE,
       responsiveJS,
+      scrollbarJS,
     });
 
     // Create blob and open in new tab
@@ -95,8 +103,9 @@ function buildStandaloneHTML(parts: {
   componentsJS: string;
   mockJUCE: string;
   responsiveJS: string;
+  scrollbarJS: string;
 }): string {
-  const { html, css, bindingsJS, componentsJS, mockJUCE, responsiveJS } = parts;
+  const { html, css, bindingsJS, componentsJS, mockJUCE, responsiveJS, scrollbarJS } = parts;
 
   // Replace external CSS/JS references with inline content
   // Original HTML has: <link rel="stylesheet" href="style.css">
@@ -117,9 +126,12 @@ function buildStandaloneHTML(parts: {
     `<script>\n${mockJUCE}\n</script>\n<script>\n${componentsJS}\n</script>`
   );
 
+  // Add responsive JS and custom scrollbar JS
+  const additionalScripts = [responsiveJS, scrollbarJS].filter(Boolean).map(js => `<script>\n${js}\n</script>`).join('\n');
+
   standaloneHTML = standaloneHTML.replace(
     '<script src="bindings.js"></script>',
-    `<script>\n${bindingsJS}\n</script>${responsiveJS ? `\n<script>\n${responsiveJS}\n</script>` : ''}`
+    `<script>\n${bindingsJS}\n</script>${additionalScripts ? `\n${additionalScripts}` : ''}`
   );
 
   return standaloneHTML;

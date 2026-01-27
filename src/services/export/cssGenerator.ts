@@ -3,7 +3,8 @@
  * Generates style.css with element-specific styling
  */
 
-import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig } from '../../types/elements'
+import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, PanelElementConfig, FrameElementConfig, GroupBoxElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
+import { ScrollbarConfig, DEFAULT_SCROLLBAR_CONFIG } from '../../types/elements/containers'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -39,6 +40,29 @@ function generateFontFace(fontDef: FontDefinition): string {
   font-weight: normal;
   font-style: normal;
   font-display: swap;
+}`
+}
+
+/**
+ * Generate scrollbar CSS for a container element with custom scrollbar settings
+ * Now generates CSS to hide native scrollbars - JS creates the custom scrollbar
+ *
+ * @param selector - CSS selector for the container scroll content
+ * @param _config - Scrollbar configuration (unused, kept for API compatibility)
+ * @returns CSS rules to hide native scrollbars
+ */
+function generateScrollbarCSS(selector: string, _config: ScrollbarConfig): string {
+  // Hide native scrollbars - custom JS scrollbar handles display
+  return `
+${selector}::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+${selector} {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }`
 }
 
@@ -746,24 +770,32 @@ ${selector}:focus {
   outline-offset: -1px;
 }`
 
-    case 'panel':
+    case 'panel': {
+      const panelConfig = element as PanelElementConfig
+      const panelScrollbarCSS = panelConfig.allowScroll ? generateScrollbarCSS(selector, panelConfig) : ''
       return `${selector} {
   /* Panel */
   background-color: ${element.backgroundColor};
   border-radius: ${element.borderRadius}px;
   padding: ${element.padding}px;
 ${element.borderWidth > 0 ? `  border: ${element.borderWidth}px solid ${element.borderColor};` : ''}
-}`
+}${panelScrollbarCSS}`
+    }
 
-    case 'frame':
+    case 'frame': {
+      const frameConfig = element as FrameElementConfig
+      const frameScrollbarCSS = frameConfig.allowScroll ? generateScrollbarCSS(selector, frameConfig) : ''
       return `${selector} {
   /* Frame */
   border: ${element.borderWidth}px ${element.borderStyle} ${element.borderColor};
   border-radius: ${element.borderRadius}px;
   padding: ${element.padding}px;
-}`
+}${frameScrollbarCSS}`
+    }
 
-    case 'groupbox':
+    case 'groupbox': {
+      const gbConfig = element as GroupBoxElementConfig
+      const gbScrollbarCSS = gbConfig.allowScroll ? generateScrollbarCSS(selector, gbConfig) : ''
       return `${selector} {
   /* Group Box container */
   position: relative;
@@ -793,9 +825,15 @@ ${selector} .groupbox-header {
   font-family: Inter, system-ui, sans-serif;
   font-weight: 500;
   user-select: none;
-}`
+}${gbScrollbarCSS}`
+    }
 
-    case 'collapsible':
+    case 'collapsible': {
+      const collapsibleConfig = element as CollapsibleContainerElementConfig
+      // For collapsible, scrollbar styles go on the content area, not the container
+      const collapsibleScrollbarCSS = collapsibleConfig.scrollBehavior !== 'hidden'
+        ? generateScrollbarCSS(`${selector} .collapsible-content`, collapsibleConfig)
+        : ''
       return `${selector} {
   /* Collapsible Container */
   position: relative;
@@ -836,7 +874,8 @@ ${selector} .collapsible-content {
   max-height: ${element.collapsed ? '0px' : `${element.maxContentHeight}px`};
   opacity: ${element.collapsed ? 0 : 1};
   transition: max-height 0.3s ease, opacity 0.3s ease;
-}`
+}${collapsibleScrollbarCSS}`
+    }
 
     case 'dbdisplay':
       return `${selector} {
@@ -1040,21 +1079,26 @@ ${selector} .slider-track {
   position: absolute;
   ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%);'}
   border-radius: 3px;
+  z-index: 0;
 }
 ${selector} .slider-center-mark {
   position: absolute;
-  ${isVertical ? 'left: 50%; width: 12px; height: 2px; transform: translateX(-50%);' : 'top: 50%; width: 2px; height: 12px; transform: translateY(-50%);'}
+  ${isVertical ? 'left: 50%; width: 16px; height: 3px; transform: translate(-50%, -50%);' : 'top: 50%; width: 3px; height: 16px; transform: translate(-50%, -50%);'}
+  z-index: 5;
+  pointer-events: none;
 }
 ${selector} .slider-fill {
   position: absolute;
   ${isVertical ? 'left: 50%; width: 6px; transform: translateX(-50%);' : 'top: 50%; height: 6px; transform: translateY(-50%);'}
   border-radius: 3px;
+  z-index: 1;
 }
 ${selector} .slider-thumb {
   position: absolute;
   ${isVertical ? 'left: 50%; width: 20px; height: 10px; transform: translate(-50%, 50%);' : 'top: 50%; width: 10px; height: 20px; transform: translate(-50%, -50%);'}
   border-radius: 3px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  z-index: 4;
 }`
     }
 
@@ -1069,6 +1113,8 @@ ${selector} .crossfade-labels {
   justify-content: space-between;
   margin-bottom: 4px;
   font-size: 10px;
+  position: relative;
+  z-index: 6;
 }
 ${selector} .slider-track {
   position: absolute;
@@ -1078,6 +1124,7 @@ ${selector} .slider-track {
   height: 6px;
   transform: translateY(-50%);
   border-radius: 0;
+  z-index: 0;
 }
 ${selector} .slider-fill {
   position: absolute;
@@ -1085,15 +1132,17 @@ ${selector} .slider-fill {
   height: 6px;
   transform: translateY(-50%);
   border-radius: 0;
+  z-index: 1;
 }
 ${selector} .center-detent {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 2px;
-  height: 14px;
+  width: 3px;
+  height: 16px;
   background: rgba(255, 255, 255, 0.5);
   transform: translate(-50%, -50%);
+  z-index: 5;
 }
 ${selector} .slider-thumb {
   position: absolute;
@@ -1103,6 +1152,7 @@ ${selector} .slider-thumb {
   transform: translate(-50%, -50%);
   border-radius: 0;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  z-index: 4;
 }`
 
     case 'notchedslider': {
@@ -1117,25 +1167,30 @@ ${selector} .slider-track {
   position: absolute;
   ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%);'}
   border-radius: 3px;
+  z-index: 0;
 }
 ${selector} .notches {
   position: absolute;
-  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 20px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 20px; transform: translateY(-50%);'}
+  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 24px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 24px; transform: translateY(-50%);'}
+  z-index: 5;
+  pointer-events: none;
 }
 ${selector} .notch {
   position: absolute;
-  ${isVertical ? 'left: 50%; width: 10px; height: 2px; transform: translateX(-50%);' : 'top: 50%; width: 2px; height: 10px; transform: translateY(-50%);'}
+  ${isVertical ? 'left: 50%; width: 12px; height: 2px; transform: translate(-50%, -50%);' : 'top: 50%; width: 2px; height: 12px; transform: translate(-50%, -50%);'}
 }
 ${selector} .slider-fill {
   position: absolute;
   ${isVertical ? 'left: 50%; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; height: 6px; transform: translateY(-50%);'}
   border-radius: 3px;
+  z-index: 1;
 }
 ${selector} .slider-thumb {
   position: absolute;
   ${isVertical ? 'left: 50%; width: 20px; height: 10px; transform: translate(-50%, 50%);' : 'top: 50%; width: 10px; height: 20px; transform: translate(-50%, -50%);'}
   border-radius: 3px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  z-index: 4;
 }`
     }
 
@@ -1361,6 +1416,171 @@ ${selector} .channel-labels {
 
     case 'windowchrome':
       return generateWindowChromeCSS(selector, element as WindowChromeElementConfig)
+
+    // Specialized Audio Elements
+    case 'pianokeyboard':
+      return `${selector} {
+  /* Piano Keyboard */
+  position: relative;
+  overflow: hidden;
+}
+
+${selector} .piano-key {
+  position: absolute;
+  top: 0;
+  cursor: pointer;
+  transition: background-color 0.05s;
+}
+
+${selector} .piano-key.white:hover {
+  background-color: #eee !important;
+}
+
+${selector} .piano-key.black:hover {
+  background-color: #333 !important;
+}
+
+${selector} .piano-key.active {
+  background-color: #3b82f6 !important;
+}`
+
+    case 'drumpad':
+      return `${selector} {
+  /* Drum Pad */
+  cursor: pointer;
+  transition: transform 0.05s, background-color 0.05s;
+  user-select: none;
+}
+
+${selector}:hover {
+  filter: brightness(1.1);
+}
+
+${selector}:active, ${selector}.active {
+  transform: scale(0.95);
+}`
+
+    case 'padgrid':
+      return `${selector} {
+  /* Pad Grid */
+  position: relative;
+  user-select: none;
+}
+
+${selector} .pad {
+  cursor: pointer;
+  transition: transform 0.05s, background-color 0.05s;
+}
+
+${selector} .pad:hover {
+  filter: brightness(1.1);
+}
+
+${selector} .pad:active, ${selector} .pad.active {
+  transform: scale(0.95);
+}`
+
+    case 'stepsequencer':
+      return `${selector} {
+  /* Step Sequencer */
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+${selector} canvas {
+  display: block;
+}`
+
+    case 'xypad':
+      return `${selector} {
+  /* XY Pad */
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: crosshair;
+}
+
+${selector} canvas {
+  display: block;
+}`
+
+    case 'wavetabledisplay':
+      return `${selector} {
+  /* Wavetable Display */
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+${selector} canvas {
+  display: block;
+}`
+
+    case 'harmoniceditor':
+      return `${selector} {
+  /* Harmonic Editor */
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+${selector} canvas {
+  display: block;
+}`
+
+    case 'looppoints':
+      return `${selector} {
+  /* Loop Points */
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+${selector} canvas {
+  display: block;
+}`
+
+    case 'envelopeeditor':
+      return `${selector} {
+  /* Envelope Editor */
+  overflow: hidden;
+}
+
+${selector} canvas {
+  display: block;
+}`
+
+    case 'sampledisplay':
+      return `${selector} {
+  /* Sample Display */
+  overflow: hidden;
+}
+
+${selector} canvas {
+  display: block;
+  cursor: grab;
+}
+
+${selector} canvas:active {
+  cursor: grabbing;
+}`
+
+    case 'patchbay':
+      return `${selector} {
+  /* Patch Bay */
+  overflow: hidden;
+}
+
+${selector} svg {
+  display: block;
+}`
+
+    case 'signalflow':
+      return `${selector} {
+  /* Signal Flow */
+  overflow: hidden;
+}
+
+${selector} svg {
+  display: block;
+}`
 
     default:
       // TypeScript exhaustiveness check
@@ -2305,7 +2525,7 @@ ${selector} .led-segment[data-lit="true"] {
 /**
  * Generate LED Ring CSS
  */
-function generateLedRingCSS(selector: string, element: ElementConfig & { type: 'ledring' }): string {
+function generateLedRingCSS(selector: string, _element: ElementConfig & { type: 'ledring' }): string {
   return `/* LED Ring */
 ${selector} {
   display: flex;
@@ -2316,8 +2536,8 @@ ${selector} {
 
 ${selector} svg {
   overflow: visible;
-  width: ${element.diameter}px;
-  height: ${element.diameter}px;
+  width: 100%;
+  height: 100%;
 }`
 }
 
@@ -2421,7 +2641,7 @@ ${selector} .stepper-value {
 function generateBreadcrumbCSS(selector: string, element: BreadcrumbElementConfig): string {
   return `/* Breadcrumb */
 ${selector} {
-  font-family: Inter, system-ui, sans-serif;
+  font-family: ${element.fontFamily};
 }
 
 ${selector} ol {
@@ -2444,6 +2664,8 @@ ${selector} a {
   color: ${element.linkColor};
   text-decoration: none;
   font-size: ${element.fontSize}px;
+  font-weight: ${element.fontWeight};
+  cursor: pointer;
   transition: none;
 }
 
@@ -2454,7 +2676,7 @@ ${selector} a:hover {
 ${selector} .breadcrumb-current {
   color: ${element.currentColor};
   font-size: ${element.fontSize}px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 ${selector} .breadcrumb-separator {
@@ -2616,14 +2838,63 @@ ${selector} {
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
-${generateDropdownBaseCSS(selector)}
+
+${selector} .dropdown-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
 
 ${selector} .dropdown-menu {
-  min-width: 150px;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: ${element.backgroundColor};
+  border: 1px solid ${element.borderColor};
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease-in;
+  z-index: 1000;
+}
+
+${selector}.open .dropdown-menu {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 100ms ease-out;
+}
+
+${selector} .dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: none;
+  text-align: left;
+  white-space: nowrap;
+}
+
+${selector} .dropdown-item:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+${selector} .dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+${selector} .dropdown-item.disabled:hover {
+  background-color: transparent;
 }
 
 ${selector} .menu-divider {
@@ -3126,6 +3397,11 @@ ${selector} .chrome-button.maximize:hover {
   background-color: #28ca42;
 }`
 
+  // Scrollbar CSS for content area
+  const wcScrollbarCSS = element.allowScroll
+    ? generateScrollbarCSS(`${selector} .windowchrome-content`, element)
+    : ''
+
   return `/* Window Chrome */
 ${selector} {
   display: flex;
@@ -3149,5 +3425,5 @@ ${selector} .chrome-title {
   font-weight: 500;
   -webkit-app-region: drag;
 }
-${buttonCSS}`
+${buttonCSS}${wcScrollbarCSS}`
 }

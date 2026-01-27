@@ -10,12 +10,15 @@ interface GroupBoxRendererProps {
  * Classic UI pattern for grouping related controls with a labeled border
  */
 export function GroupBoxRenderer({ config }: GroupBoxRendererProps) {
+  const hasChildren = config.children && config.children.length > 0
+
   const containerStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
     position: 'relative',
     padding: `${config.padding}px`,
     paddingTop: `${config.padding + config.headerFontSize / 2}px`,
+    overflow: config.allowScroll ? 'auto' : 'hidden',
   }
 
   const borderStyle: React.CSSProperties = {
@@ -37,8 +40,8 @@ export function GroupBoxRenderer({ config }: GroupBoxRendererProps) {
     color: config.headerColor,
     backgroundColor: config.headerBackground,
     padding: '0 4px',
-    fontFamily: 'Inter, system-ui, sans-serif',
-    fontWeight: 500,
+    fontFamily: config.headerFontFamily,
+    fontWeight: config.headerFontWeight,
     userSelect: 'none',
   }
 
@@ -46,6 +49,20 @@ export function GroupBoxRenderer({ config }: GroupBoxRendererProps) {
     <div style={containerStyle}>
       <div style={borderStyle} />
       <div style={headerStyle}>{config.headerText}</div>
+      {hasChildren && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 4,
+            right: 4,
+            fontSize: '10px',
+            color: 'rgba(255,255,255,0.4)',
+            pointerEvents: 'none',
+          }}
+        >
+          {config.children!.length} item{config.children!.length > 1 ? 's' : ''}
+        </div>
+      )}
     </div>
   )
 }

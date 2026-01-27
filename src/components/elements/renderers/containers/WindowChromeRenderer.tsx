@@ -10,6 +10,8 @@ interface WindowChromeRendererProps {
  * Supports macOS traffic lights, Windows icons, and neutral circles
  */
 export function WindowChromeRenderer({ config }: WindowChromeRendererProps) {
+  const hasChildren = config.children && config.children.length > 0
+
   const containerStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
@@ -19,12 +21,14 @@ export function WindowChromeRenderer({ config }: WindowChromeRendererProps) {
     justifyContent: 'space-between',
     padding: '0 12px',
     userSelect: 'none',
+    position: 'relative',
   }
 
   const titleStyle: React.CSSProperties = {
     fontSize: `${config.titleFontSize}px`,
+    fontFamily: config.fontFamily,
+    fontWeight: config.fontWeight,
     color: config.titleColor,
-    fontWeight: 500,
     textAlign: 'center',
     flex: 1,
     overflow: 'hidden',
@@ -172,6 +176,21 @@ export function WindowChromeRenderer({ config }: WindowChromeRendererProps) {
       {!buttonsOnLeft && (
         <div style={buttonContainerStyle}>
           {config.buttonStyle === 'windows' ? renderWindowsButtons() : renderNeutralButtons()}
+        </div>
+      )}
+
+      {hasChildren && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 4,
+            right: 4,
+            fontSize: '10px',
+            color: 'rgba(255,255,255,0.4)',
+            pointerEvents: 'none',
+          }}
+        >
+          {config.children!.length} item{config.children!.length > 1 ? 's' : ''}
         </div>
       )}
     </div>

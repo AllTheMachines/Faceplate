@@ -10,6 +10,8 @@ interface CollapsibleRendererProps {
  * Shows header with toggle arrow and content area with collapse animation
  */
 export function CollapsibleRenderer({ config }: CollapsibleRendererProps) {
+  const hasChildren = config.children && config.children.length > 0
+
   const containerStyle: React.CSSProperties = {
     width: '100%',
     height: '100%',
@@ -27,8 +29,8 @@ export function CollapsibleRenderer({ config }: CollapsibleRendererProps) {
     backgroundColor: config.headerBackground,
     color: config.headerColor,
     fontSize: `${config.headerFontSize}px`,
-    fontFamily: 'Inter, system-ui, sans-serif',
-    fontWeight: 500,
+    fontFamily: config.headerFontFamily,
+    fontWeight: config.headerFontWeight,
     display: 'flex',
     alignItems: 'center',
     padding: '0 12px',
@@ -46,6 +48,7 @@ export function CollapsibleRenderer({ config }: CollapsibleRendererProps) {
 
   const contentStyle: React.CSSProperties = {
     flex: 1,
+    position: 'relative',
     backgroundColor: config.contentBackground,
     overflow: config.scrollBehavior,
     maxHeight: config.collapsed ? '0px' : `${config.maxContentHeight}px`,
@@ -59,9 +62,14 @@ export function CollapsibleRenderer({ config }: CollapsibleRendererProps) {
       <div style={headerStyle}>
         <span style={arrowStyle}>▼</span>
         <span>{config.headerText}</span>
+        {hasChildren && (
+          <span style={{ marginLeft: 'auto', fontSize: '10px', opacity: 0.5 }}>
+            {config.children!.length}
+          </span>
+        )}
       </div>
       <div style={contentStyle}>
-        {/* Content area - can contain child elements in future */}
+        {/* Content area - children shown in container editor */}
       </div>
     </div>
   )
