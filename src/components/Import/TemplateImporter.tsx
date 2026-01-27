@@ -3,6 +3,9 @@ import { useDropzone } from 'react-dropzone'
 import { parseJUCETemplate } from '../../services/import/templateParser'
 import { useStore } from '../../store'
 import { ElementConfig } from '../../types/elements'
+import { UnsavedChangesDialog } from '../dialogs/UnsavedChangesDialog'
+import { serializeProject } from '../../services/serialization'
+import { saveProjectFile } from '../../services/fileSystem'
 
 interface TemplateImporterProps {
   isOpen: boolean
@@ -24,10 +27,26 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     canvasHeight: number
   } | null>(null)
   const [importing, setImporting] = useState(false)
+  const [showUnsavedDialog, setShowUnsavedDialog] = useState(false)
 
   const addElements = useStore((state) => state.addElements)
   const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
   const clearSelection = useStore((state) => state.clearSelection)
+  const isDirty = useStore((state) => state.isDirty())
+  const setSavedState = useStore((state) => state.setSavedState)
+  const clearSavedState = useStore((state) => state.clearSavedState)
+  const elements = useStore((state) => state.elements)
+  const canvasWidth = useStore((state) => state.canvasWidth)
+  const canvasHeight = useStore((state) => state.canvasHeight)
+  const backgroundColor = useStore((state) => state.backgroundColor)
+  const backgroundType = useStore((state) => state.backgroundType)
+  const gradientConfig = useStore((state) => state.gradientConfig)
+  const snapToGrid = useStore((state) => state.snapToGrid)
+  const gridSize = useStore((state) => state.gridSize)
+  const selectedIds = useStore((state) => state.selectedIds)
+  const assets = useStore((state) => state.assets)
+  const knobStyles = useStore((state) => state.knobStyles)
+  const setLastModified = useStore((state) => state.setLastModified)
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
@@ -73,7 +92,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     setPreview(result)
   }, [files])
 
-  const handleImport = useCallback(() => {
+  const doImport = useCallback(() => {
     if (!preview) return
 
     setImporting(true)
@@ -94,12 +113,96 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     console.log('Elements in store after import:', currentElements.length)
     console.log('Import complete')
 
+    // Clear saved state (imported template is new, unsaved content)
+    clearSavedState()
+
     // Clean up and close modal
     setImporting(false)
     setFiles({})
     setPreview(null)
     onClose()
-  }, [preview, addElements, setCanvasDimensions, clearSelection, onClose])
+  }, [preview, addElements, setCanvasDimensions, clearSelection, clearSavedState, onClose])
+
+  const handleImport = useCallback(() => {
+    if (!preview) return
+
+    // Check if there are unsaved changes
+    if (isDirty) {
+      setShowUnsavedDialog(true)
+    } else {
+      doImport()
+    }
+  }, [preview, isDirty, doImport])
+
+  const handleDialogSave = useCallback(async () => {
+    // Save current project first
+    try {
+      const currentSnapshot = JSON.stringify({
+        elements,
+        canvasWidth,
+        canvasHeight,
+        backgroundColor,
+        backgroundType,
+        gradientConfig,
+        snapToGrid,
+        gridSize,
+        assets,
+        knobStyles,
+      })
+
+      const json = serializeProject({
+        elements,
+        canvasWidth,
+        canvasHeight,
+        backgroundColor,
+        backgroundType,
+        gradientConfig,
+        snapToGrid,
+        gridSize,
+        selectedIds,
+        assets,
+        knobStyles,
+      })
+
+      await saveProjectFile(json)
+
+      const timestamp = Date.now()
+      setSavedState(currentSnapshot, timestamp)
+      setLastModified(timestamp)
+
+      // Now proceed with import
+      setShowUnsavedDialog(false)
+      doImport()
+    } catch (err) {
+      console.error('Failed to save before import:', err)
+      // Still close dialog, user can retry
+      setShowUnsavedDialog(false)
+    }
+  }, [
+    elements,
+    canvasWidth,
+    canvasHeight,
+    backgroundColor,
+    backgroundType,
+    gradientConfig,
+    snapToGrid,
+    gridSize,
+    selectedIds,
+    assets,
+    knobStyles,
+    setSavedState,
+    setLastModified,
+    doImport,
+  ])
+
+  const handleDialogDiscard = useCallback(() => {
+    setShowUnsavedDialog(false)
+    doImport()
+  }, [doImport])
+
+  const handleDialogCancel = useCallback(() => {
+    setShowUnsavedDialog(false)
+  }, [])
 
   const handleReset = useCallback(() => {
     setFiles({})
@@ -246,6 +349,15 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
           )}
         </div>
       </div>
+
+      {/* Unsaved Changes Dialog */}
+      <UnsavedChangesDialog
+        isOpen={showUnsavedDialog}
+        onSave={handleDialogSave}
+        onDiscard={handleDialogDiscard}
+        onCancel={handleDialogCancel}
+        actionDescription="importing a template"
+      />
     </div>
   )
 }
