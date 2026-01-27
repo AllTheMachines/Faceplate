@@ -1,12 +1,26 @@
 import { StateCreator } from 'zustand'
 import { ElementConfig } from '../types/elements'
 
+// Format timestamp to "27 Jan 06:38" in CET
+function formatTimestamp(ts: number): string {
+  return new Date(ts).toLocaleString('en-GB', {
+    timeZone: 'Europe/Berlin',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    day: '2-digit',
+    month: 'short'
+  })
+}
+
 export interface ElementsSlice {
   // State
   elements: ElementConfig[]
   selectedIds: string[]
   lastSelectedId: string | null
-  lastModified: number | null // Unix timestamp of last modification
+  // Pre-formatted timestamp from project file (e.g., "27 Jan 06:38")
+  // Set on save/load, null for new projects
+  lastSavedTimestamp: string | null
 
   // Actions
   addElement: (element: ElementConfig) => void
@@ -15,6 +29,8 @@ export interface ElementsSlice {
   updateElement: (id: string, updates: Partial<ElementConfig>) => void
   setElements: (elements: ElementConfig[]) => void
   getElement: (id: string) => ElementConfig | undefined
+  // Set timestamp from file (on load) or current time (on save)
+  setLastSavedTimestamp: (timestamp: number | null) => void
 
   // Selection actions
   selectElement: (id: string) => void
@@ -38,26 +54,23 @@ export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSl
   elements: [],
   selectedIds: [],
   lastSelectedId: null,
-  lastModified: null,
+  lastSavedTimestamp: null,
 
   // Actions
   addElement: (element) =>
     set((state) => ({
       elements: [...state.elements, element],
-      lastModified: Date.now(),
     })),
 
   addElements: (elements) =>
     set((state) => ({
       elements: [...state.elements, ...elements],
-      lastModified: Date.now(),
     })),
 
   removeElement: (id) =>
     set((state) => ({
       elements: state.elements.filter((el) => el.id !== id),
       selectedIds: state.selectedIds.filter((selectedId) => selectedId !== id),
-      lastModified: Date.now(),
     })),
 
   updateElement: (id, updates) =>
@@ -65,13 +78,16 @@ export const createElementsSlice: StateCreator<ElementsSlice, [], [], ElementsSl
       elements: state.elements.map((el) =>
         el.id === id ? ({ ...el, ...updates } as ElementConfig) : el
       ),
-      lastModified: Date.now(),
     })),
 
   setElements: (elements) =>
     set({
       elements,
-      lastModified: elements.length > 0 ? Date.now() : null,
+    }),
+
+  setLastSavedTimestamp: (timestamp) =>
+    set({
+      lastSavedTimestamp: timestamp ? formatTimestamp(timestamp) : null,
     }),
 
   // Selector helper

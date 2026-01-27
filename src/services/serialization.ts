@@ -51,6 +51,8 @@ export function serializeProject(state: SerializationInput): string {
     selectedIds: state.selectedIds,
     assets: state.assets,
     knobStyles: state.knobStyles,
+    // Set timestamp when saving
+    lastModified: Date.now(),
   }
 
   // JSON.stringify with 2-space indent for human readability

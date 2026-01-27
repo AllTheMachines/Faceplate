@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
 import { TemplateImporter } from '../Import/TemplateImporter'
@@ -7,20 +7,8 @@ import { useStore } from '../../store'
 export function LeftPanel() {
   const [importerOpen, setImporterOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'elements' | 'assets'>('elements')
-  const lastModified = useStore((state) => state.lastModified)
-
-  const timestamp = useMemo(() => {
-    if (!lastModified) return 'New Project'
-
-    return new Date(lastModified).toLocaleString('en-GB', {
-      timeZone: 'Europe/Berlin',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-      day: '2-digit',
-      month: 'short'
-    })
-  }, [lastModified])
+  // Pre-formatted timestamp from project file, null for new/unsaved projects
+  const lastSavedTimestamp = useStore((state) => state.lastSavedTimestamp)
 
   return (
     <div className="bg-gray-800 border-r border-gray-700 overflow-y-auto flex flex-col">
@@ -28,7 +16,7 @@ export function LeftPanel() {
         <h1 className="text-xl font-bold text-white tracking-tight">Faceplate</h1>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500">VST3 UI Designer</span>
-          <span className="text-xs text-yellow-400 bg-gray-900 px-1 rounded">{timestamp} CET</span>
+          <span className="text-xs text-yellow-400 bg-gray-900 px-1 rounded">{lastSavedTimestamp ? `${lastSavedTimestamp} CET` : 'New Project'}</span>
         </div>
       </div>
 

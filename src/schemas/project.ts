@@ -252,6 +252,8 @@ export const ProjectSchema = z.object({
   assets: z.array(SVGAssetSchema).optional().default([]),
   knobStyles: z.array(KnobStyleSchema).optional().default([]),
   selectedIds: z.array(z.string()).optional(),
+  // Timestamp when project was last saved (Unix ms)
+  lastModified: z.number().optional(),
 })
 
 // ============================================================================
