@@ -5,9 +5,9 @@
 - **v1.0 MVP** - Phases 1-13 (shipped 2026-01-25)
 - **v1.1 SVG Import System** - Phases 14-18 (shipped 2026-01-26)
 - **v1.2 Complete Element Taxonomy** - Phases 19-30 (shipped 2026-01-27)
-- **v1.3 Workflow & Protection** - Phases 31-33
+- **v1.3 Workflow & Protection** - Phases 31-33 (shipped 2026-01-27)
 - **v1.4 Container Editing System** - Phases 34-35
-- **v1.5 Export & Asset Management** - Phases 36-37
+- **v1.5 Export & Asset Management** - Phase 37 (Phase 36 shipped with v1.3)
 
 ## Phases
 
@@ -524,31 +524,33 @@ Plans:
 3. ✓ Warning dialog when loading a new project or template with unsaved changes
 4. ✓ "Last saved: X minutes ago" indicator somewhere visible
 
-### Phase 33: Adjustable Snap Grid
+### Phase 33: Adjustable Snap Grid ✓
 **Goal**: Visible background grid for precise element alignment
 **Dependencies**: None
 **Milestone**: v1.3
+**Completed**: 2026-01-27
 
 **Success Criteria:**
-1. Visible grid lines on canvas background
-2. Adjustable grid spacing (e.g., 5px, 10px, 20px, 50px)
-3. Toggle to show/hide grid (keyboard shortcut)
-4. Grid respects zoom level (stays visually consistent)
-5. Option to snap to grid vs free positioning
-6. Grid color/opacity customizable or auto-adapts to canvas background
+1. ✓ Visible grid lines on canvas background
+2. ✓ Adjustable grid spacing (e.g., 5px, 10px, 20px, 50px)
+3. ✓ Toggle to show/hide grid (keyboard shortcut Ctrl+G)
+4. ✓ Grid respects zoom level (stays visually consistent)
+5. ✓ Option to snap to grid vs free positioning
+6. ✓ Grid color/opacity customizable or auto-adapts to canvas background
 
-### Phase 34: Container Element Editor
+### Phase 34: Container Element Editor ✓
 **Goal**: Users can add child elements to containers via dedicated editing interface
 **Dependencies**: Phase 31 (benefits from history visibility for debugging)
 **Milestone**: v1.4
+**Completed**: 2026-01-27
 
 **Success Criteria:**
-1. "Edit Contents" button in property panel for container elements (GroupBox, Collapsible, Panel, Frame, Window Chrome)
-2. Button opens popup/modal with dedicated canvas showing container interior
-3. Full palette available in popup - user can drag any element into container
-4. Container-in-container support (nested editing) with breadcrumb navigation
-5. Changes in container editor reflect immediately in main canvas
-6. Clear visual feedback showing which container is being edited
+1. ✓ "Edit Contents" button in property panel for container elements (GroupBox, Collapsible, Panel, Frame, Window Chrome)
+2. ✓ Button opens popup/modal with dedicated canvas showing container interior
+3. ✓ Full palette available in popup - user can drag any element into container
+4. ✓ Container-in-container support (nested editing) with breadcrumb navigation
+5. ✓ Changes in container editor reflect immediately in main canvas
+6. ✓ Clear visual feedback showing which container is being edited
 
 ### Phase 35: Container Overflow & Scrollbars
 **Goal**: Containers handle child elements that exceed their bounds gracefully
@@ -563,18 +565,19 @@ Plans:
 5. Export generates correct CSS overflow properties
 6. Preview mode supports scrollable containers
 
-### Phase 36: SVG Export with Named Layers
+### Phase 36: SVG Export with Named Layers ✓
 **Goal**: Export individual elements as SVG with meaningful layer names for re-import workflow
 **Dependencies**: None
 **Milestone**: v1.5
+**Completed**: 2026-01-27
 
 **Success Criteria:**
-1. "Export as SVG" option for any element (context menu or property panel button)
-2. SVG layers have meaningful names based on element structure (e.g., `knob-body`, `knob-indicator`, `knob-shadow`, `slider-track`, `slider-thumb`)
-3. Consistent naming convention documented for each element type
-4. When importing SVG for an element, auto-match layers by name
-5. Validation on import: error if required layers missing, warning if extra layers present
-6. Layer naming convention ensures re-imported SVGs work immediately without manual mapping
+1. ✓ "Export as SVG" option for any element (property panel button)
+2. ✓ SVG layers have meaningful names based on element structure (e.g., `knob-body`, `knob-indicator`, `knob-shadow`, `slider-track`, `slider-thumb`)
+3. ✓ Consistent naming convention documented for each element type (LAYER_CONVENTIONS in svgElementExport.ts)
+4. ✓ When importing SVG for an element, auto-match layers by name
+5. ✓ Validation on import: error if required layers missing, warning if extra layers present
+6. ✓ Layer naming convention ensures re-imported SVGs work immediately without manual mapping
 
 ### Phase 37: Font Management System
 **Goal**: Centralized font management with automatic discovery and export bundling
@@ -627,12 +630,12 @@ Plans:
 | 30. Specialized Audio (Part 3) | v1.2 | 6/6 | Complete | 2026-01-27 |
 | 31. Undo/Redo History Panel | v1.3 | 2/2 | Complete | 2026-01-27 |
 | 32. Unsaved Changes Protection | v1.3 | 2/2 | Complete | 2026-01-27 |
-| 33. Adjustable Snap Grid | v1.3 | 0/? | Planned | - |
-| 34. Container Element Editor | v1.4 | 0/? | Planned | - |
+| 33. Adjustable Snap Grid | v1.3 | 1/1 | Complete | 2026-01-27 |
+| 34. Container Element Editor | v1.4 | 1/1 | Complete | 2026-01-27 |
 | 35. Container Overflow & Scrollbars | v1.4 | 0/? | Planned | - |
-| 36. SVG Export with Named Layers | v1.5 | 0/? | Planned | - |
+| 36. SVG Export with Named Layers | v1.5 | 1/1 | Complete | 2026-01-27 |
 | 37. Font Management System | v1.5 | 0/? | Planned | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 32 complete*
+*Last updated: 2026-01-27 after Phase 33 and 36 complete*
