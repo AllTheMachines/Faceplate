@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core'
 import { useState, useRef, useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { useStore } from './store'
@@ -50,6 +51,90 @@ import {
   createEnvelopeDisplay,
   createLFODisplay,
   createFilterResponse,
+  // Additional controls
+  createSteppedKnob,
+  createCenterDetentKnob,
+  createDotIndicatorKnob,
+  createMultiSlider,
+  createBipolarSlider,
+  createCrossfadeSlider,
+  createNotchedSlider,
+  createArcSlider,
+  createIconButton,
+  createKickButton,
+  createToggleSwitch,
+  createPowerButton,
+  createRockerSwitch,
+  createRotarySwitch,
+  createSegmentButton,
+  createStepper,
+  createBreadcrumb,
+  createMultiSelectDropdown,
+  createComboBox,
+  createMenuButton,
+  createTabBar,
+  createTagSelector,
+  createTreeView,
+  // Value displays
+  createNumericDisplay,
+  createTimeDisplay,
+  createPercentageDisplay,
+  createRatioDisplay,
+  createNoteDisplay,
+  createBpmDisplay,
+  createEditableDisplay,
+  createMultiValueDisplay,
+  // LEDs
+  createSingleLED,
+  createBiColorLED,
+  createTriColorLED,
+  createLEDArray,
+  createLEDRing,
+  createLEDMatrix,
+  // Professional meters
+  createRMSMeterMono,
+  createRMSMeterStereo,
+  createVUMeterMono,
+  createVUMeterStereo,
+  createPPMType1Mono,
+  createPPMType1Stereo,
+  createPPMType2Mono,
+  createPPMType2Stereo,
+  createTruePeakMeterMono,
+  createTruePeakMeterStereo,
+  createLUFSMomentaryMono,
+  createLUFSMomentaryStereo,
+  createLUFSShorttermMono,
+  createLUFSShorttermStereo,
+  createLUFSIntegratedMono,
+  createLUFSIntegratedStereo,
+  createK12MeterMono,
+  createK12MeterStereo,
+  createK14MeterMono,
+  createK14MeterStereo,
+  createK20MeterMono,
+  createK20MeterStereo,
+  createCorrelationMeter,
+  createStereoWidthMeter,
+  // Visualizations
+  createScrollingWaveform,
+  createSpectrumAnalyzer,
+  createSpectrogram,
+  createGoniometer,
+  createVectorscope,
+  // Specialized Audio
+  createPianoKeyboard,
+  createDrumPad,
+  createPadGrid,
+  createStepSequencer,
+  createXYPad,
+  createWavetableDisplay,
+  createHarmonicEditor,
+  createLoopPoints,
+  createEnvelopeEditor,
+  createSampleDisplay,
+  createPatchBay,
+  createSignalFlow,
 } from './types/elements'
 
 function DragPreview({
@@ -412,6 +497,255 @@ function App() {
       case 'filterresponse':
         newElement = createFilterResponse({ x: canvasX, y: canvasY, ...variant })
         break
+      // Additional rotary controls
+      case 'steppedknob':
+        newElement = createSteppedKnob({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'centerdetentknob':
+        newElement = createCenterDetentKnob({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'dotindicatorknob':
+        newElement = createDotIndicatorKnob({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Additional linear controls
+      case 'multislider':
+        newElement = createMultiSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'bipolarslider':
+        newElement = createBipolarSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'crossfadeslider':
+        newElement = createCrossfadeSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'notchedslider':
+        newElement = createNotchedSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'arcslider':
+        newElement = createArcSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Additional buttons
+      case 'iconbutton':
+        newElement = createIconButton({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'kickbutton':
+        newElement = createKickButton({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'toggleswitch':
+        newElement = createToggleSwitch({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'powerbutton':
+        newElement = createPowerButton({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'rockerswitch':
+        newElement = createRockerSwitch({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'rotaryswitch':
+        newElement = createRotarySwitch({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'segmentbutton':
+        newElement = createSegmentButton({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Navigation controls
+      case 'stepper':
+        newElement = createStepper({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'breadcrumb':
+        newElement = createBreadcrumb({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'multiselectdropdown':
+        newElement = createMultiSelectDropdown({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'combobox':
+        newElement = createComboBox({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'menubutton':
+        newElement = createMenuButton({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'tabbar':
+        newElement = createTabBar({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'tagselector':
+        newElement = createTagSelector({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'treeview':
+        newElement = createTreeView({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Value displays
+      case 'numericdisplay':
+        newElement = createNumericDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'timedisplay':
+        newElement = createTimeDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'percentagedisplay':
+        newElement = createPercentageDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ratiodisplay':
+        newElement = createRatioDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'notedisplay':
+        newElement = createNoteDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'bpmdisplay':
+        newElement = createBpmDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'editabledisplay':
+        newElement = createEditableDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'multivaluedisplay':
+        newElement = createMultiValueDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      // LEDs
+      case 'singleled':
+        newElement = createSingleLED({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'bicolorled':
+        newElement = createBiColorLED({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'tricolorled':
+        newElement = createTriColorLED({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ledarray':
+        newElement = createLEDArray({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ledring':
+        newElement = createLEDRing({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ledmatrix':
+        newElement = createLEDMatrix({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - RMS
+      case 'rmsmetermo':
+        newElement = createRMSMeterMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'rmsmeterstereo':
+        newElement = createRMSMeterStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - VU
+      case 'vumetermono':
+        newElement = createVUMeterMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'vumeterstereo':
+        newElement = createVUMeterStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - PPM
+      case 'ppmtype1mono':
+        newElement = createPPMType1Mono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ppmtype1stereo':
+        newElement = createPPMType1Stereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ppmtype2mono':
+        newElement = createPPMType2Mono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'ppmtype2stereo':
+        newElement = createPPMType2Stereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - True Peak
+      case 'truepeakmetermono':
+        newElement = createTruePeakMeterMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'truepeakmeterstereo':
+        newElement = createTruePeakMeterStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - LUFS
+      case 'lufsmomomo':
+        newElement = createLUFSMomentaryMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'lufsmomostereo':
+        newElement = createLUFSMomentaryStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'lufsshortmono':
+        newElement = createLUFSShorttermMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'lufsshortstereo':
+        newElement = createLUFSShorttermStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'lufsintmono':
+        newElement = createLUFSIntegratedMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'lufsintstereo':
+        newElement = createLUFSIntegratedStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - K-System
+      case 'k12metermono':
+        newElement = createK12MeterMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'k12meterstereo':
+        newElement = createK12MeterStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'k14metermono':
+        newElement = createK14MeterMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'k14meterstereo':
+        newElement = createK14MeterStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'k20metermono':
+        newElement = createK20MeterMono({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'k20meterstereo':
+        newElement = createK20MeterStereo({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Professional meters - Analysis
+      case 'correlationmeter':
+        newElement = createCorrelationMeter({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'stereowidthmeter':
+        newElement = createStereoWidthMeter({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Visualizations
+      case 'scrollingwaveform':
+        newElement = createScrollingWaveform({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'spectrumanalyzer':
+        newElement = createSpectrumAnalyzer({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'spectrogram':
+        newElement = createSpectrogram({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'goniometer':
+        newElement = createGoniometer({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'vectorscope':
+        newElement = createVectorscope({ x: canvasX, y: canvasY, ...variant })
+        break
+      // Specialized Audio
+      case 'pianokeyboard':
+        newElement = createPianoKeyboard({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'drumpad':
+        newElement = createDrumPad({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'padgrid':
+        newElement = createPadGrid({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'stepsequencer':
+        newElement = createStepSequencer({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'xypad':
+        newElement = createXYPad({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'wavetabledisplay':
+        newElement = createWavetableDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'harmoniceditor':
+        newElement = createHarmonicEditor({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'looppoints':
+        newElement = createLoopPoints({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'envelopeeditor':
+        newElement = createEnvelopeEditor({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'sampledisplay':
+        newElement = createSampleDisplay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'patchbay':
+        newElement = createPatchBay({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'signalflow':
+        newElement = createSignalFlow({ x: canvasX, y: canvasY, ...variant })
+        break
       default:
         return
     }
@@ -432,24 +766,46 @@ function App() {
 
   return (
     <>
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragMove={handleDragMove}
-        onDragEnd={handleDragEnd}
-      >
-        <ThreePanelLayout>
-          <CanvasStage />
-        </ThreePanelLayout>
-        <DragOverlay dropAnimation={null}>
-          {activeDragData && (
-            <DragPreview
-              elementType={activeDragData.elementType}
-              variant={activeDragData.variant}
-            />
-          )}
-        </DragOverlay>
-      </DndContext>
+      <PanelGroup direction="vertical" className="h-screen w-screen">
+        {/* Main content panel (top) */}
+        <Panel defaultSize={80} minSize={40}>
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragMove={handleDragMove}
+            onDragEnd={handleDragEnd}
+          >
+            <ThreePanelLayout>
+              <CanvasStage />
+            </ThreePanelLayout>
+            <DragOverlay dropAnimation={null}>
+              {activeDragData && (
+                <DragPreview
+                  elementType={activeDragData.elementType}
+                  variant={activeDragData.variant}
+                />
+              )}
+            </DragOverlay>
+          </DndContext>
+        </Panel>
+
+        {/* Resize handle */}
+        <PanelResizeHandle className="h-1 bg-gray-700 hover:bg-blue-500 cursor-ns-resize transition-colors" />
+
+        {/* History panel (bottom) */}
+        <Panel
+          defaultSize={20}
+          minSize={10}
+          maxSize={50}
+          collapsible={true}
+          collapsedSize={0}
+        >
+          <div className="h-full flex items-center justify-center bg-gray-900 text-gray-400">
+            History Panel
+          </div>
+        </Panel>
+      </PanelGroup>
+
       <Toaster
         position="top-right"
         toastOptions={{
