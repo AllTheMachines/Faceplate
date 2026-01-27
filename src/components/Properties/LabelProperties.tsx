@@ -1,6 +1,6 @@
 import { LabelElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
-import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
+import { FontDropdown } from './shared'
 
 const FONT_WEIGHTS = [
   { value: 100, label: 'Thin' },
@@ -41,18 +41,10 @@ export function LabelProperties({ element, onUpdate }: LabelPropertiesProps) {
           max={72}
         />
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
-          <select
+          <FontDropdown
             value={element.fontFamily}
-            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-          >
-            {AVAILABLE_FONTS.map((font) => (
-              <option key={font.name} value={font.family}>
-                {font.name}
-              </option>
-            ))}
-          </select>
+            onChange={(fontFamily) => onUpdate({ fontFamily })}
+          />
           <p
             className="text-xs text-gray-500 mt-1"
             style={{
