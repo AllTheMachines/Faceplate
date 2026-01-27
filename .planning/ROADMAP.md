@@ -507,21 +507,22 @@ Plans:
 5. ✓ Panel is collapsible/resizable
 6. ✓ Clear visual distinction between undo-able and redo-able entries
 
-### Phase 32: Unsaved Changes Protection
+### Phase 32: Unsaved Changes Protection ✓
 **Goal**: Users never accidentally lose work due to navigation or browser close
 **Dependencies**: None
 **Milestone**: v1.3
 **Plans**: 2 plans
+**Completed**: 2026-01-27
 
 Plans:
-- [ ] 32-01-PLAN.md — Dirty state slice, hooks (useBeforeUnload, useDirtyState), document title asterisk, relative time display
-- [ ] 32-02-PLAN.md — Orange save button indicator, UnsavedChangesDialog, integration with load flows
+- [x] 32-01-PLAN.md — Dirty state slice, hooks (useBeforeUnload, useDirtyState), document title asterisk, relative time display
+- [x] 32-02-PLAN.md — Orange save button indicator, UnsavedChangesDialog, integration with load flows
 
 **Success Criteria:**
-1. Visual indicator in UI when project has unsaved changes (e.g., dot on save button, asterisk in title)
-2. Browser beforeunload warning when closing/refreshing with unsaved changes
-3. Warning dialog when loading a new project or template with unsaved changes
-4. "Last saved: X minutes ago" indicator somewhere visible
+1. ✓ Visual indicator in UI when project has unsaved changes (orange save button, asterisk in title)
+2. ✓ Browser beforeunload warning when closing/refreshing with unsaved changes
+3. ✓ Warning dialog when loading a new project or template with unsaved changes
+4. ✓ "Last saved: X minutes ago" indicator somewhere visible
 
 ### Phase 33: Adjustable Snap Grid
 **Goal**: Visible background grid for precise element alignment
@@ -625,7 +626,7 @@ Plans:
 | 29. Specialized Audio (Part 2) | v1.2 | 3/3 | Complete | 2026-01-27 |
 | 30. Specialized Audio (Part 3) | v1.2 | 6/6 | Complete | 2026-01-27 |
 | 31. Undo/Redo History Panel | v1.3 | 2/2 | Complete | 2026-01-27 |
-| 32. Unsaved Changes Protection | v1.3 | 0/2 | Planned | - |
+| 32. Unsaved Changes Protection | v1.3 | 2/2 | Complete | 2026-01-27 |
 | 33. Adjustable Snap Grid | v1.3 | 0/? | Planned | - |
 | 34. Container Element Editor | v1.4 | 0/? | Planned | - |
 | 35. Container Overflow & Scrollbars | v1.4 | 0/? | Planned | - |
@@ -634,4 +635,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 32 planning*
+*Last updated: 2026-01-27 after Phase 32 complete*
