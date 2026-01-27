@@ -645,7 +645,13 @@ function updateRangeSliderVisual(rangeSliderId, minValue, maxValue) {
 // Start Initialization
 // ============================================================================
 
-initializeJUCEBridge();
+// CRITICAL: Wait for DOM to be ready before initializing interactive elements
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeJUCEBridge);
+} else {
+  // DOM already loaded - initialize immediately
+  initializeJUCEBridge();
+}
 `
 }
 
