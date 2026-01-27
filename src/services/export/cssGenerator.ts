@@ -16,6 +16,7 @@ import type {
 } from '../../types/elements/curves'
 import { toKebabCase } from './utils'
 import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
+import { collectUsedFonts, isCustomFont, getBuiltInFont, generateCustomFontFaces } from './fontExporter'
 
 export interface CSSGeneratorOptions {
   canvasWidth: number
@@ -79,32 +80,51 @@ ${selector} {
  * @param options - Canvas dimensions and background
  * @returns Complete CSS stylesheet as string
  */
-export function generateCSS(
+export async function generateCSS(
   elements: ElementConfig[],
   options: CSSGeneratorOptions
-): string {
+): Promise<string> {
   const { canvasWidth, canvasHeight, backgroundColor } = options
 
-  // Collect unique fonts from label elements and value displays
-  const usedFonts = new Set<string>()
+  // Collect unique fonts from all elements (including nested children)
+  const usedFonts = collectUsedFonts(elements)
   let uses7Segment = false
 
+  // Check for 7-segment font usage in displays
   elements.forEach(el => {
-    if (el.type === 'label' && el.fontFamily) {
-      usedFonts.add(el.fontFamily)
-    }
-    // Check for 7-segment font usage in displays
     if ('fontStyle' in el && el.fontStyle === '7segment') {
       uses7Segment = true
     }
   })
 
-  // Generate @font-face rules for used fonts
-  const fontFaces = Array.from(usedFonts)
-    .map(family => getFontByFamily(family))
+  // Separate built-in and custom fonts
+  const builtInFonts: string[] = []
+  const customFonts: string[] = []
+
+  Array.from(usedFonts).forEach(family => {
+    if (isCustomFont(family)) {
+      customFonts.push(family)
+    } else {
+      builtInFonts.push(family)
+    }
+  })
+
+  // Generate @font-face rules for built-in fonts (file references)
+  const builtInFontFaces = builtInFonts
+    .map(family => getBuiltInFont(family))
     .filter((f): f is FontDefinition => f !== undefined && f.file !== '')
     .map(generateFontFace)
     .join('\n\n')
+
+  // Generate @font-face rules for custom fonts (base64 embedded)
+  const customFontsSet = new Set(customFonts)
+  const { css: customFontFaces, warnings } = await generateCustomFontFaces(customFontsSet)
+
+  // Log warnings to console
+  if (warnings.length > 0) {
+    console.warn('[Export] Font warnings:')
+    warnings.forEach(warning => console.warn(`  - ${warning}`))
+  }
 
   // Add DSEG7 font if any display uses 7-segment style
   const dseg7Font = uses7Segment ? `@font-face {
@@ -115,7 +135,8 @@ export function generateCSS(
   font-display: block;
 }` : ''
 
-  const allFonts = [fontFaces, dseg7Font].filter(Boolean).join('\n\n')
+  // Combine all font sections
+  const allFonts = [builtInFontFaces, customFontFaces, dseg7Font].filter(Boolean).join('\n\n')
   const fontSection = allFonts ? `/* Embedded Fonts */\n${allFonts}\n\n` : ''
 
   // CSS reset
