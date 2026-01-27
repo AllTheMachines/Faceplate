@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
+import { HistoryPanel } from './components/History'
 import { useStore } from './store'
 import { snapValue } from './store/canvasSlice'
 import { getSVGNaturalSize } from './services/svg'
@@ -800,9 +801,7 @@ function App() {
           collapsible={true}
           collapsedSize={0}
         >
-          <div className="h-full flex items-center justify-center bg-gray-900 text-gray-400">
-            History Panel
-          </div>
+          <HistoryPanel />
         </Panel>
       </PanelGroup>
 
