@@ -1008,21 +1008,18 @@ ${selector} .oscilloscope-placeholder {
 
     case 'steppedknob':
       return `${selector} {
-  /* Stepped Knob styles - SVG handles visual rendering */
   cursor: pointer;
   user-select: none;
 }`
 
     case 'centerdetentknob':
       return `${selector} {
-  /* Center Detent Knob styles - SVG handles visual rendering */
   cursor: pointer;
   user-select: none;
 }`
 
     case 'dotindicatorknob':
       return `${selector} {
-  /* Dot Indicator Knob styles - SVG handles visual rendering */
   cursor: pointer;
   user-select: none;
 }`
@@ -1030,32 +1027,161 @@ ${selector} .oscilloscope-placeholder {
     case 'multislider':
       return generateMultiSliderCSS(id, element)
 
-    case 'bipolarslider':
+    case 'bipolarslider': {
+      const slider = element as ElementConfig & { type: 'bipolarslider' }
+      const isVertical = slider.orientation === 'vertical'
       return `${selector} {
-  /* Bipolar Slider styles - SVG handles visual rendering */
-  cursor: ${element.orientation === 'vertical' ? 'ns-resize' : 'ew-resize'};
+  cursor: ${isVertical ? 'ns-resize' : 'ew-resize'};
   user-select: none;
+  position: relative;
+}
+${selector} .slider-track {
+  position: absolute;
+  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%);'}
+  border-radius: 3px;
+}
+${selector} .slider-center-mark {
+  position: absolute;
+  ${isVertical ? 'left: 50%; width: 12px; height: 2px; transform: translateX(-50%);' : 'top: 50%; width: 2px; height: 12px; transform: translateY(-50%);'}
+}
+${selector} .slider-fill {
+  position: absolute;
+  ${isVertical ? 'left: 50%; width: 6px; transform: translateX(-50%);' : 'top: 50%; height: 6px; transform: translateY(-50%);'}
+  border-radius: 3px;
+}
+${selector} .slider-thumb {
+  position: absolute;
+  ${isVertical ? 'left: 50%; width: 20px; height: 10px; transform: translate(-50%, 50%);' : 'top: 50%; width: 10px; height: 20px; transform: translate(-50%, -50%);'}
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }`
+    }
 
     case 'crossfadeslider':
       return `${selector} {
-  /* Crossfade Slider styles - SVG handles visual rendering */
   cursor: ew-resize;
   user-select: none;
+  position: relative;
+}
+${selector} .crossfade-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 10px;
+}
+${selector} .slider-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 0;
+}
+${selector} .slider-fill {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 0;
+}
+${selector} .center-detent {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+}
+${selector} .slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  border-radius: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }`
 
-    case 'notchedslider':
+    case 'notchedslider': {
+      const slider = element as ElementConfig & { type: 'notchedslider' }
+      const isVertical = slider.orientation === 'vertical'
       return `${selector} {
-  /* Notched Slider styles - SVG handles visual rendering */
-  cursor: ${element.orientation === 'vertical' ? 'ns-resize' : 'ew-resize'};
+  cursor: ${isVertical ? 'ns-resize' : 'ew-resize'};
   user-select: none;
+  position: relative;
+}
+${selector} .slider-track {
+  position: absolute;
+  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%);'}
+  border-radius: 3px;
+}
+${selector} .notches {
+  position: absolute;
+  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 20px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 20px; transform: translateY(-50%);'}
+}
+${selector} .notch {
+  position: absolute;
+  ${isVertical ? 'left: 50%; width: 10px; height: 2px; transform: translateX(-50%);' : 'top: 50%; width: 2px; height: 10px; transform: translateY(-50%);'}
+}
+${selector} .slider-fill {
+  position: absolute;
+  ${isVertical ? 'left: 50%; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; height: 6px; transform: translateY(-50%);'}
+  border-radius: 3px;
+}
+${selector} .slider-thumb {
+  position: absolute;
+  ${isVertical ? 'left: 50%; width: 20px; height: 10px; transform: translate(-50%, 50%);' : 'top: 50%; width: 10px; height: 20px; transform: translate(-50%, -50%);'}
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }`
+    }
 
     case 'arcslider':
       return `${selector} {
-  /* Arc Slider styles - SVG handles visual rendering */
+  position: relative;
   cursor: pointer;
   user-select: none;
+}
+
+${selector} .arcslider-label,
+${selector} .arcslider-value {
+  position: absolute;
+  white-space: nowrap;
+  user-select: none;
+}
+
+${selector} .arcslider-label-top,
+${selector} .arcslider-value-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+}
+
+${selector} .arcslider-label-bottom,
+${selector} .arcslider-value-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+}
+
+${selector} .arcslider-label-left,
+${selector} .arcslider-value-left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 4px;
+}
+
+${selector} .arcslider-label-right,
+${selector} .arcslider-value-right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 4px;
 }`
 
     case 'rockerswitch':
@@ -1529,59 +1655,90 @@ ${selector}[data-on="true"] .led {
  * Generate Rocker Switch CSS
  */
 function generateRockerSwitchCSS(selector: string, element: RockerSwitchElementConfig): string {
+  // Match RockerSwitchRenderer.tsx flexbox layout
   return `/* Rocker Switch */
 ${selector} {
-  background-color: ${element.backgroundColor};
-  border: 2px solid ${element.borderColor};
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  user-select: none;
 }
 
 ${selector} .track {
-  display: none;
+  position: relative;
+  width: 30px;
+  min-width: 30px;
+  height: 85%;
+  background-color: ${element.backgroundColor};
+  border: 2px solid ${element.borderColor};
+  border-radius: 4px;
 }
 
 ${selector} .paddle {
   position: absolute;
-  left: 4px;
-  width: calc(100% - 8px);
-  height: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 4px);
+  height: 33.33%;
   background-color: ${element.switchColor};
-  border: 1px solid ${element.borderColor};
-  border-radius: 3px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
   transition: none;
 }
 
 ${selector}[data-position="2"] .paddle {
-  top: 4px;
+  top: 2px;
 }
 
 ${selector}[data-position="1"] .paddle {
-  top: calc(50% - 15px);
+  top: 33.33%;
 }
 
 ${selector}[data-position="0"] .paddle {
-  top: calc(100% - 34px);
+  bottom: 2px;
+}
+
+${selector} .labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 85%;
+  font-size: 10px;
+  font-family: Inter, system-ui, sans-serif;
+  color: ${element.labelColor};
 }
 
 ${selector} .label-up,
 ${selector} .label-down {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 10px;
-  color: ${element.labelColor};
   user-select: none;
 }
 
-${selector} .label-up {
-  top: -18px;
+${selector}[data-position="2"] .label-up {
+  opacity: 1;
 }
 
-${selector} .label-down {
-  bottom: -18px;
+${selector}[data-position="1"] .label-up,
+${selector}[data-position="1"] .label-down {
+  opacity: 0.5;
+}
+
+${selector}[data-position="0"] .label-down {
+  opacity: 1;
+}
+
+${selector}:not([data-position="2"]) .label-up {
+  opacity: 0.5;
+}
+
+${selector}:not([data-position="0"]) .label-down {
+  opacity: 0.5;
 }`
 }
 

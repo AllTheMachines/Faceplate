@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, ArcSliderElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -107,7 +107,11 @@ export function generateHTML(
 
   // Generate HTML for each element
   const elementsHTML = sortedElements
-    .map((element) => generateElementHTML(element))
+    .map((element) => {
+      const html = generateElementHTML(element)
+      console.log(`[HTML] ${element.type} "${element.name}":`, html.substring(0, 100) + '...')
+      return html
+    })
     .join('\n    ')
 
   return `<!DOCTYPE html>
@@ -251,28 +255,28 @@ export function generateElementHTML(element: ElementConfig): string {
 
     // Rotary control variants - use same HTML structure as knob
     case 'steppedknob':
-      return `<div id="${id}" class="${baseClass} knob-element steppedknob-element" data-type="steppedknob" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-steps="${element.stepCount}" style="${positionStyle}"></div>`
+      return generateSteppedKnobHTML(id, baseClass, positionStyle, element)
 
     case 'centerdetentknob':
-      return `<div id="${id}" class="${baseClass} knob-element centerdetentknob-element" data-type="centerdetentknob" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-snap-threshold="${element.snapThreshold}" style="${positionStyle}"></div>`
+      return generateCenterDetentKnobHTML(id, baseClass, positionStyle, element)
 
     case 'dotindicatorknob':
-      return `<div id="${id}" class="${baseClass} knob-element dotindicatorknob-element" data-type="dotindicatorknob" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" style="${positionStyle}"></div>`
+      return generateDotIndicatorKnobHTML(id, baseClass, positionStyle, element)
 
     case 'multislider':
       return generateMultiSliderHTML(id, baseClass, positionStyle, element)
 
     case 'bipolarslider':
-      return `<div id="${id}" class="${baseClass} slider-element bipolarslider-element" data-type="bipolarslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-center-value="${element.centerValue}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
+      return generateBipolarSliderHTML(id, baseClass, positionStyle, element)
 
     case 'crossfadeslider':
-      return `<div id="${id}" class="${baseClass} slider-element crossfadeslider-element" data-type="crossfadeslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-label-a="${escapeHTML(element.labelA)}" data-label-b="${escapeHTML(element.labelB)}" style="${positionStyle}"></div>`
+      return generateCrossfadeSliderHTML(id, baseClass, positionStyle, element)
 
     case 'notchedslider':
-      return `<div id="${id}" class="${baseClass} slider-element notchedslider-element" data-type="notchedslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-notch-count="${element.notchCount}" data-orientation="${element.orientation}" style="${positionStyle}"></div>`
+      return generateNotchedSliderHTML(id, baseClass, positionStyle, element)
 
     case 'arcslider':
-      return `<div id="${id}" class="${baseClass} slider-element arcslider-element" data-type="arcslider" data-min="${element.min}" data-max="${element.max}" data-value="${element.value}" data-start-angle="${element.startAngle}" data-end-angle="${element.endAngle}" style="${positionStyle}"></div>`
+      return generateArcSliderHTML(id, baseClass, positionStyle, element)
 
     case 'rockerswitch':
       return generateRockerSwitchHTML(id, baseClass, positionStyle, element)
@@ -590,6 +594,158 @@ function generateKnobHTML(id: string, baseClass: string, positionStyle: string, 
 }
 
 /**
+ * Generate Stepped Knob HTML with SVG arc structure
+ */
+function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: string, config: SteppedKnobElementConfig): string {
+  const centerX = config.diameter / 2
+  const centerY = config.diameter / 2
+  const radius = (config.diameter - config.trackWidth) / 2
+
+  // Calculate value angle (quantized to steps)
+  const range = config.max - config.min
+  const normalizedValue = (config.value - config.min) / range
+  const stepSize = 1 / (config.stepCount - 1)
+  const steppedValue = Math.round(normalizedValue / stepSize) * stepSize
+  const valueAngle = config.startAngle + steppedValue * (config.endAngle - config.startAngle)
+
+  // Generate arc paths
+  const trackPath = describeArc(centerX, centerY, radius, config.startAngle, config.endAngle)
+  const valuePath = describeArc(centerX, centerY, radius, config.startAngle, valueAngle)
+
+  // Indicator
+  const indicatorStart = polarToCartesian(centerX, centerY, radius * 0.4, valueAngle)
+  const indicatorEnd = polarToCartesian(centerX, centerY, radius * 0.9, valueAngle)
+
+  // Step indicators
+  let stepIndicatorsSVG = ''
+  if (config.showStepIndicators) {
+    for (let i = 0; i < config.stepCount; i++) {
+      const stepNormalized = i / (config.stepCount - 1)
+      const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
+      const pos = polarToCartesian(centerX, centerY, radius, stepAngle)
+      const isFilled = i <= Math.round(steppedValue * (config.stepCount - 1))
+      stepIndicatorsSVG += `<circle cx="${pos.x}" cy="${pos.y}" r="${config.trackWidth / 3}" fill="${isFilled ? config.fillColor : config.trackColor}" />`
+    }
+  }
+
+  const valueFillSVG = steppedValue > 0.001
+    ? `<path d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    : ''
+
+  const formattedValue = formatValue(steppedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} knob-element steppedknob-element" data-type="steppedknob" data-value="${steppedValue}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
+        <path d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        ${stepIndicatorsSVG}
+        ${valueFillSVG}
+        <line x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </div>`
+}
+
+/**
+ * Generate Center Detent Knob HTML with SVG arc structure
+ */
+function generateCenterDetentKnobHTML(id: string, baseClass: string, positionStyle: string, config: CenterDetentKnobElementConfig): string {
+  const centerX = config.diameter / 2
+  const centerY = config.diameter / 2
+  const radius = (config.diameter - config.trackWidth) / 2
+
+  const range = config.max - config.min
+  const normalizedValue = (config.value - config.min) / range
+  const valueAngle = config.startAngle + normalizedValue * (config.endAngle - config.startAngle)
+  const centerAngle = config.startAngle + 0.5 * (config.endAngle - config.startAngle)
+
+  const trackPath = describeArc(centerX, centerY, radius, config.startAngle, config.endAngle)
+
+  // Value fill from center
+  let valueFillSVG = ''
+  if (Math.abs(normalizedValue - 0.5) > 0.01) {
+    const fillStart = normalizedValue > 0.5 ? centerAngle : valueAngle
+    const fillEnd = normalizedValue > 0.5 ? valueAngle : centerAngle
+    const valuePath = describeArc(centerX, centerY, radius, fillStart, fillEnd)
+    valueFillSVG = `<path d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+  }
+
+  // Center marker
+  const centerPos = polarToCartesian(centerX, centerY, radius + config.trackWidth, centerAngle)
+  const centerMarkerSVG = `<circle cx="${centerPos.x}" cy="${centerPos.y}" r="3" fill="${config.indicatorColor}" />`
+
+  const indicatorStart = polarToCartesian(centerX, centerY, radius * 0.4, valueAngle)
+  const indicatorEnd = polarToCartesian(centerX, centerY, radius * 0.9, valueAngle)
+
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} knob-element centerdetentknob-element" data-type="centerdetentknob" data-value="${normalizedValue}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
+        <path d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        ${valueFillSVG}
+        ${centerMarkerSVG}
+        <line x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    </div>`
+}
+
+/**
+ * Generate Dot Indicator Knob HTML with SVG arc structure
+ */
+function generateDotIndicatorKnobHTML(id: string, baseClass: string, positionStyle: string, config: DotIndicatorKnobElementConfig): string {
+  const centerX = config.diameter / 2
+  const centerY = config.diameter / 2
+  const radius = (config.diameter - config.trackWidth) / 2
+
+  const range = config.max - config.min
+  const normalizedValue = (config.value - config.min) / range
+  const valueAngle = config.startAngle + normalizedValue * (config.endAngle - config.startAngle)
+
+  const trackPath = describeArc(centerX, centerY, radius, config.startAngle, config.endAngle)
+  const valuePath = describeArc(centerX, centerY, radius, config.startAngle, valueAngle)
+
+  const valueFillSVG = normalizedValue > 0.001
+    ? `<path d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    : ''
+
+  // Dot indicator instead of line
+  const indicatorPos = polarToCartesian(centerX, centerY, radius * 0.7, valueAngle)
+  const indicatorSVG = `<circle cx="${indicatorPos.x}" cy="${indicatorPos.y}" r="${config.trackWidth / 2}" fill="${config.indicatorColor}" />`
+
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} knob-element dotindicatorknob-element" data-type="dotindicatorknob" data-value="${normalizedValue}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
+        <path d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        ${valueFillSVG}
+        ${indicatorSVG}
+      </svg>
+    </div>`
+}
+
+/**
  * Generate slider HTML with track, fill, and thumb
  */
 function generateSliderHTML(id: string, baseClass: string, positionStyle: string, config: SliderElementConfig): string {
@@ -624,8 +780,195 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
 }
 
 /**
- * Generate meter HTML with fill and optional peak hold
+ * Generate Bipolar Slider HTML
  */
+function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle: string, config: BipolarSliderElementConfig): string {
+  const isVertical = config.orientation === 'vertical'
+  const normalizedValue = (config.value - config.min) / (config.max - config.min)
+  const normalizedCenter = (config.centerValue - config.min) / (config.max - config.min)
+  const orientationClass = isVertical ? 'vertical' : 'horizontal'
+
+  // Fill from center to value
+  const fillStart = Math.min(normalizedCenter, normalizedValue) * 100
+  const fillEnd = Math.max(normalizedCenter, normalizedValue) * 100
+  const fillStyle = isVertical
+    ? `bottom: ${fillStart}%; height: ${fillEnd - fillStart}%`
+    : `left: ${fillStart}%; width: ${fillEnd - fillStart}%`
+  const thumbStyle = isVertical
+    ? `bottom: ${normalizedValue * 100}%`
+    : `left: ${normalizedValue * 100}%`
+  const centerStyle = isVertical
+    ? `bottom: ${normalizedCenter * 100}%`
+    : `left: ${normalizedCenter * 100}%`
+
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} slider-element bipolarslider-element ${orientationClass}" data-type="bipolarslider" data-orientation="${config.orientation}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <div class="slider-track" style="background: ${config.trackColor};"></div>
+      <div class="slider-center-mark" style="${centerStyle}; background: ${config.indicatorColor};"></div>
+      <div class="slider-fill" style="${fillStyle}; background: ${config.fillColor};"></div>
+      <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
+    </div>`
+}
+
+/**
+ * Generate Crossfade Slider HTML
+ */
+function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyle: string, config: CrossfadeSliderElementConfig): string {
+  const normalizedValue = (config.value - config.min) / (config.max - config.min)
+  const thumbStyle = `left: ${normalizedValue * 100}%`
+
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} slider-element crossfadeslider-element" data-type="crossfadeslider" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <div class="crossfade-labels">
+        <span class="label-a" style="color: ${config.labelColor};">${escapeHTML(config.labelA)}</span>
+        <span class="label-b" style="color: ${config.labelColor};">${escapeHTML(config.labelB)}</span>
+      </div>
+      <div class="slider-track" style="background: ${config.trackColor};"></div>
+      <div class="slider-fill" style="width: ${normalizedValue >= 0.5 ? (normalizedValue - 0.5) * 200 : (0.5 - normalizedValue) * 200}%; left: ${normalizedValue >= 0.5 ? '50%' : normalizedValue * 100 + '%'}; background: ${config.trackFillColor};"></div>
+      <div class="center-detent"></div>
+      <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
+    </div>`
+}
+
+/**
+ * Generate Notched Slider HTML
+ */
+function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle: string, config: NotchedSliderElementConfig): string {
+  const isVertical = config.orientation === 'vertical'
+  const normalizedValue = (config.value - config.min) / (config.max - config.min)
+  const orientationClass = isVertical ? 'vertical' : 'horizontal'
+
+  const fillStyle = isVertical
+    ? `height: ${normalizedValue * 100}%`
+    : `width: ${normalizedValue * 100}%`
+  const thumbStyle = isVertical
+    ? `bottom: ${normalizedValue * 100}%`
+    : `left: ${normalizedValue * 100}%`
+
+  // Generate notch marks
+  let notchesHTML = ''
+  for (let i = 0; i < config.notchCount; i++) {
+    const pos = (i / (config.notchCount - 1)) * 100
+    const notchStyle = isVertical
+      ? `bottom: ${pos}%`
+      : `left: ${pos}%`
+    notchesHTML += `<div class="notch" style="${notchStyle}; background: ${config.indicatorColor};"></div>`
+  }
+
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} slider-element notchedslider-element ${orientationClass}" data-type="notchedslider" data-orientation="${config.orientation}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <div class="slider-track" style="background: ${config.trackColor};"></div>
+      <div class="notches">${notchesHTML}</div>
+      <div class="slider-fill" style="${fillStyle}; background: ${config.fillColor};"></div>
+      <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
+    </div>`
+}
+
+/**
+ * Arc Slider SVG arc utilities (for arc that goes through bottom of circle)
+ */
+function describeArcSlider(
+  x: number,
+  y: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number
+): string {
+  // Handle arc direction (clockwise from startAngle to endAngle)
+  // For arc slider: 135 to 45 means going through 180, 270, 0 (clockwise)
+  let sweepAngle = endAngle - startAngle
+  if (sweepAngle < 0) {
+    sweepAngle += 360
+  }
+
+  const start = polarToCartesian(x, y, radius, startAngle)
+  const end = polarToCartesian(x, y, radius, endAngle)
+  const largeArcFlag = sweepAngle > 180 ? '1' : '0'
+
+  return ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 1, end.x, end.y].join(' ')
+}
+
+/**
+ * Generate Arc Slider HTML with SVG arc structure
+ */
+function generateArcSliderHTML(id: string, baseClass: string, positionStyle: string, config: ArcSliderElementConfig): string {
+  const centerX = config.diameter / 2
+  const centerY = config.diameter / 2
+  const radius = (config.diameter - config.trackWidth) / 2 - config.thumbRadius
+
+  // Calculate value angle
+  const range = config.max - config.min
+  const normalizedValue = (config.value - config.min) / range
+
+  // Calculate sweep angle (handling wrap-around for arc that goes through bottom)
+  let sweepAngle = config.endAngle - config.startAngle
+  if (sweepAngle < 0) {
+    sweepAngle += 360
+  }
+
+  // Value angle interpolates from startAngle toward endAngle
+  const valueAngle = config.startAngle + normalizedValue * sweepAngle
+
+  // Generate arc paths
+  const trackPath = describeArcSlider(centerX, centerY, radius, config.startAngle, config.endAngle)
+  const valuePath = normalizedValue > 0.001
+    ? describeArcSlider(centerX, centerY, radius, config.startAngle, valueAngle)
+    : ''
+
+  // Thumb position on arc
+  const thumbPos = polarToCartesian(centerX, centerY, radius, valueAngle)
+
+  // Value fill SVG
+  const valueFillSVG = valuePath
+    ? `<path class="arcslider-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    : ''
+
+  // Format value display
+  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="arcslider-label arcslider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} slider-element arcslider-element" data-type="arcslider" data-min="${config.min}" data-max="${config.max}" data-value="${config.value}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
+        <path class="arcslider-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
+        ${valueFillSVG}
+        <circle class="arcslider-thumb" cx="${thumbPos.x}" cy="${thumbPos.y}" r="${config.thumbRadius}" fill="${config.thumbColor}" />
+      </svg>
+    </div>`
+}
 
 /**
  * Generate range slider HTML with two thumbs
@@ -876,8 +1219,27 @@ function generateMultiSliderHTML(
   element: MultiSliderElementConfig
 ): string {
   const bandValuesData = element.bandValues.join(',')
+
+  // Generate bands with fills
+  let bandsHTML = ''
+  for (let i = 0; i < element.bandCount; i++) {
+    const value = element.bandValues[i] ?? 0.5
+    const normalizedValue = (value - element.min) / (element.max - element.min)
+    const fillHeight = normalizedValue * 100
+
+    const labelHTML = element.labelStyle !== 'none'
+      ? `<span class="multislider-label" style="font-size: ${element.labelFontSize}px; color: ${element.labelColor};">${i + 1}</span>`
+      : ''
+
+    bandsHTML += `<div class="multislider-band">
+      <div class="multislider-fill" style="height: ${fillHeight}%;"></div>
+      <div class="multislider-thumb" style="bottom: ${fillHeight}%;"></div>
+      ${labelHTML}
+    </div>`
+  }
+
   return `<div id="${id}" class="${baseClass} multislider-element" data-type="multislider" data-band-count="${element.bandCount}" data-band-values="${bandValuesData}" data-min="${element.min}" data-max="${element.max}" data-label-style="${element.labelStyle}" data-link-mode="${element.linkMode}" style="${positionStyle}">
-  <div class="multislider-container"></div>
+  <div class="multislider-container">${bandsHTML}</div>
 </div>`
 }
 
@@ -987,13 +1349,24 @@ function generateRockerSwitchHTML(
   positionStyle: string,
   element: RockerSwitchElementConfig
 ): string {
+  // Position indicator symbols matching RockerSwitchRenderer.tsx
+  const positionSymbols: Record<0 | 1 | 2, string> = {
+    2: '\u2191', // up arrow
+    1: '\u2500', // horizontal line (center)
+    0: '\u2193', // down arrow
+  }
+
   const labelsHTML = element.showLabels
-    ? `<span class="label-up">${escapeHTML(element.upLabel)}</span><span class="label-down">${escapeHTML(element.downLabel)}</span>`
+    ? `<div class="labels">
+    <span class="label-up">${escapeHTML(element.upLabel)}</span>
+    <span class="label-down">${escapeHTML(element.downLabel)}</span>
+  </div>`
     : ''
 
   return `<div id="${id}" class="${baseClass} rockerswitch-element" data-type="rockerswitch" data-position="${element.position}" data-mode="${element.mode}" style="${positionStyle}">
-  <div class="track"></div>
-  <div class="paddle"></div>
+  <div class="track">
+    <div class="paddle">${positionSymbols[element.position]}</div>
+  </div>
   ${labelsHTML}
 </div>`
 }
@@ -1359,7 +1732,7 @@ ${readout}`
 // ============================================================================
 
 /**
- * Generate Single LED HTML
+ * Generate Single LED HTML with visual content
  */
 function generateSingleLedHTML(
   id: string,
@@ -1367,11 +1740,20 @@ function generateSingleLedHTML(
   positionStyle: string,
   element: ElementConfig & { type: 'singleled' }
 ): string {
-  return `<div id="${id}" class="${baseClass} singleled-element" data-type="singleled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}"></div>`
+  const isOn = element.state === 'on'
+  const currentColor = isOn ? element.onColor : element.offColor
+  const borderRadius = element.shape === 'round' ? '50%' : `${element.cornerRadius}px`
+  const boxShadow = isOn && element.glowEnabled
+    ? `0 0 ${element.glowRadius}px ${element.glowIntensity}px ${element.onColor}`
+    : 'none'
+
+  return `<div id="${id}" class="${baseClass} singleled-element" data-type="singleled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}">
+  <div class="led-indicator" style="width: 100%; height: 100%; background-color: ${currentColor}; border-radius: ${borderRadius}; box-shadow: ${boxShadow};"></div>
+</div>`
 }
 
 /**
- * Generate Bi-Color LED HTML
+ * Generate Bi-Color LED HTML with visual content
  */
 function generateBiColorLedHTML(
   id: string,
@@ -1379,11 +1761,19 @@ function generateBiColorLedHTML(
   positionStyle: string,
   element: ElementConfig & { type: 'bicolorled' }
 ): string {
-  return `<div id="${id}" class="${baseClass} bicolorled-element" data-type="bicolorled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}"></div>`
+  const currentColor = element.state === 'green' ? element.greenColor : element.redColor
+  const borderRadius = element.shape === 'round' ? '50%' : `${element.cornerRadius}px`
+  const boxShadow = element.glowEnabled
+    ? `0 0 ${element.glowRadius}px ${element.glowIntensity}px ${currentColor}`
+    : 'none'
+
+  return `<div id="${id}" class="${baseClass} bicolorled-element" data-type="bicolorled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}">
+  <div class="led-indicator" style="width: 100%; height: 100%; background-color: ${currentColor}; border-radius: ${borderRadius}; box-shadow: ${boxShadow};"></div>
+</div>`
 }
 
 /**
- * Generate Tri-Color LED HTML
+ * Generate Tri-Color LED HTML with visual content
  */
 function generateTriColorLedHTML(
   id: string,
@@ -1391,7 +1781,23 @@ function generateTriColorLedHTML(
   positionStyle: string,
   element: ElementConfig & { type: 'tricolorled' }
 ): string {
-  return `<div id="${id}" class="${baseClass} tricolorled-element" data-type="tricolorled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}"></div>`
+  // Determine current color based on state
+  let currentColor = element.offColor
+  if (element.state === 'yellow') {
+    currentColor = element.yellowColor
+  } else if (element.state === 'red') {
+    currentColor = element.redColor
+  }
+
+  const isOn = element.state !== 'off'
+  const borderRadius = element.shape === 'round' ? '50%' : `${element.cornerRadius}px`
+  const boxShadow = isOn && element.glowEnabled
+    ? `0 0 ${element.glowRadius}px ${element.glowIntensity}px ${currentColor}`
+    : 'none'
+
+  return `<div id="${id}" class="${baseClass} tricolorled-element" data-type="tricolorled" data-state="${element.state}" data-shape="${element.shape}" style="${positionStyle}">
+  <div class="led-indicator" style="width: 100%; height: 100%; background-color: ${currentColor}; border-radius: ${borderRadius}; box-shadow: ${boxShadow};"></div>
+</div>`
 }
 
 /**
@@ -1772,7 +2178,7 @@ function generateTreeViewHTML(
  * Generate Scrolling Waveform HTML with JavaScript draw function
  */
 function generateScrollingWaveformHTML(config: ScrollingWaveformElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element viz-container" data-viz-type="scrollingwaveform" style="${positionStyle}">
@@ -1846,7 +2252,7 @@ function generateScrollingWaveformHTML(config: ScrollingWaveformElementConfig): 
  * Generate Spectrum Analyzer HTML with JavaScript draw function
  */
 function generateSpectrumAnalyzerHTML(config: SpectrumAnalyzerElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element viz-container" data-viz-type="spectrumanalyzer" data-fft-size="${config.fftSize}" style="${positionStyle}">
@@ -1900,7 +2306,7 @@ function generateSpectrumAnalyzerHTML(config: SpectrumAnalyzerElementConfig): st
  * Generate Spectrogram HTML with JavaScript draw function
  */
 function generateSpectrogramHTML(config: SpectrogramElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element viz-container" data-viz-type="spectrogram" data-fft-size="${config.fftSize}" style="${positionStyle}">
@@ -1950,7 +2356,7 @@ function generateSpectrogramHTML(config: SpectrogramElementConfig): string {
  * Generate Goniometer HTML with JavaScript draw function
  */
 function generateGoniometerHTML(config: GoniometerElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element viz-container" data-viz-type="goniometer" style="${positionStyle}">
@@ -2048,7 +2454,7 @@ function generateGoniometerHTML(config: GoniometerElementConfig): string {
  * Generate Vectorscope HTML with JavaScript draw function
  */
 function generateVectorscopeHTML(config: VectorscopeElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element viz-container" data-viz-type="vectorscope" style="${positionStyle}">
@@ -2140,7 +2546,7 @@ function generateVectorscopeHTML(config: VectorscopeElementConfig): string {
  * Generate EQ Curve HTML with JavaScript draw function
  */
 function generateEQCurveHTML(config: EQCurveElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element curve-container" data-curve-type="eqcurve" style="${positionStyle}">
@@ -2261,7 +2667,7 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
  * Generate Compressor Curve HTML with JavaScript draw function
  */
 function generateCompressorCurveHTML(config: CompressorCurveElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element curve-container" data-curve-type="compressorcurve" style="${positionStyle}">
@@ -2393,7 +2799,7 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
  * Generate Envelope Display HTML with JavaScript draw function
  */
 function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element curve-container" data-curve-type="envelopedisplay" style="${positionStyle}">
@@ -2540,7 +2946,7 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
  * Generate LFO Display HTML with JavaScript draw function
  */
 function generateLFODisplayHTML(config: LFODisplayElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element curve-container" data-curve-type="lfodisplay" style="${positionStyle}">
@@ -2665,7 +3071,7 @@ function generateLFODisplayHTML(config: LFODisplayElementConfig): string {
  * Generate Filter Response HTML with JavaScript draw function
  */
 function generateFilterResponseHTML(config: FilterResponseElementConfig): string {
-  const id = toKebabCase(config.id)
+  const id = toKebabCase(config.name)
   const positionStyle = `position: absolute; left: ${config.x}px; top: ${config.y}px; width: ${config.width}px; height: ${config.height}px; transform: rotate(${config.rotation}deg);`
 
   return `<div id="${id}" class="element curve-container" data-curve-type="filterresponse" style="${positionStyle}">
