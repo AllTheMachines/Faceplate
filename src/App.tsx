@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core'
 import { useState, useRef, useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels'
 import { ThreePanelLayout } from './components/Layout'
 import { CanvasStage } from './components/Canvas'
 import { HistoryPanel } from './components/History'
@@ -771,7 +771,7 @@ function App() {
 
   return (
     <>
-      <PanelGroup direction="vertical" className="h-screen w-screen">
+      <PanelGroup orientation="vertical" className="h-screen w-screen">
         {/* Main content panel (top) */}
         <Panel defaultSize={isPanelVisible ? 80 : 100} minSize={40}>
           <DndContext
