@@ -5,6 +5,7 @@ import { createViewportSlice, ViewportSlice } from './viewportSlice'
 import { createElementsSlice, ElementsSlice } from './elementsSlice'
 import { createAssetsSlice, AssetsSlice } from './assetsSlice'
 import { createKnobStylesSlice, KnobStylesSlice } from './knobStylesSlice'
+import { createDirtyStateSlice, DirtyStateSlice } from './dirtyStateSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -34,7 +35,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -46,13 +47,22 @@ export const useStore = create<Store>()(
       ...createTemplateSlice(...a),
       ...createAssetsSlice(...a),
       ...createKnobStylesSlice(...a),
+      ...createDirtyStateSlice(...a),
     }),
     {
       limit: 50,
-      // Exclude viewport state from undo history (camera position should not be undoable)
-      // Elements and assets ARE included in undo history (user may want to undo accidental deletion)
+      // Exclude viewport state and selection from undo history
+      // - Viewport (camera position) should not be undoable
+      // - Selection changes should not be undoable (would cause confusion)
+      // - Live drag values are transient UI state
+      // - Dirty state tracking (savedStateSnapshot, lastSavedTimestamp) should not be undoable
       partialize: (state) => {
-        const { scale, offsetX, offsetY, isPanning, dragStart, lockAllMode, ...rest } = state
+        const {
+          scale, offsetX, offsetY, isPanning, dragStart, lockAllMode,
+          selectedIds, lastSelectedId, liveDragValues,
+          savedStateSnapshot, lastSavedTimestamp,
+          ...rest
+        } = state
         return rest
       },
     }
