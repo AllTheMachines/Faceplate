@@ -9,14 +9,14 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 32 - Unsaved Changes Protection
-Plan: 1 of 2 (50% complete)
-Status: In progress
-Last activity: 2026-01-27 - Completed 32-01-PLAN.md (Dirty State Infrastructure)
+Phase: 32 - Unsaved Changes Protection ✓
+Plan: 2 of 2 (100% complete)
+Status: Complete
+Last activity: 2026-01-27 - Completed 32-02-PLAN.md (Save Workflows & Visual Indicators)
 
 Previous: Phase 31 - Undo/Redo History Panel ✓ (verified 2026-01-27)
 
-Progress: [█████████░] 140/141 plans complete (99%)
+Progress: [█████████░] 141/141 plans complete (100%)
 
 ## Performance Metrics
 
@@ -44,7 +44,7 @@ Progress: [█████████░] 140/141 plans complete (99%)
 
 **v1.3 scope:**
 - Phase 31: Undo/Redo History Panel (2 plans) - Complete 2026-01-27
-- Phase 32: Unsaved Changes Protection (2 plans) - In progress 2026-01-27
+- Phase 32: Unsaved Changes Protection (2 plans) - Complete 2026-01-27
 
 ## Accumulated Context
 
@@ -224,6 +224,10 @@ All v1.1 decisions documented and outcomes verified.
 | 60-second refresh interval | 32-01 | Balance between accuracy and performance for relative time display | Matches VS Code pattern, low overhead |
 | Never saved logic | 32-01 | Empty project should not show dirty state | isDirty returns true only if savedStateSnapshot null AND elements.length > 0 |
 | Compare serializable state only | 32-01 | Exclude viewport/selection from dirty detection | elements, canvas, assets, knobStyles only - matches project save format |
+| Save button orange when dirty | 32-02 | High-visibility indicator of unsaved changes | bg-amber-600 when dirty, bg-blue-600 when clean |
+| Snapshot timing after save/load | 32-02 | Ensure snapshot matches file on disk | Capture state AFTER successful save/load operations |
+| Clear saved state after templates | 32-02 | Templates are new content, not saved projects | Call clearSavedState() after loading built-in or imported templates |
+| Dialog pattern Save/Don't Save/Cancel | 32-02 | Standard desktop app UX | Familiar to users from other applications |
 
 ### Pending Todos
 
@@ -379,7 +383,7 @@ None - Phase 26 complete
 - **Total:** 2 plans complete, all 6 success criteria met
 - Phase verified complete 2026-01-27
 
-**Phase 32 In Progress:**
+**Phase 32 Complete:**
 - Plan 32-01: Dirty State Infrastructure - COMPLETE (2026-01-27, 4min)
   - Created DirtyStateSlice with savedStateSnapshot and lastSavedTimestamp
   - Implemented isDirty() selector with JSON snapshot comparison
@@ -388,7 +392,14 @@ None - Phase 26 complete
   - LeftPanel displays "Never saved" or "Last saved: X ago"
   - Installed date-fns for relative time formatting
   - All fields excluded from undo history
-- Plan 32-02: Save Workflows (pending)
+- Plan 32-02: Save Workflows & Visual Indicators - COMPLETE (2026-01-27, 4min)
+  - Created UnsavedChangesDialog with Save/Don't Save/Cancel pattern
+  - Save button turns orange (amber-600) when dirty
+  - Capture state snapshot after successful save and load
+  - Integrated warning dialogs before load project, load template, import template
+  - Clear saved state after template operations
+- **Total:** 2 plans complete, all 4 success criteria met
+- Phase verified complete 2026-01-27
 
 **Phase 31 decisions:**
 
@@ -403,11 +414,11 @@ None - Phase 26 complete
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 32-01-PLAN.md
+Stopped at: Completed Phase 32 (Unsaved Changes Protection)
 Resume file: None
 
-**Next step:** `/gsd:execute-phase 32 --plan 02` (Save Workflows)
+**Next step:** Phase 33 or other v1.3 work (ROADMAP.md defines future phases)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-27 after Phase 31 complete*
+*Last updated: 2026-01-27 after Phase 32 complete*
