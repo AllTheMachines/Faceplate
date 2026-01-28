@@ -89,9 +89,21 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - Custom font dropdown with preview (fonts shown in their typeface) - v1.5
 - Export bundles only used fonts with base64 embedding for custom fonts - v1.5
 
+**v1.6 Multi-Window System:**
+- Multiple windows per project with independent dimensions and backgrounds - v1.6
+- Window types: 'release' (always exported) and 'developer' (optional export) - v1.6
+- Window tabs UI with rename, delete, duplicate, type toggle - v1.6
+- Window properties panel (name, type, width, height, background) - v1.6
+- Copy/paste elements between windows - v1.6
+- Button navigation action to switch between windows - v1.6
+- Multi-window browser preview with tab navigation - v1.6
+- Multi-window export bundle with separate folders per window - v1.6
+- Project serialization v2.0.0 with windows array and migration from v1.x - v1.6
+- Per-window viewport state preservation when switching - v1.6
+
 ### Active
 
-No active requirements - v1.5 milestone complete.
+No active requirements - v1.6 milestone complete.
 
 ### Out of Scope
 
@@ -105,13 +117,14 @@ No active requirements - v1.5 milestone complete.
 ## Context
 
 **Current State:**
+- v1.6 Multi-Window System shipped (2026-01-28)
 - v1.5 Export & Asset Management shipped (2026-01-27)
 - v1.4 Container Editing System shipped (2026-01-27)
 - v1.3 Workflow & Protection shipped (2026-01-27)
 - v1.2 Complete Element Taxonomy shipped (2026-01-27)
 - v1.1 SVG Import System shipped (2026-01-26)
 - v1.0 MVP shipped (2026-01-25)
-- ~176,000 lines TypeScript
+- ~180,000 lines TypeScript
 - 100+ element types supported
 - Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS, SVGO, DOMPurify, opentype.js
 
@@ -182,6 +195,9 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | IndexedDB for font storage | Offline access, faster than re-scanning, persists across sessions | Good - seamless UX |
 | Base64 for custom fonts in export | Self-contained bundles for offline JUCE WebView2 | Good - no external dependencies |
 | Layer naming conventions for SVG | Re-import workflow simplified with automatic matching | Good - intuitive roundtrip |
+| Multi-window architecture | Projects can have multiple windows (main, developer, settings) | Good - flexible plugin UIs |
+| Window type separation | Release vs developer windows allows debug UIs without shipping them | Good - professional workflow |
+| Button navigation actions | Buttons can navigate between windows in exported bundle | Good - enables multi-page UIs |
 
 ---
-*Last updated: 2026-01-27 after v1.5 milestone complete*
+*Last updated: 2026-01-28 after v1.6 milestone complete*

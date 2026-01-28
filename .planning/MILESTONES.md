@@ -1,5 +1,36 @@
 # Project Milestones: VST3 WebView UI Designer
 
+## v1.6 Multi-Window System (Shipped: 2026-01-28)
+
+**Delivered:** Multi-window project architecture with independent windows, navigation between windows, and separate export folders.
+
+**Phases completed:** 38 (1 phase, direct implementation)
+
+**Key accomplishments:**
+- Multiple windows per project with independent dimensions and backgrounds
+- Window types: 'release' (always exported) and 'developer' (optional in export)
+- Window tabs UI with context menu (rename, delete, duplicate, type toggle)
+- Window properties panel in RightPanel (name, type, width, height, background)
+- Copy/paste elements between windows with proper element-to-window association
+- Button navigation action property for switching between windows
+- Multi-window browser preview with tab bar navigation
+- Multi-window export bundle with separate folders per window
+- Project serialization v2.0.0 format with windows array
+- Automatic migration from v1.x single-canvas projects to v2.0.0 multi-window format
+- Per-window viewport state preservation when switching windows
+
+**Stats:**
+- 15+ files created/modified
+- WindowsSlice, WindowTabs, multi-window preview, multi-window export
+- 1 phase, 10 requirements (100% satisfied)
+- 1 day from start to ship (2026-01-28)
+
+**Git range:** `feat(38)` — Multi-window system
+
+**What's next:** v1.7 — Future enhancements
+
+---
+
 ## v1.5 Export & Asset Management (Shipped: 2026-01-27)
 
 **Delivered:** SVG export with named layers for re-import workflow, plus centralized font management with user directory selection and export bundling.

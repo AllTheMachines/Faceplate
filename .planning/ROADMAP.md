@@ -8,6 +8,7 @@
 - ✅ **v1.3 Workflow & Protection** — Phases 31-33 (shipped 2026-01-27)
 - ✅ **v1.4 Container Editing System** — Phases 34-35 (shipped 2026-01-27)
 - ✅ **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
+- ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
 
 ## Phases
 
@@ -531,6 +532,38 @@ Plans:
 
 </details>
 
+<details>
+<summary>✅ v1.6 Multi-Window System (Phase 38) — SHIPPED 2026-01-28</summary>
+
+### Phase 38: Multi-Window System ✓
+**Goal**: Projects support multiple windows with independent settings and navigation
+**Plans**: 1 plan (direct implementation) — completed 2026-01-28
+
+**Requirements delivered:**
+- WIN-01: Multiple windows per project with independent dimensions and backgrounds
+- WIN-02: Window types: 'release' and 'developer' with export filtering
+- WIN-03: Window tabs UI with rename, delete, duplicate, type toggle
+- WIN-04: Window properties panel (name, type, width, height, background)
+- WIN-05: Copy/paste elements between windows
+- WIN-06: Button navigation action to switch windows
+- WIN-07: Multi-window browser preview with tab navigation
+- WIN-08: Multi-window export bundle with folder per window
+- WIN-09: Project serialization v2.0.0 with automatic migration
+- WIN-10: Per-window viewport state preservation
+
+**Success Criteria:**
+1. User can create multiple windows in a project ✓
+2. Each window has independent dimensions and background ✓
+3. User can mark windows as 'developer' to exclude from default export ✓
+4. User can switch between windows via tabs ✓
+5. User can copy elements from one window and paste in another ✓
+6. User can configure button to navigate to another window ✓
+7. Browser preview shows all windows with tab navigation ✓
+8. Export creates separate folders for each window ✓
+9. Old v1.x projects migrate automatically to v2.0.0 format ✓
+
+</details>
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -573,7 +606,8 @@ Plans:
 | 35. Container Overflow & Scrollbars | v1.4 | 1/1 | Complete | 2026-01-27 |
 | 36. SVG Export with Named Layers | v1.5 | 1/1 | Complete | 2026-01-27 |
 | 37. Font Management System | v1.5 | 5/5 | Complete | 2026-01-27 |
+| 38. Multi-Window System | v1.6 | 1/1 | Complete | 2026-01-28 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-27 after v1.5 milestone complete*
+*Last updated: 2026-01-28 after v1.6 milestone complete*
