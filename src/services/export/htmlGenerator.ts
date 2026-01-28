@@ -274,8 +274,12 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
     case 'rangeslider':
       return generateRangeSliderHTML(id, baseClass, positionStyle, element)
 
-    case 'button':
-      return `<button id="${id}" class="${baseClass} button-element" data-type="button" data-mode="${element.mode}" style="${positionStyle}">${escapeHTML(element.label)}</button>`
+    case 'button': {
+      const btnEl = element as import('../../types/elements').ButtonElementConfig
+      const actionAttr = btnEl.action && btnEl.action !== 'none' ? ` data-action="${btnEl.action}"` : ''
+      const targetAttr = btnEl.targetWindowId ? ` data-target-window="${btnEl.targetWindowId}"` : ''
+      return `<button id="${id}" class="${baseClass} button-element" data-type="button" data-mode="${element.mode}"${actionAttr}${targetAttr} style="${positionStyle}">${escapeHTML(element.label)}</button>`
+    }
 
     case 'label':
       return `<span id="${id}" class="${baseClass} label-element" data-type="label" style="${positionStyle}">${escapeHTML(element.text)}</span>`

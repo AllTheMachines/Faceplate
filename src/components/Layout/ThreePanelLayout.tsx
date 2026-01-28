@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { LeftPanel } from './LeftPanel'
 import { RightPanel } from './RightPanel'
+import { WindowTabs } from './WindowTabs'
 
 interface ThreePanelLayoutProps {
   children: ReactNode
@@ -14,9 +15,12 @@ export function ThreePanelLayout({ children, bottomPanel, showBottomPanel = fals
       <LeftPanel />
       <div className="flex flex-col h-screen">
         {/* Canvas area */}
-        <div className={`relative overflow-hidden ${showBottomPanel ? 'h-1/2' : 'h-full'}`}>
+        <div className={`relative overflow-hidden ${showBottomPanel ? 'flex-1' : 'flex-1'}`} style={{ minHeight: 0 }}>
           {children}
         </div>
+
+        {/* Window tabs bar */}
+        <WindowTabs />
 
         {/* Bottom panel (history) */}
         {showBottomPanel && bottomPanel && (

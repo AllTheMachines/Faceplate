@@ -4,12 +4,12 @@
  */
 
 // Main export functions
-export { exportJUCEBundle, exportHTMLPreview } from './codeGenerator'
-export type { ExportOptions, ExportResult } from './codeGenerator'
+export { exportJUCEBundle, exportHTMLPreview, exportMultiWindowBundle } from './codeGenerator'
+export type { ExportOptions, ExportResult, MultiWindowExportOptions, WindowExportData } from './codeGenerator'
 
 // Browser preview
-export { previewHTMLExport } from './previewExport'
-export type { PreviewOptions } from './previewExport'
+export { previewHTMLExport, previewMultiWindowExport } from './previewExport'
+export type { PreviewOptions, MultiWindowPreviewOptions } from './previewExport'
 
 // Validation
 export { validateForExport } from './validators'

@@ -38,6 +38,7 @@ export interface KnobElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -46,6 +47,7 @@ export interface KnobElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string  // For custom format
   valueDecimalPlaces: number
@@ -86,6 +88,7 @@ export interface SliderElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -94,6 +97,7 @@ export interface SliderElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string  // For custom format
   valueDecimalPlaces: number
@@ -103,6 +107,8 @@ export interface SliderElementConfig extends BaseElementConfig {
   valueColor: string
 }
 
+export type ButtonAction = 'none' | 'navigate-window'
+
 export interface ButtonElementConfig extends BaseElementConfig {
   type: 'button'
 
@@ -110,6 +116,10 @@ export interface ButtonElementConfig extends BaseElementConfig {
   mode: 'momentary' | 'toggle'
   label: string
   pressed: boolean
+
+  // Action (optional - for window navigation, etc.)
+  action?: ButtonAction
+  targetWindowId?: string  // Window ID to navigate to when action is 'navigate-window'
 
   // Text
   fontSize: number
@@ -265,6 +275,7 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -273,6 +284,7 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string
   valueDecimalPlaces: number
@@ -311,6 +323,7 @@ export interface CenterDetentKnobElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -319,6 +332,7 @@ export interface CenterDetentKnobElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string
   valueDecimalPlaces: number
@@ -355,6 +369,7 @@ export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -363,6 +378,7 @@ export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string
   valueDecimalPlaces: number
@@ -400,6 +416,7 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -408,6 +425,7 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string
   valueDecimalPlaces: number
@@ -502,6 +520,7 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -510,6 +529,7 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string
   valueDecimalPlaces: number
@@ -547,6 +567,7 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
   showLabel: boolean
   labelText: string
   labelPosition: 'top' | 'bottom' | 'left' | 'right'
+  labelDistance: number  // Distance in pixels from element to label
   labelFontSize: number
   labelFontFamily: string
   labelFontWeight: string
@@ -555,6 +576,7 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
   // Value Display
   showValue: boolean
   valuePosition: 'top' | 'bottom' | 'left' | 'right'
+  valueDistance: number  // Distance in pixels from element to value
   valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
   valueSuffix: string
   valueDecimalPlaces: number
@@ -1198,12 +1220,14 @@ export function createKnob(overrides?: Partial<KnobElementConfig>): KnobElementC
     showLabel: false,
     labelText: 'Knob',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1241,12 +1265,14 @@ export function createSlider(overrides?: Partial<SliderElementConfig>): SliderEl
     showLabel: false,
     labelText: 'Slider',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1493,12 +1519,14 @@ export function createSteppedKnob(overrides?: Partial<SteppedKnobElementConfig>)
     showLabel: false,
     labelText: 'Stepped',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1538,12 +1566,14 @@ export function createCenterDetentKnob(overrides?: Partial<CenterDetentKnobEleme
     showLabel: false,
     labelText: 'Pan',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1581,12 +1611,14 @@ export function createDotIndicatorKnob(overrides?: Partial<DotIndicatorKnobEleme
     showLabel: false,
     labelText: 'Dot',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1625,12 +1657,14 @@ export function createBipolarSlider(overrides?: Partial<BipolarSliderElementConf
     showLabel: false,
     labelText: 'Pan',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1702,12 +1736,14 @@ export function createNotchedSlider(overrides?: Partial<NotchedSliderElementConf
     showLabel: false,
     labelText: 'Notched',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,
@@ -1746,12 +1782,14 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     showLabel: false,
     labelText: 'Arc',
     labelPosition: 'bottom',
+    labelDistance: 4,
     labelFontSize: 12,
     labelFontFamily: 'Inter, system-ui, sans-serif',
     labelFontWeight: '400',
     labelColor: '#ffffff',
     showValue: false,
     valuePosition: 'top',
+    valueDistance: 4,
     valueFormat: 'numeric',
     valueSuffix: '',
     valueDecimalPlaces: 2,

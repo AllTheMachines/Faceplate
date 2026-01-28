@@ -107,6 +107,7 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
         showLabel={element.showLabel}
         labelText={element.labelText}
         labelPosition={element.labelPosition}
+        labelDistance={element.labelDistance}
         labelFontSize={element.labelFontSize}
         labelColor={element.labelColor}
         labelFontFamily={element.labelFontFamily}
@@ -116,6 +117,7 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
         onLabelPositionChange={(labelPosition) =>
           onUpdate({ labelPosition: labelPosition as SliderElementConfig['labelPosition'] })
         }
+        onLabelDistanceChange={(labelDistance) => onUpdate({ labelDistance })}
         onLabelFontSizeChange={(labelFontSize) => onUpdate({ labelFontSize })}
         onLabelColorChange={(labelColor) => onUpdate({ labelColor })}
         onLabelFontFamilyChange={(labelFontFamily) => onUpdate({ labelFontFamily })}
@@ -126,6 +128,7 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
       <ValueDisplaySection
         showValue={element.showValue}
         valuePosition={element.valuePosition}
+        valueDistance={element.valueDistance}
         valueFormat={element.valueFormat}
         valueSuffix={element.valueSuffix}
         valueDecimalPlaces={element.valueDecimalPlaces}
@@ -137,6 +140,7 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
         onValuePositionChange={(valuePosition) =>
           onUpdate({ valuePosition: valuePosition as SliderElementConfig['valuePosition'] })
         }
+        onValueDistanceChange={(valueDistance) => onUpdate({ valueDistance })}
         onValueFormatChange={(valueFormat) =>
           onUpdate({ valueFormat: valueFormat as SliderElementConfig['valueFormat'] })
         }

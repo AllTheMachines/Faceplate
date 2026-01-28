@@ -8,6 +8,7 @@ import { createKnobStylesSlice, KnobStylesSlice } from './knobStylesSlice'
 import { createDirtyStateSlice, DirtyStateSlice } from './dirtyStateSlice'
 import { createContainerEditorSlice, ContainerEditorSlice } from './containerEditorSlice'
 import { createFontsSlice, FontsSlice } from './fontsSlice'
+import { createWindowsSlice, WindowsSlice } from './windowsSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -37,7 +38,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -52,6 +53,7 @@ export const useStore = create<Store>()(
       ...createDirtyStateSlice(...a),
       ...createContainerEditorSlice(...a),
       ...createFontsSlice(...a),
+      ...createWindowsSlice(...a),
     }),
     {
       limit: 50,
@@ -62,6 +64,8 @@ export const useStore = create<Store>()(
       // - Dirty state tracking (savedStateSnapshot, lastSavedTimestamp) should not be undoable
       // - Container editor state (editingContainerId, containerEditStack) is UI state
       // - Fonts state (customFonts, fontsDirectoryPath, etc.) is not undoable
+      // - activeWindowId is navigation state, not undoable
+      // - windowViewports is per-window viewport state, not undoable
       partialize: (state) => {
         const {
           scale, offsetX, offsetY, isPanning, dragStart, lockAllMode,
@@ -69,6 +73,7 @@ export const useStore = create<Store>()(
           savedStateSnapshot, lastSavedTimestamp,
           editingContainerId, containerEditStack,
           customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime,
+          activeWindowId, windowViewports,
           ...rest
         } = state
         return rest

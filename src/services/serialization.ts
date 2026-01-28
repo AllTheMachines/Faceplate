@@ -16,6 +16,12 @@ import type { Asset } from '../types/asset'
 import type { KnobStyle } from '../types/knobStyle'
 import { sanitizeSVG } from '../lib/svg-sanitizer'
 
+// Current application version
+export const CURRENT_VERSION = '2.0.0'
+
+// Supported versions for migration
+const SUPPORTED_VERSIONS = ['1.0.0', '1.0', '2.0.0']
+
 // ============================================================================
 // Serialization
 // ============================================================================
@@ -101,7 +107,17 @@ export function deserializeProject(json: string): DeserializeResult {
   }
 
   // Apply version migrations (if needed)
-  const migrated = migrateProject(parsed)
+  const migrationResult = migrateProject(parsed)
+
+  // Check for migration errors (incompatible versions)
+  if (!migrationResult.success) {
+    return {
+      success: false,
+      error: migrationResult.error,
+    }
+  }
+
+  const migrated = migrationResult.data
 
   // Validate against v2 schema (migrated data should always be v2)
   const result = ProjectSchemaV2.safeParse(migrated)
@@ -219,16 +235,60 @@ function migrateV1ToV2(data: ProjectDataV1): ProjectData {
 }
 
 /**
+ * Check if a version string is newer than the current version
+ */
+function isVersionNewer(version: string, current: string): boolean {
+  const vParts = version.split('.').map(Number)
+  const cParts = current.split('.').map(Number)
+
+  for (let i = 0; i < Math.max(vParts.length, cParts.length); i++) {
+    const v = vParts[i] || 0
+    const c = cParts[i] || 0
+    if (v > c) return true
+    if (v < c) return false
+  }
+  return false
+}
+
+type MigrationResult =
+  | { success: true; data: unknown }
+  | { success: false; error: string }
+
+/**
  * Migrate project data between versions
  * v1.x -> v2.0.0: Convert single canvas to multi-window format
+ * Returns error for incompatible/future versions
  */
-function migrateProject(data: unknown): unknown {
+function migrateProject(data: unknown): MigrationResult {
   // Check if this is v1.x format and needs migration
   if (isV1Format(data)) {
     console.log('[Serialization] Migrating v1.x project to v2.0.0 format')
-    return migrateV1ToV2(data)
+    return { success: true, data: migrateV1ToV2(data) }
   }
 
-  // Already v2.0.0 or newer format
-  return data
+  // Check version for v2+ format
+  if (typeof data === 'object' && data !== null && 'version' in data) {
+    const version = (data as { version: unknown }).version
+    if (typeof version === 'string') {
+      // Check if version is from the future
+      if (isVersionNewer(version, CURRENT_VERSION)) {
+        return {
+          success: false,
+          error: `This project was created with a newer version of the application (v${version}). Please update to the latest version to open this file. Your current version is v${CURRENT_VERSION}.`
+        }
+      }
+
+      // Check for unsupported versions (not v1.x and not v2.x)
+      const majorVersion = parseInt(version.split('.')[0] || '0')
+      if (majorVersion < 1 || majorVersion > 2) {
+        return {
+          success: false,
+          error: `Unsupported project version (v${version}). This application supports versions 1.x and 2.x.`
+        }
+      }
+    }
+  }
+
+  // Already v2.0.0 format
+  return { success: true, data }
 }

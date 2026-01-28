@@ -251,12 +251,19 @@ export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
                 min={8}
                 max={32}
               />
-              <ColorInput
-                label="Color"
-                value={element.labelColor}
-                onChange={(labelColor) => onUpdate({ labelColor })}
+              <NumberInput
+                label="Distance"
+                value={element.labelDistance ?? 4}
+                onChange={(labelDistance) => onUpdate({ labelDistance })}
+                min={0}
+                max={50}
               />
             </div>
+            <ColorInput
+              label="Color"
+              value={element.labelColor}
+              onChange={(labelColor) => onUpdate({ labelColor })}
+            />
           </>
         )}
       </PropertySection>
@@ -356,11 +363,20 @@ export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
                 max={32}
               />
             </div>
-            <ColorInput
-              label="Color"
-              value={element.valueColor}
-              onChange={(valueColor) => onUpdate({ valueColor })}
-            />
+            <div className="grid grid-cols-2 gap-3">
+              <NumberInput
+                label="Distance"
+                value={element.valueDistance ?? 4}
+                onChange={(valueDistance) => onUpdate({ valueDistance })}
+                min={0}
+                max={50}
+              />
+              <ColorInput
+                label="Color"
+                value={element.valueColor}
+                onChange={(valueColor) => onUpdate({ valueColor })}
+              />
+            </div>
           </>
         )}
       </PropertySection>

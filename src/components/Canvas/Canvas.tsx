@@ -30,20 +30,23 @@ export function Canvas() {
   const [zoomInputValue, setZoomInputValue] = useState('')
   const zoomInputRef = useRef<HTMLInputElement>(null)
 
-  // Get canvas dimensions and background
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
-  const backgroundType = useStore((state) => state.backgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
+  // Get active window for canvas dimensions and background
+  const activeWindow = useStore((state) => state.getActiveWindow())
+  const canvasWidth = activeWindow?.width ?? 800
+  const canvasHeight = activeWindow?.height ?? 600
+  const backgroundColor = activeWindow?.backgroundColor ?? '#1a1a1a'
+  const backgroundType = activeWindow?.backgroundType ?? 'color'
+  const gradientConfig = activeWindow?.gradientConfig
 
   // Grid settings
   const showGrid = useStore((state) => state.showGrid)
   const gridSize = useStore((state) => state.gridSize)
   const gridColor = useStore((state) => state.gridColor)
 
-  // Get elements
-  const elements = useStore((state) => state.elements)
+  // Get elements - filter to only show elements in the active window
+  const allElements = useStore((state) => state.elements)
+  const activeWindowElementIds = activeWindow?.elementIds ?? []
+  const elements = allElements.filter((el) => activeWindowElementIds.includes(el.id))
   const selectedIds = useStore((state) => state.selectedIds)
   const clearSelection = useStore((state) => state.clearSelection)
 

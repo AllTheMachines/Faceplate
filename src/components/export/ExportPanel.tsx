@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useStore } from '../../store'
 import {
   exportJUCEBundle,
   exportHTMLPreview,
+  exportMultiWindowBundle,
   previewHTMLExport,
+  previewMultiWindowExport,
   validateForExport,
 } from '../../services/export'
+import type { WindowExportData } from '../../services/export'
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return (
@@ -36,15 +39,43 @@ export function ExportPanel() {
   const [lastExport, setLastExport] = useState<ExportDetails | null>(null)
   const [optimizeSVG, setOptimizeSVG] = useState(true)
   const [enableResponsiveScaling, setEnableResponsiveScaling] = useState(true)
+  const [includeDeveloperWindows, setIncludeDeveloperWindows] = useState(false)
 
   // Get state from store
-  const elements = useStore((state) => state.elements)
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
+  const allElements = useStore((state) => state.elements)
+  const windows = useStore((state) => state.windows)
+  const activeWindow = useStore((state) => state.getActiveWindow())
 
-  // Run validation
-  const validationResult = validateForExport(elements)
+  // For backwards compatibility with single-window exports, get active window data
+  const elements = useMemo(() => {
+    if (!activeWindow) return []
+    return allElements.filter(el => activeWindow.elementIds.includes(el.id))
+  }, [allElements, activeWindow])
+
+  const canvasWidth = activeWindow?.width ?? 800
+  const canvasHeight = activeWindow?.height ?? 600
+  const backgroundColor = activeWindow?.backgroundColor ?? '#1a1a1a'
+
+  // Build window export data
+  const windowsData = useMemo((): WindowExportData[] => {
+    return windows.map(w => ({
+      id: w.id,
+      name: w.name,
+      type: w.type,
+      width: w.width,
+      height: w.height,
+      backgroundColor: w.backgroundColor,
+      elements: allElements.filter(el => w.elementIds.includes(el.id)),
+    }))
+  }, [windows, allElements])
+
+  // Window counts for UI
+  const releaseWindowCount = windows.filter(w => w.type === 'release').length
+  const developerWindowCount = windows.filter(w => w.type === 'developer').length
+  const hasMultipleWindows = windows.length > 1
+
+  // Run validation on all elements
+  const validationResult = validateForExport(allElements)
 
   const handleExportJUCE = async () => {
     setIsExporting(true)
@@ -60,21 +91,33 @@ export function ExportPanel() {
     }
     setTimeout(() => setExportStatus('Creating bundle...'), 800)
 
-    const result = await exportJUCEBundle({
-      elements,
-      canvasWidth,
-      canvasHeight,
-      backgroundColor,
-      optimizeSVG,
-      enableResponsiveScaling,
-    })
+    // Use multi-window export if multiple windows, otherwise single-window for compatibility
+    const result = hasMultipleWindows
+      ? await exportMultiWindowBundle(windowsData, {
+          optimizeSVG,
+          enableResponsiveScaling,
+          includeDeveloperWindows,
+        })
+      : await exportJUCEBundle({
+          elements,
+          canvasWidth,
+          canvasHeight,
+          backgroundColor,
+          optimizeSVG,
+          enableResponsiveScaling,
+        })
 
     setIsExporting(false)
     setExportStatus('')
 
     if (result.success) {
       const timestamp = new Date().toLocaleString()
-      const fileCount = 5 // index.html, style.css, components.js, bindings.js, README.md
+      const windowCount = hasMultipleWindows
+        ? (includeDeveloperWindows ? windows.length : releaseWindowCount)
+        : 1
+      const fileCount = hasMultipleWindows
+        ? windowCount * 4 + 1 // 4 files per window + README
+        : 5 // index.html, style.css, components.js, bindings.js, README.md
       setLastExport({
         timestamp,
         fileCount,
@@ -125,13 +168,27 @@ export function ExportPanel() {
     setError(null)
     setExportStatus('Opening preview...')
 
-    const result = await previewHTMLExport({
-      elements,
-      canvasWidth,
-      canvasHeight,
-      backgroundColor,
-      enableResponsiveScaling: true,
-    })
+    // Use multi-window preview if there are multiple windows
+    const result = hasMultipleWindows
+      ? await previewMultiWindowExport({
+          windows: windows.map(w => ({
+            id: w.id,
+            name: w.name,
+            elements: allElements.filter(el => w.elementIds.includes(el.id)),
+            width: w.width,
+            height: w.height,
+            backgroundColor: w.backgroundColor,
+          })),
+          activeWindowId: activeWindow?.id || windows[0].id,
+          enableResponsiveScaling: true,
+        })
+      : await previewHTMLExport({
+          elements,
+          canvasWidth,
+          canvasHeight,
+          backgroundColor,
+          enableResponsiveScaling: true,
+        })
 
     setIsExporting(false)
     setExportStatus('')
@@ -190,6 +247,16 @@ export function ExportPanel() {
           </div>
         )}
 
+        {/* Window Summary */}
+        {hasMultipleWindows && (
+          <div className="mb-3 p-2 bg-gray-800/50 rounded text-xs text-gray-300">
+            <div className="font-medium mb-1">Windows ({windows.length})</div>
+            <div className="text-gray-400">
+              {releaseWindowCount} release{releaseWindowCount !== 1 ? '' : ''}{developerWindowCount > 0 && `, ${developerWindowCount} developer`}
+            </div>
+          </div>
+        )}
+
         {/* Export Options Section */}
         <div className="mb-4">
           <h4 className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Options</h4>
@@ -212,6 +279,17 @@ export function ExportPanel() {
               />
               Enable responsive scaling
             </label>
+            {developerWindowCount > 0 && (
+              <label className="flex items-center gap-2 text-xs text-gray-300 cursor-pointer hover:text-gray-100 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={includeDeveloperWindows}
+                  onChange={(e) => setIncludeDeveloperWindows(e.target.checked)}
+                  className="rounded border-gray-600 bg-gray-700 text-amber-500"
+                />
+                Include developer windows
+              </label>
+            )}
           </div>
         </div>
 

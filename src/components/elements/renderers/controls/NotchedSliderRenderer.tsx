@@ -58,6 +58,7 @@ export function NotchedSliderRenderer({ config }: NotchedSliderRendererProps) {
 
   // Calculate label/value positioning
   const getLabelStyle = () => {
+    const distance = config.labelDistance ?? 4
     const base: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${config.labelFontSize}px`,
@@ -69,17 +70,18 @@ export function NotchedSliderRenderer({ config }: NotchedSliderRendererProps) {
 
     switch (config.labelPosition) {
       case 'top':
-        return { ...base, bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: '4px' }
+        return { ...base, bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: `${distance}px` }
       case 'bottom':
-        return { ...base, top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: '4px' }
+        return { ...base, top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: `${distance}px` }
       case 'left':
-        return { ...base, right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: '4px' }
+        return { ...base, right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: `${distance}px` }
       case 'right':
-        return { ...base, left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: '4px' }
+        return { ...base, left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: `${distance}px` }
     }
   }
 
   const getValueStyle = () => {
+    const distance = config.valueDistance ?? 4
     const base: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${config.valueFontSize}px`,
@@ -91,13 +93,13 @@ export function NotchedSliderRenderer({ config }: NotchedSliderRendererProps) {
 
     switch (config.valuePosition) {
       case 'top':
-        return { ...base, bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: '4px' }
+        return { ...base, bottom: '100%', left: '50%', transform: 'translateX(-50%)', marginBottom: `${distance}px` }
       case 'bottom':
-        return { ...base, top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: '4px' }
+        return { ...base, top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: `${distance}px` }
       case 'left':
-        return { ...base, right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: '4px' }
+        return { ...base, right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: `${distance}px` }
       case 'right':
-        return { ...base, left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: '4px' }
+        return { ...base, left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: `${distance}px` }
     }
   }
 

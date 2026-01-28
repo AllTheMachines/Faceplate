@@ -21,12 +21,18 @@ export function useCopyPaste() {
   const selectMultiple = useStore((state) => state.selectMultiple)
   const activeWindowId = useStore((state) => state.activeWindowId)
   const addElementToWindow = useStore((state) => state.addElementToWindow)
+  const getWindowForElement = useStore((state) => state.getWindowForElement)
 
   const copyToClipboard = useCallback(() => {
-    // Get selected elements
+    // Get selected elements that belong to the active window only
     const elements = selectedIds
       .map((id) => getElement(id))
-      .filter((el): el is ElementConfig => el !== undefined)
+      .filter((el): el is ElementConfig => {
+        if (el === undefined) return false
+        // Only include elements that belong to the active window
+        const elementWindow = getWindowForElement(el.id)
+        return elementWindow?.id === activeWindowId
+      })
 
     if (elements.length === 0) return
 
@@ -42,7 +48,7 @@ export function useCopyPaste() {
     } catch {
       // Silently ignore - system clipboard is optional
     }
-  }, [selectedIds, getElement, activeWindowId])
+  }, [selectedIds, getElement, activeWindowId, getWindowForElement])
 
   const pasteFromClipboard = useCallback(() => {
     if (clipboardRef.current.elements.length === 0) return
@@ -79,10 +85,15 @@ export function useCopyPaste() {
 
   const duplicateSelected = useCallback(() => {
     // Duplicate = copy + paste in one action
-    // Get selected elements
+    // Get selected elements that belong to the active window only
     const elements = selectedIds
       .map((id) => getElement(id))
-      .filter((el): el is ElementConfig => el !== undefined)
+      .filter((el): el is ElementConfig => {
+        if (el === undefined) return false
+        // Only include elements that belong to the active window
+        const elementWindow = getWindowForElement(el.id)
+        return elementWindow?.id === activeWindowId
+      })
 
     if (elements.length === 0) return
 
@@ -107,7 +118,7 @@ export function useCopyPaste() {
     // Select the duplicated elements
     clearSelection()
     selectMultiple(pastedIds)
-  }, [selectedIds, getElement, addElement, addElementToWindow, clearSelection, selectMultiple])
+  }, [selectedIds, getElement, addElement, addElementToWindow, clearSelection, selectMultiple, getWindowForElement, activeWindowId])
 
   return { copyToClipboard, pasteFromClipboard, duplicateSelected }
 }

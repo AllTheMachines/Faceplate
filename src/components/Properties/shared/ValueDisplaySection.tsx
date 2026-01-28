@@ -7,6 +7,7 @@ import { VALUE_FORMAT_OPTIONS, SELECT_CLASSNAME } from '../constants'
 interface ValueDisplaySectionProps {
   showValue: boolean
   valuePosition: string
+  valueDistance?: number
   valueFormat: string
   valueSuffix?: string
   valueDecimalPlaces: number
@@ -14,6 +15,7 @@ interface ValueDisplaySectionProps {
   valueColor: string
   onShowValueChange: (show: boolean) => void
   onValuePositionChange: (position: string) => void
+  onValueDistanceChange?: (distance: number) => void
   onValueFormatChange: (format: string) => void
   onValueSuffixChange?: (suffix: string) => void
   onValueDecimalPlacesChange: (places: number) => void
@@ -29,6 +31,7 @@ interface ValueDisplaySectionProps {
 export function ValueDisplaySection({
   showValue,
   valuePosition,
+  valueDistance,
   valueFormat,
   valueSuffix = '',
   valueDecimalPlaces,
@@ -36,6 +39,7 @@ export function ValueDisplaySection({
   valueColor,
   onShowValueChange,
   onValuePositionChange,
+  onValueDistanceChange,
   onValueFormatChange,
   onValueSuffixChange,
   onValueDecimalPlacesChange,
@@ -110,7 +114,18 @@ export function ValueDisplaySection({
               max={32}
             />
           </div>
-          <ColorInput label="Color" value={valueColor} onChange={onValueColorChange} />
+          <div className="grid grid-cols-2 gap-3">
+            {onValueDistanceChange && (
+              <NumberInput
+                label="Distance"
+                value={valueDistance ?? 4}
+                onChange={onValueDistanceChange}
+                min={0}
+                max={50}
+              />
+            )}
+            <ColorInput label="Color" value={valueColor} onChange={onValueColorChange} />
+          </div>
         </>
       )}
     </PropertySection>

@@ -1,6 +1,7 @@
-import { ButtonElementConfig, ElementConfig } from '../../types/elements'
+import { ButtonElementConfig, ElementConfig, ButtonAction } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
+import { useStore } from '../../store'
 
 interface ButtonPropertiesProps {
   element: ButtonElementConfig
@@ -8,6 +9,12 @@ interface ButtonPropertiesProps {
 }
 
 export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
+  const windows = useStore((state) => state.windows)
+  const activeWindowId = useStore((state) => state.activeWindowId)
+
+  // Filter out current window from target options
+  const targetWindows = windows.filter((w) => w.id !== activeWindowId)
+
   return (
     <>
       {/* Behavior */}
@@ -43,6 +50,51 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
           />
           <span className="text-sm text-gray-300">Pressed</span>
         </label>
+      </PropertySection>
+
+      {/* Action */}
+      <PropertySection title="Action">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">On Click</label>
+          <select
+            value={element.action || 'none'}
+            onChange={(e) => {
+              const action = e.target.value as ButtonAction
+              onUpdate({
+                action,
+                // Clear target window if switching to none
+                targetWindowId: action === 'none' ? undefined : element.targetWindowId,
+              })
+            }}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            <option value="none">None (parameter binding only)</option>
+            <option value="navigate-window">Navigate to Window</option>
+          </select>
+        </div>
+        {element.action === 'navigate-window' && (
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Target Window</label>
+            {targetWindows.length > 0 ? (
+              <select
+                value={element.targetWindowId || ''}
+                onChange={(e) => onUpdate({ targetWindowId: e.target.value || undefined })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                <option value="">Select a window...</option>
+                {targetWindows.map((w) => (
+                  <option key={w.id} value={w.id}>
+                    {w.name} {w.type === 'developer' ? '(Dev)' : ''}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="text-xs text-gray-500 italic">
+                No other windows available. Create another window first.
+              </p>
+            )}
+          </div>
+        )}
       </PropertySection>
 
       {/* Typography */}

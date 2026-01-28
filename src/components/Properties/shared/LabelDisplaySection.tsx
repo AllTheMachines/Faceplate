@@ -7,11 +7,13 @@ interface LabelDisplaySectionProps {
   showLabel: boolean
   labelText: string
   labelPosition: string
+  labelDistance?: number
   labelFontSize: number
   labelColor: string
   onShowLabelChange: (show: boolean) => void
   onLabelTextChange: (text: string) => void
   onLabelPositionChange: (position: string) => void
+  onLabelDistanceChange?: (distance: number) => void
   onLabelFontSizeChange: (size: number) => void
   onLabelColorChange: (color: string) => void
   // Optional font family and weight props (only SliderProperties uses these)
@@ -25,11 +27,13 @@ export function LabelDisplaySection({
   showLabel,
   labelText,
   labelPosition,
+  labelDistance,
   labelFontSize,
   labelColor,
   onShowLabelChange,
   onLabelTextChange,
   onLabelPositionChange,
+  onLabelDistanceChange,
   onLabelFontSizeChange,
   onLabelColorChange,
   labelFontFamily,
@@ -77,8 +81,17 @@ export function LabelDisplaySection({
               min={8}
               max={32}
             />
-            <ColorInput label="Color" value={labelColor} onChange={onLabelColorChange} />
+            {onLabelDistanceChange && (
+              <NumberInput
+                label="Distance"
+                value={labelDistance ?? 4}
+                onChange={onLabelDistanceChange}
+                min={0}
+                max={50}
+              />
+            )}
           </div>
+          <ColorInput label="Color" value={labelColor} onChange={onLabelColorChange} />
         </>
       )}
     </PropertySection>

@@ -17,9 +17,7 @@ export const ACTION_COLORS: Record<HistoryAction, string> = {
 // Store state shape for inference
 export interface StoreState {
   elements: ElementConfig[]
-  canvasWidth?: number
-  canvasHeight?: number
-  backgroundColor?: string
+  windows?: Array<{ id: string; width?: number; height?: number; backgroundColor?: string }>
   [key: string]: unknown
 }
 
@@ -35,12 +33,10 @@ export function inferAction(beforeState: StoreState | null, afterState: StoreSta
   const beforeElements = beforeState.elements || []
   const afterElements = afterState.elements || []
 
-  // Check for canvas property changes
-  if (
-    beforeState.canvasWidth !== afterState.canvasWidth ||
-    beforeState.canvasHeight !== afterState.canvasHeight ||
-    beforeState.backgroundColor !== afterState.backgroundColor
-  ) {
+  // Check for window/canvas property changes
+  const beforeWindows = JSON.stringify(beforeState.windows || [])
+  const afterWindows = JSON.stringify(afterState.windows || [])
+  if (beforeWindows !== afterWindows) {
     return 'canvas'
   }
 

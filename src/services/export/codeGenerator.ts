@@ -28,6 +28,23 @@ export interface ExportOptions {
   enableResponsiveScaling?: boolean // Include responsive scaling script (default true)
 }
 
+export interface MultiWindowExportOptions {
+  projectName?: string
+  optimizeSVG?: boolean
+  enableResponsiveScaling?: boolean
+  includeDeveloperWindows?: boolean // Export developer windows (default false)
+}
+
+export interface WindowExportData {
+  id: string
+  name: string
+  type: 'release' | 'developer'
+  width: number
+  height: number
+  backgroundColor: string
+  elements: ElementConfig[]
+}
+
 interface ImageAsset {
   path: string    // Path in ZIP (e.g., "assets/image.png")
   srcUrl: string  // URL to fetch from (e.g., "/assets/image.png")
@@ -495,4 +512,233 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
       error: error instanceof Error ? error.message : 'Unknown error occurred during export',
     }
   }
+}
+
+// ============================================================================
+// Multi-Window Export
+// ============================================================================
+
+/**
+ * Convert window name to folder-safe name
+ * E.g., "User Window" -> "user-window"
+ */
+function toFolderName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    || 'window'
+}
+
+/**
+ * Export multi-window JUCE bundle
+ * Creates a ZIP with separate folders for each window
+ *
+ * ZIP structure:
+ * my-plugin/
+ *   README.md
+ *   user-window/
+ *     index.html, style.css, components.js, bindings.js
+ *   dev-debug-panel/    (only with includeDeveloperWindows)
+ *     index.html, style.css, components.js, bindings.js
+ */
+export async function exportMultiWindowBundle(
+  windowsData: WindowExportData[],
+  options: MultiWindowExportOptions
+): Promise<ExportResult> {
+  try {
+    // Filter windows based on options
+    const windowsToExport = options.includeDeveloperWindows
+      ? windowsData
+      : windowsData.filter(w => w.type === 'release')
+
+    if (windowsToExport.length === 0) {
+      return {
+        success: false,
+        error: 'No windows to export. Add at least one release window.',
+      }
+    }
+
+    // Validate all windows
+    for (const window of windowsToExport) {
+      const validationResult = validateForExport(window.elements)
+      if (!validationResult.valid && validationResult.errors.length > 0) {
+        const errorMessages = validationResult.errors
+          .map((err) => `• ${err.elementName}: ${err.message}`)
+          .join('\n')
+        return {
+          success: false,
+          error: `Window "${window.name}" has issues:\n\n${errorMessages}`,
+        }
+      }
+    }
+
+    // Collect all SVG assets across all windows
+    const allElements = windowsToExport.flatMap(w => w.elements)
+    const shouldOptimizeSVG = options.optimizeSVG !== false
+    const svgAssets = collectSVGAssets(allElements)
+    const { optimizedMap, sizeSavings } = await optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
+
+    // Temporarily apply optimized SVGs
+    const restoreSVGs = applyOptimizedSVGs(optimizedMap)
+
+    try {
+      const zip = new JSZip()
+
+      // Build window ID to folder path mapping for navigation
+      const windowFolderMap: Record<string, string> = {}
+      for (const w of windowsToExport) {
+        const baseName = toFolderName(w.name)
+        const folderName = w.type === 'developer' ? `dev-${baseName}` : baseName
+        windowFolderMap[w.id] = folderName
+      }
+
+      // Process each window
+      for (const window of windowsToExport) {
+        // Create folder name with dev- prefix for developer windows
+        const baseName = toFolderName(window.name)
+        const folderName = window.type === 'developer' ? `dev-${baseName}` : baseName
+
+        // Generate files for this window
+        const htmlContent = generateHTML(window.elements, {
+          canvasWidth: window.width,
+          canvasHeight: window.height,
+          backgroundColor: window.backgroundColor,
+          isPreviewMode: false,
+        })
+
+        const cssContent = await generateCSS(window.elements, {
+          canvasWidth: window.width,
+          canvasHeight: window.height,
+          backgroundColor: window.backgroundColor,
+        })
+
+        const componentsJS = generateComponentsJS(window.elements)
+
+        // Build window mapping for navigation (relative paths from this window's folder)
+        const windowMapping: Record<string, string> = {}
+        for (const [windowId, targetFolder] of Object.entries(windowFolderMap)) {
+          if (windowId !== window.id) {
+            windowMapping[windowId] = `../${targetFolder}/index.html`
+          }
+        }
+
+        const bindingsJS = generateBindingsJS(window.elements, {
+          isPreviewMode: false,
+          windowMapping: Object.keys(windowMapping).length > 0 ? windowMapping : undefined,
+        })
+
+        // Add responsive scaling script if enabled
+        const shouldIncludeResponsiveScaling = options.enableResponsiveScaling !== false
+        const responsiveScaleJS = shouldIncludeResponsiveScaling
+          ? generateResponsiveScaleJS(window.width, window.height)
+          : ''
+
+        const customScrollbarJS = generateCustomScrollbarJS()
+
+        const bindingsWithScaling = [
+          bindingsJS,
+          responsiveScaleJS,
+          customScrollbarJS
+        ].filter(Boolean).join('\n\n')
+
+        // Add files to folder
+        const folder = zip.folder(folderName)!
+        folder.file('index.html', htmlContent)
+        folder.file('style.css', cssContent)
+        folder.file('components.js', componentsJS)
+        folder.file('bindings.js', bindingsWithScaling)
+
+        // Bundle image assets for this window
+        const imageAssets = collectImageAssets(window.elements)
+        await bundleImageAssets(folder, imageAssets)
+      }
+
+      // Add root README
+      const readme = generateMultiWindowREADME(windowsToExport, options.includeDeveloperWindows)
+      zip.file('README.md', readme)
+
+      // Generate ZIP blob
+      const blob = await zip.generateAsync({ type: 'blob' })
+
+      // Trigger download
+      const filename = `${options.projectName || 'webview-ui'}-bundle.zip`
+      await fileSave(blob, {
+        fileName: filename,
+        extensions: ['.zip'],
+      })
+
+      return { success: true, sizeSavings }
+    } finally {
+      restoreSVGs()
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: true }
+    }
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred during export',
+    }
+  }
+}
+
+/**
+ * Generate README for multi-window export
+ */
+function generateMultiWindowREADME(
+  windows: WindowExportData[],
+  includedDevWindows?: boolean
+): string {
+  const devWindows = windows.filter(w => w.type === 'developer')
+
+  const windowList = windows
+    .map(w => {
+      const folderName = w.type === 'developer'
+        ? `dev-${toFolderName(w.name)}`
+        : toFolderName(w.name)
+      return `- **${w.name}** (${w.width}x${w.height}) - \`${folderName}/\``
+    })
+    .join('\n')
+
+  return `# VST3 WebView UI Bundle
+
+This bundle contains ${windows.length} window${windows.length > 1 ? 's' : ''} for your plugin UI.
+
+## Windows
+
+${windowList}
+
+${devWindows.length > 0 && includedDevWindows ? `
+### Developer Windows
+
+Developer windows (prefixed with \`dev-\`) are for development/debugging purposes.
+They should typically not be included in release builds.
+` : ''}
+
+## Integration
+
+Each window folder contains:
+- \`index.html\` - Main HTML file to load in WebView
+- \`style.css\` - Styles for all UI elements
+- \`components.js\` - UI component implementations
+- \`bindings.js\` - JUCE parameter bindings
+
+### Loading a Window
+
+\`\`\`cpp
+// In your JUCE editor component
+void loadWindow(const String& windowFolder) {
+    File uiDir = File::getSpecialLocation(File::currentApplicationFile)
+                     .getChildFile("Resources")
+                     .getChildFile(windowFolder);
+    webView->goToURL(uiDir.getChildFile("index.html").getFullPathName());
+}
+\`\`\`
+
+## Generated by Faceplate
+
+VST3 WebView UI Designer
+`
 }

@@ -168,11 +168,7 @@ function App() {
   // Subscribe to state that isDirty depends on, then compute
   const savedStateSnapshot = useStore((state) => state.savedStateSnapshot)
   const elements = useStore((state) => state.elements)
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
-  const backgroundType = useStore((state) => state.backgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
+  const windows = useStore((state) => state.windows)
   const snapToGridState = useStore((state) => state.snapToGrid)
   const gridSizeState = useStore((state) => state.gridSize)
   const assets = useStore((state) => state.assets)
@@ -185,11 +181,7 @@ function App() {
     }
     const currentSnapshot = JSON.stringify({
       elements,
-      canvasWidth,
-      canvasHeight,
-      backgroundColor,
-      backgroundType,
-      gradientConfig,
+      windows,
       snapToGrid: snapToGridState,
       gridSize: gridSizeState,
       assets,
@@ -227,6 +219,7 @@ function App() {
   const setLiveDragValues = useStore((state) => state.setLiveDragValues)
   const getElement = useStore((state) => state.getElement)
   const getAsset = useStore((state) => state.getAsset)
+  const addElementToWindow = useStore((state) => state.addElementToWindow)
 
   // Track active drag data for preview overlay
   const [activeDragData, setActiveDragData] = useState<{
@@ -398,6 +391,7 @@ function App() {
       newElement.y = canvasY - newElement.height / 2
 
       addElement(newElement)
+      addElementToWindow(newElement.id)
       setActiveDragData(null)
       return
     }
@@ -806,6 +800,7 @@ function App() {
     }
 
     addElement(newElement)
+    addElementToWindow(newElement.id)
 
     // Clear drag state
     setActiveDragData(null)

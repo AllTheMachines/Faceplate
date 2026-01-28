@@ -31,17 +31,15 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false)
 
   const addElements = useStore((state) => state.addElements)
-  const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
   const clearSelection = useStore((state) => state.clearSelection)
   const { isDirty } = useDirtyState()
   const setSavedState = useStore((state) => state.setSavedState)
   const clearSavedState = useStore((state) => state.clearSavedState)
   const elements = useStore((state) => state.elements)
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
-  const backgroundType = useStore((state) => state.backgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
+  const windows = useStore((state) => state.windows)
+  const activeWindow = useStore((state) => state.getActiveWindow())
+  const updateWindow = useStore((state) => state.updateWindow)
+  const addElementToWindow = useStore((state) => state.addElementToWindow)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
   const selectedIds = useStore((state) => state.selectedIds)
@@ -94,13 +92,16 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
   }, [files])
 
   const doImport = useCallback(() => {
-    if (!preview) return
+    if (!preview || !activeWindow) return
 
     setImporting(true)
     console.log('Starting import:', preview.elements.length, 'elements')
 
-    // Update canvas size
-    setCanvasDimensions(preview.canvasWidth, preview.canvasHeight)
+    // Update active window size
+    updateWindow(activeWindow.id, {
+      width: preview.canvasWidth,
+      height: preview.canvasHeight,
+    })
 
     // Clear existing selection
     clearSelection()
@@ -108,6 +109,11 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     // Add all elements in a single batch update
     console.log('Adding elements to store...')
     addElements(preview.elements)
+
+    // Add imported elements to active window
+    preview.elements.forEach(el => {
+      addElementToWindow(el.id)
+    })
 
     // Verify elements were added to store
     const currentElements = useStore.getState().elements
@@ -122,7 +128,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     setFiles({})
     setPreview(null)
     onClose()
-  }, [preview, addElements, setCanvasDimensions, clearSelection, clearSavedState, onClose])
+  }, [preview, activeWindow, addElements, updateWindow, addElementToWindow, clearSelection, clearSavedState, onClose])
 
   const handleImport = useCallback(() => {
     if (!preview) return
@@ -140,11 +146,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     try {
       const currentSnapshot = JSON.stringify({
         elements,
-        canvasWidth,
-        canvasHeight,
-        backgroundColor,
-        backgroundType,
-        gradientConfig,
+        windows,
         snapToGrid,
         gridSize,
         assets,
@@ -153,11 +155,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
 
       const json = serializeProject({
         elements,
-        canvasWidth,
-        canvasHeight,
-        backgroundColor,
-        backgroundType,
-        gradientConfig,
+        windows,
         snapToGrid,
         gridSize,
         selectedIds,
@@ -181,11 +179,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     }
   }, [
     elements,
-    canvasWidth,
-    canvasHeight,
-    backgroundColor,
-    backgroundType,
-    gradientConfig,
+    windows,
     snapToGrid,
     gridSize,
     selectedIds,

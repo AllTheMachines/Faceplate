@@ -7,19 +7,37 @@ import { ExportPanel } from '../export/ExportPanel'
 export function RightPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
   const hasSelection = selectedIds.length > 0
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
+
+  // Get active window for canvas dimensions/background
+  const activeWindow = useStore((state) => state.getActiveWindow())
+  const updateWindow = useStore((state) => state.updateWindow)
+
+  const canvasWidth = activeWindow?.width ?? 800
+  const canvasHeight = activeWindow?.height ?? 600
+  const backgroundColor = activeWindow?.backgroundColor ?? '#1a1a1a'
+
+  // Grid settings (global, not per-window)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
   const showGrid = useStore((state) => state.showGrid)
-  const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
-  const setBackgroundColor = useStore((state) => state.setBackgroundColor)
   const setSnapToGrid = useStore((state) => state.setSnapToGrid)
   const setShowGrid = useStore((state) => state.setShowGrid)
   const setGridSize = useStore((state) => state.setGridSize)
   const lockAllMode = useStore((state) => state.lockAllMode)
   const toggleLockAllMode = useStore((state) => state.toggleLockAllMode)
+
+  // Update handlers that modify active window
+  const setCanvasDimensions = (width: number, height: number) => {
+    if (activeWindow) {
+      updateWindow(activeWindow.id, { width, height })
+    }
+  }
+
+  const setBackgroundColor = (color: string) => {
+    if (activeWindow) {
+      updateWindow(activeWindow.id, { backgroundColor: color })
+    }
+  }
 
   return (
     <div className="bg-gray-800 border-l border-gray-700 overflow-y-auto flex flex-col">
@@ -50,67 +68,130 @@ export function RightPanel() {
         {hasSelection ? (
           <PropertyPanel />
         ) : (
-          /* Canvas Settings Section */
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-gray-300 mb-3">Canvas Settings</h3>
+          <>
+            {/* Window Properties Section */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-300 mb-3">Window Properties</h3>
 
-            <div className="space-y-3">
-              {/* Width Input */}
-              <div>
-                <label htmlFor="canvas-width" className="block text-xs text-gray-400 mb-1">
-                  Width
-                </label>
-                <input
-                  id="canvas-width"
-                  type="number"
-                  value={canvasWidth}
-                  onChange={(e) => setCanvasDimensions(Number(e.target.value), canvasHeight)}
-                  className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
-                  min={100}
-                  max={4000}
-                />
-              </div>
-
-              {/* Height Input */}
-              <div>
-                <label htmlFor="canvas-height" className="block text-xs text-gray-400 mb-1">
-                  Height
-                </label>
-                <input
-                  id="canvas-height"
-                  type="number"
-                  value={canvasHeight}
-                  onChange={(e) => setCanvasDimensions(canvasWidth, Number(e.target.value))}
-                  className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
-                  min={100}
-                  max={4000}
-                />
-              </div>
-
-              {/* Background Color Input */}
-              <div>
-                <label htmlFor="bg-color" className="block text-xs text-gray-400 mb-1">
-                  Background Color
-                </label>
-                <div className="flex gap-2">
+              <div className="space-y-3">
+                {/* Window Name */}
+                <div>
+                  <label htmlFor="window-name" className="block text-xs text-gray-400 mb-1">
+                    Name
+                  </label>
                   <input
-                    id="bg-color"
-                    type="color"
-                    value={backgroundColor}
-                    onChange={(e) => setBackgroundColor(e.target.value)}
-                    className="h-8 w-12 bg-gray-700 border border-gray-600 rounded cursor-pointer"
-                  />
-                  <input
+                    id="window-name"
                     type="text"
-                    value={backgroundColor}
-                    onChange={(e) => setBackgroundColor(e.target.value)}
-                    className="flex-1 bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm font-mono"
+                    value={activeWindow?.name ?? ''}
+                    onChange={(e) => {
+                      if (activeWindow) {
+                        updateWindow(activeWindow.id, { name: e.target.value })
+                      }
+                    }}
+                    className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
                   />
                 </div>
-              </div>
 
-              {/* Grid Settings */}
-              <div className="pt-2 border-t border-gray-700 space-y-2">
+                {/* Window Type Toggle */}
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Type</label>
+                  <div className="flex rounded overflow-hidden border border-gray-600">
+                    <button
+                      onClick={() => {
+                        if (activeWindow) {
+                          updateWindow(activeWindow.id, { type: 'release' })
+                        }
+                      }}
+                      className={`flex-1 px-3 py-1.5 text-sm font-medium transition-colors ${
+                        activeWindow?.type === 'release'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                      }`}
+                    >
+                      Release
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (activeWindow) {
+                          updateWindow(activeWindow.id, { type: 'developer' })
+                        }
+                      }}
+                      className={`flex-1 px-3 py-1.5 text-sm font-medium transition-colors ${
+                        activeWindow?.type === 'developer'
+                          ? 'bg-amber-600 text-white'
+                          : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                      }`}
+                    >
+                      Developer
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {activeWindow?.type === 'developer'
+                      ? 'Developer windows are excluded from default export'
+                      : 'Release windows are always included in export'}
+                  </p>
+                </div>
+
+                {/* Width Input */}
+                <div>
+                  <label htmlFor="canvas-width" className="block text-xs text-gray-400 mb-1">
+                    Width
+                  </label>
+                  <input
+                    id="canvas-width"
+                    type="number"
+                    value={canvasWidth}
+                    onChange={(e) => setCanvasDimensions(Number(e.target.value), canvasHeight)}
+                    className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
+                    min={100}
+                    max={4000}
+                  />
+                </div>
+
+                {/* Height Input */}
+                <div>
+                  <label htmlFor="canvas-height" className="block text-xs text-gray-400 mb-1">
+                    Height
+                  </label>
+                  <input
+                    id="canvas-height"
+                    type="number"
+                    value={canvasHeight}
+                    onChange={(e) => setCanvasDimensions(canvasWidth, Number(e.target.value))}
+                    className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
+                    min={100}
+                    max={4000}
+                  />
+                </div>
+
+                {/* Background Color Input */}
+                <div>
+                  <label htmlFor="bg-color" className="block text-xs text-gray-400 mb-1">
+                    Background Color
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      id="bg-color"
+                      type="color"
+                      value={backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      className="h-8 w-12 bg-gray-700 border border-gray-600 rounded cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      className="flex-1 bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Grid Settings Section */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-300 mb-3">Grid Settings</h3>
+              <div className="space-y-2">
                 {/* Show Grid Toggle */}
                 <div className="flex items-center gap-2">
                   <input
@@ -159,7 +240,7 @@ export function RightPanel() {
                 </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
       <div className="mt-auto">

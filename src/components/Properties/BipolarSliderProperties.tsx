@@ -117,6 +117,7 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
         showLabel={element.showLabel}
         labelText={element.labelText}
         labelPosition={element.labelPosition}
+        labelDistance={element.labelDistance}
         labelFontSize={element.labelFontSize}
         labelColor={element.labelColor}
         onShowLabelChange={(showLabel) => onUpdate({ showLabel })}
@@ -124,6 +125,7 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
         onLabelPositionChange={(labelPosition) =>
           onUpdate({ labelPosition: labelPosition as BipolarSliderElementConfig['labelPosition'] })
         }
+        onLabelDistanceChange={(labelDistance) => onUpdate({ labelDistance })}
         onLabelFontSizeChange={(labelFontSize) => onUpdate({ labelFontSize })}
         onLabelColorChange={(labelColor) => onUpdate({ labelColor })}
       />
@@ -132,6 +134,7 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
       <ValueDisplaySection
         showValue={element.showValue}
         valuePosition={element.valuePosition}
+        valueDistance={element.valueDistance}
         valueFormat={element.valueFormat}
         valueSuffix={element.valueSuffix}
         valueDecimalPlaces={element.valueDecimalPlaces}
@@ -141,6 +144,7 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
         onValuePositionChange={(valuePosition) =>
           onUpdate({ valuePosition: valuePosition as BipolarSliderElementConfig['valuePosition'] })
         }
+        onValueDistanceChange={(valueDistance) => onUpdate({ valueDistance })}
         onValueFormatChange={(valueFormat) =>
           onUpdate({ valueFormat: valueFormat as BipolarSliderElementConfig['valueFormat'] })
         }

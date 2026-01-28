@@ -109,6 +109,7 @@ export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesPr
         showLabel={element.showLabel}
         labelText={element.labelText}
         labelPosition={element.labelPosition}
+        labelDistance={element.labelDistance}
         labelFontSize={element.labelFontSize}
         labelColor={element.labelColor}
         onShowLabelChange={(showLabel) => onUpdate({ showLabel })}
@@ -116,6 +117,7 @@ export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesPr
         onLabelPositionChange={(labelPosition) =>
           onUpdate({ labelPosition: labelPosition as ArcSliderElementConfig['labelPosition'] })
         }
+        onLabelDistanceChange={(labelDistance) => onUpdate({ labelDistance })}
         onLabelFontSizeChange={(labelFontSize) => onUpdate({ labelFontSize })}
         onLabelColorChange={(labelColor) => onUpdate({ labelColor })}
       />
@@ -124,6 +126,7 @@ export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesPr
       <ValueDisplaySection
         showValue={element.showValue}
         valuePosition={element.valuePosition}
+        valueDistance={element.valueDistance}
         valueFormat={element.valueFormat}
         valueSuffix={element.valueSuffix}
         valueDecimalPlaces={element.valueDecimalPlaces}
@@ -133,6 +136,7 @@ export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesPr
         onValuePositionChange={(valuePosition) =>
           onUpdate({ valuePosition: valuePosition as ArcSliderElementConfig['valuePosition'] })
         }
+        onValueDistanceChange={(valueDistance) => onUpdate({ valueDistance })}
         onValueFormatChange={(valueFormat) =>
           onUpdate({ valueFormat: valueFormat as ArcSliderElementConfig['valueFormat'] })
         }

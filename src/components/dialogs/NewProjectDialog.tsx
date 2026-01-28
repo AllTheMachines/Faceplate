@@ -10,7 +10,7 @@ interface NewProjectDialogProps {
 
 export const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ isOpen, onClose }) => {
   const { templates } = useTemplateStore()
-  const { loadFromTemplate, clearCanvas, setCanvasDimensions } = useStore()
+  const { loadFromTemplate, clearCanvas, updateWindow, getActiveWindow } = useStore()
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
 
   if (!isOpen) return null
@@ -23,7 +23,11 @@ export const NewProjectDialog: React.FC<NewProjectDialogProps> = ({ isOpen, onCl
 
   const handleStartBlank = () => {
     clearCanvas()
-    setCanvasDimensions(600, 400) // Default size
+    // Update active window dimensions
+    const activeWindow = getActiveWindow()
+    if (activeWindow) {
+      updateWindow(activeWindow.id, { width: 600, height: 400 })
+    }
     onClose()
   }
 

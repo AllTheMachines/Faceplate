@@ -125,6 +125,7 @@ export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderProp
         showLabel={element.showLabel}
         labelText={element.labelText}
         labelPosition={element.labelPosition}
+        labelDistance={element.labelDistance}
         labelFontSize={element.labelFontSize}
         labelColor={element.labelColor}
         onShowLabelChange={(showLabel) => onUpdate({ showLabel })}
@@ -132,6 +133,7 @@ export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderProp
         onLabelPositionChange={(labelPosition) =>
           onUpdate({ labelPosition: labelPosition as NotchedSliderElementConfig['labelPosition'] })
         }
+        onLabelDistanceChange={(labelDistance) => onUpdate({ labelDistance })}
         onLabelFontSizeChange={(labelFontSize) => onUpdate({ labelFontSize })}
         onLabelColorChange={(labelColor) => onUpdate({ labelColor })}
       />
@@ -140,6 +142,7 @@ export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderProp
       <ValueDisplaySection
         showValue={element.showValue}
         valuePosition={element.valuePosition}
+        valueDistance={element.valueDistance}
         valueFormat={element.valueFormat}
         valueSuffix={element.valueSuffix}
         valueDecimalPlaces={element.valueDecimalPlaces}
@@ -149,6 +152,7 @@ export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderProp
         onValuePositionChange={(valuePosition) =>
           onUpdate({ valuePosition: valuePosition as NotchedSliderElementConfig['valuePosition'] })
         }
+        onValueDistanceChange={(valueDistance) => onUpdate({ valueDistance })}
         onValueFormatChange={(valueFormat) =>
           onUpdate({ valueFormat: valueFormat as NotchedSliderElementConfig['valueFormat'] })
         }
