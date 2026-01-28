@@ -67,8 +67,8 @@ export function MultiValueDisplayRenderer({ config }: MultiValueDisplayRendererP
               style={{
                 fontFamily: config.fontFamily,
                 fontSize: `${config.fontSize}px`,
+                fontWeight: config.fontWeight,
                 color: textColor,
-                fontWeight: 500,
               }}
             >
               {formattedValue}

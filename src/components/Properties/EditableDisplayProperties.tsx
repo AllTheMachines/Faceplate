@@ -1,5 +1,7 @@
 import { EditableDisplayElementConfig, ElementConfig } from '../../types/elements'
-import { NumberInput, ColorInput, PropertySection } from './'
+import { NumberInput, PropertySection } from './'
+import { ColorsSection, FontSection } from './shared'
+import { SELECT_CLASSNAME } from './constants'
 
 interface EditableDisplayPropertiesProps {
   element: EditableDisplayElementConfig
@@ -42,7 +44,7 @@ export function EditableDisplayProperties({ element, onUpdate }: EditableDisplay
           <select
             value={element.format}
             onChange={(e) => onUpdate({ format: e.target.value as 'numeric' | 'percentage' | 'db' })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="numeric">Numeric</option>
             <option value="percentage">Percentage</option>
@@ -60,54 +62,26 @@ export function EditableDisplayProperties({ element, onUpdate }: EditableDisplay
       </PropertySection>
 
       {/* Colors */}
-      <PropertySection title="Colors">
-        <ColorInput
-          label="Text Color"
-          value={element.textColor}
-          onChange={(textColor) => onUpdate({ textColor })}
-        />
-        <ColorInput
-          label="Background Color"
-          value={element.backgroundColor}
-          onChange={(backgroundColor) => onUpdate({ backgroundColor })}
-        />
-        <ColorInput
-          label="Border Color"
-          value={element.borderColor}
-          onChange={(borderColor) => onUpdate({ borderColor })}
-        />
-      </PropertySection>
+      <ColorsSection
+        textColor={element.textColor}
+        backgroundColor={element.backgroundColor}
+        borderColor={element.borderColor}
+        onTextColorChange={(textColor) => onUpdate({ textColor })}
+        onBackgroundColorChange={(backgroundColor) => onUpdate({ backgroundColor })}
+        onBorderColorChange={(borderColor) => onUpdate({ borderColor })}
+      />
 
       {/* Font */}
-      <PropertySection title="Font">
-        <NumberInput
-          label="Font Size"
-          value={element.fontSize}
-          onChange={(fontSize) => onUpdate({ fontSize })}
-          min={8}
-          max={72}
-          step={1}
-        />
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
-          <select
-            value={element.fontFamily}
-            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-          >
-            <option value="Roboto Mono, monospace">Roboto Mono</option>
-            <option value="Inter, system-ui, sans-serif">Inter</option>
-          </select>
-        </div>
-        <NumberInput
-          label="Padding"
-          value={element.padding}
-          onChange={(padding) => onUpdate({ padding })}
-          min={0}
-          max={50}
-          step={1}
-        />
-      </PropertySection>
+      <FontSection
+        fontSize={element.fontSize}
+        fontFamily={element.fontFamily}
+        fontWeight={element.fontWeight}
+        padding={element.padding}
+        onFontSizeChange={(fontSize) => onUpdate({ fontSize })}
+        onFontFamilyChange={(fontFamily) => onUpdate({ fontFamily })}
+        onFontWeightChange={(fontWeight) => onUpdate({ fontWeight })}
+        onPaddingChange={(padding) => onUpdate({ padding })}
+      />
     </>
   )
 }

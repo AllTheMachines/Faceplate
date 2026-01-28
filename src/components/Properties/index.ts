@@ -100,6 +100,20 @@ import {
   LFODisplayProperties,
   FilterResponseProperties,
 } from './curves'
+import {
+  PianoKeyboardProperties,
+  DrumPadProperties,
+  PadGridProperties,
+  StepSequencerProperties,
+  XYPadProperties,
+  WavetableDisplayProperties,
+  HarmonicEditorProperties,
+  LoopPointsProperties,
+  EnvelopeEditorProperties,
+  SampleDisplayProperties,
+  PatchBayProperties,
+  SignalFlowProperties,
+} from './specialized'
 
 // Re-export all property components
 export { KnobProperties } from './KnobProperties'
@@ -194,6 +208,20 @@ export {
   LFODisplayProperties,
   FilterResponseProperties,
 } from './curves'
+export {
+  PianoKeyboardProperties,
+  DrumPadProperties,
+  PadGridProperties,
+  StepSequencerProperties,
+  XYPadProperties,
+  WavetableDisplayProperties,
+  HarmonicEditorProperties,
+  LoopPointsProperties,
+  EnvelopeEditorProperties,
+  SampleDisplayProperties,
+  PatchBayProperties,
+  SignalFlowProperties,
+} from './specialized'
 
 // Property component props interface
 export interface PropertyComponentProps {
@@ -321,6 +349,20 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['svggraphic', SvgGraphicProperties],
   ['rectangle', RectangleProperties],
   ['line', LineProperties],
+
+  // Specialized Audio
+  ['pianokeyboard', PianoKeyboardProperties],
+  ['drumpad', DrumPadProperties],
+  ['padgrid', PadGridProperties],
+  ['stepsequencer', StepSequencerProperties],
+  ['xypad', XYPadProperties],
+  ['wavetabledisplay', WavetableDisplayProperties],
+  ['harmoniceditor', HarmonicEditorProperties],
+  ['looppoints', LoopPointsProperties],
+  ['envelopeeditor', EnvelopeEditorProperties],
+  ['sampledisplay', SampleDisplayProperties],
+  ['patchbay', PatchBayProperties],
+  ['signalflow', SignalFlowProperties],
 ])
 
 // Type-safe lookup function

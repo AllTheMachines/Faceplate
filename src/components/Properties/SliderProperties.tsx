@@ -1,5 +1,7 @@
 import { SliderElementConfig, ElementConfig } from '../../types/elements'
-import { NumberInput, ColorInput, PropertySection, TextInput } from './'
+import { NumberInput, ColorInput, PropertySection } from './'
+import { LabelDisplaySection, ValueDisplaySection } from './shared'
+import { SELECT_CLASSNAME } from './constants'
 
 interface SliderPropertiesProps {
   element: SliderElementConfig
@@ -20,7 +22,7 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
                 orientation: e.target.value as SliderElementConfig['orientation'],
               })
             }
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="vertical">Vertical</option>
             <option value="horizontal">Horizontal</option>
@@ -66,6 +68,13 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
           value={element.trackFillColor}
           onChange={(trackFillColor) => onUpdate({ trackFillColor })}
         />
+        <NumberInput
+          label="Track Width"
+          value={element.trackWidth}
+          onChange={(trackWidth) => onUpdate({ trackWidth })}
+          min={2}
+          max={20}
+        />
       </PropertySection>
 
       {/* Thumb */}
@@ -94,131 +103,50 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
       </PropertySection>
 
       {/* Label */}
-      <PropertySection title="Label">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={element.showLabel}
-            onChange={(e) => onUpdate({ showLabel: e.target.checked })}
-            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-300">Show Label</span>
-        </label>
-        {element.showLabel && (
-          <>
-            <TextInput
-              label="Label Text"
-              value={element.labelText}
-              onChange={(labelText) => onUpdate({ labelText })}
-            />
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Position</label>
-              <select
-                value={element.labelPosition}
-                onChange={(e) =>
-                  onUpdate({ labelPosition: e.target.value as SliderElementConfig['labelPosition'] })
-                }
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <NumberInput
-                label="Font Size"
-                value={element.labelFontSize}
-                onChange={(labelFontSize) => onUpdate({ labelFontSize })}
-                min={8}
-                max={32}
-              />
-              <ColorInput
-                label="Color"
-                value={element.labelColor}
-                onChange={(labelColor) => onUpdate({ labelColor })}
-              />
-            </div>
-          </>
-        )}
-      </PropertySection>
+      <LabelDisplaySection
+        showLabel={element.showLabel}
+        labelText={element.labelText}
+        labelPosition={element.labelPosition}
+        labelFontSize={element.labelFontSize}
+        labelColor={element.labelColor}
+        labelFontFamily={element.labelFontFamily}
+        labelFontWeight={element.labelFontWeight}
+        onShowLabelChange={(showLabel) => onUpdate({ showLabel })}
+        onLabelTextChange={(labelText) => onUpdate({ labelText })}
+        onLabelPositionChange={(labelPosition) =>
+          onUpdate({ labelPosition: labelPosition as SliderElementConfig['labelPosition'] })
+        }
+        onLabelFontSizeChange={(labelFontSize) => onUpdate({ labelFontSize })}
+        onLabelColorChange={(labelColor) => onUpdate({ labelColor })}
+        onLabelFontFamilyChange={(labelFontFamily) => onUpdate({ labelFontFamily })}
+        onLabelFontWeightChange={(labelFontWeight) => onUpdate({ labelFontWeight })}
+      />
 
       {/* Value Display */}
-      <PropertySection title="Value Display">
-        <label className="flex items-center gap-2 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={element.showValue}
-            onChange={(e) => onUpdate({ showValue: e.target.checked })}
-            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-300">Show Value</span>
-        </label>
-        {element.showValue && (
-          <>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Position</label>
-              <select
-                value={element.valuePosition}
-                onChange={(e) =>
-                  onUpdate({ valuePosition: e.target.value as SliderElementConfig['valuePosition'] })
-                }
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-              >
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Format</label>
-              <select
-                value={element.valueFormat}
-                onChange={(e) =>
-                  onUpdate({ valueFormat: e.target.value as SliderElementConfig['valueFormat'] })
-                }
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-              >
-                <option value="numeric">Numeric</option>
-                <option value="percentage">Percentage</option>
-                <option value="db">dB</option>
-                <option value="hz">Hz</option>
-                <option value="custom">Custom</option>
-              </select>
-            </div>
-            {element.valueFormat === 'custom' && (
-              <TextInput
-                label="Suffix"
-                value={element.valueSuffix}
-                onChange={(valueSuffix) => onUpdate({ valueSuffix })}
-              />
-            )}
-            <div className="grid grid-cols-2 gap-3">
-              <NumberInput
-                label="Decimal Places"
-                value={element.valueDecimalPlaces}
-                onChange={(valueDecimalPlaces) => onUpdate({ valueDecimalPlaces })}
-                min={0}
-                max={4}
-              />
-              <NumberInput
-                label="Font Size"
-                value={element.valueFontSize}
-                onChange={(valueFontSize) => onUpdate({ valueFontSize })}
-                min={8}
-                max={32}
-              />
-            </div>
-            <ColorInput
-              label="Color"
-              value={element.valueColor}
-              onChange={(valueColor) => onUpdate({ valueColor })}
-            />
-          </>
-        )}
-      </PropertySection>
+      <ValueDisplaySection
+        showValue={element.showValue}
+        valuePosition={element.valuePosition}
+        valueFormat={element.valueFormat}
+        valueSuffix={element.valueSuffix}
+        valueDecimalPlaces={element.valueDecimalPlaces}
+        valueFontSize={element.valueFontSize}
+        valueColor={element.valueColor}
+        valueFontFamily={element.valueFontFamily}
+        valueFontWeight={element.valueFontWeight}
+        onShowValueChange={(showValue) => onUpdate({ showValue })}
+        onValuePositionChange={(valuePosition) =>
+          onUpdate({ valuePosition: valuePosition as SliderElementConfig['valuePosition'] })
+        }
+        onValueFormatChange={(valueFormat) =>
+          onUpdate({ valueFormat: valueFormat as SliderElementConfig['valueFormat'] })
+        }
+        onValueSuffixChange={(valueSuffix) => onUpdate({ valueSuffix })}
+        onValueDecimalPlacesChange={(valueDecimalPlaces) => onUpdate({ valueDecimalPlaces })}
+        onValueFontSizeChange={(valueFontSize) => onUpdate({ valueFontSize })}
+        onValueColorChange={(valueColor) => onUpdate({ valueColor })}
+        onValueFontFamilyChange={(valueFontFamily) => onUpdate({ valueFontFamily })}
+        onValueFontWeightChange={(valueFontWeight) => onUpdate({ valueFontWeight })}
+      />
     </>
   )
 }

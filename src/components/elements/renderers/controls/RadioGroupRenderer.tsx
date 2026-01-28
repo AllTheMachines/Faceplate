@@ -58,8 +58,9 @@ export function RadioGroupRenderer({ config }: RadioGroupRendererProps) {
             style={{
               marginLeft: '8px',
               color: config.textColor,
-              fontSize: '14px',
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontSize: `${config.fontSize}px`,
+              fontFamily: config.fontFamily,
+              fontWeight: config.fontWeight,
             }}
           >
             {option}

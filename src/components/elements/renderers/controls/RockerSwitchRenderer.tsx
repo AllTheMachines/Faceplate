@@ -107,9 +107,10 @@ export function RockerSwitchRenderer({ config }: RockerSwitchRendererProps) {
             flexDirection: 'column',
             justifyContent: 'space-between',
             height: trackHeight,
-            fontSize: '10px',
+            fontSize: `${config.labelFontSize}px`,
+            fontFamily: config.labelFontFamily,
+            fontWeight: config.labelFontWeight,
             color: config.labelColor,
-            fontFamily: 'Inter, system-ui, sans-serif',
           }}
         >
           <span style={{ opacity: config.position === 2 ? 1 : 0.5 }}>

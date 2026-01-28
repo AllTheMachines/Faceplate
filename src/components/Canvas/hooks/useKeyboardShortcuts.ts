@@ -10,26 +10,33 @@ export function useKeyboardShortcuts() {
   const moveToBack = useStore((state) => state.moveToBack)
   const moveForward = useStore((state) => state.moveForward)
   const moveBackward = useStore((state) => state.moveBackward)
+  const toggleShowGrid = useStore((state) => state.toggleShowGrid)
 
   // Copy/paste functionality
   const { copyToClipboard, pasteFromClipboard } = useCopyPaste()
 
-  // Undo
+  // Undo - explicit ctrl+z for Windows/Linux, cmd+z for Mac
   useHotkeys(
-    'ctrl+z',
-    () => {
+    'ctrl+z, meta+z',
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('[Undo] Triggered via', e.key, 'ctrl:', e.ctrlKey, 'meta:', e.metaKey)
       useStore.temporal.getState().undo()
     },
-    { preventDefault: true, enableOnFormTags: false }
+    { preventDefault: true, enableOnFormTags: true, enableOnContentEditable: true }
   )
 
-  // Redo (both Ctrl+Y and Ctrl+Shift+Z)
+  // Redo - ctrl+y, ctrl+shift+z (Windows/Linux), cmd+shift+z (Mac)
   useHotkeys(
-    'ctrl+y, ctrl+shift+z',
-    () => {
+    'ctrl+y, ctrl+shift+z, meta+shift+z',
+    (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('[Redo] Triggered via', e.key)
       useStore.temporal.getState().redo()
     },
-    { preventDefault: true, enableOnFormTags: false }
+    { preventDefault: true, enableOnFormTags: true, enableOnContentEditable: true }
   )
 
   // Delete selected elements
@@ -122,5 +129,16 @@ export function useKeyboardShortcuts() {
     },
     { enableOnFormTags: false },
     [pasteFromClipboard]
+  )
+
+  // Toggle Grid: Ctrl/Cmd + G
+  useHotkeys(
+    'mod+g',
+    (e) => {
+      e.preventDefault()
+      toggleShowGrid()
+    },
+    { enableOnFormTags: false },
+    [toggleShowGrid]
   )
 }

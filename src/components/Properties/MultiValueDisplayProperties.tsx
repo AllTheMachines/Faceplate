@@ -1,5 +1,18 @@
 import { MultiValueDisplayElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
+import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
+
+const FONT_WEIGHTS = [
+  { value: 100, label: 'Thin' },
+  { value: 200, label: 'Extra Light' },
+  { value: 300, label: 'Light' },
+  { value: 400, label: 'Regular' },
+  { value: 500, label: 'Medium' },
+  { value: 600, label: 'Semi Bold' },
+  { value: 700, label: 'Bold' },
+  { value: 800, label: 'Extra Bold' },
+  { value: 900, label: 'Black' },
+] as const
 
 interface MultiValueDisplayPropertiesProps {
   element: MultiValueDisplayElementConfig
@@ -160,8 +173,25 @@ export function MultiValueDisplayProperties({ element, onUpdate }: MultiValueDis
             onChange={(e) => onUpdate({ fontFamily: e.target.value })}
             className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
           >
-            <option value="Roboto Mono, monospace">Roboto Mono</option>
-            <option value="Inter, system-ui, sans-serif">Inter</option>
+            {AVAILABLE_FONTS.map((font) => (
+              <option key={font.family} value={font.family}>
+                {font.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
+          <select
+            value={element.fontWeight}
+            onChange={(e) => onUpdate({ fontWeight: Number(e.target.value) })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            {FONT_WEIGHTS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
         <NumberInput

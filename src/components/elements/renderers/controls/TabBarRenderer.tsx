@@ -94,7 +94,7 @@ export function TabBarRenderer({ config }: TabBarRendererProps) {
                 gap: '6px',
               }}
             >
-              {renderTabContent(tab)}
+              {renderTabContent(tab, config)}
             </div>
 
             {/* Indicator (underline or accent-bar) */}
@@ -133,7 +133,7 @@ export function TabBarRenderer({ config }: TabBarRendererProps) {
 /**
  * Render tab content based on showIcon and showLabel settings
  */
-function renderTabContent(tab: TabConfig) {
+function renderTabContent(tab: TabConfig, config: TabBarElementConfig) {
   const iconSize = 18
 
   const iconElement =
@@ -155,9 +155,9 @@ function renderTabContent(tab: TabConfig) {
     tab.showLabel && tab.label ? (
       <span
         style={{
-          fontSize: '13px',
-          fontFamily: 'Inter, system-ui, sans-serif',
-          fontWeight: 500,
+          fontSize: `${config.fontSize}px`,
+          fontFamily: config.fontFamily,
+          fontWeight: config.fontWeight,
           whiteSpace: 'nowrap',
         }}
       >

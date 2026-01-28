@@ -12,9 +12,12 @@ export function RightPanel() {
   const backgroundColor = useStore((state) => state.backgroundColor)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
+  const showGrid = useStore((state) => state.showGrid)
   const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
   const setBackgroundColor = useStore((state) => state.setBackgroundColor)
   const setSnapToGrid = useStore((state) => state.setSnapToGrid)
+  const setShowGrid = useStore((state) => state.setShowGrid)
+  const setGridSize = useStore((state) => state.setGridSize)
   const lockAllMode = useStore((state) => state.lockAllMode)
   const toggleLockAllMode = useStore((state) => state.toggleLockAllMode)
 
@@ -106,18 +109,54 @@ export function RightPanel() {
                 </div>
               </div>
 
-              {/* Snap to Grid Toggle */}
-              <div className="flex items-center gap-2 pt-2 border-t border-gray-700">
-                <input
-                  type="checkbox"
-                  id="snap-toggle"
-                  checked={snapToGrid}
-                  onChange={(e) => setSnapToGrid(e.target.checked)}
-                  className="rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
-                />
-                <label htmlFor="snap-toggle" className="text-sm text-gray-300">
-                  Snap to grid ({gridSize}px)
-                </label>
+              {/* Grid Settings */}
+              <div className="pt-2 border-t border-gray-700 space-y-2">
+                {/* Show Grid Toggle */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="show-grid-toggle"
+                    checked={showGrid}
+                    onChange={(e) => setShowGrid(e.target.checked)}
+                    className="rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                  />
+                  <label htmlFor="show-grid-toggle" className="text-sm text-gray-300">
+                    Show grid
+                  </label>
+                  <span className="text-xs text-gray-500 ml-auto">Ctrl+G</span>
+                </div>
+
+                {/* Snap to Grid Toggle */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="snap-toggle"
+                    checked={snapToGrid}
+                    onChange={(e) => setSnapToGrid(e.target.checked)}
+                    className="rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                  />
+                  <label htmlFor="snap-toggle" className="text-sm text-gray-300">
+                    Snap to grid
+                  </label>
+                </div>
+
+                {/* Grid Size Selector */}
+                <div className="flex items-center gap-2">
+                  <label htmlFor="grid-size" className="text-sm text-gray-300">
+                    Grid size
+                  </label>
+                  <select
+                    id="grid-size"
+                    value={gridSize}
+                    onChange={(e) => setGridSize(Number(e.target.value))}
+                    className="ml-auto bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
+                  >
+                    <option value={5}>5px</option>
+                    <option value={10}>10px</option>
+                    <option value={20}>20px</option>
+                    <option value={50}>50px</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>

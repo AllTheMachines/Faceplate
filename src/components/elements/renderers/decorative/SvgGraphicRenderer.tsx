@@ -26,6 +26,8 @@ export function SvgGraphicRenderer({ config }: SvgGraphicRendererProps) {
 
   // State 1: Unassigned placeholder (assetId is undefined)
   if (!config.assetId) {
+    // Use smaller font for compact preview sizes
+    const isCompact = config.width < 80 || config.height < 80
     return (
       <div
         style={{
@@ -38,11 +40,14 @@ export function SvgGraphicRenderer({ config }: SvgGraphicRendererProps) {
           border: '2px dashed #4b5563',
           backgroundColor: '#374151',
           color: '#9ca3af',
-          fontSize: '12px',
+          fontSize: isCompact ? '8px' : '12px',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+          padding: '2px',
         }}
       >
-        <div style={{ fontSize: '24px', marginBottom: '8px' }}>📁</div>
-        <span>Select Asset</span>
+        <div style={{ fontSize: isCompact ? '16px' : '24px', marginBottom: isCompact ? '2px' : '8px', lineHeight: 1 }}>📁</div>
+        <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{isCompact ? 'SVG' : 'Select Asset'}</span>
       </div>
     )
   }
@@ -51,6 +56,7 @@ export function SvgGraphicRenderer({ config }: SvgGraphicRendererProps) {
 
   // State 3: Missing asset (assetId exists but asset not found)
   if (!asset) {
+    const isCompact = config.width < 80 || config.height < 80
     return (
       <div
         style={{
@@ -63,11 +69,14 @@ export function SvgGraphicRenderer({ config }: SvgGraphicRendererProps) {
           border: '2px solid #ef4444',
           backgroundColor: '#7f1d1d',
           color: '#fca5a5',
-          fontSize: '12px',
+          fontSize: isCompact ? '8px' : '12px',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+          padding: '2px',
         }}
       >
-        <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚠️</div>
-        <span>Asset not found</span>
+        <div style={{ fontSize: isCompact ? '16px' : '24px', marginBottom: isCompact ? '2px' : '8px', lineHeight: 1 }}>⚠️</div>
+        <span style={{ textAlign: 'center', lineHeight: 1.1 }}>{isCompact ? 'Missing' : 'Asset not found'}</span>
       </div>
     )
   }

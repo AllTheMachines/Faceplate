@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { RadioGroupElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 
 interface RadioGroupPropertiesProps {
   element: RadioGroupElementConfig
@@ -70,6 +71,45 @@ export function RadioGroupProperties({ element, onUpdate }: RadioGroupProperties
           onChange={(spacing) => onUpdate({ spacing })}
           min={0}
           max={20}
+        />
+      </PropertySection>
+
+      {/* Typography */}
+      <PropertySection title="Typography">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
+          <select
+            value={element.fontFamily}
+            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            {AVAILABLE_FONTS.map((font) => (
+              <option key={font.family} value={font.family}>
+                {font.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
+          <select
+            value={element.fontWeight}
+            onChange={(e) => onUpdate({ fontWeight: e.target.value })}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            <option value="300">Light (300)</option>
+            <option value="400">Regular (400)</option>
+            <option value="500">Medium (500)</option>
+            <option value="600">Semi-Bold (600)</option>
+            <option value="700">Bold (700)</option>
+          </select>
+        </div>
+        <NumberInput
+          label="Font Size"
+          value={element.fontSize}
+          onChange={(fontSize) => onUpdate({ fontSize })}
+          min={8}
+          max={24}
         />
       </PropertySection>
 

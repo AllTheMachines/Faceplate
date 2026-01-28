@@ -36,6 +36,7 @@ export function RatioDisplayRenderer({ config }: RatioDisplayRendererProps) {
         justifyContent: 'center',
         fontFamily: config.fontStyle === '7segment' ? 'monospace' : config.fontFamily,
         fontSize: `${config.fontSize}px`,
+        fontWeight: config.fontWeight,
         color: config.textColor,
         borderRadius: 0,
         boxSizing: 'border-box',

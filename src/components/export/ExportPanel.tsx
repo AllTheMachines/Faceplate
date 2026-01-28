@@ -29,7 +29,7 @@ interface ExportDetails {
 }
 
 export function ExportPanel() {
-  const [expanded, setExpanded] = useState(true)
+  const [expanded, setExpanded] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const [exportStatus, setExportStatus] = useState<string>('')
   const [error, setError] = useState<string | null>(null)

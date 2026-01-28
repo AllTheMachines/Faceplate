@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useState, useCallback, KeyboardEvent } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { useStore } from '../../store'
 import { usePan, useZoom, useKeyboardShortcuts, useMarquee, useElementNudge } from './hooks'
@@ -22,6 +22,13 @@ export function Canvas() {
   const offsetY = useStore((state) => state.offsetY)
   const isPanning = useStore((state) => state.isPanning)
   const dragStart = useStore((state) => state.dragStart)
+  const setScale = useStore((state) => state.setScale)
+  const setViewport = useStore((state) => state.setViewport)
+
+  // Zoom input state
+  const [isEditingZoom, setIsEditingZoom] = useState(false)
+  const [zoomInputValue, setZoomInputValue] = useState('')
+  const zoomInputRef = useRef<HTMLInputElement>(null)
 
   // Get canvas dimensions and background
   const canvasWidth = useStore((state) => state.canvasWidth)
@@ -29,6 +36,11 @@ export function Canvas() {
   const backgroundColor = useStore((state) => state.backgroundColor)
   const backgroundType = useStore((state) => state.backgroundType)
   const gradientConfig = useStore((state) => state.gradientConfig)
+
+  // Grid settings
+  const showGrid = useStore((state) => state.showGrid)
+  const gridSize = useStore((state) => state.gridSize)
+  const gridColor = useStore((state) => state.gridColor)
 
   // Get elements
   const elements = useStore((state) => state.elements)
@@ -55,6 +67,50 @@ export function Canvas() {
     }
     clearSelection()
   }, [clearSelection, justFinishedDrag])
+
+  // Zoom edit handlers
+  const handleZoomDoubleClick = useCallback(() => {
+    // Reset to 100% and center the canvas
+    const viewportEl = viewportRef.current
+    if (viewportEl) {
+      const rect = viewportEl.getBoundingClientRect()
+      // Center the canvas at 100%
+      const newOffsetX = (rect.width - canvasWidth) / 2
+      const newOffsetY = (rect.height - canvasHeight) / 2
+      setViewport(1, newOffsetX, newOffsetY)
+    } else {
+      setScale(1)
+    }
+  }, [canvasWidth, canvasHeight, setViewport, setScale])
+
+  const handleZoomClick = useCallback(() => {
+    setZoomInputValue(Math.round(scale * 100).toString())
+    setIsEditingZoom(true)
+    // Focus input after render
+    setTimeout(() => zoomInputRef.current?.select(), 0)
+  }, [scale])
+
+  const handleZoomInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    // Only allow numbers
+    const value = e.target.value.replace(/[^0-9]/g, '')
+    setZoomInputValue(value)
+  }, [])
+
+  const handleZoomInputBlur = useCallback(() => {
+    const percent = parseInt(zoomInputValue, 10)
+    if (!isNaN(percent) && percent >= 10 && percent <= 1000) {
+      setScale(percent / 100)
+    }
+    setIsEditingZoom(false)
+  }, [zoomInputValue, setScale])
+
+  const handleZoomInputKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleZoomInputBlur()
+    } else if (e.key === 'Escape') {
+      setIsEditingZoom(false)
+    }
+  }, [handleZoomInputBlur])
 
   // Combine refs for canvas background (both droppable and local ref)
   // Use effect to sync the droppable ref after canvasBackgroundRef is set
@@ -85,17 +141,50 @@ export function Canvas() {
   // Calculate CSS transform: translate BEFORE scale (critical!)
   const transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
 
+  // Calculate grid pattern style
+  const getGridPattern = (): string | undefined => {
+    if (!showGrid) return undefined
+
+    // Create a subtle grid using CSS gradients
+    // Use 10% opacity for a subtle effect
+    const gridColorWithAlpha = `${gridColor}1a` // ~10% opacity
+    const lineWidth = 1
+
+    return `
+      linear-gradient(to right, ${gridColorWithAlpha} ${lineWidth}px, transparent ${lineWidth}px),
+      linear-gradient(to bottom, ${gridColorWithAlpha} ${lineWidth}px, transparent ${lineWidth}px)
+    `.trim()
+  }
+
   // Calculate background style
   const getBackgroundStyle = (): React.CSSProperties => {
+    const gridPattern = getGridPattern()
+
     if (backgroundType === 'gradient' && gradientConfig) {
       const angle = gradientConfig.angle ?? 180
       const colorString = gradientConfig.colors.join(', ')
+
+      if (gridPattern) {
+        return {
+          background: `${gridPattern}, linear-gradient(${angle}deg, ${colorString})`,
+          backgroundSize: `${gridSize}px ${gridSize}px, 100% 100%`,
+        }
+      }
+
       return {
         background: `linear-gradient(${angle}deg, ${colorString})`,
       }
     }
 
     // Default: solid color
+    if (gridPattern) {
+      return {
+        backgroundColor,
+        backgroundImage: gridPattern,
+        backgroundSize: `${gridSize}px ${gridSize}px`,
+      }
+    }
+
     return {
       backgroundColor,
     }
@@ -139,15 +228,22 @@ export function Canvas() {
             onMouseUp={marqueeHandlers.onMouseUp}
             onMouseLeave={marqueeHandlers.onMouseLeave}
           >
-            {/* Elements render here */}
-            {elements.map((element) => (
-              <Element key={element.id} element={element} />
-            ))}
+            {/* Elements render here - filter out children (elements inside containers) */}
+            {elements
+              .filter((element) => !element.parentId)
+              .map((element) => (
+                <Element key={element.id} element={element} />
+              ))}
 
-            {/* Selection overlays */}
-            {selectedIds.map((id) => (
-              <SelectionOverlay key={`selection-${id}`} elementId={id} />
-            ))}
+            {/* Selection overlays - only for top-level elements */}
+            {selectedIds
+              .filter((id) => {
+                const el = elements.find((e) => e.id === id)
+                return el && !el.parentId
+              })
+              .map((id) => (
+                <SelectionOverlay key={`selection-${id}`} elementId={id} />
+              ))}
 
             {/* Marquee selection rectangle (only show after 5px threshold) */}
             {marqueeRect && marqueeRect.width > 5 && marqueeRect.height > 5 && (
@@ -157,10 +253,29 @@ export function Canvas() {
         </div>
       </div>
 
-      {/* Zoom indicator */}
+      {/* Zoom indicator - click to edit, double-click to reset to 100% */}
       {viewportSize.width > 0 && (
-        <div className="absolute bottom-4 right-4 bg-gray-800 border border-gray-700 px-3 py-1 rounded text-sm text-gray-300">
-          {Math.round(scale * 100)}%
+        <div
+          className="absolute bottom-4 right-4 bg-gray-800 border border-gray-700 px-3 py-1 rounded text-sm text-gray-300 cursor-pointer hover:bg-gray-700 hover:border-gray-600 transition-colors select-none"
+          onClick={handleZoomClick}
+          onDoubleClick={handleZoomDoubleClick}
+          title="Click to edit, double-click to reset to 100%"
+        >
+          {isEditingZoom ? (
+            <input
+              ref={zoomInputRef}
+              type="text"
+              value={zoomInputValue}
+              onChange={handleZoomInputChange}
+              onBlur={handleZoomInputBlur}
+              onKeyDown={handleZoomInputKeyDown}
+              className="w-12 bg-transparent border-none outline-none text-gray-300 text-center"
+              autoFocus
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            Math.round(scale * 100)
+          )}%
         </div>
       )}
     </div>

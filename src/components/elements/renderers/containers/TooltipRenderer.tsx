@@ -120,6 +120,8 @@ export function TooltipRenderer({ config }: TooltipRendererProps) {
     backgroundColor: config.backgroundColor,
     color: config.textColor,
     fontSize: `${config.fontSize}px`,
+    fontFamily: config.fontFamily,
+    fontWeight: config.fontWeight,
     padding: `${config.padding}px`,
     borderRadius: `${config.borderRadius}px`,
     maxWidth: `${config.maxWidth}px`,

@@ -1,5 +1,7 @@
 import { NumericDisplayElementConfig, ElementConfig } from '../../types/elements'
-import { NumberInput, TextInput, ColorInput, PropertySection } from './'
+import { NumberInput, TextInput, PropertySection } from './'
+import { ColorsSection, FontSection } from './shared'
+import { FONT_STYLE_OPTIONS, BEZEL_STYLE_OPTIONS, SELECT_CLASSNAME } from './constants'
 
 interface NumericDisplayPropertiesProps {
   element: NumericDisplayElementConfig
@@ -56,7 +58,7 @@ export function NumericDisplayProperties({ element, onUpdate }: NumericDisplayPr
           <select
             value={element.unitDisplay}
             onChange={(e) => onUpdate({ unitDisplay: e.target.value as 'suffix' | 'label' })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="suffix">Suffix (inline)</option>
             <option value="label">Label (separate)</option>
@@ -71,10 +73,13 @@ export function NumericDisplayProperties({ element, onUpdate }: NumericDisplayPr
           <select
             value={element.fontStyle}
             onChange={(e) => onUpdate({ fontStyle: e.target.value as '7segment' | 'modern' })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
-            <option value="7segment">7-Segment</option>
-            <option value="modern">Modern</option>
+            {FONT_STYLE_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -82,11 +87,13 @@ export function NumericDisplayProperties({ element, onUpdate }: NumericDisplayPr
           <select
             value={element.bezelStyle}
             onChange={(e) => onUpdate({ bezelStyle: e.target.value as 'inset' | 'flat' | 'none' })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
-            <option value="inset">Inset</option>
-            <option value="flat">Flat</option>
-            <option value="none">None</option>
+            {BEZEL_STYLE_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
         </div>
         {element.fontStyle === '7segment' && (
@@ -107,54 +114,26 @@ export function NumericDisplayProperties({ element, onUpdate }: NumericDisplayPr
       </PropertySection>
 
       {/* Colors */}
-      <PropertySection title="Colors">
-        <ColorInput
-          label="Text Color"
-          value={element.textColor}
-          onChange={(textColor) => onUpdate({ textColor })}
-        />
-        <ColorInput
-          label="Background Color"
-          value={element.backgroundColor}
-          onChange={(backgroundColor) => onUpdate({ backgroundColor })}
-        />
-        <ColorInput
-          label="Border Color"
-          value={element.borderColor}
-          onChange={(borderColor) => onUpdate({ borderColor })}
-        />
-      </PropertySection>
+      <ColorsSection
+        textColor={element.textColor}
+        backgroundColor={element.backgroundColor}
+        borderColor={element.borderColor}
+        onTextColorChange={(textColor) => onUpdate({ textColor })}
+        onBackgroundColorChange={(backgroundColor) => onUpdate({ backgroundColor })}
+        onBorderColorChange={(borderColor) => onUpdate({ borderColor })}
+      />
 
       {/* Font */}
-      <PropertySection title="Font">
-        <NumberInput
-          label="Font Size"
-          value={element.fontSize}
-          onChange={(fontSize) => onUpdate({ fontSize })}
-          min={8}
-          max={72}
-          step={1}
-        />
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
-          <select
-            value={element.fontFamily}
-            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-          >
-            <option value="Roboto Mono, monospace">Roboto Mono</option>
-            <option value="Inter, system-ui, sans-serif">Inter</option>
-          </select>
-        </div>
-        <NumberInput
-          label="Padding"
-          value={element.padding}
-          onChange={(padding) => onUpdate({ padding })}
-          min={0}
-          max={50}
-          step={1}
-        />
-      </PropertySection>
+      <FontSection
+        fontSize={element.fontSize}
+        fontFamily={element.fontFamily}
+        fontWeight={element.fontWeight}
+        padding={element.padding}
+        onFontSizeChange={(fontSize) => onUpdate({ fontSize })}
+        onFontFamilyChange={(fontFamily) => onUpdate({ fontFamily })}
+        onFontWeightChange={(fontWeight) => onUpdate({ fontWeight })}
+        onPaddingChange={(padding) => onUpdate({ padding })}
+      />
     </>
   )
 }

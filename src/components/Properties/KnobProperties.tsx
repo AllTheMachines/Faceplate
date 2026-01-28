@@ -3,6 +3,7 @@ import { KnobElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection, TextInput } from './'
 import { useStore } from '../../store'
 import { ManageKnobStylesDialog } from '../dialogs'
+import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 
 interface KnobPropertiesProps {
   element: KnobElementConfig
@@ -214,6 +215,34 @@ export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
                 <option value="right">Right</option>
               </select>
             </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Font Family</label>
+              <select
+                value={element.labelFontFamily}
+                onChange={(e) => onUpdate({ labelFontFamily: e.target.value })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                {AVAILABLE_FONTS.map((font) => (
+                  <option key={font.family} value={font.family}>
+                    {font.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
+              <select
+                value={element.labelFontWeight}
+                onChange={(e) => onUpdate({ labelFontWeight: e.target.value })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                <option value="300">Light (300)</option>
+                <option value="400">Regular (400)</option>
+                <option value="500">Medium (500)</option>
+                <option value="600">Semi-Bold (600)</option>
+                <option value="700">Bold (700)</option>
+              </select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <NumberInput
                 label="Font Size"
@@ -283,6 +312,34 @@ export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
                 onChange={(valueSuffix) => onUpdate({ valueSuffix })}
               />
             )}
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Font Family</label>
+              <select
+                value={element.valueFontFamily}
+                onChange={(e) => onUpdate({ valueFontFamily: e.target.value })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                {AVAILABLE_FONTS.map((font) => (
+                  <option key={font.family} value={font.family}>
+                    {font.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
+              <select
+                value={element.valueFontWeight}
+                onChange={(e) => onUpdate({ valueFontWeight: e.target.value })}
+                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+              >
+                <option value="300">Light (300)</option>
+                <option value="400">Regular (400)</option>
+                <option value="500">Medium (500)</option>
+                <option value="600">Semi-Bold (600)</option>
+                <option value="700">Bold (700)</option>
+              </select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <NumberInput
                 label="Decimal Places"

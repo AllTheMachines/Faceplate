@@ -30,6 +30,60 @@ export const AVAILABLE_FONTS: FontDefinition[] = [
     category: 'monospace',
   },
   {
+    name: 'Arial',
+    family: 'Arial, sans-serif',
+    file: '', // System font
+    category: 'sans-serif',
+  },
+  {
+    name: 'Helvetica',
+    family: 'Helvetica, Arial, sans-serif',
+    file: '', // System font
+    category: 'sans-serif',
+  },
+  {
+    name: 'Verdana',
+    family: 'Verdana, sans-serif',
+    file: '', // System font
+    category: 'sans-serif',
+  },
+  {
+    name: 'Tahoma',
+    family: 'Tahoma, sans-serif',
+    file: '', // System font
+    category: 'sans-serif',
+  },
+  {
+    name: 'Georgia',
+    family: 'Georgia, serif',
+    file: '', // System font
+    category: 'serif',
+  },
+  {
+    name: 'Times New Roman',
+    family: 'Times New Roman, serif',
+    file: '', // System font
+    category: 'serif',
+  },
+  {
+    name: 'Courier New',
+    family: 'Courier New, monospace',
+    file: '', // System font
+    category: 'monospace',
+  },
+  {
+    name: 'Monaco',
+    family: 'Monaco, monospace',
+    file: '', // System font
+    category: 'monospace',
+  },
+  {
+    name: 'Consolas',
+    family: 'Consolas, monospace',
+    file: '', // System font
+    category: 'monospace',
+  },
+  {
     name: 'System Default',
     family: 'system-ui, -apple-system, sans-serif',
     file: '', // No file - uses system fonts

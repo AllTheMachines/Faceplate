@@ -38,8 +38,8 @@ export function SliderRenderer({ config }: SliderRendererProps) {
   const range = config.max - config.min
   const normalizedValue = (config.value - config.min) / range
 
-  // Track width (use smaller dimension)
-  const trackWidth = config.orientation === 'vertical' ? 6 : 6
+  // Track width from config (defaults to 6 if not set)
+  const trackWidth = config.trackWidth ?? 6
 
   // Format value display
   const formattedValue = formatValue(
@@ -56,6 +56,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
     const base: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${config.labelFontSize}px`,
+      fontFamily: config.labelFontFamily,
       color: config.labelColor,
       whiteSpace: 'nowrap',
       userSelect: 'none',
@@ -77,6 +78,7 @@ export function SliderRenderer({ config }: SliderRendererProps) {
     const base: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${config.valueFontSize}px`,
+      fontFamily: config.valueFontFamily,
       color: config.valueColor,
       whiteSpace: 'nowrap',
       userSelect: 'none',

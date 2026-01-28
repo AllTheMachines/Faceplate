@@ -20,6 +20,8 @@ export interface CanvasSlice {
   // Snap to grid
   snapToGrid: boolean
   gridSize: number
+  showGrid: boolean
+  gridColor: string
 
   // Lock all mode (prevents selection/editing for UI testing)
   lockAllMode: boolean
@@ -31,6 +33,9 @@ export interface CanvasSlice {
   setGradientConfig: (config: GradientConfig | undefined) => void
   setSnapToGrid: (enabled: boolean) => void
   setGridSize: (size: number) => void
+  setShowGrid: (show: boolean) => void
+  toggleShowGrid: () => void
+  setGridColor: (color: string) => void
   toggleLockAllMode: () => void
 }
 
@@ -42,6 +47,8 @@ export const createCanvasSlice: StateCreator<CanvasSlice, [], [], CanvasSlice> =
   backgroundType: 'color',
   snapToGrid: false,
   gridSize: 10,
+  showGrid: false,
+  gridColor: '#ffffff',
   lockAllMode: false,
 
   // Actions
@@ -62,6 +69,15 @@ export const createCanvasSlice: StateCreator<CanvasSlice, [], [], CanvasSlice> =
 
   setGridSize: (size) =>
     set({ gridSize: size }),
+
+  setShowGrid: (show) =>
+    set({ showGrid: show }),
+
+  toggleShowGrid: () =>
+    set((state) => ({ showGrid: !state.showGrid })),
+
+  setGridColor: (color) =>
+    set({ gridColor: color }),
 
   toggleLockAllMode: () =>
     set((state) => ({ lockAllMode: !state.lockAllMode })),

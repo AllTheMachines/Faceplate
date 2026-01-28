@@ -58,7 +58,8 @@ export function GainReductionMeterRenderer({ config }: GainReductionMeterRendere
             textAlign: 'center',
             fontSize: `${config.fontSize}px`,
             color: config.textColor,
-            fontFamily: 'Roboto Mono, monospace',
+            fontFamily: config.fontFamily,
+            fontWeight: config.fontWeight,
           }}
         >
           {dbValue.toFixed(1)}

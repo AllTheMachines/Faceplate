@@ -83,6 +83,7 @@ export function EditableDisplayRenderer({ config }: EditableDisplayRendererProps
         justifyContent: 'center',
         fontFamily: config.fontFamily,
         fontSize: `${config.fontSize}px`,
+        fontWeight: config.fontWeight,
         color: textColor,
         border: `1px solid ${config.borderColor}`,
         borderRadius: 0,

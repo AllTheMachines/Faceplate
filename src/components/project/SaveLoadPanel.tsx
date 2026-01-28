@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useStore } from '../../store'
+import { useDirtyState } from '../../hooks/useDirtyState'
 import { serializeProject, deserializeProject } from '../../services/serialization'
 import { saveProjectFile, loadProjectFile } from '../../services/fileSystem'
 import { BUILT_IN_TEMPLATES, loadBuiltInTemplate } from '../../services/templateLoader'
@@ -79,8 +80,8 @@ export function SaveLoadPanel() {
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
 
-  // Get dirty state
-  const isDirty = useStore((state) => state.isDirty())
+  // Get dirty state via hook (properly subscribes to all dependencies)
+  const { isDirty } = useDirtyState()
   const setSavedState = useStore((state) => state.setSavedState)
   const clearSavedState = useStore((state) => state.clearSavedState)
 

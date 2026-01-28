@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Lock files (auto-generated, very large)
+package-lock.json
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Binary/image files
+screenshots/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.svg
+
+# Git internals
+.git/
+
+# GSD framework boilerplate (not project-specific)
+.claude/get-shit-done/templates/
+.claude/get-shit-done/references/
+.claude/get-shit-done/workflows/
+
+# Editor/IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

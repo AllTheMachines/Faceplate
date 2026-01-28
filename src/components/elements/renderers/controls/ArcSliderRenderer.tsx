@@ -113,6 +113,7 @@ export function ArcSliderRenderer({ config }: ArcSliderRendererProps) {
     const base: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${config.labelFontSize}px`,
+      fontFamily: config.labelFontFamily,
       color: config.labelColor,
       whiteSpace: 'nowrap',
       userSelect: 'none',
@@ -134,6 +135,7 @@ export function ArcSliderRenderer({ config }: ArcSliderRendererProps) {
     const base: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${config.valueFontSize}px`,
+      fontFamily: config.valueFontFamily,
       color: config.valueColor,
       whiteSpace: 'nowrap',
       userSelect: 'none',

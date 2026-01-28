@@ -28,7 +28,9 @@ export function BreadcrumbRenderer({ config }: BreadcrumbRendererProps) {
         gap: '6px',
         userSelect: 'none',
         overflow: 'hidden',
-        fontSize: config.fontSize,
+        fontSize: `${config.fontSize}px`,
+        fontFamily: config.fontFamily,
+        fontWeight: config.fontWeight,
       }}
       data-element-type="breadcrumb"
     >

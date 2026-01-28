@@ -130,6 +130,7 @@ export function MultiSliderRenderer({ config }: MultiSliderRendererProps) {
               y={y}
               textAnchor="middle"
               fontSize={config.labelFontSize}
+              fontFamily={config.labelFontFamily}
               fill={config.labelColor}
               style={{ userSelect: 'none' }}
             >

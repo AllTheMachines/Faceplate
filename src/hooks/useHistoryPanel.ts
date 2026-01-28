@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 export function useHistoryPanel() {
-  const [isPanelVisible, setIsPanelVisible] = useState(true)
+  const [isPanelVisible, setIsPanelVisible] = useState(false)
 
   const togglePanel = () => {
     setIsPanelVisible(prev => !prev)

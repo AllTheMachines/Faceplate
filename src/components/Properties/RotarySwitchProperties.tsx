@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { RotarySwitchElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
 
@@ -7,6 +8,14 @@ interface RotarySwitchPropertiesProps {
 }
 
 export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchPropertiesProps) {
+  // Local state for textarea to allow typing commas
+  const [labelsText, setLabelsText] = useState(element.positionLabels?.join(', ') ?? '')
+
+  // Sync local state when element changes externally
+  useEffect(() => {
+    setLabelsText(element.positionLabels?.join(', ') ?? '')
+  }, [element.id, element.positionLabels])
+
   // Handle position count change - ensure currentPosition is valid
   const handlePositionCountChange = (positionCount: number) => {
     const updates: Partial<RotarySwitchElementConfig> = { positionCount }
@@ -17,19 +26,30 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
     onUpdate(updates)
   }
 
-  // Handle labels change from textarea (comma or newline separated)
-  const handleLabelsChange = (text: string) => {
-    const trimmed = text.trim()
+  // Handle labels change on blur (comma or newline separated)
+  // Also auto-adjust positionCount to match number of labels if more labels provided
+  const handleLabelsBlur = () => {
+    const trimmed = labelsText.trim()
     if (trimmed === '') {
       onUpdate({ positionLabels: null })
     } else {
       const labels = trimmed.split(/[,\n]/).map((s) => s.trim()).filter(Boolean)
-      onUpdate({ positionLabels: labels.length > 0 ? labels : null })
+      if (labels.length > 0) {
+        const updates: Partial<RotarySwitchElementConfig> = { positionLabels: labels }
+        // Auto-adjust positionCount if more labels provided (up to max of 12)
+        if (labels.length > element.positionCount && labels.length <= 12) {
+          updates.positionCount = labels.length
+          // Reset currentPosition if it would be out of bounds
+          if (element.currentPosition >= labels.length) {
+            updates.currentPosition = 0
+          }
+        }
+        onUpdate(updates)
+      } else {
+        onUpdate({ positionLabels: null })
+      }
     }
   }
-
-  // Convert labels array to textarea value
-  const labelsText = element.positionLabels?.join(', ') ?? ''
 
   return (
     <>
@@ -80,7 +100,8 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
           <label className="block text-xs text-gray-400 mb-1">Position Labels</label>
           <textarea
             value={labelsText}
-            onChange={(e) => handleLabelsChange(e.target.value)}
+            onChange={(e) => setLabelsText(e.target.value)}
+            onBlur={handleLabelsBlur}
             placeholder="Leave empty for 1, 2, 3..."
             rows={3}
             className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm resize-none"

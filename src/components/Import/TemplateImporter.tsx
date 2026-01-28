@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { parseJUCETemplate } from '../../services/import/templateParser'
 import { useStore } from '../../store'
+import { useDirtyState } from '../../hooks/useDirtyState'
 import { ElementConfig } from '../../types/elements'
 import { UnsavedChangesDialog } from '../dialogs/UnsavedChangesDialog'
 import { serializeProject } from '../../services/serialization'
@@ -32,7 +33,7 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
   const addElements = useStore((state) => state.addElements)
   const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
   const clearSelection = useStore((state) => state.clearSelection)
-  const isDirty = useStore((state) => state.isDirty())
+  const { isDirty } = useDirtyState()
   const setSavedState = useStore((state) => state.setSavedState)
   const clearSavedState = useStore((state) => state.clearSavedState)
   const elements = useStore((state) => state.elements)

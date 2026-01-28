@@ -1,12 +1,19 @@
+import { useRef } from 'react'
+import toast from 'react-hot-toast'
 import { useStore } from '../../store'
 import { ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection, getPropertyComponent } from './'
+import { downloadElementSVG, getLayerNamesForType } from '../../services/export/svgElementExport'
+import { validateSVGForElement, detectLayersForType } from '../../services/svgLayerDetection'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
   const elements = useStore((state) => state.elements)
   const updateElement = useStore((state) => state.updateElement)
   const liveDragValues = useStore((state) => state.liveDragValues)
+
+  // File input ref for SVG import
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Get the selected element by finding it in the elements array
   // This ensures the component re-renders when the element changes
@@ -54,6 +61,61 @@ export function PropertyPanel() {
   const displayY = liveValues?.y ?? element.y
   const displayWidth = liveValues?.width ?? element.width
   const displayHeight = liveValues?.height ?? element.height
+
+  // Handle SVG import with validation
+  const handleSVGImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Reset input for re-imports
+    e.target.value = ''
+
+    try {
+      const svgContent = await file.text()
+
+      // Validate SVG structure
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(svgContent, 'image/svg+xml')
+      if (doc.querySelector('parsererror')) {
+        toast.error('Invalid SVG file')
+        return
+      }
+
+      // Detect and validate layers
+      const validation = validateSVGForElement(svgContent, element.type)
+      const detection = detectLayersForType(svgContent, element.type)
+
+      // Show results
+      if (validation.isValid) {
+        const matchedCount = Object.keys(detection.matched).length
+        toast.success(
+          `SVG validated! ${matchedCount} layer(s) matched for ${element.type}`,
+          { duration: 4000 }
+        )
+
+        // Log detailed results to console for debugging
+        console.log('SVG Import Validation:', {
+          elementType: element.type,
+          matched: detection.matched,
+          missing: detection.missing,
+          unmapped: detection.unmapped,
+        })
+
+        // Show warnings if any
+        validation.warnings.forEach(warning => {
+          toast(warning, { icon: '⚠️', duration: 5000 })
+        })
+      } else {
+        // Show errors
+        validation.errors.forEach(error => {
+          toast.error(error, { duration: 5000 })
+        })
+      }
+    } catch (err) {
+      toast.error('Failed to read SVG file')
+      console.error('SVG import error:', err)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -115,6 +177,42 @@ export function PropertyPanel() {
         </label>
         <p className="text-xs text-gray-500 mt-1">
           Locked elements cannot be moved or resized
+        </p>
+      </PropertySection>
+
+      {/* Export / Import */}
+      <PropertySection title="SVG">
+        <div className="flex gap-2">
+          <button
+            onClick={() => downloadElementSVG(element)}
+            className="flex-1 py-2 px-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm flex items-center justify-center gap-2 transition-colors"
+            title="Export element as SVG with named layers"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex-1 py-2 px-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm flex items-center justify-center gap-2 transition-colors"
+            title="Import and validate SVG layers"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m4-8l-4-4m0 0l-4 4m4-4v12" />
+            </svg>
+            Import
+          </button>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".svg,image/svg+xml"
+          onChange={handleSVGImport}
+          className="hidden"
+        />
+        <p className="text-xs text-gray-500 mt-2">
+          Expected layers: {getLayerNamesForType(element.type).slice(0, 3).join(', ')}...
         </p>
       </PropertySection>
 

@@ -1,5 +1,6 @@
 import { FrequencyDisplayElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { FontFamilySelect, FontWeightSelect } from './shared'
 
 interface FrequencyDisplayPropertiesProps {
   element: FrequencyDisplayElementConfig
@@ -63,6 +64,16 @@ export function FrequencyDisplayProperties({
 
       {/* Appearance */}
       <PropertySection title="Appearance">
+        <FontFamilySelect
+          value={element.fontFamily}
+          onChange={(fontFamily) => onUpdate({ fontFamily })}
+        />
+        <FontWeightSelect
+          value={element.fontWeight}
+          onChange={(fontWeight) => onUpdate({ fontWeight: fontWeight as string })}
+          variant="compact"
+          valueType="string"
+        />
         <NumberInput
           label="Font Size"
           value={element.fontSize}
@@ -71,15 +82,6 @@ export function FrequencyDisplayProperties({
           max={72}
           step={1}
         />
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Font Family</label>
-          <input
-            type="text"
-            value={element.fontFamily}
-            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-          />
-        </div>
         <ColorInput
           label="Text Color"
           value={element.textColor}

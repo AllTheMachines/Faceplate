@@ -121,6 +121,21 @@ import {
   LineRenderer,
 } from './decorative'
 
+import {
+  PianoKeyboardRenderer,
+  DrumPadRenderer,
+  PadGridRenderer,
+  StepSequencerRenderer,
+  XYPadRenderer,
+  WavetableDisplayRenderer,
+  HarmonicEditorRenderer,
+  LoopPointsRenderer,
+  EnvelopeEditorRenderer,
+  SampleDisplayRenderer,
+  PatchBayRenderer,
+  SignalFlowRenderer,
+} from './specialized'
+
 // Renderer component type - accepts config prop and renders element
 export type RendererComponent = React.ComponentType<{ config: ElementConfig }>
 
@@ -246,6 +261,20 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['svggraphic', SvgGraphicRenderer as RendererComponent],
   ['rectangle', RectangleRenderer as RendererComponent],
   ['line', LineRenderer as RendererComponent],
+
+  // Specialized Audio
+  ['pianokeyboard', PianoKeyboardRenderer as RendererComponent],
+  ['drumpad', DrumPadRenderer as RendererComponent],
+  ['padgrid', PadGridRenderer as RendererComponent],
+  ['stepsequencer', StepSequencerRenderer as RendererComponent],
+  ['xypad', XYPadRenderer as RendererComponent],
+  ['wavetabledisplay', WavetableDisplayRenderer as RendererComponent],
+  ['harmoniceditor', HarmonicEditorRenderer as RendererComponent],
+  ['looppoints', LoopPointsRenderer as RendererComponent],
+  ['envelopeeditor', EnvelopeEditorRenderer as RendererComponent],
+  ['sampledisplay', SampleDisplayRenderer as RendererComponent],
+  ['patchbay', PatchBayRenderer as RendererComponent],
+  ['signalflow', SignalFlowRenderer as RendererComponent],
 ])
 
 /**
@@ -362,4 +391,17 @@ export {
   SvgGraphicRenderer,
   RectangleRenderer,
   LineRenderer,
+  // Specialized Audio
+  PianoKeyboardRenderer,
+  DrumPadRenderer,
+  PadGridRenderer,
+  StepSequencerRenderer,
+  XYPadRenderer,
+  WavetableDisplayRenderer,
+  HarmonicEditorRenderer,
+  LoopPointsRenderer,
+  EnvelopeEditorRenderer,
+  SampleDisplayRenderer,
+  PatchBayRenderer,
+  SignalFlowRenderer,
 }

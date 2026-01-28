@@ -45,14 +45,18 @@ export function LEDRingRenderer({ config }: LEDRingRendererProps) {
         height: '100%',
         position: 'relative',
         overflow: 'visible',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <svg
-        width={diameter}
-        height={diameter}
+        width="100%"
+        height="100%"
         viewBox={`0 0 ${diameter} ${diameter}`}
         style={{
           transform: `rotate(${rotationAngle}deg)`,
+          overflow: 'visible',
         }}
       >
         <defs>

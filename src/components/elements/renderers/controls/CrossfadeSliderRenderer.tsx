@@ -35,6 +35,7 @@ export function CrossfadeSliderRenderer({ config }: CrossfadeSliderRendererProps
           left: 0,
           top: 0,
           fontSize: `${config.labelFontSize}px`,
+          fontFamily: config.labelFontFamily,
           color: config.labelColor,
           opacity: 0.5 + aOpacity * 0.5, // Range from 0.5 to 1.0
           userSelect: 'none',
@@ -50,6 +51,7 @@ export function CrossfadeSliderRenderer({ config }: CrossfadeSliderRendererProps
           right: 0,
           top: 0,
           fontSize: `${config.labelFontSize}px`,
+          fontFamily: config.labelFontFamily,
           color: config.labelColor,
           opacity: 0.5 + bOpacity * 0.5, // Range from 0.5 to 1.0
           userSelect: 'none',

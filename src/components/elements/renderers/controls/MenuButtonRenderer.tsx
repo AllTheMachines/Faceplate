@@ -86,7 +86,7 @@ export function MenuButtonRenderer({ config }: MenuButtonRendererProps) {
         width: '100%',
         height: '100%',
         position: 'relative',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: config.fontFamily,
       }}
     >
       {/* Button */}
@@ -100,11 +100,11 @@ export function MenuButtonRenderer({ config }: MenuButtonRendererProps) {
           border: `1px solid ${config.borderColor}`,
           borderRadius: `${config.borderRadius}px`,
           padding: '0 32px 0 12px',
-          fontSize: '14px',
+          fontSize: `${config.fontSize}px`,
+          fontWeight: config.fontWeight,
           cursor: 'pointer',
           textAlign: 'left',
           outline: 'none',
-          fontWeight: 500,
           transition: 'none',
         }}
       >

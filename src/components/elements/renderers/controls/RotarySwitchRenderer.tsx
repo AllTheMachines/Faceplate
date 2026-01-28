@@ -134,7 +134,7 @@ export function RotarySwitchRenderer({ config }: RotarySwitchRendererProps) {
               fill={config.labelColor}
               fontWeight={isActive ? 'bold' : 'normal'}
               opacity={isActive ? 1 : 0.6}
-              fontFamily="Inter, system-ui, sans-serif"
+              fontFamily={config.fontFamily}
             >
               {label}
             </text>
@@ -149,7 +149,8 @@ export function RotarySwitchRenderer({ config }: RotarySwitchRendererProps) {
             flexDirection: 'column',
             gap: '2px',
             fontSize: `${config.labelFontSize}px`,
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: config.labelFontFamily,
+            fontWeight: config.labelFontWeight,
           }}
         >
           {labels.slice(0, positionCount).map((label, i) => (

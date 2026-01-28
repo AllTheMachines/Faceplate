@@ -60,9 +60,9 @@ export function SegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
                 isHorizontal && !isLast ? `1px solid ${config.borderColor}` : 'none',
               borderBottom:
                 !isHorizontal && !isLast ? `1px solid ${config.borderColor}` : 'none',
-              fontSize: '13px',
-              fontFamily: 'Inter, system-ui, sans-serif',
-              fontWeight: isSelected ? 500 : 400,
+              fontSize: `${config.fontSize}px`,
+              fontFamily: config.fontFamily,
+              fontWeight: config.fontWeight,
               minWidth: 0,
               overflow: 'hidden',
             }}

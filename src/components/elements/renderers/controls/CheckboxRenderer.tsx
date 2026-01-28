@@ -45,8 +45,9 @@ export function CheckboxRenderer({ config }: CheckboxRendererProps) {
     <span
       style={{
         color: config.textColor,
-        fontSize: '14px',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontSize: `${config.fontSize}px`,
+        fontFamily: config.fontFamily,
+        fontWeight: config.fontWeight,
         userSelect: 'none',
         marginLeft: config.labelPosition === 'right' ? '8px' : '0',
         marginRight: config.labelPosition === 'left' ? '8px' : '0',

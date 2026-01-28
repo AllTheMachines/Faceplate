@@ -8,6 +8,13 @@ import { detectKnobLayers, getSuggestedLayers, DetectedLayers } from '../../serv
 import { KnobStyleLayers } from '../../types/knobStyle'
 import { SafeSVG } from '../SafeSVG'
 
+// Validation summary for user feedback
+interface ValidationSummary {
+  matchedCount: number
+  unmappedCount: number
+  hasIndicator: boolean
+}
+
 interface LayerMappingDialogProps {
   isOpen: boolean
   onClose: () => void
@@ -86,6 +93,15 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
       setDetected(detectedLayers)
       setMappings(initialMappings)
       setStyleName(file.name.replace(/\.svg$/i, ''))
+
+      // Show detection summary toast
+      const autoMatched = allIdentifiers.length - detectedLayers.unmapped.length
+      if (autoMatched > 0) {
+        toast.success(`Auto-detected ${autoMatched} layer${autoMatched !== 1 ? 's' : ''} from naming conventions`, { duration: 3000 })
+      } else if (allIdentifiers.length > 0) {
+        toast(`Found ${allIdentifiers.length} layer${allIdentifiers.length !== 1 ? 's' : ''} - please map them manually`, { icon: '📋', duration: 3000 })
+      }
+
       setStep('mapping')
     } catch (error) {
       toast.error('Failed to read SVG file')
@@ -116,6 +132,20 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
 
   // Validation: must have at least indicator mapped
   const hasIndicator = Object.values(mappings).includes('indicator')
+
+  // Compute validation summary for feedback
+  const getValidationSummary = (): ValidationSummary => {
+    const roles = Object.values(mappings)
+    const matchedCount = roles.filter(r => r !== 'exclude').length
+    const unmappedCount = roles.filter(r => r === 'exclude').length
+    return {
+      matchedCount,
+      unmappedCount,
+      hasIndicator: roles.includes('indicator')
+    }
+  }
+
+  const validationSummary = detected ? getValidationSummary() : null
 
   // Handle create style
   const handleCreate = () => {
@@ -187,15 +217,30 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
               <div>
                 <p className="text-sm text-gray-400 mb-2">Detected Layers</p>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {Object.keys(mappings).map((id) => (
+                  {Object.keys(mappings).map((id) => {
+                    const isAutoDetected = !detected.unmapped.includes(id)
+                    const currentMapping = mappings[id]
+                    return (
                     <div key={id} className="flex items-center gap-2">
+                      <span
+                        className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                          currentMapping === 'exclude'
+                            ? 'bg-gray-600'
+                            : isAutoDetected
+                              ? 'bg-green-500'
+                              : 'bg-blue-500'
+                        }`}
+                        title={isAutoDetected ? 'Auto-detected' : 'Manually mapped'}
+                      />
                       <span className="text-sm text-gray-300 flex-1 truncate" title={id}>
                         {id}
                       </span>
                       <select
-                        value={mappings[id]}
+                        value={currentMapping}
                         onChange={(e) => handleMappingChange(id, e.target.value as LayerRole)}
-                        className="bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm"
+                        className={`bg-gray-700 border text-white rounded px-2 py-1 text-sm ${
+                          currentMapping === 'exclude' ? 'border-gray-600 text-gray-400' : 'border-gray-500'
+                        }`}
                       >
                         <option value="indicator">Indicator</option>
                         <option value="track">Track</option>
@@ -205,15 +250,44 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
                         <option value="exclude">Exclude</option>
                       </select>
                     </div>
-                  ))}
+                    )
+                  })}
+                </div>
+                {/* Legend */}
+                <div className="flex gap-3 mt-2 text-xs text-gray-500">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-green-500" /> Auto-detected
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" /> Manual
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-gray-600" /> Excluded
+                  </span>
                 </div>
               </div>
             </div>
 
-            {!hasIndicator && (
-              <p className="text-sm text-amber-400 mb-4">
-                At least one layer must be mapped as Indicator
-              </p>
+            {/* Validation Summary */}
+            {validationSummary && (
+              <div className={`p-3 rounded mb-4 ${validationSummary.hasIndicator ? 'bg-green-900/30 border border-green-700' : 'bg-amber-900/30 border border-amber-700'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={validationSummary.hasIndicator ? 'text-green-400' : 'text-amber-400'}>
+                    {validationSummary.hasIndicator ? '✓' : '⚠'}
+                  </span>
+                  <span className="text-sm font-medium text-gray-200">
+                    {validationSummary.matchedCount} layer{validationSummary.matchedCount !== 1 ? 's' : ''} mapped
+                    {validationSummary.unmappedCount > 0 && (
+                      <span className="text-gray-400"> • {validationSummary.unmappedCount} excluded</span>
+                    )}
+                  </span>
+                </div>
+                {!validationSummary.hasIndicator && (
+                  <p className="text-sm text-amber-400">
+                    At least one layer must be mapped as Indicator
+                  </p>
+                )}
+              </div>
             )}
 
             <div className="flex gap-2">

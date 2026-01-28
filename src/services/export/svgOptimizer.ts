@@ -8,9 +8,20 @@
  *
  * Based on SVGO v4.0.0+ preset-default with conservative overrides
  * Research: .planning/phases/18-export-polish/18-RESEARCH.md Pattern 1
+ *
+ * NOTE: Uses dynamic import to avoid loading Node.js-dependent SVGO at app startup
  */
 
-import { optimize } from 'svgo';
+// Lazy-loaded SVGO optimize function
+let optimizeFn: typeof import('svgo').optimize | null = null;
+
+async function getOptimize() {
+  if (!optimizeFn) {
+    const svgo = await import('svgo');
+    optimizeFn = svgo.optimize;
+  }
+  return optimizeFn;
+}
 
 /**
  * Result of SVG optimization with size metrics
@@ -45,7 +56,8 @@ export interface MultipleOptimizationResult {
  * @param svgContent - Raw SVG string to optimize
  * @returns Optimization result with size metrics
  */
-export function optimizeSVG(svgContent: string): OptimizationResult {
+export async function optimizeSVG(svgContent: string): Promise<OptimizationResult> {
+  const optimize = await getOptimize();
   const originalSize = new Blob([svgContent]).size;
 
   const result = optimize(svgContent, {
@@ -88,13 +100,13 @@ export function optimizeSVG(svgContent: string): OptimizationResult {
  * @param svgContents - Array of raw SVG strings to optimize
  * @returns Combined optimization result with total size metrics
  */
-export function optimizeMultipleSVGs(svgContents: string[]): MultipleOptimizationResult {
+export async function optimizeMultipleSVGs(svgContents: string[]): Promise<MultipleOptimizationResult> {
   let totalOriginalSize = 0;
   let totalOptimizedSize = 0;
   const optimizedSvgs: string[] = [];
 
   for (const svg of svgContents) {
-    const result = optimizeSVG(svg);
+    const result = await optimizeSVG(svg);
     optimizedSvgs.push(result.optimizedSvg);
     totalOriginalSize += result.originalSize;
     totalOptimizedSize += result.optimizedSize;

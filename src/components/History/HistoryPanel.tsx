@@ -32,6 +32,27 @@ export function HistoryPanel() {
     }
   }, [currentIndex])
 
+  // Copy history summary to clipboard
+  const copyHistoryToClipboard = () => {
+    const currentState = useAppStore.getState()
+    const summary = {
+      totalStates: pastStates.length + futureStates.length + 1,
+      pastStates: pastStates.length,
+      futureStates: futureStates.length,
+      currentElements: currentState.elements.length,
+      elements: currentState.elements.map(el => ({
+        id: el.id,
+        type: el.type,
+        name: el.name,
+        x: el.x,
+        y: el.y,
+        width: el.width,
+        height: el.height,
+      })),
+    }
+    navigator.clipboard.writeText(JSON.stringify(summary, null, 2))
+  }
+
   // Time-travel navigation - jump to specific history index
   // Uses imperative getState() for one-time read without re-render subscription
   const jumpToHistoryIndex = (targetIndex: number) => {
@@ -82,9 +103,17 @@ export function HistoryPanel() {
             [{pastStates.length + futureStates.length + 1} states]
           </span>
         </div>
-        <span className="text-xs text-gray-500">
-          {pastStates.length} past | {futureStates.length} future
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-500">
+            {pastStates.length} past | {futureStates.length} future
+          </span>
+          <button
+            onClick={copyHistoryToClipboard}
+            className="px-2 py-0.5 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded"
+          >
+            Copy
+          </button>
+        </div>
       </div>
 
       {/* Scrollable history list */}

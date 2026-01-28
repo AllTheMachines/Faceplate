@@ -21,6 +21,7 @@ export function DbDisplayRenderer({ config }: DbDisplayRendererProps) {
         justifyContent: 'center',
         fontFamily: config.fontFamily,
         fontSize: `${config.fontSize}px`,
+        fontWeight: config.fontWeight,
         color: config.textColor,
         borderRadius: 0,
         boxSizing: 'border-box',

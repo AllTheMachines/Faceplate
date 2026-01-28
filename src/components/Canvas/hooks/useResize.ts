@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useStore } from '../../../store'
 import { snapValue } from '../../../store/canvasSlice'
 
+// Access temporal store for undo pause/resume
+const temporalStore = useStore.temporal
+
 type HandlePosition = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w'
 
 interface UseResizeReturn {
@@ -30,6 +33,9 @@ export function useResize(): UseResizeReturn {
 
     const element = getElement(id)
     if (!element) return
+
+    // Pause undo history during resize - only final state will be recorded
+    temporalStore.getState().pause()
 
     setIsResizing(true)
     setActiveHandle(position)
@@ -217,6 +223,9 @@ export function useResize(): UseResizeReturn {
           updateElement(elementId, snappedUpdates)
         }
       }
+
+      // Resume undo history - this records the final state as a single entry
+      temporalStore.getState().resume()
 
       // Clear live values - element state is now source of truth
       setLiveDragValues(null)

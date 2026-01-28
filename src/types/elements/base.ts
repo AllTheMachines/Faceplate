@@ -22,4 +22,14 @@ export interface BaseElementConfig {
 
   // JUCE Binding (optional)
   parameterId?: string // For JUCE parameter binding
+
+  // Container hierarchy (optional)
+  parentId?: string // ID of parent container (if this element is a child)
+}
+
+/**
+ * Interface for container elements that can have children
+ */
+export interface ContainerWithChildren {
+  children?: string[] // IDs of child elements
 }

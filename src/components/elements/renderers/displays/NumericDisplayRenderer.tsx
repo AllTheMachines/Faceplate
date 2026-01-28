@@ -45,6 +45,7 @@ export function NumericDisplayRenderer({ config }: NumericDisplayRendererProps) 
         justifyContent: 'center',
         fontFamily: config.fontStyle === '7segment' ? 'monospace' : config.fontFamily,
         fontSize: `${config.fontSize}px`,
+        fontWeight: config.fontWeight,
         color: textColor,
         borderRadius: 0,
         boxSizing: 'border-box',

@@ -171,6 +171,10 @@ const paletteCategories = [
       { id: 'frame', type: 'frame', name: 'Frame' },
       { id: 'groupbox', type: 'groupbox', name: 'Group Box' },
       { id: 'collapsible', type: 'collapsible', name: 'Collapsible' },
+      { id: 'tooltip', type: 'tooltip', name: 'Tooltip' },
+      { id: 'horizontalspacer', type: 'horizontalspacer', name: 'Horizontal Spacer' },
+      { id: 'verticalspacer', type: 'verticalspacer', name: 'Vertical Spacer' },
+      { id: 'windowchrome', type: 'windowchrome', name: 'Window Chrome' },
     ],
   },
   {
@@ -178,6 +182,23 @@ const paletteCategories = [
     items: [
       { id: 'modulationmatrix', type: 'modulationmatrix', name: 'Mod Matrix' },
       { id: 'presetbrowser', type: 'presetbrowser', name: 'Preset Browser' },
+    ],
+  },
+  {
+    name: 'Specialized Audio',
+    items: [
+      { id: 'pianokeyboard', type: 'pianokeyboard', name: 'Piano Keyboard' },
+      { id: 'drumpad', type: 'drumpad', name: 'Drum Pad' },
+      { id: 'padgrid', type: 'padgrid', name: 'Pad Grid' },
+      { id: 'stepsequencer', type: 'stepsequencer', name: 'Step Sequencer' },
+      { id: 'xypad', type: 'xypad', name: 'XY Pad' },
+      { id: 'wavetabledisplay', type: 'wavetabledisplay', name: 'Wavetable' },
+      { id: 'harmoniceditor', type: 'harmoniceditor', name: 'Harmonic Editor' },
+      { id: 'looppoints', type: 'looppoints', name: 'Loop Points' },
+      { id: 'envelopeeditor', type: 'envelopeeditor', name: 'Envelope Editor' },
+      { id: 'sampledisplay', type: 'sampledisplay', name: 'Sample Display' },
+      { id: 'patchbay', type: 'patchbay', name: 'Patch Bay' },
+      { id: 'signalflow', type: 'signalflow', name: 'Signal Flow' },
     ],
   },
 ]
