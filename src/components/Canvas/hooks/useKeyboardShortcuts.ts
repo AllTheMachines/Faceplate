@@ -12,8 +12,8 @@ export function useKeyboardShortcuts() {
   const moveBackward = useStore((state) => state.moveBackward)
   const toggleShowGrid = useStore((state) => state.toggleShowGrid)
 
-  // Copy/paste functionality
-  const { copyToClipboard, pasteFromClipboard } = useCopyPaste()
+  // Copy/paste/duplicate functionality
+  const { copyToClipboard, pasteFromClipboard, duplicateSelected } = useCopyPaste()
 
   // Undo - explicit ctrl+z for Windows/Linux, cmd+z for Mac
   useHotkeys(
@@ -129,6 +129,17 @@ export function useKeyboardShortcuts() {
     },
     { enableOnFormTags: false },
     [pasteFromClipboard]
+  )
+
+  // Duplicate: Ctrl/Cmd + D
+  useHotkeys(
+    'mod+d',
+    (e) => {
+      e.preventDefault()
+      duplicateSelected()
+    },
+    { enableOnFormTags: false },
+    [duplicateSelected]
   )
 
   // Toggle Grid: Ctrl/Cmd + G

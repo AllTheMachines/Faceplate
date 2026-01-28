@@ -4,9 +4,14 @@ import { ElementConfig } from '../../../types/elements'
 
 const PASTE_OFFSET = 20 // pixels
 
+interface ClipboardData {
+  elements: ElementConfig[]
+  sourceWindowId: string | null
+}
+
 export function useCopyPaste() {
-  // In-memory clipboard storage
-  const clipboardRef = useRef<ElementConfig[]>([])
+  // In-memory clipboard storage with source window tracking
+  const clipboardRef = useRef<ClipboardData>({ elements: [], sourceWindowId: null })
 
   // Store selectors
   const selectedIds = useStore((state) => state.selectedIds)
@@ -14,6 +19,8 @@ export function useCopyPaste() {
   const addElement = useStore((state) => state.addElement)
   const clearSelection = useStore((state) => state.clearSelection)
   const selectMultiple = useStore((state) => state.selectMultiple)
+  const activeWindowId = useStore((state) => state.activeWindowId)
+  const addElementToWindow = useStore((state) => state.addElementToWindow)
 
   const copyToClipboard = useCallback(() => {
     // Get selected elements
@@ -23,8 +30,11 @@ export function useCopyPaste() {
 
     if (elements.length === 0) return
 
-    // Store in in-memory clipboard
-    clipboardRef.current = elements
+    // Store in in-memory clipboard with source window
+    clipboardRef.current = {
+      elements,
+      sourceWindowId: activeWindowId,
+    }
 
     // Optionally write to system clipboard for debugging (non-blocking)
     try {
@@ -32,35 +42,72 @@ export function useCopyPaste() {
     } catch {
       // Silently ignore - system clipboard is optional
     }
-  }, [selectedIds, getElement])
+  }, [selectedIds, getElement, activeWindowId])
 
   const pasteFromClipboard = useCallback(() => {
-    if (clipboardRef.current.length === 0) return
+    if (clipboardRef.current.elements.length === 0) return
 
     const pastedIds: string[] = []
 
     // Clone and paste each element
-    for (const original of clipboardRef.current) {
+    for (const original of clipboardRef.current.elements) {
       // Deep clone to handle nested objects like colorStops in meters
       const cloned = structuredClone(original)
 
       // Generate new UUID and offset position
+      const newId = crypto.randomUUID()
       const pasted: ElementConfig = {
         ...cloned,
-        id: crypto.randomUUID(),
+        id: newId,
         x: cloned.x + PASTE_OFFSET,
         y: cloned.y + PASTE_OFFSET,
       }
 
       // Add to store (automatically tracked by zundo for undo)
       addElement(pasted)
-      pastedIds.push(pasted.id)
+
+      // Add element to active window
+      addElementToWindow(newId)
+
+      pastedIds.push(newId)
     }
 
     // Select the pasted elements
     clearSelection()
     selectMultiple(pastedIds)
-  }, [addElement, clearSelection, selectMultiple])
+  }, [addElement, addElementToWindow, clearSelection, selectMultiple])
 
-  return { copyToClipboard, pasteFromClipboard }
+  const duplicateSelected = useCallback(() => {
+    // Duplicate = copy + paste in one action
+    // Get selected elements
+    const elements = selectedIds
+      .map((id) => getElement(id))
+      .filter((el): el is ElementConfig => el !== undefined)
+
+    if (elements.length === 0) return
+
+    const pastedIds: string[] = []
+
+    // Clone and paste each element directly (no clipboard storage)
+    for (const original of elements) {
+      const cloned = structuredClone(original)
+      const newId = crypto.randomUUID()
+      const pasted: ElementConfig = {
+        ...cloned,
+        id: newId,
+        x: cloned.x + PASTE_OFFSET,
+        y: cloned.y + PASTE_OFFSET,
+      }
+
+      addElement(pasted)
+      addElementToWindow(newId)
+      pastedIds.push(newId)
+    }
+
+    // Select the duplicated elements
+    clearSelection()
+    selectMultiple(pastedIds)
+  }, [selectedIds, getElement, addElement, addElementToWindow, clearSelection, selectMultiple])
+
+  return { copyToClipboard, pasteFromClipboard, duplicateSelected }
 }
