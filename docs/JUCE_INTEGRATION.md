@@ -10,6 +10,55 @@ Complete guide to integrating Faceplate-exported WebView UIs with JUCE plugins.
 
 ## Parameter Sync Architecture
 
+### Request-Based Sync (Recommended)
+
+The recommended approach uses request-based synchronization: JavaScript signals when it's ready, then C++ pushes parameter values.
+
+```
+                JavaScript (UI)
+                        |
+                        | initializeJUCEBridge() completes
+                        | all UI elements initialized
+                        v
+              bridge.requestParamSync()
+                        |
+                        v
+                C++ (Source of Truth)
+                        |
+                        | Receives requestParamSync call
+                        | Iterates all parameters
+                        v
+              evaluateJavascript("updateKnobVisual(...)")
+                        |
+                        v
+                JavaScript (UI)
+                        |
+                        v
+              Knobs update to correct positions
+```
+
+**Flow:**
+1. DAW loads project with plugin
+2. C++ creates editor, WebView starts loading
+3. WebView loads HTML, CSS, JS
+4. JS: `initializeJUCEBridge()` runs
+5. JS: Polls until JUCE backend available
+6. JS: Creates bridge wrappers
+7. JS: Sets up all knob/slider interactions
+8. JS: Calls `bridge.requestParamSync()` — signals readiness
+9. C++: Receives `requestParamSync` call
+10. C++: Calls `evaluateJavascript("updateKnobVisual('volume', 0.5)")` for each param
+11. JS: Knobs update to correct positions
+
+**Why This Matters:**
+- **Reliable**: No guessing with timer delays
+- **Works everywhere**: Different DAWs, different load times
+- **Clean architecture**: JS signals readiness, C++ responds
+
+### Legacy Timer-Based Sync (Fallback)
+
+If C++ doesn't implement `requestParamSync`, the fallback uses a timer-based approach:
+
 ```
                 C++ (Source of Truth)
                         |
@@ -34,10 +83,6 @@ When a plugin editor opens, the WebView UI initializes with default values defin
 - Automation recorded different values
 
 Without sync, the UI shows wrong values, and the first user interaction causes a "jump" to the displayed value.
-
-### Timing Considerations
-
-CRITICAL: Do not call emitEvent immediately in pageFinishedLoading(). The JavaScript environment needs ~100ms to fully initialize. Use Timer::callAfterDelay.
 
 ## C++ Implementation
 
@@ -125,6 +170,39 @@ void PluginEditor::syncAllParametersToWebView()
 }
 ```
 
+### Request-Based Sync (Recommended C++ Implementation)
+
+Register the `requestParamSync` native function to enable request-based sync:
+
+```cpp
+PluginEditor::PluginEditor(PluginProcessor& p)
+    : AudioProcessorEditor(&p), processor(p),
+      browser(juce::WebBrowserComponent::Options()
+          .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
+          .withResourceProvider([this](const auto& url) { return getResource(url); })
+          // Register requestParamSync for request-based sync
+          .withNativeFunction("requestParamSync", [this](auto& args, auto complete) {
+              // JS is ready - sync all parameters now
+              syncAllParametersToWebView();
+              complete({});
+          })
+          // ... other native functions
+      )
+{
+    // ...
+}
+```
+
+With request-based sync, you no longer need the timer delay in `pageFinishedLoading()`:
+
+```cpp
+void PluginEditor::pageFinishedLoading()
+{
+    // No action needed - JS will call requestParamSync when ready
+    DBG("WebView page loaded, waiting for JS to request param sync");
+}
+```
+
 ## Parameter ID Mapping
 
 Faceplate maps element IDs to parameter IDs as follows:
@@ -150,9 +228,10 @@ For projects with multiple windows:
 ## Troubleshooting
 
 ### UI doesn't update after sync
-1. Check browser console for "[ParamSync]" log messages
+1. Check browser console for "[ParamSync]" or "[JUCEBridge]" log messages
 2. Verify data-parameter-id attributes in HTML match C++ parameter IDs
-3. Ensure 100ms delay is used (not immediate emit)
+3. For request-based sync: ensure C++ has registered `requestParamSync` native function
+4. For legacy sync: ensure 100ms delay is used (not immediate emit)
 
 ### Controls jump on first interaction
 - This indicates internal state wasn't updated during sync
@@ -160,8 +239,13 @@ For projects with multiple windows:
 - Check that element._knobValue (etc.) is being set
 
 ### Sync works in some hosts but not others
-- Some hosts restore state before editor creation
-- Use Timer::callAfterDelay to ensure consistent timing
+- Use request-based sync (recommended) - it handles varying load times automatically
+- For legacy sync: use Timer::callAfterDelay to ensure consistent timing
+
+### requestParamSync not being called
+- Check browser console for "[JUCEBridge] requestParamSync not available" message
+- Ensure C++ registers the `requestParamSync` native function
+- The JS side gracefully falls back if the function isn't available
 
 ## Related Documentation
 

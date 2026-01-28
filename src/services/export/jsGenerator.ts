@@ -480,6 +480,18 @@ ${xyPadSetups || '        // No XY pads'}
 ${loopPointsSetups || '        // No loop points'}
 ${harmonicEditorSetups || '        // No harmonic editors'}
 
+        // Request parameter sync from C++ now that UI is fully ready
+        if (bridge.requestParamSync) {
+          try {
+            await bridge.requestParamSync();
+            console.log('[JUCEBridge] Parameter sync requested from C++');
+          } catch (e) {
+            console.warn('[JUCEBridge] requestParamSync failed:', e);
+          }
+        } else {
+          console.log('[JUCEBridge] requestParamSync not available (C++ may use timer-based sync)');
+        }
+
         console.log('[JUCEBridge] Initialization complete');
         return;
       }

@@ -551,6 +551,13 @@ async function initializeJUCEBridge() {
         console.log('[JUCEBridge] JUCE available with functions:', functions);
         bridge = createJUCEFunctionWrappers();
         initializeAllElements();
+
+        // Request parameter sync from C++ now that UI is fully ready
+        if (bridge.requestParamSync) {
+          bridge.requestParamSync().then(() => {
+            console.log('[JUCEBridge] Parameter sync requested from C++');
+          }).catch(() => {});
+        }
         return;
       }
     }
@@ -563,7 +570,8 @@ async function initializeJUCEBridge() {
     setParameter: () => Promise.resolve(),
     getParameter: () => Promise.resolve(0.5),
     beginGesture: () => Promise.resolve(),
-    endGesture: () => Promise.resolve()
+    endGesture: () => Promise.resolve(),
+    requestParamSync: () => Promise.resolve()  // No-op in standalone
   };
   initializeAllElements();
 }
@@ -827,4 +835,4 @@ Before export, Faceplate validates the design:
 
 ---
 
-*Last updated: 28 January 2026*
+*Last updated: 29 January 2026*

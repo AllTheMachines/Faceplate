@@ -248,6 +248,11 @@ juce::WebBrowserComponent browser {
             }
             complete({});
         })
+        .withNativeFunction("requestParamSync", [this](auto& args, auto complete) {
+            // JS signals it's ready - push all parameter values to WebView
+            syncAllParametersToWebView();
+            complete({});
+        })
 };
 ```
 
@@ -259,6 +264,7 @@ juce::WebBrowserComponent browser {
 | `getParameter` | `(paramId)` | `float` | Get current normalized value |
 | `beginGesture` | `(paramId)` | `void` | Start automation recording |
 | `endGesture` | `(paramId)` | `void` | End automation recording |
+| `requestParamSync` | `()` | `void` | Request C++ to push all parameter values (called when JS is ready) |
 
 ---
 
@@ -486,4 +492,4 @@ This pattern was discovered and refined through testing in the EFXvst3 and INSTv
 
 ---
 
-*Last updated: 28 January 2026*
+*Last updated: 29 January 2026*
