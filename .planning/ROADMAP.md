@@ -9,6 +9,7 @@
 - ✅ **v1.4 Container Editing System** — Phases 34-35 (shipped 2026-01-27)
 - ✅ **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
 - ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
+- ◆ **v1.7 Parameter Sync** — Phase 39 (in progress)
 
 ## Phases
 
@@ -564,6 +565,30 @@ Plans:
 
 </details>
 
+<details open>
+<summary>v1.7 Parameter Sync (Phase 39) - IN PROGRESS</summary>
+
+### Phase 39: Parameter Sync
+**Goal**: Exported bundles sync UI state with C++ parameter values when editor opens
+**Dependencies**: None
+**Requirements**: SYNC-01 through SYNC-08, DOC-01 through DOC-04
+**Plans**: 1 plan (direct implementation)
+
+Plans:
+- [ ] 39-01: Parameter sync listener and documentation
+
+**Success Criteria:**
+1. Export generates `setupParameterSyncListener()` in bindings.js
+2. Listener handles `__juce__paramSync` event from C++ backend
+3. All parameter-bound elements update visual state (knobs, sliders, buttons, meters, displays)
+4. Internal state updated to prevent drag jumping
+5. Graceful fallback when JUCE backend unavailable
+6. Element ID → parameter ID mapping works correctly
+7. JUCE_INTEGRATION.md includes C++ implementation examples
+8. Generated code includes inline comments explaining sync purpose
+
+</details>
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -607,7 +632,8 @@ Plans:
 | 36. SVG Export with Named Layers | v1.5 | 1/1 | Complete | 2026-01-27 |
 | 37. Font Management System | v1.5 | 5/5 | Complete | 2026-01-27 |
 | 38. Multi-Window System | v1.6 | 1/1 | Complete | 2026-01-28 |
+| 39. Parameter Sync | v1.7 | 0/1 | Ready | — |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-28 after v1.6 milestone complete*
+*Last updated: 2026-01-28 after v1.7 milestone started*

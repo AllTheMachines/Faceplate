@@ -1,5 +1,23 @@
 # Project Milestones: VST3 WebView UI Designer
 
+## v1.7 Parameter Sync (In Progress)
+
+**Goal:** Ensure WebView UI reflects actual C++ parameter values when editor opens.
+
+**Problem solved:** When a plugin editor opens, the WebView UI displays default knob/slider positions instead of actual parameter values from the DAW project. This affects DAW project save/reload, preset loading, and automation visualization.
+
+**Phases:** 39 (1 phase, 1 plan)
+
+**Key deliverables:**
+- Export generates `setupParameterSyncListener()` in bindings.js
+- Listener handles `__juce__paramSync` event from C++ backend
+- All parameter-bound elements update visual and internal state
+- JUCE_INTEGRATION.md includes C++ implementation examples
+
+**Requirements:** 12 total (SYNC-01 through SYNC-08, DOC-01 through DOC-04)
+
+---
+
 ## v1.6 Multi-Window System (Shipped: 2026-01-28)
 
 **Delivered:** Multi-window project architecture with independent windows, navigation between windows, and separate export folders.
