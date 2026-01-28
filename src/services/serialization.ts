@@ -1,12 +1,17 @@
 /**
  * Serialization service for project persistence
  * Converts Zustand state to versioned JSON with validation
+ *
+ * v2.0.0: Multi-window support
+ * - Projects now contain multiple windows
+ * - Each window has its own dimensions and background
+ * - Elements are stored globally, referenced by window elementIds
  */
 
 import { generateErrorMessage } from 'zod-error'
-import { ProjectSchema, type ProjectData } from '../schemas/project'
+import { ProjectSchemaV2, type ProjectData, type ProjectDataV1, type UIWindowData } from '../schemas/project'
 import type { ElementConfig } from '../types/elements'
-import type { GradientConfig } from '../store/canvasSlice'
+import type { UIWindow } from '../store/windowsSlice'
 import type { Asset } from '../types/asset'
 import type { KnobStyle } from '../types/knobStyle'
 import { sanitizeSVG } from '../lib/svg-sanitizer'
@@ -17,40 +22,45 @@ import { sanitizeSVG } from '../lib/svg-sanitizer'
 
 export interface SerializationInput {
   elements: ElementConfig[]
-  canvasWidth: number
-  canvasHeight: number
-  backgroundColor: string
-  backgroundType: 'color' | 'gradient' | 'image'
-  gradientConfig?: GradientConfig
+  windows: UIWindow[]
   snapToGrid: boolean
   gridSize: number
+  showGrid: boolean
+  gridColor: string
   selectedIds: string[]
   assets: Asset[]
   knobStyles: KnobStyle[]
 }
 
 /**
- * Serialize project state to JSON string
+ * Serialize project state to JSON string (v2.0.0 format)
  * Excludes viewport state (scale, offsetX, offsetY) - camera position is not document state
  * Includes selectedIds - selection is meaningful state to restore
  */
 export function serializeProject(state: SerializationInput): string {
   const projectData: ProjectData = {
-    version: '1.0.0',
-    canvas: {
-      canvasWidth: state.canvasWidth,
-      canvasHeight: state.canvasHeight,
-      backgroundColor: state.backgroundColor,
-      backgroundType: state.backgroundType,
-      gradientConfig: state.gradientConfig,
-      snapToGrid: state.snapToGrid,
-      gridSize: state.gridSize,
-    },
+    version: '2.0.0',
+    windows: state.windows.map((w): UIWindowData => ({
+      id: w.id,
+      name: w.name,
+      type: w.type,
+      width: w.width,
+      height: w.height,
+      backgroundColor: w.backgroundColor,
+      backgroundType: w.backgroundType,
+      gradientConfig: w.gradientConfig,
+      elementIds: w.elementIds,
+      createdAt: w.createdAt,
+    })),
     // Cast needed: TypeScript ElementConfig is wider than Zod ProjectData schema
     elements: state.elements as ProjectData['elements'],
     selectedIds: state.selectedIds,
     assets: state.assets,
     knobStyles: state.knobStyles,
+    snapToGrid: state.snapToGrid,
+    gridSize: state.gridSize,
+    showGrid: state.showGrid,
+    gridColor: state.gridColor,
     // Set timestamp when saving
     lastModified: Date.now(),
   }
@@ -76,6 +86,7 @@ export type DeserializeResult =
 /**
  * Deserialize JSON string to project data with validation
  * Returns typed result with success/error discriminated union
+ * Automatically migrates v1.x projects to v2.0.0 format
  */
 export function deserializeProject(json: string): DeserializeResult {
   // Parse JSON syntax
@@ -92,8 +103,8 @@ export function deserializeProject(json: string): DeserializeResult {
   // Apply version migrations (if needed)
   const migrated = migrateProject(parsed)
 
-  // Validate against schema
-  const result = ProjectSchema.safeParse(migrated)
+  // Validate against v2 schema (migrated data should always be v2)
+  const result = ProjectSchemaV2.safeParse(migrated)
 
   if (!result.success) {
     // Use zod-error for user-friendly error messages
@@ -165,15 +176,59 @@ export function deserializeProject(json: string): DeserializeResult {
 // ============================================================================
 
 /**
+ * Check if data is v1.x format (has canvas property, no windows)
+ */
+function isV1Format(data: unknown): data is ProjectDataV1 {
+  if (typeof data !== 'object' || data === null) return false
+  const obj = data as Record<string, unknown>
+  return 'canvas' in obj && !('windows' in obj)
+}
+
+/**
+ * Migrate v1.x project to v2.0.0 format
+ * Creates a single "Main Window" with all elements
+ */
+function migrateV1ToV2(data: ProjectDataV1): ProjectData {
+  const windowId = crypto.randomUUID()
+
+  // Create single window from v1 canvas settings
+  const mainWindow: UIWindowData = {
+    id: windowId,
+    name: 'Main Window',
+    type: 'release',
+    width: data.canvas.canvasWidth,
+    height: data.canvas.canvasHeight,
+    backgroundColor: data.canvas.backgroundColor,
+    backgroundType: data.canvas.backgroundType,
+    gradientConfig: data.canvas.gradientConfig,
+    elementIds: data.elements.map(el => el.id),
+    createdAt: data.lastModified || Date.now(),
+  }
+
+  return {
+    version: '2.0.0',
+    windows: [mainWindow],
+    elements: data.elements,
+    assets: data.assets || [],
+    knobStyles: data.knobStyles || [],
+    selectedIds: data.selectedIds,
+    snapToGrid: data.canvas.snapToGrid,
+    gridSize: data.canvas.gridSize,
+    lastModified: data.lastModified,
+  }
+}
+
+/**
  * Migrate project data between versions
- * For v1.0.0, no migration needed
- * Future: check version field and apply migrations
+ * v1.x -> v2.0.0: Convert single canvas to multi-window format
  */
 function migrateProject(data: unknown): unknown {
-  // For v1.0.0, no migration needed
-  // Future versions will add migration logic here:
-  // if (data.version === '1.0.0') {
-  //   return migrateFrom1_0_0to1_1_0(data)
-  // }
+  // Check if this is v1.x format and needs migration
+  if (isV1Format(data)) {
+    console.log('[Serialization] Migrating v1.x project to v2.0.0 format')
+    return migrateV1ToV2(data)
+  }
+
+  // Already v2.0.0 or newer format
   return data
 }

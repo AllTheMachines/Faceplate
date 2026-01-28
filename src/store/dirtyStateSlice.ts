@@ -45,13 +45,11 @@ export const createDirtyStateSlice: StateCreator<Store, [], [], DirtyStateSlice>
     // Compare current serializable state against saved snapshot
     const currentSnapshot = JSON.stringify({
       elements: state.elements,
-      canvasWidth: state.canvasWidth,
-      canvasHeight: state.canvasHeight,
-      backgroundColor: state.backgroundColor,
-      backgroundType: state.backgroundType,
-      gradientConfig: state.gradientConfig,
+      windows: state.windows,
       snapToGrid: state.snapToGrid,
       gridSize: state.gridSize,
+      showGrid: state.showGrid,
+      gridColor: state.gridColor,
       assets: state.assets,
       knobStyles: state.knobStyles,
     })

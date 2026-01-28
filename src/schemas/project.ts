@@ -228,7 +228,7 @@ const GradientConfigSchema = z.object({
 })
 
 // ============================================================================
-// Canvas Configuration Schema
+// Canvas Configuration Schema (v1.x legacy format)
 // ============================================================================
 
 export const CanvasConfigSchema = z.object({
@@ -242,25 +242,69 @@ export const CanvasConfigSchema = z.object({
 })
 
 // ============================================================================
+// UI Window Schema (v2.0.0+)
+// ============================================================================
+
+export const WindowTypeSchema = z.enum(['release', 'developer'])
+
+export const UIWindowSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  type: WindowTypeSchema,
+  width: z.number(),
+  height: z.number(),
+  backgroundColor: z.string(),
+  backgroundType: z.enum(['color', 'gradient', 'image']),
+  gradientConfig: GradientConfigSchema.optional(),
+  elementIds: z.array(z.string()),
+  createdAt: z.number(),
+})
+
+export type UIWindowData = z.infer<typeof UIWindowSchema>
+export type WindowType = z.infer<typeof WindowTypeSchema>
+
+// ============================================================================
 // Project Schema (Top-Level)
 // ============================================================================
 
-export const ProjectSchema = z.object({
+// v1.x schema (legacy - single canvas)
+export const ProjectSchemaV1 = z.object({
   version: z.string(),
   canvas: CanvasConfigSchema,
   elements: z.array(ElementConfigSchema),
   assets: z.array(SVGAssetSchema).optional().default([]),
   knobStyles: z.array(KnobStyleSchema).optional().default([]),
   selectedIds: z.array(z.string()).optional(),
-  // Timestamp when project was last saved (Unix ms)
   lastModified: z.number().optional(),
 })
+
+// v2.0.0+ schema (multi-window)
+export const ProjectSchemaV2 = z.object({
+  version: z.string(),
+  windows: z.array(UIWindowSchema),
+  elements: z.array(ElementConfigSchema), // All elements across all windows
+  assets: z.array(SVGAssetSchema).optional().default([]),
+  knobStyles: z.array(KnobStyleSchema).optional().default([]),
+  selectedIds: z.array(z.string()).optional(),
+  // Global canvas/grid settings (not per-window)
+  snapToGrid: z.boolean().optional().default(false),
+  gridSize: z.number().optional().default(10),
+  showGrid: z.boolean().optional().default(false),
+  gridColor: z.string().optional().default('#ffffff'),
+  lastModified: z.number().optional(),
+})
+
+// Combined schema that accepts both formats
+// During parsing, v1 will be migrated to v2 format
+export const ProjectSchema = z.union([ProjectSchemaV2, ProjectSchemaV1])
 
 // ============================================================================
 // Exported Types
 // ============================================================================
 
-export type ProjectData = z.infer<typeof ProjectSchema>
+export type ProjectDataV1 = z.infer<typeof ProjectSchemaV1>
+export type ProjectDataV2 = z.infer<typeof ProjectSchemaV2>
+export type ProjectData = ProjectDataV2 // v2 is the canonical format
 export type CanvasConfig = z.infer<typeof CanvasConfigSchema>
 export type ElementConfig = z.infer<typeof ElementConfigSchema>
 export type GradientConfig = z.infer<typeof GradientConfigSchema>

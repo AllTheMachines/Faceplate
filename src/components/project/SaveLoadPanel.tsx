@@ -69,13 +69,11 @@ export function SaveLoadPanel() {
 
   // Get state for save
   const elements = useStore((state) => state.elements)
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
-  const backgroundType = useStore((state) => state.backgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
+  const windows = useStore((state) => state.windows)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
+  const showGrid = useStore((state) => state.showGrid)
+  const gridColor = useStore((state) => state.gridColor)
   const selectedIds = useStore((state) => state.selectedIds)
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
@@ -87,16 +85,17 @@ export function SaveLoadPanel() {
 
   // Get actions for load
   const setElements = useStore((state) => state.setElements)
-  const setCanvasDimensions = useStore((state) => state.setCanvasDimensions)
-  const setBackgroundColor = useStore((state) => state.setBackgroundColor)
-  const setBackgroundType = useStore((state) => state.setBackgroundType)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const setWindows = useStore((state) => state.setWindows)
   const setSnapToGrid = useStore((state) => state.setSnapToGrid)
   const setGridSize = useStore((state) => state.setGridSize)
+  const setShowGrid = useStore((state) => state.setShowGrid)
+  const setGridColor = useStore((state) => state.setGridColor)
   const selectMultiple = useStore((state) => state.selectMultiple)
   const setAssets = useStore((state) => state.setAssets)
   const setKnobStyles = useStore((state) => state.setKnobStyles)
   const setLastModified = useStore((state) => state.setLastModified)
+  const addWindow = useStore((state) => state.addWindow)
+  const addElementToWindow = useStore((state) => state.addElementToWindow)
 
   const handleSave = async () => {
     setLoading(true)
@@ -106,13 +105,11 @@ export function SaveLoadPanel() {
       // Capture current state snapshot BEFORE save
       const currentSnapshot = JSON.stringify({
         elements,
-        canvasWidth,
-        canvasHeight,
-        backgroundColor,
-        backgroundType,
-        gradientConfig,
+        windows,
         snapToGrid,
         gridSize,
+        showGrid,
+        gridColor,
         assets,
         knobStyles,
       })
@@ -120,13 +117,11 @@ export function SaveLoadPanel() {
       // Serialize current state (adds lastModified timestamp)
       const json = serializeProject({
         elements,
-        canvasWidth,
-        canvasHeight,
-        backgroundColor,
-        backgroundType,
-        gradientConfig,
+        windows,
         snapToGrid,
         gridSize,
+        showGrid,
+        gridColor,
         selectedIds,
         assets,
         knobStyles,
@@ -176,25 +171,26 @@ export function SaveLoadPanel() {
       // Load successful - update store
       const { data } = deserializeResult
 
-      // Update canvas settings
-      setCanvasDimensions(data.canvas.canvasWidth, data.canvas.canvasHeight)
-      setBackgroundColor(data.canvas.backgroundColor)
-      setBackgroundType(data.canvas.backgroundType)
-      setSnapToGrid(data.canvas.snapToGrid)
-      setGridSize(data.canvas.gridSize)
+      // Update windows (v2 format)
+      // Cast UIWindowData to UIWindow (same structure)
+      setWindows(data.windows as import('../../store/windowsSlice').UIWindow[])
 
-      // Update gradient config (may be undefined)
-      if (data.canvas.gradientConfig) {
-        setGradientConfig(data.canvas.gradientConfig)
-      }
+      // Update global settings
+      setSnapToGrid(data.snapToGrid ?? false)
+      setGridSize(data.gridSize ?? 10)
+      setShowGrid(data.showGrid ?? false)
+      setGridColor(data.gridColor ?? '#ffffff')
 
       // Replace all elements (setElements replaces, doesn't append)
       // Cast needed: Zod schema type != TypeScript type due to Phase 13 extended elements
       setElements(data.elements as import('../../types/elements').ElementConfig[])
 
-      // Restore selection if present
+      // Restore selection if present (filter to valid element IDs)
       if (data.selectedIds) {
-        selectMultiple(data.selectedIds)
+        const validIds = data.selectedIds.filter(id =>
+          data.elements.some(el => el.id === id)
+        )
+        selectMultiple(validIds)
       }
 
       // Restore assets if present
@@ -213,13 +209,11 @@ export function SaveLoadPanel() {
       // After successful load, capture saved state snapshot
       const loadedSnapshot = JSON.stringify({
         elements: data.elements,
-        canvasWidth: data.canvas.canvasWidth,
-        canvasHeight: data.canvas.canvasHeight,
-        backgroundColor: data.canvas.backgroundColor,
-        backgroundType: data.canvas.backgroundType,
-        gradientConfig: data.canvas.gradientConfig,
-        snapToGrid: data.canvas.snapToGrid,
-        gridSize: data.canvas.gridSize,
+        windows: data.windows,
+        snapToGrid: data.snapToGrid,
+        gridSize: data.gridSize,
+        showGrid: data.showGrid,
+        gridColor: data.gridColor,
         assets: data.assets,
         knobStyles: data.knobStyles,
       })
@@ -243,10 +237,22 @@ export function SaveLoadPanel() {
     try {
       const template = await loadBuiltInTemplate(templateId)
 
-      // Update canvas settings from template metadata
-      setCanvasDimensions(template.metadata.canvasWidth, template.metadata.canvasHeight)
-      setBackgroundColor(template.metadata.backgroundColor)
-      setBackgroundType('color')
+      // Create a new window from template metadata
+      const windowId = crypto.randomUUID()
+      const templateWindow = {
+        id: windowId,
+        name: 'Main Window',
+        type: 'release' as const,
+        width: template.metadata.canvasWidth,
+        height: template.metadata.canvasHeight,
+        backgroundColor: template.metadata.backgroundColor,
+        backgroundType: 'color' as const,
+        elementIds: template.elements.map(el => el.id),
+        createdAt: Date.now(),
+      }
+
+      // Set the window
+      setWindows([templateWindow])
 
       // Clear selection and load elements
       selectMultiple([])

@@ -6,13 +6,11 @@ export function useDirtyState() {
   const savedStateSnapshot = useStore((state) => state.savedStateSnapshot)
   const lastSavedTimestamp = useStore((state) => state.lastSavedTimestamp)
   const elements = useStore((state) => state.elements)
-  const canvasWidth = useStore((state) => state.canvasWidth)
-  const canvasHeight = useStore((state) => state.canvasHeight)
-  const backgroundColor = useStore((state) => state.backgroundColor)
-  const backgroundType = useStore((state) => state.backgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
+  const windows = useStore((state) => state.windows)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
+  const showGrid = useStore((state) => state.showGrid)
+  const gridColor = useStore((state) => state.gridColor)
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
 
@@ -27,13 +25,11 @@ export function useDirtyState() {
     // Compare current serializable state against saved snapshot
     const currentSnapshot = JSON.stringify({
       elements,
-      canvasWidth,
-      canvasHeight,
-      backgroundColor,
-      backgroundType,
-      gradientConfig,
+      windows,
       snapToGrid,
       gridSize,
+      showGrid,
+      gridColor,
       assets,
       knobStyles,
     })
