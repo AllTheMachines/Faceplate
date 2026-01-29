@@ -6,10 +6,10 @@ interface LayerRowProps {
   layer: Layer
   isSelected: boolean
   onSelect: (id: string) => void
-  dragHandle?: React.RefObject<HTMLDivElement>
+  dragHandleProps?: ((el: HTMLDivElement | null) => void) | null
 }
 
-export function LayerRow({ layer, isSelected, onSelect }: LayerRowProps) {
+export function LayerRow({ layer, isSelected, onSelect, dragHandleProps }: LayerRowProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(layer.name)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -72,14 +72,32 @@ export function LayerRow({ layer, isSelected, onSelect }: LayerRowProps) {
 
   return (
     <div
+      ref={dragHandleProps}
       className={`
-        flex items-center gap-2 px-3 py-2 cursor-pointer
+        group flex items-center gap-2 px-3 py-2 cursor-pointer h-10
         ${isSelected ? 'bg-blue-600/30' : 'hover:bg-gray-700/50'}
         ${!layer.visible ? 'opacity-50' : ''}
       `}
       onClick={() => onSelect(layer.id)}
       onDoubleClick={handleDoubleClick}
     >
+      {/* Drag handle grip icon (not on default layer) */}
+      {!isDefault ? (
+        <div className="flex-shrink-0 text-gray-600 group-hover:text-gray-400 cursor-grab active:cursor-grabbing">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <circle cx="9" cy="6" r="1.5" />
+            <circle cx="15" cy="6" r="1.5" />
+            <circle cx="9" cy="12" r="1.5" />
+            <circle cx="15" cy="12" r="1.5" />
+            <circle cx="9" cy="18" r="1.5" />
+            <circle cx="15" cy="18" r="1.5" />
+          </svg>
+        </div>
+      ) : (
+        // Spacer for default layer to align with others
+        <div className="w-4 flex-shrink-0" />
+      )}
+
       {/* Color dot */}
       <div
         className="w-3 h-3 rounded-full flex-shrink-0"
