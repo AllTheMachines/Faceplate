@@ -319,7 +319,7 @@ html, body {
 
 ### Font Embedding
 
-Fonts are embedded as base64 data URLs for offline use:
+**JUCE Export:** Fonts are embedded as base64 data URLs for offline use:
 
 ```css
 @font-face {
@@ -331,6 +331,8 @@ Fonts are embedded as base64 data URLs for offline use:
 ```
 
 Only fonts actually used in the design are embedded.
+
+**Preview Mode:** Uses Google Fonts CDN instead of embedded fonts. This is because preview runs via blob URLs where relative font paths don't work. The CDN provides Inter, Roboto, and Roboto Mono with all font weights (300-700).
 
 ---
 
@@ -836,3 +838,17 @@ Before export, Faceplate validates the design:
 ---
 
 *Last updated: 29 January 2026*
+
+---
+
+## Preview vs JUCE Export Differences
+
+| Aspect | Preview Mode | JUCE Export |
+|--------|--------------|-------------|
+| Fonts | Google Fonts CDN | Base64 embedded |
+| File Structure | Single blob URL | Separate files |
+| JUCE Bridge | Mock (standalone) | Real bridge |
+| Offline Support | No (requires internet) | Yes |
+| Use Case | Quick testing | Production |
+
+Preview mode is for rapid iteration and visual testing. Always test JUCE export for production deployment.

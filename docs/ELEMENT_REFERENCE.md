@@ -723,6 +723,8 @@ Filter frequency response curve.
 
 Structural elements that can contain other elements.
 
+**Child Positioning:** Children inside containers use coordinates relative to the container's content area (inside padding/border). A child at `x: 0, y: 0` appears at the top-left of the container's content area. The designer and export both use this same coordinate system.
+
 #### panel
 Simple panel container.
 
@@ -957,4 +959,4 @@ Signal flow diagram for routing visualization.
 
 ---
 
-*Last updated: 28 January 2026*
+*Last updated: 29 January 2026*

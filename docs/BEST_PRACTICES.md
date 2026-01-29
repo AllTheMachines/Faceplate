@@ -233,11 +233,12 @@ setTimeout(() => {
 
 Always test in browser before JUCE integration:
 
-1. Export as **HTML Preview**
-2. Open `index.html` in a browser
-3. Test all interactions
-4. Check console for errors (F12)
-5. Verify visual appearance
+1. Export as **HTML Preview** or use **Preview in Browser**
+2. Test all interactions
+3. Check console for errors (F12)
+4. Verify visual appearance
+
+**Note:** Preview mode uses Google Fonts CDN for font rendering, while JUCE export embeds fonts as base64. Font rendering should be identical, but preview requires internet access for fonts to load.
 
 ### JUCE Testing
 
@@ -428,4 +429,4 @@ Before shipping your plugin:
 
 ---
 
-*Last updated: 28 January 2026*
+*Last updated: 29 January 2026*
