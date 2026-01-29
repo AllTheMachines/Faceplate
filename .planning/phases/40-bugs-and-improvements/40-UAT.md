@@ -1,9 +1,9 @@
 ---
-status: complete
+status: diagnosed
 phase: 40-bugs-and-improvements
 source: 40-01-SUMMARY.md, 40-02-SUMMARY.md, 40-03-SUMMARY.md, 40-04-SUMMARY.md, 40-05-SUMMARY.md, 40-06-SUMMARY.md, 40-07-SUMMARY.md, 40-08-SUMMARY.md
 started: 2026-01-29T19:00:00Z
-updated: 2026-01-29T19:30:00Z
+updated: 2026-01-29T19:45:00Z
 ---
 
 ## Current Test
@@ -52,9 +52,8 @@ note: Grid renders correctly
 
 ### 9. Container Editor Snap-to-Grid
 expected: In container editor with grid enabled, drag an element. Element should snap to grid lines when snapToGrid is enabled.
-result: issue
-reported: "elements are not snapping to the grid"
-severity: major
+result: pass
+note: Snaps on mouse release (same as main canvas). User perception - works correctly.
 
 ### 10. Container Editor Copy/Paste
 expected: In container editor, select element(s). Ctrl+C to copy, Ctrl+V to paste. Pasted elements appear with 20px offset and "copy" suffix in name.
@@ -86,10 +85,13 @@ reason: No custom fonts available; font management UI not found in interface
 ## Summary
 
 total: 15
-passed: 8
-issues: 2
+passed: 9
+issues: 1
 pending: 0
 skipped: 5
+
+Note: Test 9 reclassified as pass after diagnosis (snap-on-release works correctly).
+Additional gap found during Test 10: multi-select drag not working (separate from copy/paste).
 
 ## Gaps
 
@@ -98,27 +100,38 @@ skipped: 5
   reason: "User reported: it created a subfolder called 'main-window'. why? all files should just be copied there"
   severity: minor
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "exportMultiWindowToFolder always creates subdirectory via getDirectoryHandle, no check for single window"
+  artifacts:
+    - path: "src/services/export/codeGenerator.ts"
+      issue: "Lines 857-864 unconditionally create subdirectory for each window"
+  missing:
+    - "Add check: if windowsToExport.length === 1, write directly to dirHandle instead of creating subdirectory"
+  debug_session: ".planning/debug/folder-export-unnecessary-subfolder.md"
 
 - truth: "Elements snap to grid when dragged in container editor"
-  status: failed
+  status: not_a_bug
   reason: "User reported: elements are not snapping to the grid"
-  severity: major
+  severity: none
   test: 9
-  root_cause: ""
-  artifacts: []
+  root_cause: "Snap-on-release behavior (not snap-during-drag) - same as main canvas. Works correctly."
+  artifacts:
+    - path: "src/components/ContainerEditor/ContainerEditorCanvas.tsx"
+      issue: "snapPosition() called in handleMouseUp (line 121) - snaps on release, not during drag"
   missing: []
-  debug_session: ""
+  debug_session: ".planning/debug/container-snap-to-grid.md"
 
 - truth: "Multi-selected elements can be dragged together in container editor"
   status: failed
   reason: "User reported: i cant drag them together when i select multiple ones"
   severity: major
   test: 10
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "DragState only tracks single element (childId). No support for multi-element drag."
+  artifacts:
+    - path: "src/components/ContainerEditor/ContainerEditorCanvas.tsx"
+      issue: "DragState interface only has childId for one element, startDrag/handleMouseUp/getDragOffset all single-element"
+  missing:
+    - "Modify DragState to store map of selected elements' start positions"
+    - "In startDrag, capture start positions for all elements in selectedIds"
+    - "In handleMouseUp, iterate all selected elements and apply delta"
+    - "In getDragOffset, return offset for any element in selection being dragged"
+  debug_session: ".planning/debug/container-multiselect-drag.md"
