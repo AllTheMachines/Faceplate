@@ -5,6 +5,7 @@ import { ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection, getPropertyComponent } from './'
 import { downloadElementSVG, getLayerNamesForType } from '../../services/export/svgElementExport'
 import { validateSVGForElement, detectLayersForType } from '../../services/svgLayerDetection'
+import { sectionHelp } from '../../content/help/sections'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -120,7 +121,7 @@ export function PropertyPanel() {
   return (
     <div className="space-y-6">
       {/* Position & Size */}
-      <PropertySection title="Position & Size">
+      <PropertySection title="Position & Size" helpContent={sectionHelp['position-size']}>
         <div className="grid grid-cols-2 gap-3">
           <NumberInput
             label="X"
@@ -148,7 +149,7 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Identity */}
-      <PropertySection title="Identity">
+      <PropertySection title="Identity" helpContent={sectionHelp['identity']}>
         <TextInput
           label="Name"
           value={element.name}
@@ -165,7 +166,7 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Lock */}
-      <PropertySection title="Lock">
+      <PropertySection title="Lock" helpContent={sectionHelp['lock']}>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -181,7 +182,7 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Export / Import */}
-      <PropertySection title="SVG">
+      <PropertySection title="SVG" helpContent={sectionHelp['svg']}>
         <div className="flex gap-2">
           <button
             onClick={() => downloadElementSVG(element)}
