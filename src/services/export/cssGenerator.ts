@@ -491,7 +491,7 @@ ${selector} .rangeslider-thumb:active {
   /* Button */
   background-color: ${element.backgroundColor};
   color: ${element.textColor};
-  border: 2px solid ${element.borderColor};
+  border: ${element.borderWidth ?? 1}px solid ${element.borderColor};
   border-radius: ${element.borderRadius}px;
   font-family: Inter, system-ui, sans-serif;
   font-size: 14px;
