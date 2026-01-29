@@ -25,6 +25,9 @@ export interface BaseElementConfig {
 
   // Container hierarchy (optional)
   parentId?: string // ID of parent container (if this element is a child)
+
+  // Layer assignment (optional)
+  layerId?: string // Layer this element belongs to (defaults to 'default' if not set)
 }
 
 /**

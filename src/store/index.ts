@@ -9,6 +9,7 @@ import { createDirtyStateSlice, DirtyStateSlice } from './dirtyStateSlice'
 import { createContainerEditorSlice, ContainerEditorSlice } from './containerEditorSlice'
 import { createFontsSlice, FontsSlice } from './fontsSlice'
 import { createWindowsSlice, WindowsSlice } from './windowsSlice'
+import { createLayersSlice, LayersSlice } from './layersSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -38,7 +39,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice & LayersSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -54,6 +55,7 @@ export const useStore = create<Store>()(
       ...createContainerEditorSlice(...a),
       ...createFontsSlice(...a),
       ...createWindowsSlice(...a),
+      ...createLayersSlice(...a),
     }),
     {
       limit: 50,
@@ -74,6 +76,7 @@ export const useStore = create<Store>()(
           editingContainerId, containerEditStack,
           customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime,
           activeWindowId, windowViewports,
+          selectedLayerId,
           ...rest
         } = state
         return rest
