@@ -70,6 +70,7 @@ export function DbDisplayProperties({ element, onUpdate }: DbDisplayPropertiesPr
           onChange={(fontWeight) => onUpdate({ fontWeight: fontWeight as string })}
           variant="compact"
           valueType="string"
+          fontFamily={element.fontFamily}
         />
         <NumberInput
           label="Font Size"

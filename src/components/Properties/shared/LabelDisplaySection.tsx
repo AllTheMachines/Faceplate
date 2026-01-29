@@ -70,6 +70,7 @@ export function LabelDisplaySection({
                 onChange={(val) => onLabelFontWeightChange!(val as string)}
                 variant="compact"
                 valueType="string"
+                fontFamily={labelFontFamily}
               />
             </>
           )}

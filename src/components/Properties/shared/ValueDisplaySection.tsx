@@ -95,6 +95,7 @@ export function ValueDisplaySection({
                 onChange={(val) => onValueFontWeightChange!(val as string)}
                 variant="compact"
                 valueType="string"
+                fontFamily={valueFontFamily}
               />
             </>
           )}

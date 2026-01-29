@@ -73,6 +73,7 @@ export function FrequencyDisplayProperties({
           onChange={(fontWeight) => onUpdate({ fontWeight: fontWeight as string })}
           variant="compact"
           valueType="string"
+          fontFamily={element.fontFamily}
         />
         <NumberInput
           label="Font Size"

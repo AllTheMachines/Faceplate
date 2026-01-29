@@ -41,6 +41,7 @@ export function FontSection({
         onChange={(val) => onFontWeightChange(val as number)}
         variant="full"
         valueType="number"
+        fontFamily={fontFamily}
       />
       <NumberInput
         label="Padding"
