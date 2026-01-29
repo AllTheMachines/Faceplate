@@ -145,6 +145,7 @@ export function useCopyPaste() {
   const duplicateSelected = useCallback(() => {
     // Duplicate = copy + paste in one action
     // Get selected elements that belong to the active window only
+    const totalSelected = selectedIds.length
     const elements = selectedIds
       .map((id) => getElement(id))
       .filter((el): el is ElementConfig => {
@@ -153,6 +154,11 @@ export function useCopyPaste() {
         const elementWindow = getWindowForElement(el.id)
         return elementWindow?.id === activeWindowId
       })
+
+    const fromOtherWindows = totalSelected - elements.length
+    if (fromOtherWindows > 0) {
+      console.log(`[Duplicate] Skipping ${fromOtherWindows} element(s) from other windows (duplicating ${elements.length} in active window)`)
+    }
 
     if (elements.length === 0) return
 
