@@ -5,11 +5,13 @@ import { Layer, LAYER_COLOR_MAP } from '../../types/layer'
 interface LayerRowProps {
   layer: Layer
   isSelected: boolean
+  hasSelectedElements?: boolean
   onSelect: (id: string) => void
+  onDelete?: (layer: Layer) => void
   dragHandleProps?: ((el: HTMLDivElement | null) => void) | null
 }
 
-export function LayerRow({ layer, isSelected, onSelect, dragHandleProps }: LayerRowProps) {
+export function LayerRow({ layer, isSelected, hasSelectedElements, onSelect, onDelete, dragHandleProps }: LayerRowProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(layer.name)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -77,6 +79,7 @@ export function LayerRow({ layer, isSelected, onSelect, dragHandleProps }: Layer
         group flex items-center gap-2 px-3 py-2 cursor-pointer h-10
         ${isSelected ? 'bg-blue-600/30' : 'hover:bg-gray-700/50'}
         ${!layer.visible ? 'opacity-50' : ''}
+        ${hasSelectedElements ? 'border-l-2 border-l-blue-500' : ''}
       `}
       onClick={() => onSelect(layer.id)}
       onDoubleClick={handleDoubleClick}
@@ -185,6 +188,23 @@ export function LayerRow({ layer, isSelected, onSelect, dragHandleProps }: Layer
             </svg>
           )}
         </button>
+
+        {/* Delete button (only for non-default layers) */}
+        {!isDefault && onDelete && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete(layer)
+            }}
+            className="p-1 rounded hover:bg-red-600/30 transition-colors text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100"
+            title="Delete layer"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   )

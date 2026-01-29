@@ -1,36 +1,55 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { Tree, NodeRendererProps } from 'react-arborist'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useStore } from '../../store'
 import { Layer, LayerColor, LAYER_COLORS, LAYER_COLOR_MAP } from '../../types/layer'
 import { LayerRow } from './LayerRow'
+import { DeleteLayerDialog } from './DeleteLayerDialog'
 
 // Data structure for react-arborist tree nodes
 interface LayerNodeData {
   id: string
   name: string
   layer: Layer
+  hasSelectedElements: boolean
 }
 
 // LayerNode render component that wraps LayerRow
-function LayerNode({
-  node,
-  style,
-  dragHandle,
-}: NodeRendererProps<LayerNodeData>) {
-  const selectedLayerId = useStore((state) => state.selectedLayerId)
-  const selectLayer = useStore((state) => state.selectLayer)
+// Must be created as a factory function to capture the onDelete callback
+function createLayerNode(onDeleteLayer: (layer: Layer) => void) {
+  return function LayerNode({
+    node,
+    style,
+    dragHandle,
+  }: NodeRendererProps<LayerNodeData>) {
+    const selectedLayerId = useStore((state) => state.selectedLayerId)
+    const selectLayer = useStore((state) => state.selectLayer)
+    const elements = useStore((state) => state.elements)
+    const selectElement = useStore((state) => state.selectElement)
 
-  return (
-    <div style={style}>
-      <LayerRow
-        layer={node.data.layer}
-        isSelected={selectedLayerId === node.data.layer.id}
-        onSelect={selectLayer}
-        dragHandleProps={dragHandle}
-      />
-    </div>
-  )
+    // Handle layer click - select first element in this layer
+    const handleLayerClick = useCallback((layerId: string) => {
+      selectLayer(layerId)
+      // Find first element in this layer and select it
+      const firstElement = elements.find((el) => (el.layerId || 'default') === layerId)
+      if (firstElement) {
+        selectElement(firstElement.id)
+      }
+    }, [selectLayer, selectElement, elements])
+
+    return (
+      <div style={style}>
+        <LayerRow
+          layer={node.data.layer}
+          isSelected={selectedLayerId === node.data.layer.id}
+          hasSelectedElements={node.data.hasSelectedElements}
+          onSelect={handleLayerClick}
+          onDelete={onDeleteLayer}
+          dragHandleProps={dragHandle}
+        />
+      </div>
+    )
+  }
 }
 
 export function LayersPanel() {
@@ -48,6 +67,29 @@ export function LayersPanel() {
   const getLayersInOrder = useStore((state) => state.getLayersInOrder)
   const reorderLayers = useStore((state) => state.reorderLayers)
   const toggleLayerVisibility = useStore((state) => state.toggleLayerVisibility)
+  const elements = useStore((state) => state.elements)
+  const selectedIds = useStore((state) => state.selectedIds)
+
+  // Track which layers have selected elements (for visual indicator)
+  const layersWithSelectedElements = useMemo(() => {
+    const layerSet = new Set<string>()
+    for (const id of selectedIds) {
+      const element = elements.find((el) => el.id === id)
+      if (element) {
+        layerSet.add(element.layerId || 'default')
+      }
+    }
+    return layerSet
+  }, [selectedIds, elements])
+
+  // State for delete confirmation dialog
+  const [layerToDelete, setLayerToDelete] = useState<Layer | null>(null)
+
+  // Create the LayerNode component with delete handler
+  const LayerNodeComponent = useMemo(
+    () => createLayerNode((layer) => setLayerToDelete(layer)),
+    []
+  )
 
   // H key shortcut - toggle visibility of selected layer
   useHotkeys('h', () => {
@@ -122,6 +164,7 @@ export function LayersPanel() {
     id: layer.id,
     name: layer.name,
     layer: layer,
+    hasSelectedElements: layersWithSelectedElements.has(layer.id),
   }))
 
   // Handle move (reorder) from react-arborist
@@ -323,7 +366,7 @@ export function LayersPanel() {
             }}
             className="layers-tree"
           >
-            {LayerNode}
+            {LayerNodeComponent}
           </Tree>
         )}
       </div>
@@ -332,6 +375,13 @@ export function LayersPanel() {
       <div className="px-3 py-2 border-t border-gray-700 text-xs text-gray-500">
         {layers.length} layer{layers.length !== 1 ? 's' : ''}
       </div>
+
+      {/* Delete layer confirmation dialog */}
+      <DeleteLayerDialog
+        layer={layerToDelete}
+        isOpen={layerToDelete !== null}
+        onClose={() => setLayerToDelete(null)}
+      />
     </div>
   )
 }
