@@ -262,29 +262,61 @@ type MigrationResult =
 function migrateProject(data: unknown): MigrationResult {
   // Check if this is v1.x format and needs migration
   if (isV1Format(data)) {
-    console.log('[Serialization] Migrating v1.x project to v2.0.0 format')
+    console.log('[Serialization] Migrating project from v1.x to v2.0.0')
     return { success: true, data: migrateV1ToV2(data) }
   }
 
-  // Check version for v2+ format
-  if (typeof data === 'object' && data !== null && 'version' in data) {
-    const version = (data as { version: unknown }).version
-    if (typeof version === 'string') {
-      // Check if version is from the future
-      if (isVersionNewer(version, CURRENT_VERSION)) {
-        return {
-          success: false,
-          error: `This project was created with a newer version of the application (v${version}). Please update to the latest version to open this file. Your current version is v${CURRENT_VERSION}.`
-        }
-      }
+  // Check if data is an object
+  if (typeof data !== 'object' || data === null) {
+    return {
+      success: false,
+      error: 'Invalid project file: expected JSON object'
+    }
+  }
 
-      // Check for unsupported versions (not v1.x and not v2.x)
-      const majorVersion = parseInt(version.split('.')[0] || '0')
-      if (majorVersion < 1 || majorVersion > 2) {
-        return {
-          success: false,
-          error: `Unsupported project version (v${version}). This application supports versions 1.x and 2.x.`
-        }
+  const obj = data as Record<string, unknown>
+
+  // Handle missing version field
+  if (!('version' in obj)) {
+    // If has windows array, assume v2.0.0 (missing version in saved file)
+    if ('windows' in obj && Array.isArray(obj.windows)) {
+      console.log('[Serialization] Adding missing version field to v2.0.0 project')
+      return {
+        success: true,
+        data: { ...obj, version: '2.0.0' }
+      }
+    }
+
+    // If no windows and no canvas, this is invalid
+    if (!('canvas' in obj)) {
+      return {
+        success: false,
+        error: 'Invalid project file: missing version information and no recognizable format'
+      }
+    }
+
+    // Has canvas but no version, treat as v1.0.0
+    console.log('[Serialization] Migrating project from v1.0.0 to v2.0.0')
+    return { success: true, data: migrateV1ToV2(obj as ProjectDataV1) }
+  }
+
+  // Check version for v2+ format
+  const version = obj.version
+  if (typeof version === 'string') {
+    // Check if version is from the future
+    if (isVersionNewer(version, CURRENT_VERSION)) {
+      return {
+        success: false,
+        error: `This project was created with a newer version of the application (v${version}). Please update to the latest version to open this file. Your current version is v${CURRENT_VERSION}.`
+      }
+    }
+
+    // Check for unsupported versions (not v1.x and not v2.x)
+    const majorVersion = parseInt(version.split('.')[0] || '0')
+    if (majorVersion < 1 || majorVersion > 2) {
+      return {
+        success: false,
+        error: `Unsupported project version (v${version}). This application supports versions 1.x and 2.x.`
       }
     }
   }
