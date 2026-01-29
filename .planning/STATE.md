@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 43 (Help System) - In progress
-Plan: 3 of 4
-Status: In progress
-Last activity: 2026-01-29 — Completed 43-03-PLAN.md (Element Type Help)
+Phase: 43 (Help System) - Complete
+Plan: 4 of 4
+Status: Phase complete
+Last activity: 2026-01-29 - Completed 43-04-PLAN.md (F1 Integration)
 
-Progress: [█████████░] 10/12 plans (83%)
+Progress: [███████████] 12/12 plans (100%)
 
 ## Milestones Shipped
 
@@ -29,18 +29,9 @@ Progress: [█████████░] 10/12 plans (83%)
 | v1.6 Multi-Window System | 38 | 1 | 2026-01-28 |
 | v1.7 Parameter Sync | 39 | 1 | 2026-01-28 |
 | v1.8 Bug Fixes & Improvements | 40 | 8 | 2026-01-29 |
+| v1.9 Layers & Help System | 41-43 | 12 | 2026-01-29 |
 
-**Total: 40 phases, 165 plans, 7 days**
-
-## Current Milestone: v1.9
-
-**Goal:** Layers system for element organization, contextual help system, and deferred bug fixes
-
-**GitHub Issues:**
-- #2: Folder export subfolder for single-window [bug, minor] - FIXED (41-01)
-- #3: Container multi-select drag [bug, major] - FIXED (41-02)
-- #4: Layers system with lock/hide/show [enhancement] - FIXED (42)
-- #6: Help buttons for Properties Panel [enhancement] - IN PROGRESS (43)
+**Total: 43 phases, 177 plans, 8 days**
 
 ## Accumulated Context
 
@@ -64,6 +55,10 @@ All decisions documented in PROJECT.md Key Decisions table.
 - Normalized element type lookup for flexible matching
 - Category-based organization for maintainability
 
+**43-04 Decisions:**
+- Use enableOnFormTags to allow F1 even in text inputs
+- Single selection shows element help, all other states show general help
+
 ### Pending Todos
 
 None
@@ -74,12 +69,12 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-29
-Stopped at: Completed 43-03-PLAN.md (Element Type Help)
+Last session: 2026-01-29 20:16 CET
+Stopped at: Completed Phase 43 (Help System) - v1.9 milestone complete
 Resume file: None
 
-**Next step:** Execute 43-04-PLAN.md (F1 Integration)
+**Milestone complete:** v1.9 Layers & Help System shipped
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Completed 43-03-PLAN.md*
+*Last updated: 2026-01-29 - Completed Phase 43 (Help System)*
