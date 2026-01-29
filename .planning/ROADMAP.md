@@ -10,6 +10,74 @@
 - ✅ **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
 - ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
 - ✅ **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
+- 🚧 **v1.8 Bug Fixes & Improvements** — Phase 40 (in progress)
+
+## Current Milestone: v1.8 Bug Fixes & Improvements
+
+### Phase 40: Bug Fixes & UI Improvements
+**Goal**: Fix reported bugs and add quality-of-life improvements
+**Plans**: 8 plans in 2 waves
+
+Plans:
+- [ ] 40-01-PLAN.md — Fix critical state bugs (version, name validation, multi-window duplicate)
+- [ ] 40-02-PLAN.md — Add Button borderWidth property
+- [ ] 40-03-PLAN.md — Fix color picker and label/value distance
+- [ ] 40-04-PLAN.md — Add folder export option
+- [ ] 40-05-PLAN.md — Container editor snap-to-grid
+- [ ] 40-06-PLAN.md — Container editor copy/paste/duplicate
+- [ ] 40-07-PLAN.md — Alt/Ctrl+click to deselect from multi-select
+- [ ] 40-08-PLAN.md — Fix font weight display and preview consistency
+
+#### Wave Structure
+
+| Wave | Plans | Description |
+|------|-------|-------------|
+| 1 | 40-01, 40-02, 40-03, 40-04, 40-08 | Critical bugs & folder export (parallel) |
+| 2 | 40-05, 40-06, 40-07 | Container editor & selection (parallel) |
+
+#### Bugs Addressed
+
+| ID | Description | Plan | Priority |
+|----|-------------|------|----------|
+| BUG-40-01 | Font weight names incorrect in preview | 40-08 | High |
+| BUG-40-02 | Button border thickness not editable | 40-02 | Medium |
+| BUG-40-03 | Duplicate name error after delete/recreate | 40-01 | High |
+| BUG-40-04 | Color picker shows wrong color | 40-03 | Medium |
+| BUG-40-05 | Label/value distance not editable | 40-03 | Medium |
+| BUG-40-06 | Multi-window duplicate affects other windows | 40-01 | High |
+| BUG-40-07 | Missing version causes migration error | 40-01 | High |
+
+#### Features Addressed
+
+| ID | Description | Plan | Priority |
+|----|-------------|------|----------|
+| FEAT-40-01 | Direct folder export | 40-04 | High |
+| FEAT-40-02 | Container editor snap-to-grid | 40-05 | Medium |
+| FEAT-40-03 | Container editor copy/paste | 40-06 | Medium |
+| FEAT-40-06 | Alt/Ctrl+click deselect | 40-07 | Medium |
+
+#### Deferred (Low Priority)
+
+| ID | Description | Reason |
+|----|-------------|--------|
+| FEAT-40-04 | VST sync bidirectional | Requires C++ changes in VST repos |
+| FEAT-40-05 | Merge INSTvst/EFXvst | Architectural scope too large for bug fix phase |
+| FEAT-40-07 | Auto-generate UI from specs | New skill, not a bug fix |
+| FEAT-40-08 | Layers system | Major feature, defer to v1.9 |
+
+**Success Criteria:**
+1. Font weights render correctly in preview matching canvas
+2. Border thickness editable on all elements that support borders
+3. Element naming works correctly after delete/recreate cycle
+4. Color picker displays correct color matching hex value
+5. Label/value distance configurable in properties panel
+6. Multi-select duplication only affects current window
+7. Project version stored in JSON with proper migration on load
+8. Export can output to folder without creating zip
+9. Container editor has snap-to-grid and copy/paste support
+10. Alt/Ctrl+click deselects individual elements from multi-selection
+
+---
 
 ## Phases
 
@@ -491,54 +559,54 @@ Plans:
 </details>
 
 <details>
-<summary>✅ v1.3 Workflow & Protection (Phases 31-33) — SHIPPED 2026-01-27</summary>
+<summary>v1.3 Workflow & Protection (Phases 31-33) - SHIPPED 2026-01-27</summary>
 
-### Phase 31: Undo/Redo History Panel ✓
+### Phase 31: Undo/Redo History Panel
 **Goal**: Visible debug panel showing every state change for debugging and transparency
-**Plans**: 2 plans — completed 2026-01-27
+**Plans**: 2 plans - completed 2026-01-27
 
-### Phase 32: Unsaved Changes Protection ✓
+### Phase 32: Unsaved Changes Protection
 **Goal**: Users never accidentally lose work due to navigation or browser close
-**Plans**: 2 plans — completed 2026-01-27
+**Plans**: 2 plans - completed 2026-01-27
 
-### Phase 33: Adjustable Snap Grid ✓
+### Phase 33: Adjustable Snap Grid
 **Goal**: Visible background grid for precise element alignment
-**Plans**: 1 plan — completed 2026-01-27
+**Plans**: 1 plan - completed 2026-01-27
 
 </details>
 
 <details>
-<summary>✅ v1.4 Container Editing System (Phases 34-35) — SHIPPED 2026-01-27</summary>
+<summary>v1.4 Container Editing System (Phases 34-35) - SHIPPED 2026-01-27</summary>
 
-### Phase 34: Container Element Editor ✓
+### Phase 34: Container Element Editor
 **Goal**: Users can add child elements to containers via dedicated editing interface
-**Plans**: 1 plan — completed 2026-01-27
+**Plans**: 1 plan - completed 2026-01-27
 
-### Phase 35: Container Overflow & Scrollbars ✓
+### Phase 35: Container Overflow & Scrollbars
 **Goal**: Containers handle child elements that exceed their bounds gracefully
-**Plans**: 1 plan — completed 2026-01-27
+**Plans**: 1 plan - completed 2026-01-27
 
 </details>
 
 <details>
-<summary>✅ v1.5 Export & Asset Management (Phases 36-37) — SHIPPED 2026-01-27</summary>
+<summary>v1.5 Export & Asset Management (Phases 36-37) - SHIPPED 2026-01-27</summary>
 
-### Phase 36: SVG Export with Named Layers ✓
+### Phase 36: SVG Export with Named Layers
 **Goal**: Export individual elements as SVG with meaningful layer names for re-import workflow
-**Plans**: 1 plan — completed 2026-01-27
+**Plans**: 1 plan - completed 2026-01-27
 
-### Phase 37: Font Management System ✓
+### Phase 37: Font Management System
 **Goal**: Centralized font management with user directory selection and export bundling
-**Plans**: 5 plans — completed 2026-01-27
+**Plans**: 5 plans - completed 2026-01-27
 
 </details>
 
 <details>
-<summary>✅ v1.6 Multi-Window System (Phase 38) — SHIPPED 2026-01-28</summary>
+<summary>v1.6 Multi-Window System (Phase 38) - SHIPPED 2026-01-28</summary>
 
-### Phase 38: Multi-Window System ✓
+### Phase 38: Multi-Window System
 **Goal**: Projects support multiple windows with independent settings and navigation
-**Plans**: 1 plan (direct implementation) — completed 2026-01-28
+**Plans**: 1 plan (direct implementation) - completed 2026-01-28
 
 **Requirements delivered:**
 - WIN-01: Multiple windows per project with independent dimensions and backgrounds
@@ -553,38 +621,38 @@ Plans:
 - WIN-10: Per-window viewport state preservation
 
 **Success Criteria:**
-1. User can create multiple windows in a project ✓
-2. Each window has independent dimensions and background ✓
-3. User can mark windows as 'developer' to exclude from default export ✓
-4. User can switch between windows via tabs ✓
-5. User can copy elements from one window and paste in another ✓
-6. User can configure button to navigate to another window ✓
-7. Browser preview shows all windows with tab navigation ✓
-8. Export creates separate folders for each window ✓
-9. Old v1.x projects migrate automatically to v2.0.0 format ✓
+1. User can create multiple windows in a project
+2. Each window has independent dimensions and background
+3. User can mark windows as 'developer' to exclude from default export
+4. User can switch between windows via tabs
+5. User can copy elements from one window and paste in another
+6. User can configure button to navigate to another window
+7. Browser preview shows all windows with tab navigation
+8. Export creates separate folders for each window
+9. Old v1.x projects migrate automatically to v2.0.0 format
 
 </details>
 
 <details>
-<summary>✅ v1.7 Parameter Sync (Phase 39) — SHIPPED 2026-01-28</summary>
+<summary>v1.7 Parameter Sync (Phase 39) - SHIPPED 2026-01-28</summary>
 
-### Phase 39: Parameter Sync ✓
+### Phase 39: Parameter Sync
 **Goal**: Exported bundles sync UI state with C++ parameter values when editor opens
-**Plans**: 1 plan — completed 2026-01-28
+**Plans**: 1 plan - completed 2026-01-28
 
 **Requirements delivered:**
 - SYNC-01 through SYNC-08: Parameter synchronization infrastructure
 - DOC-01 through DOC-04: JUCE integration documentation
 
 **Success Criteria:**
-1. Export generates `setupParameterSyncListener()` in bindings.js ✓
-2. Listener handles `__juce__paramSync` event from C++ backend ✓
-3. All parameter-bound elements update visual state (knobs, sliders, buttons, meters, displays) ✓
-4. Internal state updated to prevent drag jumping ✓
-5. Graceful fallback when JUCE backend unavailable ✓
-6. Element ID → parameter ID mapping works correctly ✓
-7. JUCE_INTEGRATION.md includes C++ implementation examples ✓
-8. Generated code includes inline comments explaining sync purpose ✓
+1. Export generates `setupParameterSyncListener()` in bindings.js
+2. Listener handles `__juce__paramSync` event from C++ backend
+3. All parameter-bound elements update visual state (knobs, sliders, buttons, meters, displays)
+4. Internal state updated to prevent drag jumping
+5. Graceful fallback when JUCE backend unavailable
+6. Element ID to parameter ID mapping works correctly
+7. JUCE_INTEGRATION.md includes C++ implementation examples
+8. Generated code includes inline comments explaining sync purpose
 
 </details>
 
@@ -632,7 +700,8 @@ Plans:
 | 37. Font Management System | v1.5 | 5/5 | Complete | 2026-01-27 |
 | 38. Multi-Window System | v1.6 | 1/1 | Complete | 2026-01-28 |
 | 39. Parameter Sync | v1.7 | 1/1 | Complete | 2026-01-28 |
+| 40. Bug Fixes & UI Improvements | v1.8 | 0/8 | Not Started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-28 after v1.7 milestone shipped*
+*Last updated: 2026-01-29 - Phase 40 planned with 8 plans in 2 waves*
