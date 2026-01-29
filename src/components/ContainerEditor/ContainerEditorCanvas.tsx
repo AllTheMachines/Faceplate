@@ -50,7 +50,7 @@ export function ContainerEditorCanvas({
   const { copyToClipboard, pasteFromClipboard, duplicateSelected } = useContainerCopyPaste(containerId)
 
   // Grid support - syncs with main canvas settings
-  const { showGrid, gridSize, gridColor } = useContainerGrid()
+  const { showGrid, gridSize, gridColor, snapPosition } = useContainerGrid()
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
@@ -114,8 +114,14 @@ export function ContainerEditorCanvas({
       if (drag.childId) {
         const deltaX = drag.currentX - drag.startX
         const deltaY = drag.currentY - drag.startY
-        const newX = Math.max(0, Math.min(contentWidth - 20, drag.elementStartX + deltaX))
-        const newY = Math.max(0, Math.min(contentHeight - 20, drag.elementStartY + deltaY))
+        let newX = Math.max(0, Math.min(contentWidth - 20, drag.elementStartX + deltaX))
+        let newY = Math.max(0, Math.min(contentHeight - 20, drag.elementStartY + deltaY))
+
+        // Snap to grid if enabled
+        const snapped = snapPosition(newX, newY)
+        newX = snapped.x
+        newY = snapped.y
+
         updateElement(drag.childId, { x: newX, y: newY })
       }
 
@@ -138,7 +144,7 @@ export function ContainerEditorCanvas({
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [drag.isDragging, drag.childId, drag.startX, drag.startY, drag.currentX, drag.currentY, drag.elementStartX, drag.elementStartY, contentWidth, contentHeight, updateElement])
+  }, [drag.isDragging, drag.childId, drag.startX, drag.startY, drag.currentX, drag.currentY, drag.elementStartX, drag.elementStartY, contentWidth, contentHeight, updateElement, snapPosition])
 
   // Handle element click with modifier key support
   const handleElementClick = useCallback((childId: string, e: React.MouseEvent) => {
