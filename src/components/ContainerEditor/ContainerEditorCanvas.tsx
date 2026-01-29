@@ -36,6 +36,8 @@ export function ContainerEditorCanvas({
   const removeChildFromContainer = useStore((state) => state.removeChildFromContainer)
   const startEditingContainer = useStore((state) => state.startEditingContainer)
   const selectElement = useStore((state) => state.selectElement)
+  const toggleSelection = useStore((state) => state.toggleSelection)
+  const addToSelection = useStore((state) => state.addToSelection)
   const clearSelection = useStore((state) => state.clearSelection)
   const selectedIds = useStore((state) => state.selectedIds)
 
@@ -127,6 +129,28 @@ export function ContainerEditorCanvas({
     }
   }, [drag.isDragging, drag.childId, drag.startX, drag.startY, drag.currentX, drag.currentY, drag.elementStartX, drag.elementStartY, contentWidth, contentHeight, updateElement])
 
+  // Handle element click with modifier key support
+  const handleElementClick = useCallback((childId: string, e: React.MouseEvent) => {
+    const isAlreadySelected = selectedIds.includes(childId)
+    const isAltOrCtrl = e.altKey || e.ctrlKey || e.metaKey
+
+    if (e.shiftKey) {
+      // Shift+click: Add to selection
+      addToSelection(childId)
+    } else if (isAltOrCtrl && isAlreadySelected) {
+      // Alt/Ctrl+click on selected: Remove from selection
+      toggleSelection(childId)
+    } else if (isAltOrCtrl && !isAlreadySelected) {
+      // Alt/Ctrl+click on unselected: Add to selection
+      addToSelection(childId)
+    } else if (isAlreadySelected && selectedIds.length > 1) {
+      // Plain click on already selected: keep selection
+    } else {
+      // Plain click: Select only this element
+      selectElement(childId)
+    }
+  }, [selectedIds, selectElement, toggleSelection, addToSelection])
+
   // Start dragging
   const startDrag = useCallback((childId: string, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -135,7 +159,16 @@ export function ContainerEditorCanvas({
     const child = elements.find((el) => el.id === childId)
     if (!child) return
 
-    selectElement(childId)
+    // Handle selection with modifier keys
+    handleElementClick(childId, e)
+
+    // Only start drag if not deselecting
+    const isAltOrCtrl = e.altKey || e.ctrlKey || e.metaKey
+    const wasSelected = selectedIds.includes(childId)
+    if (isAltOrCtrl && wasSelected) {
+      // Don't start drag if we're deselecting
+      return
+    }
 
     setDrag({
       isDragging: true,
@@ -147,7 +180,7 @@ export function ContainerEditorCanvas({
       elementStartX: child.x,
       elementStartY: child.y
     })
-  }, [elements, selectElement])
+  }, [elements, selectedIds, handleElementClick])
 
   // Handle canvas click (deselect)
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
