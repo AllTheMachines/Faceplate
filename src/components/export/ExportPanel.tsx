@@ -4,6 +4,7 @@ import {
   exportJUCEBundle,
   exportHTMLPreview,
   exportMultiWindowBundle,
+  exportMultiWindowToFolder,
   previewHTMLExport,
   previewMultiWindowExport,
   validateForExport,
@@ -26,6 +27,7 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
 interface ExportDetails {
   timestamp: string
   fileCount: number
+  folderName?: string
   sizeSavings?: {
     percent: number
   }
@@ -40,6 +42,7 @@ export function ExportPanel() {
   const [optimizeSVG, setOptimizeSVG] = useState(true)
   const [enableResponsiveScaling, setEnableResponsiveScaling] = useState(true)
   const [includeDeveloperWindows, setIncludeDeveloperWindows] = useState(false)
+  const [exportMode, setExportMode] = useState<'zip' | 'folder'>('zip')
 
   // Get state from store
   const allElements = useStore((state) => state.elements)
@@ -119,21 +122,32 @@ export function ExportPanel() {
     }
     setTimeout(() => setExportStatus('Creating bundle...'), 800)
 
-    // Use multi-window export if multiple windows, otherwise single-window for compatibility
-    const result = hasMultipleWindows
-      ? await exportMultiWindowBundle(windowsData, {
-          optimizeSVG,
-          enableResponsiveScaling,
-          includeDeveloperWindows,
-        })
-      : await exportJUCEBundle({
-          elements,
-          canvasWidth,
-          canvasHeight,
-          backgroundColor,
-          optimizeSVG,
-          enableResponsiveScaling,
-        })
+    let result: { success: boolean; folderName?: string; error?: string; sizeSavings?: any }
+
+    // Folder export (direct to directory)
+    if (exportMode === 'folder') {
+      result = await exportMultiWindowToFolder(windowsData, {
+        optimizeSVG,
+        enableResponsiveScaling,
+        includeDeveloperWindows,
+      })
+    } else {
+      // ZIP export (existing behavior)
+      result = hasMultipleWindows
+        ? await exportMultiWindowBundle(windowsData, {
+            optimizeSVG,
+            enableResponsiveScaling,
+            includeDeveloperWindows,
+          })
+        : await exportJUCEBundle({
+            elements,
+            canvasWidth,
+            canvasHeight,
+            backgroundColor,
+            optimizeSVG,
+            enableResponsiveScaling,
+          })
+    }
 
     setIsExporting(false)
     setExportStatus('')
@@ -149,6 +163,7 @@ export function ExportPanel() {
       setLastExport({
         timestamp,
         fileCount,
+        folderName: result.folderName,
         sizeSavings: result.sizeSavings,
       })
     } else {
@@ -285,6 +300,53 @@ export function ExportPanel() {
           </div>
         )}
 
+        {/* Export Mode Selection */}
+        <div className="mb-4">
+          <h4 className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Export Mode</h4>
+          <div className="space-y-2 bg-gray-800/50 rounded p-2">
+            <label className="flex items-start gap-2 text-xs text-gray-300 cursor-pointer hover:text-gray-100 transition-colors">
+              <input
+                type="radio"
+                name="exportMode"
+                checked={exportMode === 'zip'}
+                onChange={() => setExportMode('zip')}
+                className="mt-0.5 border-gray-600 bg-gray-700 text-blue-500"
+              />
+              <div className="flex-1">
+                <div className="font-medium">ZIP Archive</div>
+                <div className="text-gray-400 mt-0.5">Download as .zip file (traditional)</div>
+              </div>
+            </label>
+            <label className={`flex items-start gap-2 text-xs cursor-pointer transition-colors ${
+              'showDirectoryPicker' in window
+                ? 'text-gray-300 hover:text-gray-100'
+                : 'text-gray-500 opacity-50 cursor-not-allowed'
+            }`}>
+              <input
+                type="radio"
+                name="exportMode"
+                checked={exportMode === 'folder'}
+                onChange={() => setExportMode('folder')}
+                disabled={!('showDirectoryPicker' in window)}
+                className="mt-0.5 border-gray-600 bg-gray-700 text-blue-500"
+              />
+              <div className="flex-1">
+                <div className="font-medium">
+                  Export to Folder
+                  {!('showDirectoryPicker' in window) && (
+                    <span className="ml-1 text-gray-500">(Not supported)</span>
+                  )}
+                </div>
+                <div className="text-gray-400 mt-0.5">
+                  {('showDirectoryPicker' in window)
+                    ? 'Write directly to a folder - choose your project\'s UI folder to skip unzipping'
+                    : 'Requires Chrome, Edge, or Opera browser'}
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
         {/* Export Options Section */}
         <div className="mb-4">
           <h4 className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Options</h4>
@@ -343,7 +405,7 @@ export function ExportPanel() {
               disabled={isExporting || (validationResult.valid === false && validationResult.errors.length > 0)}
               className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white text-sm font-medium rounded transition-colors"
             >
-              {isExporting ? exportStatus : 'Export JUCE Bundle'}
+              {isExporting ? exportStatus : `Export JUCE Bundle ${exportMode === 'folder' ? '(to Folder)' : '(as ZIP)'}`}
             </button>
 
             <button
@@ -392,6 +454,9 @@ export function ExportPanel() {
           <div className="p-2 bg-green-900/30 border border-green-700 rounded text-xs">
             <div className="font-medium text-green-200 mb-1">Export Complete</div>
             <div className="text-green-300/80">
+              {lastExport.folderName && (
+                <div className="mb-1">Exported to: <span className="font-medium">{lastExport.folderName}/</span></div>
+              )}
               {lastExport.timestamp} • {lastExport.fileCount} files
               {lastExport.sizeSavings && lastExport.sizeSavings.percent > 0 && (
                 <span> • SVG optimized: {lastExport.sizeSavings.percent.toFixed(1)}% smaller</span>

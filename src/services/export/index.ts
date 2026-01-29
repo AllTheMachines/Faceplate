@@ -4,7 +4,7 @@
  */
 
 // Main export functions
-export { exportJUCEBundle, exportHTMLPreview, exportMultiWindowBundle } from './codeGenerator'
+export { exportJUCEBundle, exportHTMLPreview, exportMultiWindowBundle, exportMultiWindowToFolder } from './codeGenerator'
 export type { ExportOptions, ExportResult, MultiWindowExportOptions, WindowExportData } from './codeGenerator'
 
 // Browser preview
