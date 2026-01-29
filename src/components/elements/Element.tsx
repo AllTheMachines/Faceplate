@@ -373,9 +373,35 @@ function ElementComponent({ element }: ElementProps) {
   const selectElement = useStore((state) => state.selectElement)
   const toggleSelection = useStore((state) => state.toggleSelection)
   const addToSelection = useStore((state) => state.addToSelection)
+  const selectedIds = useStore((state) => state.selectedIds)
   const lockAllMode = useStore((state) => state.lockAllMode)
   const elements = useStore((state) => state.elements)
   const childrenRef = useRef<HTMLDivElement>(null)
+  const [isHoldingAltCtrl, setIsHoldingAltCtrl] = useState(false)
+
+  // Track Alt/Ctrl key state for cursor feedback
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey) {
+        setIsHoldingAltCtrl(true)
+      }
+    }
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.altKey && !e.ctrlKey && !e.metaKey) {
+        setIsHoldingAltCtrl(false)
+      }
+    }
+    const handleBlur = () => setIsHoldingAltCtrl(false)
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('blur', handleBlur)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('blur', handleBlur)
+    }
+  }, [])
 
   const childElements = useMemo(() => {
     if (!CONTAINER_TYPES.includes(element.type)) return []
@@ -457,8 +483,10 @@ function ElementComponent({ element }: ElementProps) {
 
   const bothScrollbars = needsVScroll && needsHScroll
 
+  const isSelected = selectedIds.includes(element.id)
+
   return (
-    <BaseElement element={element} onClick={handleClick}>
+    <BaseElement element={element} onClick={handleClick} isHoldingAltCtrl={isHoldingAltCtrl && isSelected}>
       <Suspense fallback={<RendererFallback />}>
         <Renderer config={element} />
       </Suspense>

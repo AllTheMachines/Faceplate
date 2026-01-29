@@ -7,9 +7,10 @@ interface BaseElementProps {
   element: ElementConfig
   children: React.ReactNode
   onClick?: (e: React.MouseEvent) => void
+  isHoldingAltCtrl?: boolean
 }
 
-export function BaseElement({ element, children, onClick }: BaseElementProps) {
+export function BaseElement({ element, children, onClick, isHoldingAltCtrl = false }: BaseElementProps) {
   // Check if element is selected
   const selectedIds = useStore((state) => state.selectedIds)
   const isSelected = selectedIds.includes(element.id)
@@ -102,7 +103,13 @@ export function BaseElement({ element, children, onClick }: BaseElementProps) {
       ? 'default'
       : element.locked
         ? 'pointer'  // Locked elements: show pointer (can click to select, but not drag)
-        : (isDragging || isMultiSelectDrag ? 'grabbing' : isSelected ? 'grab' : 'pointer'),
+        : (isDragging || isMultiSelectDrag)
+          ? 'grabbing'
+          : (isSelected && isHoldingAltCtrl)
+            ? 'pointer'  // Show pointer when Alt/Ctrl held over selected (indicates deselect action)
+            : isSelected
+              ? 'grab'
+              : 'pointer',
     userSelect: 'none',
   }
 
