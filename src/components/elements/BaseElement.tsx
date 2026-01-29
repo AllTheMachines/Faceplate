@@ -16,18 +16,25 @@ export function BaseElement({ element, children, onClick, isHoldingAltCtrl = fal
   const isSelected = selectedIds.includes(element.id)
   const lockAllMode = useStore((state) => state.lockAllMode)
   const liveDragValues = useStore((state) => state.liveDragValues)
+  const getLayerById = useStore((state) => state.getLayerById)
+
+  // Check if element is locked due to its layer being locked
+  const layerId = element.layerId || 'default'
+  const layer = getLayerById(layerId)
+  const isLayerLocked = layer?.locked || false
+  const isLocked = element.locked || isLayerLocked
 
   // Get DnD context to detect multi-select dragging
   const { active } = useDndContext()
 
-  // Enable dragging for selected, unlocked elements
+  // Enable dragging for selected, unlocked elements (check both element and layer lock)
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `element-${element.id}`,
     data: {
       sourceType: 'element',
       element,
     },
-    disabled: !isSelected || element.locked || lockAllMode,
+    disabled: !isSelected || isLocked || lockAllMode,
   })
 
   // Track when drag just finished to prevent onClick from resetting selection
@@ -76,8 +83,9 @@ export function BaseElement({ element, children, onClick, isHoldingAltCtrl = fal
     // This element is being dragged - use its own transform
     dragOffsetX = transform.x
     dragOffsetY = transform.y
-  } else if (isMultiSelectDrag && liveValue && isSelected && !element.locked) {
+  } else if (isMultiSelectDrag && liveValue && isSelected && !isLocked) {
     // Another selected element is being dragged - use calculated delta from live values
+    // Only apply if element is not locked (element or layer)
     dragOffsetX = liveValue.x !== undefined ? liveValue.x - element.x : 0
     dragOffsetY = liveValue.y !== undefined ? liveValue.y - element.y : 0
   }
@@ -101,8 +109,8 @@ export function BaseElement({ element, children, onClick, isHoldingAltCtrl = fal
     pointerEvents: lockAllMode ? 'none' : 'auto',
     cursor: lockAllMode
       ? 'default'
-      : element.locked
-        ? 'pointer'  // Locked elements: show pointer (can click to select, but not drag)
+      : isLocked
+        ? 'pointer'  // Locked elements (element or layer): show pointer (can click to select, but not drag)
         : (isDragging || isMultiSelectDrag)
           ? 'grabbing'
           : (isSelected && isHoldingAltCtrl)

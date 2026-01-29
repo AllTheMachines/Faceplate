@@ -9,6 +9,7 @@ type HandlePosition = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w'
 
 export function SelectionOverlay({ elementId }: SelectionOverlayProps) {
   const element = useStore((state) => state.getElement(elementId))
+  const getLayerById = useStore((state) => state.getLayerById)
   const { startResize } = useResize()
 
   // If element doesn't exist, don't render
@@ -16,13 +17,22 @@ export function SelectionOverlay({ elementId }: SelectionOverlayProps) {
     return null
   }
 
+  // Check if element is locked (element or layer)
+  const layerId = element.layerId || 'default'
+  const layer = getLayerById(layerId)
+  const isLayerLocked = layer?.locked || false
+  const isLocked = element.locked || isLayerLocked
+
   const { x, y, width, height, rotation = 0 } = element
 
   // Calculate transform
   const transform = rotation !== 0 ? `rotate(${rotation}deg)` : undefined
 
-  // ResizeHandle component
+  // ResizeHandle component - hidden when element or layer is locked
   const ResizeHandle = ({ position }: { position: HandlePosition }) => {
+    // Don't render resize handles for locked elements
+    if (isLocked) return null
+
     const handleStyles: React.CSSProperties = {
       position: 'absolute',
       width: '8px',
