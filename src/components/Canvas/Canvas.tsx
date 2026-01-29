@@ -1,10 +1,11 @@
-import { useRef, useEffect, useState, useCallback, KeyboardEvent } from 'react'
+import { useRef, useEffect, useState, useCallback, useMemo, KeyboardEvent } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { useStore } from '../../store'
 import { usePan, useZoom, useKeyboardShortcuts, useMarquee, useElementNudge } from './hooks'
 import { Element } from '../elements'
 import { SelectionOverlay } from './SelectionOverlay'
 import { MarqueeSelection } from './MarqueeSelection'
+import { ElementConfig } from '../../types/elements'
 
 export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -49,6 +50,48 @@ export function Canvas() {
   const elements = allElements.filter((el) => activeWindowElementIds.includes(el.id))
   const selectedIds = useStore((state) => state.selectedIds)
   const clearSelection = useStore((state) => state.clearSelection)
+
+  // Get layers for z-order sorting and visibility filtering
+  const getLayersInOrder = useStore((state) => state.getLayersInOrder)
+  const getLayerById = useStore((state) => state.getLayerById)
+  const layers = useStore((state) => state.layers)
+
+  // Sort elements by layer order for z-index rendering and filter out hidden layers
+  // Elements in lower-order layers render first (back), higher-order layers render later (front)
+  const visibleElements = useMemo(() => {
+    const orderedLayers = getLayersInOrder() // Returns layers sorted by order (0 = bottom)
+    const layerOrderMap = new Map(orderedLayers.map((l, idx) => [l.id, idx]))
+
+    // Filter out elements from hidden layers
+    const visibleElems = elements.filter((element) => {
+      const layerId = element.layerId || 'default'
+      const layer = getLayerById(layerId)
+      // Show element if layer is visible or layer not found (backwards compatibility)
+      return layer?.visible !== false
+    })
+
+    const sortElementsByLayerOrder = (elems: ElementConfig[]): ElementConfig[] => {
+      return [...elems].sort((a, b) => {
+        const layerIdA = a.layerId || 'default'
+        const layerIdB = b.layerId || 'default'
+
+        const orderA = layerOrderMap.get(layerIdA) ?? 0
+        const orderB = layerOrderMap.get(layerIdB) ?? 0
+
+        // Elements in lower-order layers render first (back)
+        // Elements in higher-order layers render later (front)
+        if (orderA !== orderB) {
+          return orderA - orderB
+        }
+
+        // Within same layer, maintain creation order (array position)
+        return 0
+      })
+    }
+
+    // Sort by layer order
+    return sortElementsByLayerOrder(visibleElems)
+  }, [elements, getLayersInOrder, getLayerById, layers])
 
   // Use pan and zoom hooks
   const { handlers: panHandlers } = usePan(viewportRef)
@@ -231,17 +274,17 @@ export function Canvas() {
             onMouseUp={marqueeHandlers.onMouseUp}
             onMouseLeave={marqueeHandlers.onMouseLeave}
           >
-            {/* Elements render here - filter out children (elements inside containers) */}
-            {elements
+            {/* Elements render here - sorted by layer order, filtered by visibility, exclude children (elements inside containers) */}
+            {visibleElements
               .filter((element) => !element.parentId)
               .map((element) => (
                 <Element key={element.id} element={element} />
               ))}
 
-            {/* Selection overlays - only for top-level elements */}
+            {/* Selection overlays - only for visible top-level elements */}
             {selectedIds
               .filter((id) => {
-                const el = elements.find((e) => e.id === id)
+                const el = visibleElements.find((e) => e.id === id)
                 return el && !el.parentId
               })
               .map((id) => (

@@ -21,6 +21,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
   const selectMultiple = useStore((state) => state.selectMultiple)
   const isPanning = useStore((state) => state.isPanning)
   const scale = useStore((state) => state.scale)
+  const getLayerById = useStore((state) => state.getLayerById)
 
   // Convert screen coordinates to canvas coordinates
   const screenToCanvas = useCallback(
@@ -88,8 +89,13 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
         bottom: Math.max(marquee.startY, y),
       }
 
-      // Find intersecting elements
+      // Find intersecting elements (excluding hidden layers)
       const intersecting = elements.filter((el) => {
+        // Skip elements in hidden layers
+        const layerId = el.layerId || 'default'
+        const layer = getLayerById(layerId)
+        if (layer?.visible === false) return false
+
         const elRect: Rect = {
           left: el.x,
           top: el.y,
@@ -104,7 +110,7 @@ export function useMarquee(canvasRef: RefObject<HTMLDivElement>) {
         selectMultiple(intersecting.map((el) => el.id))
       }
     },
-    [marquee, screenToCanvas, elements, selectMultiple]
+    [marquee, screenToCanvas, elements, selectMultiple, getLayerById]
   )
 
   const handleMouseUp = useCallback(() => {
