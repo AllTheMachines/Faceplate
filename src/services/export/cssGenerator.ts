@@ -775,6 +775,7 @@ ${selector} label {
   padding: ${element.padding}px;
   font-family: ${element.fontFamily};
   font-size: ${element.fontSize}px;
+  font-weight: ${element.fontWeight};
   text-align: ${element.textAlign};
   outline: none;
   box-sizing: border-box;

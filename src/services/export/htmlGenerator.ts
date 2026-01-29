@@ -127,12 +127,12 @@ export interface HTMLGeneratorOptions {
 
 /**
  * Generate HTML for children of a container element
- * Children are positioned relative to the container's content area
+ * Children are positioned at their stored coordinates (relative to container top-left)
+ * matching the designer rendering
  */
 function generateChildrenHTML(
   containerId: string,
-  allElements: ElementConfig[] | undefined,
-  contentOffset: { top: number; left: number }
+  allElements: ElementConfig[] | undefined
 ): string {
   if (!allElements) return ''
 
@@ -140,15 +140,10 @@ function generateChildrenHTML(
   const children = allElements.filter((el) => el.parentId === containerId)
   if (children.length === 0) return ''
 
-  // Generate HTML for each child with adjusted position
+  // Generate HTML for each child at their stored position
   return children
     .map((child) => {
-      // Adjust position to be relative to container content area
-      const adjustedX = child.x + contentOffset.left
-      const adjustedY = child.y + contentOffset.top
-      const adjustedElement = { ...child, x: adjustedX, y: adjustedY }
-      // Use relative positioning within container
-      const childHTML = generateElementHTML(adjustedElement, allElements)
+      const childHTML = generateElementHTML(child, allElements)
       return childHTML
     })
     .join('\n      ')
@@ -161,8 +156,7 @@ function generateChildrenHTML(
  */
 function generateScrollableChildrenHTML(
   containerId: string,
-  allElements: ElementConfig[] | undefined,
-  contentOffset: { top: number; left: number }
+  allElements: ElementConfig[] | undefined
 ): string {
   if (!allElements) return ''
 
@@ -174,19 +168,16 @@ function generateScrollableChildrenHTML(
   let maxRight = 0
   let maxBottom = 0
   for (const child of children) {
-    const right = child.x + contentOffset.left + child.width
-    const bottom = child.y + contentOffset.top + child.height
+    const right = child.x + child.width
+    const bottom = child.y + child.height
     maxRight = Math.max(maxRight, right)
     maxBottom = Math.max(maxBottom, bottom)
   }
 
-  // Generate HTML for each child
+  // Generate HTML for each child at their stored position
   const childrenHTML = children
     .map((child) => {
-      const adjustedX = child.x + contentOffset.left
-      const adjustedY = child.y + contentOffset.top
-      const adjustedElement = { ...child, x: adjustedX, y: adjustedY }
-      return generateElementHTML(adjustedElement, allElements)
+      return generateElementHTML(child, allElements)
     })
     .join('\n        ')
 
@@ -325,39 +316,36 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
       return `<div id="${id}" class="${baseClass} line-element" data-type="line" style="${positionStyle}"><div style="${lineStyle}"></div></div>`
     }
     case 'panel': {
-      const panelPadding = element.padding + element.borderWidth
       if (element.allowScroll) {
         const scrollbarConfig = getScrollbarConfigAttr(element)
         const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
-        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: panelPadding, left: panelPadding })
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements)
         return `<div id="${id}" class="${baseClass} panel-element" data-type="panel" style="${positionStyle} overflow: hidden;"><div class="panel-scroll-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
       }
-      const panelChildren = generateChildrenHTML(element.id, allElements, { top: panelPadding, left: panelPadding })
+      const panelChildren = generateChildrenHTML(element.id, allElements)
       return `<div id="${id}" class="${baseClass} panel-element" data-type="panel" style="${positionStyle} overflow: hidden;">${panelChildren}</div>`
     }
 
     case 'frame': {
-      const framePadding = element.padding + element.borderWidth
       if (element.allowScroll) {
         const scrollbarConfig = getScrollbarConfigAttr(element)
         const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
-        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: framePadding, left: framePadding })
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements)
         return `<div id="${id}" class="${baseClass} frame-element" data-type="frame" style="${positionStyle} overflow: hidden;"><div class="frame-scroll-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); height: 100%; overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
       }
-      const frameChildren = generateChildrenHTML(element.id, allElements, { top: framePadding, left: framePadding })
+      const frameChildren = generateChildrenHTML(element.id, allElements)
       return `<div id="${id}" class="${baseClass} frame-element" data-type="frame" style="${positionStyle} overflow: hidden;">${frameChildren}</div>`
     }
 
     case 'groupbox': {
-      const gbPadding = element.padding + element.borderWidth
       const gbHeaderOffset = element.headerFontSize / 2
       if (element.allowScroll) {
         const scrollbarConfig = getScrollbarConfigAttr(element)
         const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
-        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: gbPadding + gbHeaderOffset, left: gbPadding })
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements)
         return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle} overflow: hidden;"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div><div class="groupbox-scroll-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); height: calc(100% - ${gbHeaderOffset}px); overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
       }
-      const groupboxChildren = generateChildrenHTML(element.id, allElements, { top: gbPadding + gbHeaderOffset, left: gbPadding })
+      const groupboxChildren = generateChildrenHTML(element.id, allElements)
       return `<div id="${id}" class="${baseClass} groupbox-element" data-type="groupbox" data-header="${escapeHTML(element.headerText)}" style="${positionStyle} overflow: hidden;"><div class="groupbox-border"></div><div class="groupbox-header">${escapeHTML(element.headerText)}</div>${groupboxChildren}</div>`
     }
 
@@ -365,10 +353,10 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
       if (element.scrollBehavior !== 'hidden') {
         const scrollbarConfig = getScrollbarConfigAttr(element)
         const scrollbarWidth = element.scrollbarWidth ?? DEFAULT_SCROLLBAR_CONFIG.scrollbarWidth
-        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements, { top: element.headerHeight + element.borderWidth, left: element.borderWidth })
+        const scrollableChildren = generateScrollableChildrenHTML(element.id, allElements)
         return `<div id="${id}" class="${baseClass} collapsible-element" data-type="collapsible" data-collapsed="${element.collapsed}" style="${positionStyle} overflow: hidden;"><div class="collapsible-header"><span class="collapsible-arrow">▼</span><span>${escapeHTML(element.headerText)}</span></div><div class="collapsible-content" data-custom-scrollbar='${scrollbarConfig}' style="width: calc(100% - ${scrollbarWidth}px); overflow: auto; scrollbar-width: none; -ms-overflow-style: none;">${scrollableChildren}</div></div>`
       }
-      const collapsibleChildren = generateChildrenHTML(element.id, allElements, { top: element.headerHeight + element.borderWidth, left: element.borderWidth })
+      const collapsibleChildren = generateChildrenHTML(element.id, allElements)
       return `<div id="${id}" class="${baseClass} collapsible-element" data-type="collapsible" data-collapsed="${element.collapsed}" style="${positionStyle} overflow: hidden;"><div class="collapsible-header"><span class="collapsible-arrow">▼</span><span>${escapeHTML(element.headerText)}</span></div><div class="collapsible-content">${collapsibleChildren}</div></div>`
     }
 
@@ -610,8 +598,7 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
 
     case 'windowchrome': {
       const wcConfig = element as WindowChromeElementConfig
-      const wcTitleBarHeight = wcConfig.titleBarHeight || 32
-      const windowChromeChildren = generateChildrenHTML(element.id, allElements, { top: wcTitleBarHeight, left: 0 })
+      const windowChromeChildren = generateChildrenHTML(element.id, allElements)
       return generateWindowChromeHTML(id, baseClass, positionStyle, wcConfig, windowChromeChildren)
     }
 
@@ -696,10 +683,10 @@ function generateStyledKnobHTML(
   // Label and value display
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -774,10 +761,10 @@ function generateKnobHTML(id: string, baseClass: string, positionStyle: string, 
   // Label and value display
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -835,10 +822,10 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
 
   const formattedValue = formatValue(steppedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add class="knob-arc-fill" to value fill for JS interaction
@@ -894,10 +881,10 @@ function generateCenterDetentKnobHTML(id: string, baseClass: string, positionSty
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -941,10 +928,10 @@ function generateDotIndicatorKnobHTML(id: string, baseClass: string, positionSty
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="knob-value knob-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -980,10 +967,10 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
   // Label and value display
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -1022,10 +1009,10 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -1050,10 +1037,10 @@ function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyl
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -1100,10 +1087,10 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -1181,10 +1168,10 @@ function generateArcSliderHTML(id: string, baseClass: string, positionStyle: str
   // Format value display
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
-    ? `<span class="arcslider-label arcslider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="arcslider-label arcslider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
@@ -1465,7 +1452,7 @@ function generateMultiSliderHTML(
     const fillHeight = normalizedValue * 100
 
     const labelHTML = element.labelStyle !== 'none'
-      ? `<span class="multislider-label" style="font-size: ${element.labelFontSize}px; color: ${element.labelColor};">${i + 1}</span>`
+      ? `<span class="multislider-label" style="font-size: ${element.labelFontSize ?? 12}px; color: ${element.labelColor};">${i + 1}</span>`
       : ''
 
     bandsHTML += `<div class="multislider-band">
@@ -1684,7 +1671,7 @@ function generateRotarySwitchHTML(
       const isActive = i === element.currentPosition
       const opacity = isActive ? 1 : 0.6
       const fontWeight = isActive ? 'bold' : 'normal'
-      return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${element.labelFontSize}" fill="${element.labelColor}" font-weight="${fontWeight}" opacity="${opacity}">${escapeHTML(label)}</text>`
+      return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="${element.labelFontSize ?? 12}" fill="${element.labelColor}" font-weight="${fontWeight}" opacity="${opacity}">${escapeHTML(label)}</text>`
     }).join('')
     labelsHTML = radialLabelsHTML
   } else {

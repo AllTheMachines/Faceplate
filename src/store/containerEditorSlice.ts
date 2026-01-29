@@ -26,13 +26,16 @@ export interface ContainerEditorSlice {
   isChildOfContainer: (elementId: string, containerId: string) => boolean
 }
 
-// Store type that includes elements - will be passed in via middleware
+// Store type that includes elements and window functions - will be passed in via middleware
 interface StoreWithElements {
   elements: ElementConfig[]
   addElement: (element: ElementConfig) => void
   removeElement: (id: string) => void
   updateElement: (id: string, updates: Partial<ElementConfig>) => void
   getElement: (id: string) => ElementConfig | undefined
+  // Window functions for adding children to the same window as parent
+  addElementToWindow: (elementId: string, windowId?: string) => void
+  getWindowForElement: (elementId: string) => { id: string } | undefined
 }
 
 export const createContainerEditorSlice: StateCreator<
@@ -102,6 +105,12 @@ export const createContainerEditorSlice: StateCreator<
 
     // Add the child element to the store
     get().addElement(childWithParent)
+
+    // Add child to the same window as its parent container
+    const containerWindow = get().getWindowForElement(containerId)
+    if (containerWindow) {
+      get().addElementToWindow(child.id, containerWindow.id)
+    }
 
     // Update the container's children array
     const currentChildren = (container as EditableContainer).children || []

@@ -46,10 +46,38 @@ export function ExportPanel() {
   const windows = useStore((state) => state.windows)
   const activeWindow = useStore((state) => state.getActiveWindow())
 
+  // Helper to get all elements including children (for containers with children not in elementIds)
+  const getElementsWithChildren = (windowElementIds: string[]): ElementConfig[] => {
+    const result: ElementConfig[] = []
+    const seen = new Set<string>()
+
+    const addWithChildren = (id: string) => {
+      if (seen.has(id)) return
+      seen.add(id)
+
+      const el = allElements.find(e => e.id === id)
+      if (!el) return
+
+      result.push(el)
+
+      // If container, recursively add children via parentId relationship
+      const children = allElements.filter(child => child.parentId === id)
+      for (const child of children) {
+        addWithChildren(child.id)
+      }
+    }
+
+    for (const id of windowElementIds) {
+      addWithChildren(id)
+    }
+
+    return result
+  }
+
   // For backwards compatibility with single-window exports, get active window data
   const elements = useMemo(() => {
     if (!activeWindow) return []
-    return allElements.filter(el => activeWindow.elementIds.includes(el.id))
+    return getElementsWithChildren(activeWindow.elementIds)
   }, [allElements, activeWindow])
 
   const canvasWidth = activeWindow?.width ?? 800
@@ -65,7 +93,7 @@ export function ExportPanel() {
       width: w.width,
       height: w.height,
       backgroundColor: w.backgroundColor,
-      elements: allElements.filter(el => w.elementIds.includes(el.id)),
+      elements: getElementsWithChildren(w.elementIds),
     }))
   }, [windows, allElements])
 
@@ -174,7 +202,7 @@ export function ExportPanel() {
           windows: windows.map(w => ({
             id: w.id,
             name: w.name,
-            elements: allElements.filter(el => w.elementIds.includes(el.id)),
+            elements: getElementsWithChildren(w.elementIds),
             width: w.width,
             height: w.height,
             backgroundColor: w.backgroundColor,

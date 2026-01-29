@@ -9,6 +9,61 @@ interface ClipboardData {
   sourceWindowId: string | null
 }
 
+/**
+ * Deep clone an element and all its children, generating new IDs
+ * Returns an array of all cloned elements (parent + all descendants)
+ */
+function deepCloneElement(
+  element: ElementConfig,
+  getElement: (id: string) => ElementConfig | undefined,
+  offset: { x: number; y: number } = { x: PASTE_OFFSET, y: PASTE_OFFSET },
+  newParentId?: string
+): ElementConfig[] {
+  const result: ElementConfig[] = []
+
+  // Clone the element itself
+  const cloned = structuredClone(element)
+  const newId = crypto.randomUUID()
+
+  // Apply offset and new ID
+  cloned.id = newId
+  cloned.x = element.x + offset.x
+  cloned.y = element.y + offset.y
+
+  // Update parentId if this is a child being cloned
+  if (newParentId !== undefined) {
+    cloned.parentId = newParentId
+  }
+
+  // Check if this element has children (is a container)
+  const elementWithChildren = element as ElementConfig & { children?: string[] }
+  if (elementWithChildren.children && elementWithChildren.children.length > 0) {
+    const newChildIds: string[] = []
+
+    // Recursively clone each child
+    for (const childId of elementWithChildren.children) {
+      const childElement = getElement(childId)
+      if (childElement) {
+        // Children are positioned relative to parent, so no offset needed
+        const clonedChildren = deepCloneElement(childElement, getElement, { x: 0, y: 0 }, newId)
+        result.push(...clonedChildren)
+        // First element in result is the direct child
+        if (clonedChildren.length > 0) {
+          newChildIds.push(clonedChildren[0]!.id)
+        }
+      }
+    }
+
+    // Update the container's children array with new IDs
+    ;(cloned as ElementConfig & { children?: string[] }).children = newChildIds
+  }
+
+  // Add the cloned element first (so it's at index 0 for direct access)
+  result.unshift(cloned)
+
+  return result
+}
+
 export function useCopyPaste() {
   // In-memory clipboard storage with source window tracking
   const clipboardRef = useRef<ClipboardData>({ elements: [], sourceWindowId: null })
@@ -55,33 +110,37 @@ export function useCopyPaste() {
 
     const pastedIds: string[] = []
 
-    // Clone and paste each element
+    // Clone and paste each element (with children if container)
     for (const original of clipboardRef.current.elements) {
-      // Deep clone to handle nested objects like colorStops in meters
-      const cloned = structuredClone(original)
-
-      // Generate new UUID and offset position
-      const newId = crypto.randomUUID()
-      const pasted: ElementConfig = {
-        ...cloned,
-        id: newId,
-        x: cloned.x + PASTE_OFFSET,
-        y: cloned.y + PASTE_OFFSET,
+      // Skip elements that are children of another selected element
+      // (they will be cloned as part of their parent)
+      const originalWithParent = original as ElementConfig & { parentId?: string }
+      if (originalWithParent.parentId) {
+        const parentIsAlsoSelected = clipboardRef.current.elements.some(
+          (el) => el.id === originalWithParent.parentId
+        )
+        if (parentIsAlsoSelected) continue
       }
 
-      // Add to store (automatically tracked by zundo for undo)
-      addElement(pasted)
+      // Deep clone element and all its children
+      const clonedElements = deepCloneElement(original, getElement)
 
-      // Add element to active window
-      addElementToWindow(newId)
+      // Add all cloned elements to store
+      for (const cloned of clonedElements) {
+        addElement(cloned)
+        addElementToWindow(cloned.id)
+      }
 
-      pastedIds.push(newId)
+      // Track the top-level element for selection
+      if (clonedElements.length > 0) {
+        pastedIds.push(clonedElements[0]!.id)
+      }
     }
 
     // Select the pasted elements
     clearSelection()
     selectMultiple(pastedIds)
-  }, [addElement, addElementToWindow, clearSelection, selectMultiple])
+  }, [addElement, addElementToWindow, clearSelection, selectMultiple, getElement])
 
   const duplicateSelected = useCallback(() => {
     // Duplicate = copy + paste in one action
@@ -99,20 +158,31 @@ export function useCopyPaste() {
 
     const pastedIds: string[] = []
 
-    // Clone and paste each element directly (no clipboard storage)
+    // Clone and paste each element directly (with children if container)
     for (const original of elements) {
-      const cloned = structuredClone(original)
-      const newId = crypto.randomUUID()
-      const pasted: ElementConfig = {
-        ...cloned,
-        id: newId,
-        x: cloned.x + PASTE_OFFSET,
-        y: cloned.y + PASTE_OFFSET,
+      // Skip elements that are children of another selected element
+      // (they will be cloned as part of their parent)
+      const originalWithParent = original as ElementConfig & { parentId?: string }
+      if (originalWithParent.parentId) {
+        const parentIsAlsoSelected = elements.some(
+          (el) => el.id === originalWithParent.parentId
+        )
+        if (parentIsAlsoSelected) continue
       }
 
-      addElement(pasted)
-      addElementToWindow(newId)
-      pastedIds.push(newId)
+      // Deep clone element and all its children
+      const clonedElements = deepCloneElement(original, getElement)
+
+      // Add all cloned elements to store
+      for (const cloned of clonedElements) {
+        addElement(cloned)
+        addElementToWindow(cloned.id)
+      }
+
+      // Track the top-level element for selection
+      if (clonedElements.length > 0) {
+        pastedIds.push(clonedElements[0]!.id)
+      }
     }
 
     // Select the duplicated elements

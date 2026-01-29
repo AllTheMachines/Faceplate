@@ -126,10 +126,17 @@ function buildStandaloneHTML(parts: {
 
   let standaloneHTML = html;
 
-  // Replace CSS link with inline style
+  // Add Google Fonts link for Inter (and other common fonts) since relative paths don't work in blob URLs
+  // Remove @font-face rules for built-in fonts from CSS since they reference unavailable files
+  const googleFontsLink = '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Roboto+Mono:wght@100;300;400;500;700&display=swap" rel="stylesheet">';
+
+  // Strip @font-face rules for built-in fonts (they use relative paths that won't work)
+  const cssWithoutLocalFonts = css.replace(/@font-face\s*\{[^}]*url\(['"]?\.\/fonts\/[^}]*\}/g, '/* Font loaded via Google Fonts */');
+
+  // Replace CSS link with Google Fonts and inline style
   standaloneHTML = standaloneHTML.replace(
     '<link rel="stylesheet" href="style.css">',
-    `<style>\n${css}\n</style>`
+    `${googleFontsLink}\n<style>\n${cssWithoutLocalFonts}\n</style>`
   );
 
   // Replace script tags with inline scripts
@@ -397,12 +404,18 @@ function buildMultiWindowPreviewHTML(options: {
     })();
   `).join('\n\n');
 
+  // Strip @font-face rules for built-in fonts (they use relative paths that won't work in blob URLs)
+  const cleanedCSS = combinedCSS.replace(/@font-face\s*\{[^}]*url\(['"]?\.\/fonts\/[^}]*\}/g, '/* Font loaded via Google Fonts */');
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Multi-Window Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Roboto+Mono:wght@100;300;400;500;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -416,7 +429,7 @@ function buildMultiWindowPreviewHTML(options: {
     .window-tab.active:hover {
       background: #2563eb !important;
     }
-    ${combinedCSS}
+    ${cleanedCSS}
   </style>
 </head>
 <body>
