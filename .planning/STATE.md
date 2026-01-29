@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 41 (Bug Fixes) — NOT STARTED
-Plan: 0 of 2
-Status: Ready to plan phase 41
-Last activity: 2026-01-29 — v1.9 roadmap created
+Phase: 41 (Bug Fixes) — In Progress
+Plan: 1 of 2
+Status: Plan 41-01 complete
+Last activity: 2026-01-29 — Completed 41-01-PLAN.md
 
-Progress: [░░░░░░░░░░] 0/11 plans (0%)
+Progress: [█░░░░░░░░░] 1/11 plans (9%)
 
 ## Milestones Shipped
 
@@ -59,11 +59,11 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: v1.9 roadmap created, ready to plan Phase 41
+Stopped at: Completed 41-01-PLAN.md (single-window folder export fix)
 Resume file: None
 
-**Next step:** Run `/gsd:plan-phase 41` to plan bug fixes
+**Next step:** Execute 41-02-PLAN.md (container multi-select drag)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — v1.9 milestone started*
+*Last updated: 2026-01-29 — Plan 41-01 complete*
