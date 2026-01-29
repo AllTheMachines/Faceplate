@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-28)
 ## Current Position
 
 Phase: 40 (Bug Fixes & UI Improvements)
-Plan: 08 of 15
+Plan: 01 of 15
 Status: In progress
-Last activity: 2026-01-29 - Completed 40-08-PLAN.md
+Last activity: 2026-01-29 - Completed 40-01-PLAN.md
 
-Progress: [█████░░░░░░] 8/15 plans (53%)
+Progress: [█░░░░░░░░░░] 1/15 plans (7%)
 
 ## Milestones Shipped
 
@@ -46,7 +46,7 @@ Major decisions by milestone:
 - **v1.5:** Native File System Access API, IndexedDB for fonts, base64 embedding for custom fonts
 - **v1.6:** WindowsSlice for multi-window state, v2.0.0 serialization format, button navigation actions
 - **v1.7:** Parameter sync via data-parameter-id attributes, __juce__paramSync event, setupParameterSyncListener()
-- **v1.8:** Auto-close color picker on value change, negative distance values for precise positioning, File System Access API for direct folder export, font weight dropdown shows actual subfamily names, correct font-weight in preview rendering
+- **v1.8:** Version inference from structure when missing, window-scoped name validation via isNameUniqueInWindow, per-window export validation
 
 ### Pending Todos
 
@@ -58,18 +58,16 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-29 14:20:28
-Stopped at: Completed 40-08-PLAN.md
+Last session: 2026-01-29 14:22:46
+Stopped at: Completed 40-01-PLAN.md
 Resume file: None
 
-**Next step:** Continue Phase 40 - execute remaining plans (40-09 through 40-15)
+**Next step:** Continue Phase 40 - execute remaining plans (40-02 through 40-15)
 
 ### Roadmap Evolution
 - Phase 40 added: Bug Fixes & UI Improvements (v1.8)
-- 40-01: Missing version field handling (completed)
-- 40-02: Border width editing (completed)
-- 40-08: Font weight display and preview rendering (completed)
+- 40-01: State synchronization bugs (version handling, name validation, multi-window duplicate) - completed
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Completed 40-08-PLAN.md (8/15 plans)*
+*Last updated: 2026-01-29 — Completed 40-01-PLAN.md (1/15 plans)*
