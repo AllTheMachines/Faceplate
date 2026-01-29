@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 42 (Layers Panel)
-Plan: 4 of 6
-Status: In progress
-Last activity: 2026-01-29 — Completed 42-04-PLAN.md (Drag-Drop Reorder & Z-Order)
+Phase: 42 (Layers Panel) - COMPLETE
+Plan: 5 of 5
+Status: Phase complete
+Last activity: 2026-01-29 — Completed 42-05-PLAN.md (Layer-Element Assignment)
 
-Progress: [██████░░░░] 6/11 plans (55%)
+Progress: [███████░░░] 7/11 plans (64%)
 
 ## Milestones Shipped
 
@@ -59,11 +59,11 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 42-04-PLAN.md (Drag-Drop Reorder & Z-Order)
+Stopped at: Completed 42-05-PLAN.md (Layer-Element Assignment) - Phase 42 COMPLETE
 Resume file: None
 
-**Next step:** Execute 42-05-PLAN.md (Layer-Element Assignment)
+**Next step:** Phase 43 (Help System) or other v1.9 work
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Completed 42-04-PLAN.md*
+*Last updated: 2026-01-29 — Completed 42-05-PLAN.md (Phase 42 complete)*
