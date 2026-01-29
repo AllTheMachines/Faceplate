@@ -13,75 +13,16 @@
 - ✅ **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
 - ✅ **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
 
-## Current Milestone: v1.9 Layers & Help System
-
-**Phases 41-43** | **18 requirements** | Complete
-
----
-
 ## Phases
 
-<details open>
+<details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
 
-### Phase 41: Bug Fixes
-**Goal**: Fix deferred bugs from v1.8 (folder export, container multi-drag)
-**Requirements**: BUG-01, BUG-02
-**Plans**: 2 plans — completed 2026-01-29
+- [x] Phase 41: Bug Fixes (2/2 plans) — completed 2026-01-29
+- [x] Phase 42: Layers Panel (5/5 plans) — completed 2026-01-29
+- [x] Phase 43: Help System (4/4 plans) — completed 2026-01-29
 
-Plans:
-- [x] 41-01-PLAN.md — Fix folder export for single-window projects (GitHub #2)
-- [x] 41-02-PLAN.md — Fix container editor multi-select drag (GitHub #3)
-
-**Success Criteria:**
-1. Single-window project exports directly to selected folder (no subfolder created)
-2. Multiple selected elements in container editor drag together as group
-
-### Phase 42: Layers Panel
-**Goal**: User-created layers for element organization with visibility/lock/z-order control
-**Requirements**: LAYER-01 through LAYER-09
-**Plans**: 5 plans — completed 2026-01-29
-
-Plans:
-- [x] 42-01-PLAN.md — Layer state foundation (types, layersSlice, store integration)
-- [x] 42-02-PLAN.md — LayersPanel UI (panel component, LayerRow, LeftPanel tab)
-- [x] 42-03-PLAN.md — Visibility and lock toggles (eye/lock icons, H key shortcut)
-- [x] 42-04-PLAN.md — Drag-to-reorder and z-order (canvas render order)
-- [x] 42-05-PLAN.md — Selection sync and context menu (bidirectional sync, Move to Layer, delete dialog)
-
-**Success Criteria:**
-1. User can see Layers tab in LeftPanel with all user-created layers
-2. User can create new layers with custom name and color
-3. User can toggle visibility (eye icon) - hidden layers' elements don't render
-4. User can toggle lock (lock icon) - locked layers' elements can't be moved/resized
-5. User can drag layers to reorder - layer order determines z-order on canvas
-6. Clicking layer selects first element in that layer on canvas
-7. Selecting element on canvas highlights its layer in panel
-8. User can double-click layer name to rename inline
-9. User can right-click canvas element to "Move to Layer"
-10. User can delete layers (with confirmation showing element count)
-11. Default layer always exists at bottom, cannot be deleted or reordered
-12. Selected elements show layer color on selection handles
-
-### Phase 43: Help System
-**Goal**: Add contextual help buttons with HTML documentation
-**Requirements**: HELP-01 through HELP-07
-**Plans**: 4 plans — completed 2026-01-29
-
-Plans:
-- [x] 43-01-PLAN.md — HelpButton component, helpService, types, and dark theme styles
-- [x] 43-02-PLAN.md — Section help content and PropertySection integration
-- [x] 43-03-PLAN.md — Element-type help content and general app help
-- [x] 43-04-PLAN.md — F1 keyboard shortcut for contextual help
-
-**Success Criteria:**
-1. Each Properties Panel section has help (?) button in header
-2. Clicking help button opens new window with documentation
-3. Help content explains properties with examples
-4. Help window has dark theme matching app
-5. Help content exists for each element type
-6. F1 opens help for currently selected element type
-7. Help includes step-by-step instructions where applicable
+See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 
 </details>
 

@@ -101,13 +101,22 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - Project serialization v2.0.0 with windows array and migration from v1.x - v1.6
 - Per-window viewport state preservation when switching - v1.6
 
+**v1.9 Layers & Help System:**
+- Folder export writes directly to selected folder for single-window projects - v1.9
+- Container editor multi-select drag moves all selected elements together - v1.9
+- Layers system with visibility/lock/z-order control (like Photoshop/Figma) - v1.9
+- User-created layers with custom names and colors - v1.9
+- Layer visibility toggle (eye icon) hides elements from canvas - v1.9
+- Layer lock toggle prevents move/resize of elements - v1.9
+- Drag-to-reorder layers controls z-order on canvas - v1.9
+- Context menu "Move to Layer" for reassigning elements - v1.9
+- Help buttons on Properties Panel sections with dark-themed popup windows - v1.9
+- F1 keyboard shortcut opens contextual help for selected element - v1.9
+- 102 element types documented with comprehensive help content - v1.9
+
 ### Active
 
-**v1.9 Layers & Help System:**
-- [ ] GitHub #2: Folder export writes directly to selected folder for single-window projects
-- [ ] GitHub #3: Container editor multi-select drag moves all selected elements together
-- [ ] GitHub #4: Layers system with lock/hide/show functionality (like Photoshop/Figma)
-- [ ] GitHub #6: Help buttons for Properties Panel elements with HTML documentation
+(Next milestone requirements will be defined via /gsd:new-milestone)
 
 ### Out of Scope
 
@@ -121,6 +130,7 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Context
 
 **Current State:**
+- v1.9 Layers & Help System shipped (2026-01-29)
 - v1.8 Bug Fixes & Improvements shipped (2026-01-29)
 - v1.7 Parameter Sync shipped (2026-01-28)
 - v1.6 Multi-Window System shipped (2026-01-28)
@@ -130,14 +140,14 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - v1.2 Complete Element Taxonomy shipped (2026-01-27)
 - v1.1 SVG Import System shipped (2026-01-26)
 - v1.0 MVP shipped (2026-01-25)
-- ~70,500 lines TypeScript
-- 100+ element types supported
-- Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS, SVGO, DOMPurify, opentype.js
+- ~62,000 lines TypeScript
+- 102+ element types supported with comprehensive help documentation
+- Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS, SVGO, DOMPurify, opentype.js, react-arborist
 - GitHub Issues integration via `/github` skill
 
 **Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds.
 
-**v1.9 Focus:** Layers system for element organization, contextual help system, and deferred bug fixes (folder export, container multi-drag).
+**10 milestones shipped** across 43 phases, 177 plans in 7 days (2026-01-23 to 2026-01-29).
 
 ## Constraints
 
@@ -208,5 +218,10 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | Window type separation | Release vs developer windows allows debug UIs without shipping them | Good - professional workflow |
 | Button navigation actions | Buttons can navigate between windows in exported bundle | Good - enables multi-page UIs |
 
+| Layers system with react-arborist | Tree-based reordering with drag-drop | Good - intuitive layer management |
+| Blob URLs for help popups | Self-contained HTML windows without external files | Good - no file dependencies |
+| 102 element types documented | Comprehensive help coverage for all UI elements | Good - complete documentation |
+| F1 contextual help | Element-specific help when one selected, general otherwise | Good - context-aware UX |
+
 ---
-*Last updated: 2026-01-29 after v1.9 milestone started*
+*Last updated: 2026-01-29 after v1.9 milestone completion*

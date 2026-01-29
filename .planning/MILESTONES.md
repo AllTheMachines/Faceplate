@@ -1,5 +1,35 @@
 # Project Milestones: VST3 WebView UI Designer
 
+## v1.9 Layers & Help System (Shipped: 2026-01-29)
+
+**Delivered:** Layers system for element organization with visibility/lock/z-order control, contextual help system with dark-themed documentation windows.
+
+**Phases completed:** 41-43 (11 plans total)
+
+**Key accomplishments:**
+- User-created layers with custom names and colors for element organization
+- Layer visibility toggle - hidden layers' elements don't render on canvas
+- Layer lock toggle - locked elements can't be moved or resized
+- Drag-to-reorder layers with z-order control on canvas
+- Context menu "Move to Layer" for reassigning elements between layers
+- Help buttons on every Properties Panel section with dark-themed popup windows
+- F1 keyboard shortcut for contextual help based on current selection
+- 102 element types documented with comprehensive help content
+- Fixed: Single-window folder export now writes directly (no subfolder)
+- Fixed: Container editor multi-select drag moves all selected elements together
+
+**Stats:**
+- 53 files modified
+- +8,590 lines of TypeScript
+- 3 phases, 11 plans, 26 truths verified
+- 1 day from start to ship (2026-01-29)
+
+**Git range:** `feat(41-01)` -> `docs(43): complete Help System phase`
+
+**What's next:** v2.0 or next milestone
+
+---
+
 ## v1.8 Bug Fixes & UI Improvements (Shipped: 2026-01-29)
 
 **Delivered:** Critical bug fixes and quality-of-life improvements including folder export, container editor enhancements, and UI polish.
