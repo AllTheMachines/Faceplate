@@ -1,5 +1,6 @@
 import { useStore } from '../../store'
 import { useResize, getResizeCursor } from './hooks'
+import { LAYER_COLOR_MAP } from '../../types/layer'
 
 interface SelectionOverlayProps {
   elementId: string
@@ -23,6 +24,9 @@ export function SelectionOverlay({ elementId }: SelectionOverlayProps) {
   const isLayerLocked = layer?.locked || false
   const isLocked = element.locked || isLayerLocked
 
+  // Get layer color for selection styling
+  const layerColor = layer ? LAYER_COLOR_MAP[layer.color] : '#3b82f6'
+
   const { x, y, width, height, rotation = 0 } = element
 
   // Calculate transform
@@ -38,7 +42,7 @@ export function SelectionOverlay({ elementId }: SelectionOverlayProps) {
       width: '8px',
       height: '8px',
       background: 'white',
-      border: '1px solid #3b82f6',
+      border: `1px solid ${layerColor}`,
       pointerEvents: 'auto',
       cursor: getResizeCursor(position),
     }
@@ -102,7 +106,7 @@ export function SelectionOverlay({ elementId }: SelectionOverlayProps) {
         top: `${y}px`,
         width: `${width}px`,
         height: `${height}px`,
-        border: '2px solid #3b82f6',
+        border: `2px solid ${layerColor}`,
         pointerEvents: 'none',
         transformOrigin: '0 0',
         transform,
