@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef, useEffect, useState } from 'react'
 import { useStore } from '../../store'
 import { getRenderer } from '../elements/renderers'
 import { isEditableContainer, EditableContainer } from '../../types/elements/containers'
+import { useContainerCopyPaste } from './hooks/useContainerCopyPaste'
 
 interface ContainerEditorCanvasProps {
   containerId: string
@@ -43,6 +44,9 @@ export function ContainerEditorCanvas({
 
   const viewportRef = useRef<HTMLDivElement>(null)
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 })
+
+  // Copy/paste/duplicate support
+  const { copyToClipboard, pasteFromClipboard, duplicateSelected } = useContainerCopyPaste(containerId)
 
   // Drag state - using useState for reactivity
   const [drag, setDrag] = useState<DragState>({
@@ -212,12 +216,28 @@ export function ContainerEditorCanvas({
 
   // Handle keyboard events
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Delete' || e.key === 'Backspace') {
+    // Don't intercept if typing in an input
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      return
+    }
+
+    const isMod = e.metaKey || e.ctrlKey
+
+    if (isMod && e.key === 'c') {
+      e.preventDefault()
+      copyToClipboard()
+    } else if (isMod && e.key === 'v') {
+      e.preventDefault()
+      pasteFromClipboard()
+    } else if (isMod && e.key === 'd') {
+      e.preventDefault()
+      duplicateSelected()
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
       handleDeleteChild()
     } else if (e.key === 'Escape') {
       onClose()
     }
-  }, [handleDeleteChild, onClose])
+  }, [copyToClipboard, pasteFromClipboard, duplicateSelected, handleDeleteChild, onClose])
 
   // Focus the viewport on mount for keyboard events
   useEffect(() => {
