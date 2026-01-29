@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 42 (Layers Panel) - COMPLETE
-Plan: 5 of 5
-Status: Phase complete
-Last activity: 2026-01-29 — Completed 42-05-PLAN.md (Layer-Element Assignment)
+Phase: 43 (Help System) - In progress
+Plan: 1 of 3
+Status: In progress
+Last activity: 2026-01-29 — Completed 43-01-PLAN.md (Help System Foundation)
 
-Progress: [███████░░░] 7/11 plans (64%)
+Progress: [████████░░] 8/11 plans (73%)
 
 ## Milestones Shipped
 
@@ -40,13 +40,18 @@ Progress: [███████░░░] 7/11 plans (64%)
 - #2: Folder export subfolder for single-window [bug, minor] - FIXED (41-01)
 - #3: Container multi-select drag [bug, major] - FIXED (41-02)
 - #4: Layers system with lock/hide/show [enhancement] - FIXED (42)
-- #6: Help buttons for Properties Panel [enhancement]
+- #6: Help buttons for Properties Panel [enhancement] - IN PROGRESS (43)
 
 ## Accumulated Context
 
 ### Decisions
 
 All decisions documented in PROJECT.md Key Decisions table.
+
+**43-01 Decisions:**
+- Use Blob URLs with text/html for popup content (avoids external files)
+- Track open windows in Map to prevent duplicates and allow focus
+- Clean up Blob URLs on window load event (memory leak prevention)
 
 ### Pending Todos
 
@@ -59,11 +64,11 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 42-05-PLAN.md (Layer-Element Assignment) - Phase 42 COMPLETE
+Stopped at: Completed 43-01-PLAN.md (Help System Foundation)
 Resume file: None
 
-**Next step:** Phase 43 (Help System) or other v1.9 work
+**Next step:** Execute 43-02-PLAN.md (Help Content) or 43-03-PLAN.md (Integration)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Completed 42-05-PLAN.md (Phase 42 complete)*
+*Last updated: 2026-01-29 — Completed 43-01-PLAN.md*
