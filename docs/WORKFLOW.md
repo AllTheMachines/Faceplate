@@ -58,6 +58,19 @@ You'll see pre-configured controls matching the VST3 template.
 - Select + Delete to remove
 - Copy/paste to duplicate (Ctrl+C/V)
 
+**Organize with Layers:**
+- Click the **Layers** tab in left panel
+- Create layers for logical groupings (e.g., "Controls", "Meters", "Labels")
+- Drag layers to control z-order (top layer = front)
+- Toggle visibility (eye icon) to focus on specific sections
+- Lock layers to prevent accidental changes
+- Right-click elements to "Move to Layer"
+
+**Get Help:**
+- Click (?) buttons on any property section for documentation
+- Press **F1** for help on the currently selected element
+- Help windows show examples and step-by-step instructions
+
 **Name Your Parameters:**
 - Each interactive element needs a `parameterId`
 - Must match parameter IDs in VST3 C++
@@ -145,6 +158,10 @@ MyAudioProcessorEditor::MyAudioProcessorEditor(MyAudioProcessor& p)
 - **Use templates:** Start from template, customize incrementally
 - **Match parameter IDs:** Keep a list of your VST3 parameter IDs
 - **Test in browser first:** Open `index.html` locally to debug UI issues
+- **Organize with layers:** Group related controls (EQ, Dynamics, Output) into layers
+- **Use layer visibility:** Hide completed sections to focus on current work
+- **Lock finished layers:** Prevent accidental changes to finalized sections
+- **Press F1 for help:** Quick access to documentation for any element type
 
 ## Troubleshooting
 

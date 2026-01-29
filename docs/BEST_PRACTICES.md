@@ -35,6 +35,28 @@ Use Faceplate's snap-to-grid feature for consistent layouts:
 - 16-24px between control groups
 - 44x44px minimum touch target for controls
 
+### Layer Organization
+
+Use layers to organize complex UIs:
+
+1. **Create logical groupings:**
+   - "Input Controls" - gain, filters, routing
+   - "Processing" - EQ, dynamics, effects
+   - "Output" - volume, meters, indicators
+   - "Labels" - static text elements
+   - "Background" - decorative elements
+
+2. **Use layer visibility:** Hide completed sections while working
+3. **Lock finished layers:** Prevent accidental changes
+4. **Control z-order:** Drag layers to change stacking (backgrounds at bottom)
+5. **Use layer colors:** Color-code layers for visual organization
+
+**Layer tips:**
+- Default layer always exists at bottom (for canvas-level elements)
+- New elements are added to the currently selected layer
+- Right-click elements to move between layers
+- Selection handles show the layer's color for easy identification
+
 ### Color Schemes
 
 Audio plugin UIs typically use dark themes:

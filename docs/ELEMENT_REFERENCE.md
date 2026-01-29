@@ -32,8 +32,11 @@ All elements share these base properties:
 | `zIndex` | number | Layer order (higher = on top) |
 | `locked` | boolean | Prevent editing |
 | `visible` | boolean | Visibility toggle |
+| `layerId` | string | Layer assignment (optional, defaults to "default") |
 | `parameterId` | string | JUCE parameter binding (optional) |
 | `parentId` | string | Container parent (optional) |
+
+**Help:** Press **F1** while an element is selected to open contextual help for that element type. Each property section in the Properties panel also has a (?) button for detailed documentation.
 
 ---
 
