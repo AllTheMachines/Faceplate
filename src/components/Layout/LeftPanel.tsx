@@ -3,6 +3,7 @@ import { useStore } from 'zustand/react'
 import { formatDistanceToNow } from 'date-fns'
 import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
+import { LayersPanel } from '../Layers'
 import { TemplateImporter } from '../Import/TemplateImporter'
 import { FontSettings } from '../Settings/FontSettings'
 import { useStore as useAppStore } from '../../store'
@@ -10,7 +11,7 @@ import { useStore as useAppStore } from '../../store'
 export function LeftPanel() {
   const [importerOpen, setImporterOpen] = useState(false)
   const [fontSettingsOpen, setFontSettingsOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'elements' | 'assets'>('elements')
+  const [activeTab, setActiveTab] = useState<'elements' | 'assets' | 'layers'>('elements')
   const [, forceUpdate] = useState(0)
 
   // Use temporal store reactively via zustand's useStore hook
@@ -115,11 +116,23 @@ export function LeftPanel() {
         >
           Assets
         </button>
+        <button
+          onClick={() => setActiveTab('layers')}
+          className={`flex-1 px-4 py-2 text-sm ${
+            activeTab === 'layers'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          Layers
+        </button>
       </div>
 
       {/* Conditional render based on active tab */}
       <div className="flex-1 overflow-y-auto">
-        {activeTab === 'elements' ? <Palette /> : <AssetLibraryPanel />}
+        {activeTab === 'elements' && <Palette />}
+        {activeTab === 'assets' && <AssetLibraryPanel />}
+        {activeTab === 'layers' && <LayersPanel />}
       </div>
 
       {/* Import Template button visible on both tabs */}
