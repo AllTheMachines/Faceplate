@@ -86,7 +86,7 @@ const SliderElementSchema = BaseElementSchema.extend({
   thumbColor: z.string(),
   thumbWidth: z.number(),
   thumbHeight: z.number(),
-})
+}).passthrough()
 
 const ButtonElementSchema = BaseElementSchema.extend({
   type: z.literal('button'),
@@ -101,7 +101,8 @@ const ButtonElementSchema = BaseElementSchema.extend({
   textColor: z.string(),
   borderColor: z.string(),
   borderRadius: z.number(),
-})
+  borderWidth: z.number().optional().default(1),
+}).passthrough()
 
 const LabelElementSchema = BaseElementSchema.extend({
   type: z.literal('label'),
@@ -113,7 +114,7 @@ const LabelElementSchema = BaseElementSchema.extend({
   fontWeight: z.number(),
   color: z.string(),
   textAlign: z.enum(['left', 'center', 'right']),
-})
+}).passthrough()
 
 const MeterElementSchema = BaseElementSchema.extend({
   type: z.literal('meter'),
@@ -137,7 +138,7 @@ const MeterElementSchema = BaseElementSchema.extend({
 
   // Peak Hold
   showPeakHold: z.boolean(),
-})
+}).passthrough()
 
 const ImageElementSchema = BaseElementSchema.extend({
   type: z.literal('image'),
@@ -148,7 +149,7 @@ const ImageElementSchema = BaseElementSchema.extend({
 
   // Fit
   fit: z.enum(['contain', 'cover', 'fill', 'none']),
-})
+}).passthrough()
 
 // ============================================================================
 // SVG Asset Schema

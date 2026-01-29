@@ -131,6 +131,7 @@ export interface ButtonElementConfig extends BaseElementConfig {
   textColor: string
   borderColor: string
   borderRadius: number
+  borderWidth: number
 }
 
 export interface RangeSliderElementConfig extends BaseElementConfig {
@@ -1307,6 +1308,7 @@ export function createButton(overrides?: Partial<ButtonElementConfig>): ButtonEl
     textColor: '#ffffff',
     borderColor: '#6b7280',
     borderRadius: 0,
+    borderWidth: 1,
     ...overrides,
   }
 }
