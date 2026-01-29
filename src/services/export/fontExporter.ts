@@ -128,11 +128,14 @@ export async function generateCustomFontFaces(
       // Determine MIME type from format
       const mimeType = getMimeType(storedFont.metadata.format)
 
+      // Use actual font weight from metadata, fallback to normal
+      const fontWeight = storedFont.metadata.weight || 400
+
       // Generate @font-face rule with base64 embedded data
       const fontFace = `@font-face {
   font-family: '${family}';
   src: url(data:${mimeType};base64,${base64}) format('${storedFont.metadata.format}');
-  font-weight: normal;
+  font-weight: ${fontWeight};
   font-style: normal;
   font-display: swap;
 }`

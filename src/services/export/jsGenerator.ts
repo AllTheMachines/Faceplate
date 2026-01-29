@@ -2512,13 +2512,28 @@ function updateRangeSliderVisual(rangeSliderId, minValue, maxValue) {
 // Start Initialization
 // ============================================================================
 
-// CRITICAL: Wait for DOM to be ready before initializing interactive elements
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeJUCEBridge);
-} else {
-  // DOM already loaded - initialize immediately
+// Wait for fonts to load before initializing, to ensure correct rendering
+async function initializeWhenReady() {
+  // Wait for DOM to be ready
+  if (document.readyState === 'loading') {
+    await new Promise(resolve => {
+      document.addEventListener('DOMContentLoaded', resolve);
+    });
+  }
+
+  // Wait for all fonts to be loaded (important for custom fonts)
+  try {
+    await document.fonts.ready;
+  } catch (error) {
+    console.warn('Font loading check failed:', error);
+  }
+
+  // Initialize after fonts are ready
   initializeJUCEBridge();
 }
+
+// Start initialization
+initializeWhenReady();
 `
 }
 
