@@ -37,12 +37,40 @@ export function useFonts(): UseFontsReturn {
   // Convert StoredFont[] to CustomFont[] for UI
   const updateFontsFromStorage = useCallback(async () => {
     const storedFonts = await getAllFonts()
-    const customFonts: CustomFont[] = storedFonts.map(f => ({
-      family: f.family,
-      name: f.metadata.fullName || f.metadata.family,
-      format: f.metadata.format,
-      category: 'custom' as const,
-    }))
+
+    // Group fonts by family to collect all weights
+    const fontsByFamily = new Map<string, typeof storedFonts>()
+    for (const font of storedFonts) {
+      const existing = fontsByFamily.get(font.family) || []
+      existing.push(font)
+      fontsByFamily.set(font.family, existing)
+    }
+
+    // Convert to CustomFont with weight information
+    const customFonts: CustomFont[] = Array.from(fontsByFamily.entries()).map(([family, fonts]) => {
+      // Use first font for primary metadata
+      const primaryFont = fonts[0]!
+
+      // Collect all weights with their actual names
+      const weights = fonts
+        .filter(f => f.metadata.weight && f.metadata.subfamily)
+        .map(f => ({
+          value: f.metadata.weight!,
+          actualName: f.metadata.subfamily!,
+        }))
+        // Remove duplicates and sort by weight
+        .filter((w, idx, arr) => arr.findIndex(x => x.value === w.value) === idx)
+        .sort((a, b) => a.value - b.value)
+
+      return {
+        family,
+        name: primaryFont.metadata.fullName || primaryFont.metadata.family,
+        format: primaryFont.metadata.format,
+        category: 'custom' as const,
+        weights: weights.length > 0 ? weights : undefined,
+      }
+    })
+
     setCustomFonts(customFonts)
   }, [setCustomFonts])
 

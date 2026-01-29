@@ -7,6 +7,8 @@ export interface FontMetadata {
   family: string           // CSS font-family name (from name table)
   fullName: string         // Full font name
   postScriptName: string   // PostScript name
+  subfamily?: string       // Font subfamily (e.g., "Light", "Medium", "Bold")
+  weight?: number          // Numeric weight value (100-900)
   version?: string         // Font version
   format: 'ttf' | 'otf' | 'woff' | 'woff2'
   fileName: string         // Original file name

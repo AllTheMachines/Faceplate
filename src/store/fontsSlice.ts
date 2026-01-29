@@ -6,6 +6,12 @@ export interface CustomFont {
   name: string            // Display name (from fullName or family)
   format: 'ttf' | 'otf' | 'woff' | 'woff2'
   category: 'custom'      // Always 'custom' for user fonts
+  weights?: FontWeightInfo[]  // Available weights with actual names
+}
+
+export interface FontWeightInfo {
+  value: number           // Numeric weight (100-900)
+  actualName: string      // Actual weight name from font (e.g., "Light", "Medium")
 }
 
 export interface FontsSlice {
