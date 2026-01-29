@@ -154,6 +154,13 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
           onChange={(borderColor) => onUpdate({ borderColor })}
         />
         <NumberInput
+          label="Border Width"
+          value={element.borderWidth ?? 1}
+          onChange={(borderWidth) => onUpdate({ borderWidth })}
+          min={0}
+          max={10}
+        />
+        <NumberInput
           label="Border Radius"
           value={element.borderRadius}
           onChange={(borderRadius) => onUpdate({ borderRadius })}

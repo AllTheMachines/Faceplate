@@ -17,7 +17,7 @@ export function ButtonRenderer({ config }: ButtonRendererProps) {
         backgroundColor: config.backgroundColor,
         color: config.textColor,
         borderRadius: `${config.borderRadius}px`,
-        border: `2px solid ${config.borderColor}`,
+        border: `${config.borderWidth ?? 1}px solid ${config.borderColor}`,
         fontSize: `${config.fontSize}px`,
         fontFamily: config.fontFamily,
         fontWeight: config.fontWeight,
