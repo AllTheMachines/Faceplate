@@ -3,6 +3,7 @@ import { useStore } from '../../store'
 import { getRenderer } from '../elements/renderers'
 import { isEditableContainer, EditableContainer } from '../../types/elements/containers'
 import { useContainerCopyPaste } from './hooks/useContainerCopyPaste'
+import { useContainerGrid } from './hooks/useContainerGrid'
 
 interface ContainerEditorCanvasProps {
   containerId: string
@@ -47,6 +48,9 @@ export function ContainerEditorCanvas({
 
   // Copy/paste/duplicate support
   const { copyToClipboard, pasteFromClipboard, duplicateSelected } = useContainerCopyPaste(containerId)
+
+  // Grid support - syncs with main canvas settings
+  const { showGrid, gridSize, gridColor } = useContainerGrid()
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
@@ -311,17 +315,19 @@ export function ContainerEditorCanvas({
         }}
         onClick={handleCanvasClick}
       >
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-30"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, #ffffff10 1px, transparent 1px),
-              linear-gradient(to bottom, #ffffff10 1px, transparent 1px)
-            `,
-            backgroundSize: '20px 20px',
-          }}
-        />
+        {/* Grid pattern - synced with main canvas settings */}
+        {showGrid && (
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, ${gridColor}22 1px, transparent 1px),
+                linear-gradient(to bottom, ${gridColor}22 1px, transparent 1px)
+              `,
+              backgroundSize: `${gridSize}px ${gridSize}px`,
+            }}
+          />
+        )}
 
         {/* Empty state */}
         {children.length === 0 && (
