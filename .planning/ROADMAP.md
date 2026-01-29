@@ -10,23 +10,23 @@
 - ✅ **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
 - ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
 - ✅ **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
-- 🚧 **v1.8 Bug Fixes & Improvements** — Phase 40 (in progress)
+- ✅ **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
 
-## Current Milestone: v1.8 Bug Fixes & Improvements
+## Current Milestone: v1.8 Bug Fixes & Improvements — COMPLETE
 
 ### Phase 40: Bug Fixes & UI Improvements
 **Goal**: Fix reported bugs and add quality-of-life improvements
-**Plans**: 8 plans in 2 waves
+**Plans**: 8 plans in 2 waves — completed 2026-01-29
 
 Plans:
-- [ ] 40-01-PLAN.md — Fix critical state bugs (version, name validation, multi-window duplicate)
-- [ ] 40-02-PLAN.md — Add Button borderWidth property
-- [ ] 40-03-PLAN.md — Fix color picker and label/value distance
-- [ ] 40-04-PLAN.md — Add folder export option
-- [ ] 40-05-PLAN.md — Container editor snap-to-grid
-- [ ] 40-06-PLAN.md — Container editor copy/paste/duplicate
-- [ ] 40-07-PLAN.md — Alt/Ctrl+click to deselect from multi-select
-- [ ] 40-08-PLAN.md — Fix font weight display and preview consistency
+- [x] 40-01-PLAN.md — Fix critical state bugs (version, name validation, multi-window duplicate)
+- [x] 40-02-PLAN.md — Add Button borderWidth property
+- [x] 40-03-PLAN.md — Fix color picker and label/value distance
+- [x] 40-04-PLAN.md — Add folder export option
+- [x] 40-05-PLAN.md — Container editor snap-to-grid
+- [x] 40-06-PLAN.md — Container editor copy/paste/duplicate
+- [x] 40-07-PLAN.md — Alt/Ctrl+click to deselect from multi-select
+- [x] 40-08-PLAN.md — Fix font weight display and preview consistency
 
 #### Wave Structure
 
@@ -700,8 +700,8 @@ Plans:
 | 37. Font Management System | v1.5 | 5/5 | Complete | 2026-01-27 |
 | 38. Multi-Window System | v1.6 | 1/1 | Complete | 2026-01-28 |
 | 39. Parameter Sync | v1.7 | 1/1 | Complete | 2026-01-28 |
-| 40. Bug Fixes & UI Improvements | v1.8 | 0/8 | Not Started | - |
+| 40. Bug Fixes & UI Improvements | v1.8 | 8/8 | Complete | 2026-01-29 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-29 - Phase 40 planned with 8 plans in 2 waves*
+*Last updated: 2026-01-29 - Phase 40 complete, v1.8 shipped*
