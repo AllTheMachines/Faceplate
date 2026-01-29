@@ -39,7 +39,7 @@ Progress: [███████░░░] 7/11 plans (64%)
 **GitHub Issues:**
 - #2: Folder export subfolder for single-window [bug, minor] - FIXED (41-01)
 - #3: Container multi-select drag [bug, major] - FIXED (41-02)
-- #4: Layers system with lock/hide/show [enhancement]
+- #4: Layers system with lock/hide/show [enhancement] - FIXED (42)
 - #6: Help buttons for Properties Panel [enhancement]
 
 ## Accumulated Context

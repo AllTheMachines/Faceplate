@@ -40,14 +40,14 @@ Plans:
 ### Phase 42: Layers Panel
 **Goal**: User-created layers for element organization with visibility/lock/z-order control
 **Requirements**: LAYER-01 through LAYER-09
-**Plans**: 5 plans
+**Plans**: 5 plans — completed 2026-01-29
 
 Plans:
-- [ ] 42-01-PLAN.md — Layer state foundation (types, layersSlice, store integration)
-- [ ] 42-02-PLAN.md — LayersPanel UI (panel component, LayerRow, LeftPanel tab)
-- [ ] 42-03-PLAN.md — Visibility and lock toggles (eye/lock icons, H key shortcut)
-- [ ] 42-04-PLAN.md — Drag-to-reorder and z-order (react-arborist, canvas render order)
-- [ ] 42-05-PLAN.md — Selection sync and context menu (bidirectional sync, Move to Layer, delete dialog)
+- [x] 42-01-PLAN.md — Layer state foundation (types, layersSlice, store integration)
+- [x] 42-02-PLAN.md — LayersPanel UI (panel component, LayerRow, LeftPanel tab)
+- [x] 42-03-PLAN.md — Visibility and lock toggles (eye/lock icons, H key shortcut)
+- [x] 42-04-PLAN.md — Drag-to-reorder and z-order (canvas render order)
+- [x] 42-05-PLAN.md — Selection sync and context menu (bidirectional sync, Move to Layer, delete dialog)
 
 **Success Criteria:**
 1. User can see Layers tab in LeftPanel with all user-created layers
@@ -724,7 +724,7 @@ Plans:
 | 39. Parameter Sync | v1.7 | 1/1 | Complete | 2026-01-28 |
 | 40. Bug Fixes & UI Improvements | v1.8 | 8/8 | Complete | 2026-01-29 |
 | 41. Bug Fixes | v1.9 | 2/2 | Complete | 2026-01-29 |
-| 42. Layers Panel | v1.9 | 0/5 | Planned | — |
+| 42. Layers Panel | v1.9 | 5/5 | Complete | 2026-01-29 |
 
 ---
 *Roadmap created: 2026-01-25*
