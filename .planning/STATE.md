@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 42 (Layers Panel)
-Plan: 3 of 6
+Plan: 4 of 6
 Status: In progress
-Last activity: 2026-01-29 — Completed 42-03-PLAN.md (Visibility Toggle)
+Last activity: 2026-01-29 — Completed 42-04-PLAN.md (Drag-Drop Reorder & Z-Order)
 
-Progress: [█████░░░░░] 5/11 plans (45%)
+Progress: [██████░░░░] 6/11 plans (55%)
 
 ## Milestones Shipped
 
@@ -59,11 +59,11 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 42-03-PLAN.md (Visibility Toggle)
+Stopped at: Completed 42-04-PLAN.md (Drag-Drop Reorder & Z-Order)
 Resume file: None
 
-**Next step:** Execute 42-04-PLAN.md (Layer Assignment)
+**Next step:** Execute 42-05-PLAN.md (Layer-Element Assignment)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Completed 42-03-PLAN.md*
+*Last updated: 2026-01-29 — Completed 42-04-PLAN.md*
