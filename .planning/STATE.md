@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 41 (Bug Fixes) — In Progress
-Plan: 1 of 2
-Status: Plan 41-01 complete
-Last activity: 2026-01-29 — Completed 41-01-PLAN.md
+Phase: 41 (Bug Fixes) — Complete
+Plan: 2 of 2
+Status: Phase 41 complete
+Last activity: 2026-01-29 — Completed 41-02-PLAN.md (Container multi-select drag)
 
-Progress: [█░░░░░░░░░] 1/11 plans (9%)
+Progress: [██░░░░░░░░] 2/11 plans (18%)
 
 ## Milestones Shipped
 
@@ -37,8 +37,8 @@ Progress: [█░░░░░░░░░] 1/11 plans (9%)
 **Goal:** Layers system for element organization, contextual help system, and deferred bug fixes
 
 **GitHub Issues:**
-- #2: Folder export subfolder for single-window [bug, minor]
-- #3: Container multi-select drag [bug, major]
+- #2: Folder export subfolder for single-window [bug, minor] - FIXED (41-01)
+- #3: Container multi-select drag [bug, major] - FIXED (41-02)
 - #4: Layers system with lock/hide/show [enhancement]
 - #6: Help buttons for Properties Panel [enhancement]
 
@@ -59,11 +59,11 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 41-01-PLAN.md (single-window folder export fix)
+Stopped at: Phase 41 complete (both bug fix plans done)
 Resume file: None
 
-**Next step:** Execute 41-02-PLAN.md (container multi-select drag)
+**Next step:** Plan Phase 42 (Layers system) or verify Phase 41 completion
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Plan 41-01 complete*
+*Last updated: 2026-01-29 — Phase 41 complete*
