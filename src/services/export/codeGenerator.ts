@@ -742,3 +742,229 @@ void loadWindow(const String& windowFolder) {
 VST3 WebView UI Designer
 `
 }
+
+// ============================================================================
+// Direct Folder Export (File System Access API)
+// ============================================================================
+
+/**
+ * Helper function to write a file to a directory handle
+ */
+async function writeFileToDirectory(
+  dirHandle: FileSystemDirectoryHandle,
+  fileName: string,
+  content: string | Blob
+): Promise<void> {
+  const fileHandle = await dirHandle.getFileHandle(fileName, { create: true })
+  const writable = await fileHandle.createWritable()
+  await writable.write(content)
+  await writable.close()
+}
+
+/**
+ * Export multi-window bundle directly to a folder (no ZIP)
+ * Uses File System Access API to write files directly to user-selected directory
+ *
+ * @param windowsData - Array of windows to export
+ * @param options - Export configuration
+ * @returns Result with success status and folder name or error
+ *
+ * @example
+ * const result = await exportMultiWindowToFolder(windowsData, {
+ *   optimizeSVG: true,
+ *   enableResponsiveScaling: true,
+ *   includeDeveloperWindows: false
+ * })
+ *
+ * if (result.success) {
+ *   console.log(`Exported to ${result.folderName}/`)
+ * } else {
+ *   console.error(result.error)
+ * }
+ */
+export async function exportMultiWindowToFolder(
+  windowsData: WindowExportData[],
+  options: MultiWindowExportOptions
+): Promise<{ success: boolean; folderName?: string; error?: string }> {
+  try {
+    // Check for File System Access API support
+    if (!('showDirectoryPicker' in window)) {
+      return {
+        success: false,
+        error: 'Folder export requires a Chromium-based browser (Chrome, Edge, or Opera)',
+      }
+    }
+
+    // Filter windows based on options
+    const windowsToExport = options.includeDeveloperWindows
+      ? windowsData
+      : windowsData.filter(w => w.type === 'release')
+
+    if (windowsToExport.length === 0) {
+      return {
+        success: false,
+        error: 'No windows to export. Add at least one release window.',
+      }
+    }
+
+    // Validate all windows
+    for (const window of windowsToExport) {
+      const validationResult = validateForExport(window.elements)
+      if (!validationResult.valid && validationResult.errors.length > 0) {
+        const errorMessages = validationResult.errors
+          .map((err) => `• ${err.elementName}: ${err.message}`)
+          .join('\n')
+        return {
+          success: false,
+          error: `Window "${window.name}" has issues:\n\n${errorMessages}`,
+        }
+      }
+    }
+
+    // Show directory picker
+    let dirHandle: FileSystemDirectoryHandle
+    try {
+      dirHandle = await window.showDirectoryPicker({
+        mode: 'readwrite',
+        startIn: 'documents',
+      })
+    } catch (e) {
+      // User cancelled the picker
+      if (e instanceof Error && e.name === 'AbortError') {
+        return { success: false, error: 'Export cancelled' }
+      }
+      throw e
+    }
+
+    // Collect all SVG assets across all windows
+    const allElements = windowsToExport.flatMap(w => w.elements)
+    const shouldOptimizeSVG = options.optimizeSVG !== false
+    const svgAssets = collectSVGAssets(allElements)
+    const { optimizedMap, sizeSavings } = await optimizeSVGAssets(svgAssets, shouldOptimizeSVG)
+
+    // Temporarily apply optimized SVGs
+    const restoreSVGs = applyOptimizedSVGs(optimizedMap)
+
+    try {
+      // Build window ID to folder path mapping for navigation
+      const windowFolderMap: Record<string, string> = {}
+      for (const w of windowsToExport) {
+        const baseName = toFolderName(w.name)
+        const folderName = w.type === 'developer' ? `dev-${baseName}` : baseName
+        windowFolderMap[w.id] = folderName
+      }
+
+      // Process each window
+      for (const window of windowsToExport) {
+        // Create folder name with dev- prefix for developer windows
+        const baseName = toFolderName(window.name)
+        const folderName = window.type === 'developer' ? `dev-${baseName}` : baseName
+
+        // Create window directory
+        const windowDir = await dirHandle.getDirectoryHandle(folderName, { create: true })
+
+        // Generate files for this window
+        const htmlContent = generateHTML(window.elements, {
+          canvasWidth: window.width,
+          canvasHeight: window.height,
+          backgroundColor: window.backgroundColor,
+          isPreviewMode: false,
+        })
+
+        const cssContent = await generateCSS(window.elements, {
+          canvasWidth: window.width,
+          canvasHeight: window.height,
+          backgroundColor: window.backgroundColor,
+        })
+
+        const componentsJS = generateComponentsJS(window.elements)
+
+        // Build window mapping for navigation (relative paths from this window's folder)
+        const windowMapping: Record<string, string> = {}
+        for (const [windowId, targetFolder] of Object.entries(windowFolderMap)) {
+          if (windowId !== window.id) {
+            windowMapping[windowId] = `../${targetFolder}/index.html`
+          }
+        }
+
+        const bindingsJS = generateBindingsJS(window.elements, {
+          isPreviewMode: false,
+          windowMapping: Object.keys(windowMapping).length > 0 ? windowMapping : undefined,
+        })
+
+        // Add responsive scaling script if enabled
+        const shouldIncludeResponsiveScaling = options.enableResponsiveScaling !== false
+        const responsiveScaleJS = shouldIncludeResponsiveScaling
+          ? generateResponsiveScaleJS(window.width, window.height)
+          : ''
+
+        const customScrollbarJS = generateCustomScrollbarJS()
+
+        const bindingsWithScaling = [
+          bindingsJS,
+          responsiveScaleJS,
+          customScrollbarJS
+        ].filter(Boolean).join('\n\n')
+
+        // Write files to directory
+        await writeFileToDirectory(windowDir, 'index.html', htmlContent)
+        await writeFileToDirectory(windowDir, 'style.css', cssContent)
+        await writeFileToDirectory(windowDir, 'components.js', componentsJS)
+        await writeFileToDirectory(windowDir, 'bindings.js', bindingsWithScaling)
+
+        // Copy image assets for this window
+        const imageAssets = collectImageAssets(window.elements)
+        for (const asset of imageAssets) {
+          try {
+            const response = await fetch(asset.srcUrl)
+            if (response.ok) {
+              const blob = await response.blob()
+
+              // Create nested directory structure if needed (e.g., assets/)
+              const pathParts = asset.path.split('/')
+              let currentDir = windowDir
+
+              // Navigate/create parent directories
+              for (let i = 0; i < pathParts.length - 1; i++) {
+                currentDir = await currentDir.getDirectoryHandle(pathParts[i], { create: true })
+              }
+
+              // Write the file in the final directory
+              const fileName = pathParts[pathParts.length - 1]
+              await writeFileToDirectory(currentDir, fileName, blob)
+            }
+          } catch (error) {
+            console.error(`Failed to copy image asset: ${asset.path}`, error)
+          }
+        }
+      }
+
+      // Write root README
+      const readme = generateMultiWindowREADME(windowsToExport, options.includeDeveloperWindows)
+      await writeFileToDirectory(dirHandle, 'README.md', readme)
+
+      return { success: true, folderName: dirHandle.name }
+    } finally {
+      restoreSVGs()
+    }
+  } catch (error) {
+    // User cancelled is not an error
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, error: 'Export cancelled' }
+    }
+
+    // Permission denied
+    if (error instanceof Error && error.name === 'NotAllowedError') {
+      return {
+        success: false,
+        error: 'Permission denied. Please allow access to the selected folder.',
+      }
+    }
+
+    // Other errors are failures
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred during folder export',
+    }
+  }
+}
