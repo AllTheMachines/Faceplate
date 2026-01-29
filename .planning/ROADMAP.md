@@ -11,18 +11,68 @@
 - ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
 - ✅ **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
 - ✅ **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
+- 🔄 **v1.9 Layers & Help System** — Phases 41-43 (in progress)
 
-## Next Milestone: v1.9
+## Current Milestone: v1.9 Layers & Help System
 
-*Run `/gsd:new-milestone` to start planning v1.9*
-
-**Backlog (from GitHub Issues):**
-- #2: Folder export subfolder for single-window (minor)
-- #3: Container multi-select drag (major)
+**Phases 41-43** | **18 requirements** | In Progress
 
 ---
 
 ## Phases
+
+<details open>
+<summary>v1.9 Layers & Help System (Phases 41-43) - IN PROGRESS</summary>
+
+### Phase 41: Bug Fixes
+**Goal**: Fix deferred bugs from v1.8 (folder export, container multi-drag)
+**Requirements**: BUG-01, BUG-02
+
+- [ ] 41-01: Folder export writes directly for single-window projects
+- [ ] 41-02: Container editor multi-select drag
+
+**Success Criteria:**
+1. Single-window project exports directly to selected folder (no subfolder created)
+2. Multiple selected elements in container editor drag together as group
+
+### Phase 42: Layers Panel
+**Goal**: Add Photoshop/Figma-style layers panel for element organization
+**Requirements**: LAYER-01 through LAYER-09
+
+- [ ] 42-01: LayersPanel component with react-arborist
+- [ ] 42-02: Visibility and lock toggles
+- [ ] 42-03: Drag-to-reorder (z-order)
+- [ ] 42-04: Selection sync (layers ↔ canvas)
+- [ ] 42-05: Inline rename (double-click)
+
+**Success Criteria:**
+1. User sees all elements in layers panel with names and type icons
+2. User can toggle visibility (eye icon) - hidden elements don't render
+3. User can toggle lock (lock icon) - locked elements can't be moved/resized
+4. User can drag layers to change z-order on canvas
+5. Clicking layer selects element on canvas; canvas selection highlights in layers
+6. User can double-click layer name to rename inline
+7. Layers panel appears as tab in LeftPanel
+
+### Phase 43: Help System
+**Goal**: Add contextual help buttons with HTML documentation
+**Requirements**: HELP-01 through HELP-07
+
+- [ ] 43-01: HelpButton component and helpService
+- [ ] 43-02: Section help content (Position, Appearance, etc.)
+- [ ] 43-03: Element-type help content
+- [ ] 43-04: F1 keyboard shortcut
+
+**Success Criteria:**
+1. Each Properties Panel section has help (?) button in header
+2. Clicking help button opens new window with documentation
+3. Help content explains properties with examples
+4. Help window has dark theme matching app
+5. Help content exists for each element type
+6. F1 opens help for currently selected element type
+7. Help includes step-by-step instructions where applicable
+
+</details>
 
 <details>
 <summary>v1.8 Bug Fixes & Improvements (Phase 40) - SHIPPED 2026-01-29</summary>
