@@ -1,33 +1,34 @@
 # Backlog
 
-*Synced from GitHub Issues: Not yet synced*
-
-Run `/github sync` to pull open issues from GitHub.
+*Synced from GitHub Issues: 2026-01-29*
 
 ## Bugs
 
-<!-- Issues labeled 'bug' -->
+- [ ] #2: Folder export creates unnecessary subfolder for single-window projects [bug]
+  Minor - For single-window projects, files should write directly to selected folder.
+
+- [ ] #3: Container editor: Cannot drag multiple selected elements together [bug]
+  Major - DragState only tracks single element, need multi-element support.
 
 ## Features
 
-<!-- Issues labeled 'enhancement' or 'feature' -->
+<!-- No feature requests yet -->
 
-## Documentation
+## Ideas
 
-<!-- Issues labeled 'documentation' -->
-
-## Uncategorized
-
-<!-- Issues without labels -->
+- [ ] #1: Create Testing Scenarios for Debugging, Improvement and Feature - Search [idea]
 
 ---
 
-## Manual Entries
+## Issue Summary
 
-Add items here that aren't yet GitHub issues:
+| # | Title | Labels | Severity |
+|---|-------|--------|----------|
+| 1 | Testing Scenarios for Debugging | idea | - |
+| 2 | Folder export subfolder | bug | Minor |
+| 3 | Container multi-select drag | bug | Major |
 
-- [ ] Folder export creates unnecessary subfolder for single-window projects (minor)
-- [ ] Container editor: Cannot drag multiple selected elements together (major)
+**Total open:** 3
 
 ---
 
