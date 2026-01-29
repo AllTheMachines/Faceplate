@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-28)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Milestone v1.7 Parameter Sync
+**Current focus:** Milestone v1.8 Bug Fixes & Improvements
 
 ## Current Position
 
-Phase: 39 of 39 (Parameter Sync - COMPLETE)
-Plan: 1 of 1
-Status: Phase complete
-Last activity: 2026-01-28 - Completed 39-01-PLAN.md
+Phase: 40 (Bug Fixes & UI Improvements)
+Plan: 03 of 15
+Status: In progress
+Last activity: 2026-01-29 - Completed 40-03-PLAN.md
 
-Progress: [███████████] 1/1 plans complete (100%)
+Progress: [██░░░░░░░░░] 3/15 plans (20%)
 
 ## Milestones Shipped
 
@@ -46,6 +46,7 @@ Major decisions by milestone:
 - **v1.5:** Native File System Access API, IndexedDB for fonts, base64 embedding for custom fonts
 - **v1.6:** WindowsSlice for multi-window state, v2.0.0 serialization format, button navigation actions
 - **v1.7:** Parameter sync via data-parameter-id attributes, __juce__paramSync event, setupParameterSyncListener()
+- **v1.8:** Auto-close color picker on value change, negative distance values for precise positioning
 
 ### Pending Todos
 
@@ -57,12 +58,18 @@ None
 
 ## Session Continuity
 
-Last session: 2026-01-28
-Stopped at: Completed 39-01-PLAN.md (Phase 39 complete, Milestone v1.7 shipped)
+Last session: 2026-01-29 15:16:24
+Stopped at: Completed 40-03-PLAN.md
 Resume file: None
 
-**Next step:** Project complete - all planned milestones shipped
+**Next step:** Continue Phase 40 - execute remaining plans (40-04 through 40-15)
+
+### Roadmap Evolution
+- Phase 40 added: Bug Fixes & UI Improvements (v1.8)
+- 40-01: Missing version field handling (completed)
+- 40-02: Border width editing (completed)
+- 40-03: Color picker state & distance controls (completed)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-28 after v1.7 Parameter Sync shipped*
+*Last updated: 2026-01-29 — Completed 40-03-PLAN.md (3/15 plans)*
