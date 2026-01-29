@@ -2,17 +2,17 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-28)
+See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** Milestone v1.8 shipped
+**Current focus:** v1.8 shipped, planning v1.9
 
 ## Current Position
 
-Phase: 40 (Bug Fixes & UI Improvements)
+Phase: 40 (Bug Fixes & UI Improvements) — COMPLETE
 Plan: 8 of 8
-Status: Complete
-Last activity: 2026-01-29 - Phase 40 complete, v1.8 shipped
+Status: Milestone v1.8 shipped
+Last activity: 2026-01-29 - v1.8 milestone archived
 
 Progress: [██████████] 8/8 plans (100%)
 
@@ -60,22 +60,17 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed Phase 40 (v1.8 milestone shipped)
+Stopped at: Completed v1.8 milestone archive
 Resume file: None
 
-**Next step:** Run `/gsd:audit-milestone` to verify milestone completion, or `/gsd:new-milestone` to start v1.9
+**Next step:** Run `/gsd:new-milestone` to start v1.9 planning
 
-### Roadmap Evolution
-- Phase 40: Bug Fixes & UI Improvements (v1.8) - completed
-  - 40-01: State synchronization bugs (version handling, name validation, multi-window duplicate)
-  - 40-02: Button borderWidth property
-  - 40-03: Color picker and label/value distance
-  - 40-04: Folder export option
-  - 40-05: Container editor snap-to-grid
-  - 40-06: Container editor copy/paste/duplicate
-  - 40-07: Alt/Ctrl+click deselect
-  - 40-08: Font weight display and preview consistency
+### Backlog (GitHub Issues)
+
+- #1: Testing Scenarios for Debugging [idea]
+- #2: Folder export subfolder for single-window [bug, minor]
+- #3: Container multi-select drag [bug, major]
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — Phase 40 complete, v1.8 shipped*
+*Last updated: 2026-01-29 — v1.8 milestone archived*

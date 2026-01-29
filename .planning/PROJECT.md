@@ -103,18 +103,11 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-**v1.7 Parameter Sync:**
-- [ ] Export generates `setupParameterSyncListener()` function in bindings.js - SYNC-01
-- [ ] Sync listener handles `__juce__paramSync` event from C++ backend - SYNC-02
-- [ ] Sync updates visual state for all parameter-bound knobs - SYNC-03
-- [ ] Sync updates visual state for all parameter-bound sliders - SYNC-04
-- [ ] Sync updates visual state for all other bindable element types - SYNC-05
-- [ ] Sync updates internal state to prevent drag jumping - SYNC-06
-- [ ] Listener gracefully handles missing JUCE backend - SYNC-07
-- [ ] Export maps element IDs to parameter IDs correctly - SYNC-08
-- [ ] JUCE_INTEGRATION.md includes C++ implementation examples - DOC-01, DOC-02
-- [ ] JUCE_INTEGRATION.md explains parameter sync architecture - DOC-03
-- [ ] Generated bindings.js includes inline comments - DOC-04
+**v1.9 (Planning):**
+- [ ] GitHub #2: Folder export writes directly to selected folder for single-window projects
+- [ ] GitHub #3: Container editor multi-select drag moves all selected elements together
+
+*Run `/gsd:new-milestone` to define v1.9 requirements*
 
 ### Out of Scope
 
@@ -128,7 +121,8 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Context
 
 **Current State:**
-- v1.7 Parameter Sync in progress (2026-01-28)
+- v1.8 Bug Fixes & Improvements shipped (2026-01-29)
+- v1.7 Parameter Sync shipped (2026-01-28)
 - v1.6 Multi-Window System shipped (2026-01-28)
 - v1.5 Export & Asset Management shipped (2026-01-27)
 - v1.4 Container Editing System shipped (2026-01-27)
@@ -136,13 +130,14 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - v1.2 Complete Element Taxonomy shipped (2026-01-27)
 - v1.1 SVG Import System shipped (2026-01-26)
 - v1.0 MVP shipped (2026-01-25)
-- ~180,000 lines TypeScript
+- ~70,500 lines TypeScript
 - 100+ element types supported
 - Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS, SVGO, DOMPurify, opentype.js
+- GitHub Issues integration via `/github` skill
 
 **Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds.
 
-**v1.7 Focus:** When a plugin editor opens, the WebView UI should reflect actual parameter values from C++ (APVTS), not hardcoded defaults. This ensures DAW project save/reload, preset loading, and automation visualization work correctly.
+**v1.9 Focus:** Address deferred issues from v1.8 UAT (folder export, container multi-drag) and plan next features.
 
 ## Constraints
 
@@ -214,4 +209,4 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | Button navigation actions | Buttons can navigate between windows in exported bundle | Good - enables multi-page UIs |
 
 ---
-*Last updated: 2026-01-28 after v1.7 milestone started*
+*Last updated: 2026-01-29 after v1.8 milestone shipped*

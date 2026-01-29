@@ -1,20 +1,55 @@
 # Project Milestones: VST3 WebView UI Designer
 
-## v1.7 Parameter Sync (In Progress)
+## v1.8 Bug Fixes & UI Improvements (Shipped: 2026-01-29)
 
-**Goal:** Ensure WebView UI reflects actual C++ parameter values when editor opens.
+**Delivered:** Critical bug fixes and quality-of-life improvements including folder export, container editor enhancements, and UI polish.
 
-**Problem solved:** When a plugin editor opens, the WebView UI displays default knob/slider positions instead of actual parameter values from the DAW project. This affects DAW project save/reload, preset loading, and automation visualization.
+**Phases completed:** 40 (8 plans total)
 
-**Phases:** 39 (1 phase, 1 plan)
+**Key accomplishments:**
+- Version inference from structure for backward compatibility
+- Window-scoped name validation and multi-window duplicate fix
+- Button borderWidth property with full round-trip support
+- Color picker state sync and label/value distance controls
+- Folder export via File System Access API (Chrome/Edge)
+- Container editor: grid support, copy/paste/duplicate, context menu
+- Alt/Ctrl+click deselection for multi-select workflow
+- Font weight display showing actual subfamily names
 
-**Key deliverables:**
+**Stats:**
+- 1 phase, 8 plans, 43 commits
+- ~70,500 lines of TypeScript
+- 1 day from start to ship (2026-01-29)
+
+**Deferred to v1.9:**
+- GitHub #2: Folder export subfolder for single-window (minor)
+- GitHub #3: Container multi-select drag (major)
+
+**Git range:** `feat(40-01)` → `docs(40): complete Bug Fixes & UI Improvements phase`
+
+**What's next:** v1.9 — Address deferred issues and new features
+
+---
+
+## v1.7 Parameter Sync (Shipped: 2026-01-28)
+
+**Delivered:** Parameter synchronization ensuring WebView UI reflects actual C++ parameter values when editor opens.
+
+**Phases completed:** 39 (1 phase, 1 plan)
+
+**Key accomplishments:**
 - Export generates `setupParameterSyncListener()` in bindings.js
 - Listener handles `__juce__paramSync` event from C++ backend
 - All parameter-bound elements update visual and internal state
 - JUCE_INTEGRATION.md includes C++ implementation examples
 
-**Requirements:** 12 total (SYNC-01 through SYNC-08, DOC-01 through DOC-04)
+**Stats:**
+- 1 phase, 1 plan
+- 1 day from start to ship (2026-01-28)
+
+**Git range:** `feat(39)` — Parameter Sync
+
+**What's next:** v1.8 Bug Fixes & UI Improvements
 
 ---
 
