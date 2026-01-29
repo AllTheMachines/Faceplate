@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** v1.8 shipped, planning v1.9
+**Current focus:** v1.9 Layers & Help System
 
 ## Current Position
 
-Phase: 40 (Bug Fixes & UI Improvements) — COMPLETE
-Plan: 8 of 8
-Status: Milestone v1.8 shipped
-Last activity: 2026-01-29 - v1.8 milestone archived
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-01-29 — Milestone v1.9 started
 
-Progress: [██████████] 8/8 plans (100%)
+Progress: [░░░░░░░░░░] 0%
 
 ## Milestones Shipped
 
@@ -32,22 +32,21 @@ Progress: [██████████] 8/8 plans (100%)
 
 **Total: 40 phases, 165 plans, 7 days**
 
+## Current Milestone: v1.9
+
+**Goal:** Layers system for element organization, contextual help system, and deferred bug fixes
+
+**GitHub Issues:**
+- #2: Folder export subfolder for single-window [bug, minor]
+- #3: Container multi-select drag [bug, major]
+- #4: Layers system with lock/hide/show [enhancement]
+- #6: Help buttons for Properties Panel [enhancement]
+
 ## Accumulated Context
 
 ### Decisions
 
 All decisions documented in PROJECT.md Key Decisions table.
-
-Major decisions by milestone:
-- **v1.0:** Zustand over Redux, @dnd-kit over react-dnd, HTML/CSS rendering over Canvas
-- **v1.1:** Defense-in-depth SVG sanitization, DOMPurify with strict allowlist, SVGO safe defaults
-- **v1.2:** Registry pattern for elements, built-in icon system, instant transitions on controls
-- **v1.3:** Reactive temporal subscriptions, imperative undo/redo for time-travel
-- **v1.4:** Container editor with modal interface, custom scrollbar system
-- **v1.5:** Native File System Access API, IndexedDB for fonts, base64 embedding for custom fonts
-- **v1.6:** WindowsSlice for multi-window state, v2.0.0 serialization format, button navigation actions
-- **v1.7:** Parameter sync via data-parameter-id attributes, __juce__paramSync event, setupParameterSyncListener()
-- **v1.8:** Version inference from structure, window-scoped name validation, folder export via File System Access API
 
 ### Pending Todos
 
@@ -60,17 +59,9 @@ None
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed v1.8 milestone archive
+Stopped at: Defining v1.9 requirements
 Resume file: None
-
-**Next step:** Run `/gsd:new-milestone` to start v1.9 planning
-
-### Backlog (GitHub Issues)
-
-- #1: Testing Scenarios for Debugging [idea]
-- #2: Folder export subfolder for single-window [bug, minor]
-- #3: Container multi-select drag [bug, major]
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-01-29 — v1.8 milestone archived*
+*Last updated: 2026-01-29 — v1.9 milestone started*

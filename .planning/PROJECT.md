@@ -103,11 +103,11 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-**v1.9 (Planning):**
+**v1.9 Layers & Help System:**
 - [ ] GitHub #2: Folder export writes directly to selected folder for single-window projects
 - [ ] GitHub #3: Container editor multi-select drag moves all selected elements together
-
-*Run `/gsd:new-milestone` to define v1.9 requirements*
+- [ ] GitHub #4: Layers system with lock/hide/show functionality (like Photoshop/Figma)
+- [ ] GitHub #6: Help buttons for Properties Panel elements with HTML documentation
 
 ### Out of Scope
 
@@ -137,7 +137,7 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 **Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds.
 
-**v1.9 Focus:** Address deferred issues from v1.8 UAT (folder export, container multi-drag) and plan next features.
+**v1.9 Focus:** Layers system for element organization, contextual help system, and deferred bug fixes (folder export, container multi-drag).
 
 ## Constraints
 
@@ -209,4 +209,4 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | Button navigation actions | Buttons can navigate between windows in exported bundle | Good - enables multi-page UIs |
 
 ---
-*Last updated: 2026-01-29 after v1.8 milestone shipped*
+*Last updated: 2026-01-29 after v1.9 milestone started*
