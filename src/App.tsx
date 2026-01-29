@@ -220,6 +220,7 @@ function App() {
   const getElement = useStore((state) => state.getElement)
   const getAsset = useStore((state) => state.getAsset)
   const addElementToWindow = useStore((state) => state.addElementToWindow)
+  const selectedLayerId = useStore((state) => state.selectedLayerId)
 
   // Track active drag data for preview overlay
   const [activeDragData, setActiveDragData] = useState<{
@@ -389,6 +390,9 @@ function App() {
       // Center element on drop position
       newElement.x = canvasX - newElement.width / 2
       newElement.y = canvasY - newElement.height / 2
+
+      // Assign to selected layer (or default)
+      newElement.layerId = selectedLayerId || 'default'
 
       addElement(newElement)
       addElementToWindow(newElement.id)
@@ -797,6 +801,8 @@ function App() {
     if (newElement) {
       newElement.x = canvasX - newElement.width / 2
       newElement.y = canvasY - newElement.height / 2
+      // Assign to selected layer (or default)
+      newElement.layerId = selectedLayerId || 'default'
     }
 
     addElement(newElement)

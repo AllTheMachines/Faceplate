@@ -16,6 +16,7 @@ export function CustomSVGUpload() {
   const scale = useStore((state) => state.scale);
   const offsetX = useStore((state) => state.offsetX);
   const offsetY = useStore((state) => state.offsetY);
+  const selectedLayerId = useStore((state) => state.selectedLayerId);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -69,6 +70,9 @@ export function CustomSVGUpload() {
       name: 'Custom SVG',
     });
 
+    // Assign to selected layer
+    element.layerId = selectedLayerId || 'default';
+
     addElement(element);
     setParsedSVG(null);
     setIsOpen(false);
@@ -112,6 +116,9 @@ export function CustomSVGUpload() {
       src: dataUrl,
       name: `Custom ${result.elementType}`,
     });
+
+    // Assign to selected layer
+    element.layerId = selectedLayerId || 'default';
 
     addElement(element);
     setDesignModeOpen(false);
