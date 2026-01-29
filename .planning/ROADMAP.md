@@ -11,18 +11,18 @@
 - ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
 - ✅ **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
 - ✅ **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
-- 🔄 **v1.9 Layers & Help System** — Phases 41-43 (in progress)
+- ✅ **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
 
 ## Current Milestone: v1.9 Layers & Help System
 
-**Phases 41-43** | **18 requirements** | In Progress
+**Phases 41-43** | **18 requirements** | Complete
 
 ---
 
 ## Phases
 
 <details open>
-<summary>v1.9 Layers & Help System (Phases 41-43) - IN PROGRESS</summary>
+<summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
 
 ### Phase 41: Bug Fixes
 **Goal**: Fix deferred bugs from v1.8 (folder export, container multi-drag)
@@ -66,13 +66,13 @@ Plans:
 ### Phase 43: Help System
 **Goal**: Add contextual help buttons with HTML documentation
 **Requirements**: HELP-01 through HELP-07
-**Plans**: 4 plans
+**Plans**: 4 plans — completed 2026-01-29
 
 Plans:
-- [ ] 43-01-PLAN.md — HelpButton component, helpService, types, and dark theme styles
-- [ ] 43-02-PLAN.md — Section help content and PropertySection integration
-- [ ] 43-03-PLAN.md — Element-type help content and general app help
-- [ ] 43-04-PLAN.md — F1 keyboard shortcut for contextual help
+- [x] 43-01-PLAN.md — HelpButton component, helpService, types, and dark theme styles
+- [x] 43-02-PLAN.md — Section help content and PropertySection integration
+- [x] 43-03-PLAN.md — Element-type help content and general app help
+- [x] 43-04-PLAN.md — F1 keyboard shortcut for contextual help
 
 **Success Criteria:**
 1. Each Properties Panel section has help (?) button in header
@@ -727,8 +727,8 @@ Plans:
 | 40. Bug Fixes & UI Improvements | v1.8 | 8/8 | Complete | 2026-01-29 |
 | 41. Bug Fixes | v1.9 | 2/2 | Complete | 2026-01-29 |
 | 42. Layers Panel | v1.9 | 5/5 | Complete | 2026-01-29 |
-| 43. Help System | v1.9 | 0/4 | Planning | - |
+| 43. Help System | v1.9 | 4/4 | Complete | 2026-01-29 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-29 - Phase 43 planned (4 plans)*
+*Last updated: 2026-01-29 - v1.9 milestone complete*
