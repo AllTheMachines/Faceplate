@@ -66,11 +66,13 @@ Plans:
 ### Phase 43: Help System
 **Goal**: Add contextual help buttons with HTML documentation
 **Requirements**: HELP-01 through HELP-07
+**Plans**: 4 plans
 
-- [ ] 43-01: HelpButton component and helpService
-- [ ] 43-02: Section help content (Position, Appearance, etc.)
-- [ ] 43-03: Element-type help content
-- [ ] 43-04: F1 keyboard shortcut
+Plans:
+- [ ] 43-01-PLAN.md — HelpButton component, helpService, types, and dark theme styles
+- [ ] 43-02-PLAN.md — Section help content and PropertySection integration
+- [ ] 43-03-PLAN.md — Element-type help content and general app help
+- [ ] 43-04-PLAN.md — F1 keyboard shortcut for contextual help
 
 **Success Criteria:**
 1. Each Properties Panel section has help (?) button in header
@@ -725,7 +727,8 @@ Plans:
 | 40. Bug Fixes & UI Improvements | v1.8 | 8/8 | Complete | 2026-01-29 |
 | 41. Bug Fixes | v1.9 | 2/2 | Complete | 2026-01-29 |
 | 42. Layers Panel | v1.9 | 5/5 | Complete | 2026-01-29 |
+| 43. Help System | v1.9 | 0/4 | Planning | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-29 - Phase 42 planned (5 plans)*
+*Last updated: 2026-01-29 - Phase 43 planned (4 plans)*
