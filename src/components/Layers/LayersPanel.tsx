@@ -59,6 +59,7 @@ export function LayersPanel() {
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerHeight, setContainerHeight] = useState(300)
+  const [containerWidth, setContainerWidth] = useState(280)
 
   const layers = useStore((state) => state.layers)
   const selectedLayerId = useStore((state) => state.selectedLayerId)
@@ -112,6 +113,7 @@ export function LayersPanel() {
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         setContainerHeight(entry.contentRect.height)
+        setContainerWidth(entry.contentRect.width)
       }
     })
 
@@ -346,7 +348,7 @@ export function LayersPanel() {
               </p>
             </div>
           </div>
-        ) : (
+        ) : containerWidth > 0 && containerHeight > 0 ? (
           <Tree<LayerNodeData>
             data={treeData}
             openByDefault={false}
@@ -354,7 +356,7 @@ export function LayersPanel() {
             disableDrop={disableDrop}
             onMove={handleMove}
             rowHeight={40}
-            width="100%"
+            width={containerWidth}
             height={containerHeight}
             indent={0}
             overscanCount={5}
@@ -368,6 +370,10 @@ export function LayersPanel() {
           >
             {LayerNodeComponent}
           </Tree>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-500 text-sm">Loading layers...</div>
+          </div>
         )}
       </div>
 
