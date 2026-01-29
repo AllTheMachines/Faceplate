@@ -390,14 +390,21 @@ function ElementComponent({ element }: ElementProps) {
 
     const selectedIds = useStore.getState().selectedIds
     const isAlreadySelected = selectedIds.includes(element.id)
+    const isAltOrCtrl = e.altKey || e.ctrlKey || e.metaKey
 
     if (e.shiftKey) {
+      // Shift+click: Add to selection
       addToSelection(element.id)
-    } else if (e.ctrlKey || e.metaKey) {
+    } else if (isAltOrCtrl && isAlreadySelected) {
+      // Alt/Ctrl+click on selected: Remove from selection
       toggleSelection(element.id)
+    } else if (isAltOrCtrl && !isAlreadySelected) {
+      // Alt/Ctrl+click on unselected: Add to selection
+      addToSelection(element.id)
     } else if (isAlreadySelected && selectedIds.length > 1) {
-      // keep selection
+      // Plain click on already selected: keep selection
     } else {
+      // Plain click: Select only this element
       selectElement(element.id)
     }
   }
