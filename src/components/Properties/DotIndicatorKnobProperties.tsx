@@ -133,8 +133,9 @@ export function DotIndicatorKnobProperties({ element, onUpdate }: DotIndicatorKn
                 label="Distance"
                 value={element.labelDistance ?? 4}
                 onChange={(labelDistance) => onUpdate({ labelDistance })}
-                min={0}
+                min={-20}
                 max={50}
+                step={0.1}
               />
             </div>
             <ColorInput
@@ -218,8 +219,9 @@ export function DotIndicatorKnobProperties({ element, onUpdate }: DotIndicatorKn
                 label="Distance"
                 value={element.valueDistance ?? 4}
                 onChange={(valueDistance) => onUpdate({ valueDistance })}
-                min={0}
+                min={-20}
                 max={50}
+                step={0.1}
               />
               <ColorInput
                 label="Color"
