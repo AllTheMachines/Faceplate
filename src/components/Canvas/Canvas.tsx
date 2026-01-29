@@ -6,6 +6,14 @@ import { Element } from '../elements'
 import { SelectionOverlay } from './SelectionOverlay'
 import { MarqueeSelection } from './MarqueeSelection'
 import { ElementConfig } from '../../types/elements'
+import { LAYER_COLOR_MAP } from '../../types/layer'
+
+// Context menu state type
+interface ContextMenuState {
+  x: number
+  y: number
+  elementId: string
+}
 
 export function Canvas() {
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -50,11 +58,16 @@ export function Canvas() {
   const elements = allElements.filter((el) => activeWindowElementIds.includes(el.id))
   const selectedIds = useStore((state) => state.selectedIds)
   const clearSelection = useStore((state) => state.clearSelection)
+  const updateElement = useStore((state) => state.updateElement)
 
   // Get layers for z-order sorting and visibility filtering
   const getLayersInOrder = useStore((state) => state.getLayersInOrder)
   const getLayerById = useStore((state) => state.getLayerById)
   const layers = useStore((state) => state.layers)
+
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null)
+  const [showLayerSubmenu, setShowLayerSubmenu] = useState(false)
 
   // Sort elements by layer order for z-index rendering and filter out hidden layers
   // Elements in lower-order layers render first (back), higher-order layers render later (front)
@@ -111,8 +124,39 @@ export function Canvas() {
     if (justFinishedDrag) {
       return
     }
+    // Close context menu if open
+    if (contextMenu) {
+      setContextMenu(null)
+      setShowLayerSubmenu(false)
+      return
+    }
     clearSelection()
-  }, [clearSelection, justFinishedDrag])
+  }, [clearSelection, justFinishedDrag, contextMenu])
+
+  // Handle context menu on canvas elements
+  const handleContextMenu = useCallback((e: React.MouseEvent, elementId: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      elementId,
+    })
+    setShowLayerSubmenu(false)
+  }, [])
+
+  // Close context menu when clicking outside
+  const handleCloseContextMenu = useCallback(() => {
+    setContextMenu(null)
+    setShowLayerSubmenu(false)
+  }, [])
+
+  // Move element to layer
+  const handleMoveToLayer = useCallback((elementId: string, layerId: string) => {
+    updateElement(elementId, { layerId })
+    setContextMenu(null)
+    setShowLayerSubmenu(false)
+  }, [updateElement])
 
   // Zoom edit handlers
   const handleZoomDoubleClick = useCallback(() => {
@@ -183,6 +227,33 @@ export function Canvas() {
       resizeObserver.disconnect()
     }
   }, [])
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    if (!contextMenu) return
+
+    const handleClickOutside = (e: MouseEvent) => {
+      // Close if clicking anywhere outside the context menu
+      const target = e.target as HTMLElement
+      if (!target.closest('.canvas-context-menu')) {
+        handleCloseContextMenu()
+      }
+    }
+
+    const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleCloseContextMenu()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [contextMenu, handleCloseContextMenu])
 
   // Calculate CSS transform: translate BEFORE scale (critical!)
   const transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
@@ -273,6 +344,17 @@ export function Canvas() {
             onMouseMove={marqueeHandlers.onMouseMove}
             onMouseUp={marqueeHandlers.onMouseUp}
             onMouseLeave={marqueeHandlers.onMouseLeave}
+            onContextMenu={(e) => {
+              // Find the element that was right-clicked by traversing up the DOM
+              const target = e.target as HTMLElement
+              const elementDiv = target.closest('[data-element-id]') as HTMLElement | null
+              if (elementDiv) {
+                const elementId = elementDiv.getAttribute('data-element-id')
+                if (elementId) {
+                  handleContextMenu(e, elementId)
+                }
+              }
+            }}
           >
             {/* Elements render here - sorted by layer order, filtered by visibility, exclude children (elements inside containers) */}
             {visibleElements
@@ -324,6 +406,68 @@ export function Canvas() {
           )}%
         </div>
       )}
+
+      {/* Context menu for canvas elements */}
+      {contextMenu && (() => {
+        const element = allElements.find((el) => el.id === contextMenu.elementId)
+        const currentLayerId = element?.layerId || 'default'
+        const orderedLayers = getLayersInOrder()
+
+        return (
+          <div
+            className="canvas-context-menu fixed bg-gray-800 border border-gray-600 rounded-lg shadow-xl py-1 z-50 min-w-[180px]"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+          >
+            {/* Move to Layer menu item */}
+            <div
+              className="relative"
+              onMouseEnter={() => setShowLayerSubmenu(true)}
+              onMouseLeave={() => setShowLayerSubmenu(false)}
+            >
+              <div className="flex items-center justify-between px-3 py-2 hover:bg-gray-700 cursor-pointer text-gray-200 text-sm">
+                <span>Move to Layer</span>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+
+              {/* Layer submenu */}
+              {showLayerSubmenu && (
+                <div className="absolute left-full top-0 bg-gray-800 border border-gray-600 rounded-lg shadow-xl py-1 min-w-[160px] -ml-1">
+                  {orderedLayers.map((layer) => {
+                    const isCurrentLayer = layer.id === currentLayerId
+                    const colorHex = LAYER_COLOR_MAP[layer.color]
+
+                    return (
+                      <div
+                        key={layer.id}
+                        className={`flex items-center gap-2 px-3 py-2 hover:bg-gray-700 cursor-pointer text-sm ${
+                          isCurrentLayer ? 'text-blue-400' : 'text-gray-200'
+                        }`}
+                        onClick={() => handleMoveToLayer(contextMenu.elementId, layer.id)}
+                      >
+                        {/* Color dot */}
+                        <div
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: colorHex }}
+                        />
+                        {/* Layer name */}
+                        <span className="flex-1 truncate">{layer.name}</span>
+                        {/* Checkmark for current layer */}
+                        {isCurrentLayer && (
+                          <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                          </svg>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
