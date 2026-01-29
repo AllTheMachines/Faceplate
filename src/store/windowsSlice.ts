@@ -48,6 +48,9 @@ export interface WindowsSlice {
   getDeveloperWindows: () => UIWindow[]
   getWindowById: (id: string) => UIWindow | undefined
   getWindowForElement: (elementId: string) => UIWindow | undefined
+
+  // Name validation
+  isNameUniqueInWindow: (name: string, windowId: string, excludeElementId?: string) => boolean
 }
 
 // ============================================================================
@@ -76,7 +79,11 @@ export function createDefaultWindow(overrides: Partial<UIWindow> = {}): UIWindow
 export const createWindowsSlice: StateCreator<WindowsSlice, [], [], WindowsSlice> = (
   set,
   get
-) => ({
+) => {
+  // Import getElement from store - will be available after store composition
+  const getElement = () => (get() as any).getElement as ((id: string) => any) | undefined
+
+  return {
   // Default state - start with one window
   windows: [createDefaultWindow()],
   activeWindowId: null, // Will be set to first window's ID on first access
@@ -232,4 +239,29 @@ export const createWindowsSlice: StateCreator<WindowsSlice, [], [], WindowsSlice
   getWindowForElement: (elementId) => {
     return get().windows.find((w) => w.elementIds.includes(elementId))
   },
-})
+
+  // Name validation scoped to window
+  isNameUniqueInWindow: (name, windowId, excludeElementId) => {
+    const state = get()
+    const window = state.windows.find((w) => w.id === windowId)
+    if (!window) return true // Window doesn't exist, name is unique by default
+
+    // Get getElement function from composed store
+    const getElementFn = getElement()
+    if (!getElementFn) return true // Store not fully initialized
+
+    // Get all elements in this window
+    const elementsInWindow = window.elementIds
+      .map((id) => getElementFn(id))
+      .filter((el: any): el is any => el !== undefined)
+
+    // Check for duplicate names (excluding the element being renamed)
+    const normalizedName = name.trim()
+    const hasDuplicate = elementsInWindow.some(
+      (el: any) => el.name.trim() === normalizedName && el.id !== excludeElementId
+    )
+
+    return !hasDuplicate
+  },
+}
+}

@@ -9,7 +9,7 @@ import {
   previewMultiWindowExport,
   validateForExport,
 } from '../../services/export'
-import type { WindowExportData } from '../../services/export'
+import type { WindowExportData, ExportError } from '../../services/export'
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return (
@@ -105,8 +105,25 @@ export function ExportPanel() {
   const developerWindowCount = windows.filter(w => w.type === 'developer').length
   const hasMultipleWindows = windows.length > 1
 
-  // Run validation on all elements
-  const validationResult = validateForExport(allElements)
+  // Run validation per-window (name uniqueness is per-window, not global)
+  // Combine validation results from all windows
+  const validationResult = useMemo(() => {
+    const allErrors: ExportError[] = []
+    const allWarnings: ExportError[] = []
+
+    for (const window of windowsData) {
+      const result = validateForExport(window.elements)
+      if (!result.valid) {
+        allErrors.push(...result.errors)
+        allWarnings.push(...result.warnings)
+      }
+    }
+
+    if (allErrors.length > 0 || allWarnings.length > 0) {
+      return { valid: false, errors: allErrors, warnings: allWarnings } as const
+    }
+    return { valid: true } as const
+  }, [windowsData])
 
   const handleExportJUCE = async () => {
     setIsExporting(true)
