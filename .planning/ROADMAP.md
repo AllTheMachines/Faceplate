@@ -27,9 +27,11 @@
 ### Phase 41: Bug Fixes
 **Goal**: Fix deferred bugs from v1.8 (folder export, container multi-drag)
 **Requirements**: BUG-01, BUG-02
+**Plans**: 2 plans
 
-- [ ] 41-01: Folder export writes directly for single-window projects
-- [ ] 41-02: Container editor multi-select drag
+Plans:
+- [ ] 41-01-PLAN.md — Fix folder export for single-window projects (GitHub #2)
+- [ ] 41-02-PLAN.md — Fix container editor multi-select drag (GitHub #3)
 
 **Success Criteria:**
 1. Single-window project exports directly to selected folder (no subfolder created)
@@ -714,7 +716,8 @@ Plans:
 | 38. Multi-Window System | v1.6 | 1/1 | Complete | 2026-01-28 |
 | 39. Parameter Sync | v1.7 | 1/1 | Complete | 2026-01-28 |
 | 40. Bug Fixes & UI Improvements | v1.8 | 8/8 | Complete | 2026-01-29 |
+| 41. Bug Fixes | v1.9 | 0/2 | Planned | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-29 - Phase 40 complete, v1.8 shipped*
+*Last updated: 2026-01-29 - Phase 41 planned*
