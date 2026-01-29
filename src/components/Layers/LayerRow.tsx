@@ -8,10 +8,9 @@ interface LayerRowProps {
   hasSelectedElements?: boolean
   onSelect: (id: string) => void
   onDelete?: (layer: Layer) => void
-  dragHandleProps?: ((el: HTMLDivElement | null) => void) | null
 }
 
-export function LayerRow({ layer, isSelected, hasSelectedElements, onSelect, onDelete, dragHandleProps }: LayerRowProps) {
+export function LayerRow({ layer, isSelected, hasSelectedElements, onSelect, onDelete }: LayerRowProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(layer.name)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -74,7 +73,6 @@ export function LayerRow({ layer, isSelected, hasSelectedElements, onSelect, onD
 
   return (
     <div
-      ref={dragHandleProps}
       className={`
         group flex items-center gap-2 px-3 py-2 cursor-pointer h-10
         ${isSelected ? 'bg-blue-600/30' : 'hover:bg-gray-700/50'}

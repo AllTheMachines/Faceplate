@@ -1,75 +1,25 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { Tree, NodeRendererProps } from 'react-arborist'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useStore } from '../../store'
 import { Layer, LayerColor, LAYER_COLORS, LAYER_COLOR_MAP } from '../../types/layer'
 import { LayerRow } from './LayerRow'
 import { DeleteLayerDialog } from './DeleteLayerDialog'
 
-// Data structure for react-arborist tree nodes
-interface LayerNodeData {
-  id: string
-  name: string
-  layer: Layer
-  hasSelectedElements: boolean
-}
-
-// LayerNode render component that wraps LayerRow
-// Must be created as a factory function to capture the onDelete callback
-function createLayerNode(onDeleteLayer: (layer: Layer) => void) {
-  return function LayerNode({
-    node,
-    style,
-    dragHandle,
-  }: NodeRendererProps<LayerNodeData>) {
-    const selectedLayerId = useStore((state) => state.selectedLayerId)
-    const selectLayer = useStore((state) => state.selectLayer)
-    const elements = useStore((state) => state.elements)
-    const selectElement = useStore((state) => state.selectElement)
-
-    // Handle layer click - select first element in this layer
-    const handleLayerClick = useCallback((layerId: string) => {
-      selectLayer(layerId)
-      // Find first element in this layer and select it
-      const firstElement = elements.find((el) => (el.layerId || 'default') === layerId)
-      if (firstElement) {
-        selectElement(firstElement.id)
-      }
-    }, [selectLayer, selectElement, elements])
-
-    return (
-      <div style={style}>
-        <LayerRow
-          layer={node.data.layer}
-          isSelected={selectedLayerId === node.data.layer.id}
-          hasSelectedElements={node.data.hasSelectedElements}
-          onSelect={handleLayerClick}
-          onDelete={onDeleteLayer}
-          dragHandleProps={dragHandle}
-        />
-      </div>
-    )
-  }
-}
-
 export function LayersPanel() {
   const [isCreating, setIsCreating] = useState(false)
   const [newLayerName, setNewLayerName] = useState('')
   const [newLayerColor, setNewLayerColor] = useState<LayerColor>('blue')
   const inputRef = useRef<HTMLInputElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [containerHeight, setContainerHeight] = useState(300)
-  const [containerWidth, setContainerWidth] = useState(280)
 
   const layers = useStore((state) => state.layers)
   const selectedLayerId = useStore((state) => state.selectedLayerId)
   const selectLayer = useStore((state) => state.selectLayer)
   const addLayer = useStore((state) => state.addLayer)
   const getLayersInOrder = useStore((state) => state.getLayersInOrder)
-  const reorderLayers = useStore((state) => state.reorderLayers)
   const toggleLayerVisibility = useStore((state) => state.toggleLayerVisibility)
   const elements = useStore((state) => state.elements)
   const selectedIds = useStore((state) => state.selectedIds)
+  const selectElement = useStore((state) => state.selectElement)
 
   // Track which layers have selected elements (for visual indicator)
   const layersWithSelectedElements = useMemo(() => {
@@ -86,12 +36,6 @@ export function LayersPanel() {
   // State for delete confirmation dialog
   const [layerToDelete, setLayerToDelete] = useState<Layer | null>(null)
 
-  // Create the LayerNode component with delete handler
-  const LayerNodeComponent = useMemo(
-    () => createLayerNode((layer) => setLayerToDelete(layer)),
-    []
-  )
-
   // H key shortcut - toggle visibility of selected layer
   useHotkeys('h', () => {
     if (selectedLayerId) {
@@ -105,21 +49,6 @@ export function LayersPanel() {
       inputRef.current.focus()
     }
   }, [isCreating])
-
-  // Measure container height for Tree virtualization
-  useEffect(() => {
-    if (!containerRef.current) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerHeight(entry.contentRect.height)
-        setContainerWidth(entry.contentRect.width)
-      }
-    })
-
-    resizeObserver.observe(containerRef.current)
-    return () => resizeObserver.disconnect()
-  }, [])
 
   const handleStartCreate = () => {
     setNewLayerName('')
@@ -156,96 +85,20 @@ export function LayersPanel() {
     }
   }
 
+  // Handle layer click - select first element in this layer
+  const handleLayerClick = useCallback((layerId: string) => {
+    selectLayer(layerId)
+    // Find first element in this layer and select it
+    const firstElement = elements.find((el) => (el.layerId || 'default') === layerId)
+    if (firstElement) {
+      selectElement(firstElement.id)
+    }
+  }, [selectLayer, selectElement, elements])
+
   // Get layers sorted by order (highest first for top-to-bottom display)
   // Default layer should appear at the bottom
   const orderedLayers = getLayersInOrder()
   const sortedLayers = orderedLayers.slice().reverse()
-
-  // Transform layers to arborist data format (flat, no nesting)
-  const treeData: LayerNodeData[] = sortedLayers.map((layer) => ({
-    id: layer.id,
-    name: layer.name,
-    layer: layer,
-    hasSelectedElements: layersWithSelectedElements.has(layer.id),
-  }))
-
-  // Handle move (reorder) from react-arborist
-  const handleMove = useCallback(
-    ({
-      dragIds,
-      index,
-    }: {
-      dragIds: string[]
-      parentId: string | null
-      index: number
-    }) => {
-      const dragId = dragIds[0]
-      if (!dragId) return
-
-      // The tree shows layers in reversed order (highest order at top)
-      // We need to convert the visual index to the actual layer array index
-
-      // Get current position in the reversed (visual) order
-      const visualIndex = sortedLayers.findIndex((l) => l.id === dragId)
-      if (visualIndex === -1) return
-
-      // Convert visual indices to actual layer indices (in order-sorted array)
-      // Visual index 0 = highest order = last in orderedLayers (length - 1)
-      // Visual index N = lowest order = first in orderedLayers (0, the default)
-      const layerCount = orderedLayers.length
-
-      // Current position in orderedLayers (sorted by order ascending)
-      const fromIndex = layerCount - 1 - visualIndex
-
-      // Target position in orderedLayers
-      // When dropping at visual index, we're moving to: layerCount - 1 - index
-      // But we need to account for the direction of movement
-      let toIndex = layerCount - 1 - index
-
-      // Ensure we never place anything at index 0 (default layer position)
-      if (toIndex <= 0) {
-        toIndex = 1
-      }
-
-      // Ensure we don't exceed array bounds
-      if (toIndex >= layerCount) {
-        toIndex = layerCount - 1
-      }
-
-      // Only reorder if positions are different
-      if (fromIndex !== toIndex) {
-        reorderLayers(fromIndex, toIndex)
-      }
-    },
-    [orderedLayers, sortedLayers, reorderLayers]
-  )
-
-  // Disable drag for default layer
-  const disableDrag = useCallback((data: { data: LayerNodeData }) => {
-    return data.data.layer.id === 'default'
-  }, [])
-
-  // Prevent nesting (flat list only) and dropping below default
-  const disableDrop = useCallback(
-    ({
-      parentNode,
-      index,
-    }: {
-      parentNode: { id: string } | null
-      dragNodes: { data: LayerNodeData }[]
-      index: number
-    }) => {
-      // No nesting allowed (flat list) - if parentNode exists, we're trying to nest
-      if (parentNode !== null) return true
-
-      // Don't allow dropping at the very last position (visual bottom = default layer's spot)
-      // The default layer is always at visual bottom, and nothing can go below it
-      if (index >= sortedLayers.length) return true
-
-      return false
-    },
-    [sortedLayers.length]
-  )
 
   return (
     <div className="flex flex-col h-full">
@@ -324,8 +177,8 @@ export function LayersPanel() {
         </div>
       )}
 
-      {/* Layer list with react-arborist for drag-drop */}
-      <div ref={containerRef} className="flex-1 overflow-hidden">
+      {/* Layer list - simple version without drag-drop for now */}
+      <div className="flex-1 overflow-y-auto">
         {sortedLayers.length === 0 ? (
           <div className="flex items-center justify-center h-full p-6">
             <div className="text-center">
@@ -348,31 +201,18 @@ export function LayersPanel() {
               </p>
             </div>
           </div>
-        ) : containerWidth > 0 && containerHeight > 0 ? (
-          <Tree<LayerNodeData>
-            data={treeData}
-            openByDefault={false}
-            disableDrag={disableDrag}
-            disableDrop={disableDrop}
-            onMove={handleMove}
-            rowHeight={40}
-            width={containerWidth}
-            height={containerHeight}
-            indent={0}
-            overscanCount={5}
-            selection={selectedLayerId || undefined}
-            onSelect={(nodes) => {
-              if (nodes.length > 0 && nodes[0]) {
-                selectLayer(nodes[0].id)
-              }
-            }}
-            className="layers-tree"
-          >
-            {LayerNodeComponent}
-          </Tree>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-gray-500 text-sm">Loading layers...</div>
+          <div>
+            {sortedLayers.map((layer) => (
+              <LayerRow
+                key={layer.id}
+                layer={layer}
+                isSelected={selectedLayerId === layer.id}
+                hasSelectedElements={layersWithSelectedElements.has(layer.id)}
+                onSelect={handleLayerClick}
+                onDelete={(l) => setLayerToDelete(l)}
+              />
+            ))}
           </div>
         )}
       </div>
