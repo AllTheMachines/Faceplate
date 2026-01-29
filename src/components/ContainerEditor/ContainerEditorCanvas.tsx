@@ -48,6 +48,9 @@ export function ContainerEditorCanvas({
   // Copy/paste/duplicate support
   const { copyToClipboard, pasteFromClipboard, duplicateSelected } = useContainerCopyPaste(containerId)
 
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+
   // Drag state - using useState for reactivity
   const [drag, setDrag] = useState<DragState>({
     isDragging: false,
@@ -239,10 +242,24 @@ export function ContainerEditorCanvas({
     }
   }, [copyToClipboard, pasteFromClipboard, duplicateSelected, handleDeleteChild, onClose])
 
+  // Handle context menu
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    setContextMenu({ x: e.clientX, y: e.clientY })
+  }, [])
+
   // Focus the viewport on mount for keyboard events
   useEffect(() => {
     viewportRef.current?.focus()
   }, [])
+
+  // Close context menu on click outside
+  useEffect(() => {
+    if (!contextMenu) return
+    const handleClick = () => setContextMenu(null)
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [contextMenu])
 
   // Calculate drag offset for visual feedback
   const getDragOffset = (childId: string) => {
@@ -258,6 +275,7 @@ export function ContainerEditorCanvas({
       ref={viewportRef}
       className="w-full h-full relative overflow-hidden"
       onKeyDown={handleKeyDown}
+      onContextMenu={handleContextMenu}
       tabIndex={0}
       style={{ outline: 'none' }}
     >
@@ -410,6 +428,33 @@ export function ContainerEditorCanvas({
       {drag.isDragging && (
         <div className="absolute bottom-4 left-4 bg-black/80 text-white text-xs p-2 rounded">
           Dragging: {drag.childId} | Offset: {Math.round(drag.currentX - drag.startX)}, {Math.round(drag.currentY - drag.startY)}
+        </div>
+      )}
+
+      {/* Context menu */}
+      {contextMenu && (
+        <div
+          className="fixed bg-gray-800 border border-gray-700 rounded shadow-lg py-1 z-50"
+          style={{ left: contextMenu.x, top: contextMenu.y }}
+        >
+          <button
+            className="w-full px-4 py-1 text-left text-sm hover:bg-gray-700 text-white"
+            onClick={() => { copyToClipboard(); setContextMenu(null) }}
+          >
+            Copy <span className="text-gray-500 ml-4">Ctrl+C</span>
+          </button>
+          <button
+            className="w-full px-4 py-1 text-left text-sm hover:bg-gray-700 text-white"
+            onClick={() => { pasteFromClipboard(); setContextMenu(null) }}
+          >
+            Paste <span className="text-gray-500 ml-4">Ctrl+V</span>
+          </button>
+          <button
+            className="w-full px-4 py-1 text-left text-sm hover:bg-gray-700 text-white"
+            onClick={() => { duplicateSelected(); setContextMenu(null) }}
+          >
+            Duplicate <span className="text-gray-500 ml-4">Ctrl+D</span>
+          </button>
         </div>
       )}
     </div>
