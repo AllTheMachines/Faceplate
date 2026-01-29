@@ -11,6 +11,13 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
   const [showPicker, setShowPicker] = useState(false)
   const pickerRef = useRef<HTMLDivElement>(null)
 
+  // Close picker when value changes from outside (element selection changed)
+  useEffect(() => {
+    // Close the picker when switching between elements
+    // This prevents showing stale color from previous element
+    setShowPicker(false)
+  }, [value])
+
   // Close picker when clicking outside
   useEffect(() => {
     if (!showPicker) return
