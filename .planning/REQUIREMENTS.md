@@ -9,8 +9,8 @@ Requirements for Layers & Help System milestone. Maps to Phases 41-43.
 
 ### Bug Fixes
 
-- [ ] **BUG-01**: Single-window folder export writes directly to selected folder (no subfolder)
-- [ ] **BUG-02**: Container editor multi-select drag moves all selected elements together
+- [x] **BUG-01**: Single-window folder export writes directly to selected folder (no subfolder)
+- [x] **BUG-02**: Container editor multi-select drag moves all selected elements together
 
 ### Layers Panel
 
@@ -60,8 +60,8 @@ Deferred to v2.0+:
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BUG-01 | Phase 41 | Pending |
-| BUG-02 | Phase 41 | Pending |
+| BUG-01 | Phase 41 | Complete |
+| BUG-02 | Phase 41 | Complete |
 | LAYER-01 | Phase 42 | Pending |
 | LAYER-02 | Phase 42 | Pending |
 | LAYER-03 | Phase 42 | Pending |
