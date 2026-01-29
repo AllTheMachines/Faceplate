@@ -14,13 +14,12 @@ interface ContainerEditorCanvasProps {
 
 interface DragState {
   isDragging: boolean
-  childId: string | null
   startX: number
   startY: number
   currentX: number
   currentY: number
-  elementStartX: number
-  elementStartY: number
+  // Map of element ID to starting position for multi-select drag
+  elementStartPositions: Map<string, { x: number; y: number }>
 }
 
 /**
@@ -58,13 +57,11 @@ export function ContainerEditorCanvas({
   // Drag state - using useState for reactivity
   const [drag, setDrag] = useState<DragState>({
     isDragging: false,
-    childId: null,
     startX: 0,
     startY: 0,
     currentX: 0,
     currentY: 0,
-    elementStartX: 0,
-    elementStartY: 0
+    elementStartPositions: new Map()
   })
 
   // Get container and its children
@@ -110,30 +107,32 @@ export function ContainerEditorCanvas({
     }
 
     const handleMouseUp = () => {
-      // Apply final position to store
-      if (drag.childId) {
+      // Apply final position to store for all dragged elements
+      if (drag.elementStartPositions.size > 0) {
         const deltaX = drag.currentX - drag.startX
         const deltaY = drag.currentY - drag.startY
-        let newX = Math.max(0, Math.min(contentWidth - 20, drag.elementStartX + deltaX))
-        let newY = Math.max(0, Math.min(contentHeight - 20, drag.elementStartY + deltaY))
 
-        // Snap to grid if enabled
-        const snapped = snapPosition(newX, newY)
-        newX = snapped.x
-        newY = snapped.y
+        // Update each element that was being dragged
+        drag.elementStartPositions.forEach((startPos, elementId) => {
+          let newX = Math.max(0, Math.min(contentWidth - 20, startPos.x + deltaX))
+          let newY = Math.max(0, Math.min(contentHeight - 20, startPos.y + deltaY))
 
-        updateElement(drag.childId, { x: newX, y: newY })
+          // Snap to grid if enabled
+          const snapped = snapPosition(newX, newY)
+          newX = snapped.x
+          newY = snapped.y
+
+          updateElement(elementId, { x: newX, y: newY })
+        })
       }
 
       setDrag({
         isDragging: false,
-        childId: null,
         startX: 0,
         startY: 0,
         currentX: 0,
         currentY: 0,
-        elementStartX: 0,
-        elementStartY: 0
+        elementStartPositions: new Map()
       })
     }
 
@@ -144,7 +143,7 @@ export function ContainerEditorCanvas({
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [drag.isDragging, drag.childId, drag.startX, drag.startY, drag.currentX, drag.currentY, drag.elementStartX, drag.elementStartY, contentWidth, contentHeight, updateElement, snapPosition])
+  }, [drag.isDragging, drag.startX, drag.startY, drag.currentX, drag.currentY, drag.elementStartPositions, contentWidth, contentHeight, updateElement, snapPosition])
 
   // Handle element click with modifier key support
   const handleElementClick = useCallback((childId: string, e: React.MouseEvent) => {
@@ -187,17 +186,29 @@ export function ContainerEditorCanvas({
       return
     }
 
+    // Determine which elements to drag:
+    // - If clicked element is selected, drag all selected elements in this container
+    // - If clicked element is not selected, it becomes selected (from handleElementClick), drag only it
+    const elementsToInclude = selectedIds.includes(childId) ? selectedIds : [childId]
+
+    // Capture starting positions of all elements to drag
+    const startPositions = new Map<string, { x: number; y: number }>()
+    for (const id of elementsToInclude) {
+      const el = elements.find((e) => e.id === id)
+      if (el && el.parentId === containerId) {  // Only elements in this container
+        startPositions.set(id, { x: el.x, y: el.y })
+      }
+    }
+
     setDrag({
       isDragging: true,
-      childId,
       startX: e.clientX,
       startY: e.clientY,
       currentX: e.clientX,
       currentY: e.clientY,
-      elementStartX: child.x,
-      elementStartY: child.y
+      elementStartPositions: startPositions
     })
-  }, [elements, selectedIds, handleElementClick])
+  }, [elements, selectedIds, handleElementClick, containerId])
 
   // Handle canvas click (deselect)
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
@@ -273,7 +284,7 @@ export function ContainerEditorCanvas({
 
   // Calculate drag offset for visual feedback
   const getDragOffset = (childId: string) => {
-    if (!drag.isDragging || drag.childId !== childId) return { x: 0, y: 0 }
+    if (!drag.isDragging || !drag.elementStartPositions.has(childId)) return { x: 0, y: 0 }
     return {
       x: drag.currentX - drag.startX,
       y: drag.currentY - drag.startY
@@ -347,7 +358,7 @@ export function ContainerEditorCanvas({
         {/* Render children using renderers directly */}
         {children.map((child) => {
           const isSelected = selectedIds.includes(child.id)
-          const isBeingDragged = drag.isDragging && drag.childId === child.id
+          const isBeingDragged = drag.isDragging && drag.elementStartPositions.has(child.id)
           const isContainer = isEditableContainer(child)
           const Renderer = getRenderer(child.type)
           const dragOffset = getDragOffset(child.id)
@@ -439,7 +450,7 @@ export function ContainerEditorCanvas({
       {/* Debug: Show drag state */}
       {drag.isDragging && (
         <div className="absolute bottom-4 left-4 bg-black/80 text-white text-xs p-2 rounded">
-          Dragging: {drag.childId} | Offset: {Math.round(drag.currentX - drag.startX)}, {Math.round(drag.currentY - drag.startY)}
+          Dragging: {drag.elementStartPositions.size} element{drag.elementStartPositions.size > 1 ? 's' : ''} | Offset: {Math.round(drag.currentX - drag.startX)}, {Math.round(drag.currentY - drag.startY)}
         </div>
       )}
 
