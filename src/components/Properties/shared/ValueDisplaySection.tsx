@@ -120,8 +120,9 @@ export function ValueDisplaySection({
                 label="Distance"
                 value={valueDistance ?? 4}
                 onChange={onValueDistanceChange}
-                min={0}
+                min={-20}
                 max={50}
+                step={0.1}
               />
             )}
             <ColorInput label="Color" value={valueColor} onChange={onValueColorChange} />

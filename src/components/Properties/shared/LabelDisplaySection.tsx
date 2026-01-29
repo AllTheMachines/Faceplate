@@ -86,8 +86,9 @@ export function LabelDisplaySection({
                 label="Distance"
                 value={labelDistance ?? 4}
                 onChange={onLabelDistanceChange}
-                min={0}
+                min={-20}
                 max={50}
+                step={0.1}
               />
             )}
           </div>
