@@ -1,19 +1,60 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { Tree, NodeRendererProps } from 'react-arborist'
+import { useHotkeys } from 'react-hotkeys-hook'
 import { useStore } from '../../store'
-import { LayerColor, LAYER_COLORS, LAYER_COLOR_MAP } from '../../types/layer'
+import { Layer, LayerColor, LAYER_COLORS, LAYER_COLOR_MAP } from '../../types/layer'
 import { LayerRow } from './LayerRow'
+
+// Data structure for react-arborist tree nodes
+interface LayerNodeData {
+  id: string
+  name: string
+  layer: Layer
+}
+
+// LayerNode render component that wraps LayerRow
+function LayerNode({
+  node,
+  style,
+  dragHandle,
+}: NodeRendererProps<LayerNodeData>) {
+  const selectedLayerId = useStore((state) => state.selectedLayerId)
+  const selectLayer = useStore((state) => state.selectLayer)
+
+  return (
+    <div style={style}>
+      <LayerRow
+        layer={node.data.layer}
+        isSelected={selectedLayerId === node.data.layer.id}
+        onSelect={selectLayer}
+        dragHandleProps={dragHandle}
+      />
+    </div>
+  )
+}
 
 export function LayersPanel() {
   const [isCreating, setIsCreating] = useState(false)
   const [newLayerName, setNewLayerName] = useState('')
   const [newLayerColor, setNewLayerColor] = useState<LayerColor>('blue')
   const inputRef = useRef<HTMLInputElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [containerHeight, setContainerHeight] = useState(300)
 
   const layers = useStore((state) => state.layers)
   const selectedLayerId = useStore((state) => state.selectedLayerId)
   const selectLayer = useStore((state) => state.selectLayer)
   const addLayer = useStore((state) => state.addLayer)
   const getLayersInOrder = useStore((state) => state.getLayersInOrder)
+  const reorderLayers = useStore((state) => state.reorderLayers)
+  const toggleLayerVisibility = useStore((state) => state.toggleLayerVisibility)
+
+  // H key shortcut - toggle visibility of selected layer
+  useHotkeys('h', () => {
+    if (selectedLayerId) {
+      toggleLayerVisibility(selectedLayerId)
+    }
+  }, { enabled: !!selectedLayerId })
 
   // Auto-focus input when creating
   useEffect(() => {
@@ -21,6 +62,20 @@ export function LayersPanel() {
       inputRef.current.focus()
     }
   }, [isCreating])
+
+  // Measure container height for Tree virtualization
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerHeight(entry.contentRect.height)
+      }
+    })
+
+    resizeObserver.observe(containerRef.current)
+    return () => resizeObserver.disconnect()
+  }, [])
 
   const handleStartCreate = () => {
     setNewLayerName('')
@@ -59,7 +114,93 @@ export function LayersPanel() {
 
   // Get layers sorted by order (highest first for top-to-bottom display)
   // Default layer should appear at the bottom
-  const sortedLayers = getLayersInOrder().slice().reverse()
+  const orderedLayers = getLayersInOrder()
+  const sortedLayers = orderedLayers.slice().reverse()
+
+  // Transform layers to arborist data format (flat, no nesting)
+  const treeData: LayerNodeData[] = sortedLayers.map((layer) => ({
+    id: layer.id,
+    name: layer.name,
+    layer: layer,
+  }))
+
+  // Handle move (reorder) from react-arborist
+  const handleMove = useCallback(
+    ({
+      dragIds,
+      index,
+    }: {
+      dragIds: string[]
+      parentId: string | null
+      index: number
+    }) => {
+      const dragId = dragIds[0]
+      if (!dragId) return
+
+      // The tree shows layers in reversed order (highest order at top)
+      // We need to convert the visual index to the actual layer array index
+
+      // Get current position in the reversed (visual) order
+      const visualIndex = sortedLayers.findIndex((l) => l.id === dragId)
+      if (visualIndex === -1) return
+
+      // Convert visual indices to actual layer indices (in order-sorted array)
+      // Visual index 0 = highest order = last in orderedLayers (length - 1)
+      // Visual index N = lowest order = first in orderedLayers (0, the default)
+      const layerCount = orderedLayers.length
+
+      // Current position in orderedLayers (sorted by order ascending)
+      const fromIndex = layerCount - 1 - visualIndex
+
+      // Target position in orderedLayers
+      // When dropping at visual index, we're moving to: layerCount - 1 - index
+      // But we need to account for the direction of movement
+      let toIndex = layerCount - 1 - index
+
+      // Ensure we never place anything at index 0 (default layer position)
+      if (toIndex <= 0) {
+        toIndex = 1
+      }
+
+      // Ensure we don't exceed array bounds
+      if (toIndex >= layerCount) {
+        toIndex = layerCount - 1
+      }
+
+      // Only reorder if positions are different
+      if (fromIndex !== toIndex) {
+        reorderLayers(fromIndex, toIndex)
+      }
+    },
+    [orderedLayers, sortedLayers, reorderLayers]
+  )
+
+  // Disable drag for default layer
+  const disableDrag = useCallback((data: { data: LayerNodeData }) => {
+    return data.data.layer.id === 'default'
+  }, [])
+
+  // Prevent nesting (flat list only) and dropping below default
+  const disableDrop = useCallback(
+    ({
+      parentNode,
+      index,
+    }: {
+      parentNode: { id: string } | null
+      dragNodes: { data: LayerNodeData }[]
+      index: number
+    }) => {
+      // No nesting allowed (flat list) - if parentNode exists, we're trying to nest
+      if (parentNode !== null) return true
+
+      // Don't allow dropping at the very last position (visual bottom = default layer's spot)
+      // The default layer is always at visual bottom, and nothing can go below it
+      if (index >= sortedLayers.length) return true
+
+      return false
+    },
+    [sortedLayers.length]
+  )
 
   return (
     <div className="flex flex-col h-full">
@@ -138,8 +279,8 @@ export function LayersPanel() {
         </div>
       )}
 
-      {/* Layer list */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Layer list with react-arborist for drag-drop */}
+      <div ref={containerRef} className="flex-1 overflow-hidden">
         {sortedLayers.length === 0 ? (
           <div className="flex items-center justify-center h-full p-6">
             <div className="text-center">
@@ -163,16 +304,27 @@ export function LayersPanel() {
             </div>
           </div>
         ) : (
-          <div className="py-1">
-            {sortedLayers.map((layer) => (
-              <LayerRow
-                key={layer.id}
-                layer={layer}
-                isSelected={selectedLayerId === layer.id}
-                onSelect={selectLayer}
-              />
-            ))}
-          </div>
+          <Tree<LayerNodeData>
+            data={treeData}
+            openByDefault={false}
+            disableDrag={disableDrag}
+            disableDrop={disableDrop}
+            onMove={handleMove}
+            rowHeight={40}
+            width="100%"
+            height={containerHeight}
+            indent={0}
+            overscanCount={5}
+            selection={selectedLayerId || undefined}
+            onSelect={(nodes) => {
+              if (nodes.length > 0 && nodes[0]) {
+                selectLayer(nodes[0].id)
+              }
+            }}
+            className="layers-tree"
+          >
+            {LayerNode}
+          </Tree>
         )}
       </div>
 
