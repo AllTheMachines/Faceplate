@@ -38,23 +38,30 @@ Plans:
 2. Multiple selected elements in container editor drag together as group
 
 ### Phase 42: Layers Panel
-**Goal**: Add Photoshop/Figma-style layers panel for element organization
+**Goal**: User-created layers for element organization with visibility/lock/z-order control
 **Requirements**: LAYER-01 through LAYER-09
+**Plans**: 5 plans
 
-- [ ] 42-01: LayersPanel component with react-arborist
-- [ ] 42-02: Visibility and lock toggles
-- [ ] 42-03: Drag-to-reorder (z-order)
-- [ ] 42-04: Selection sync (layers ↔ canvas)
-- [ ] 42-05: Inline rename (double-click)
+Plans:
+- [ ] 42-01-PLAN.md — Layer state foundation (types, layersSlice, store integration)
+- [ ] 42-02-PLAN.md — LayersPanel UI (panel component, LayerRow, LeftPanel tab)
+- [ ] 42-03-PLAN.md — Visibility and lock toggles (eye/lock icons, H key shortcut)
+- [ ] 42-04-PLAN.md — Drag-to-reorder and z-order (react-arborist, canvas render order)
+- [ ] 42-05-PLAN.md — Selection sync and context menu (bidirectional sync, Move to Layer, delete dialog)
 
 **Success Criteria:**
-1. User sees all elements in layers panel with names and type icons
-2. User can toggle visibility (eye icon) - hidden elements don't render
-3. User can toggle lock (lock icon) - locked elements can't be moved/resized
-4. User can drag layers to change z-order on canvas
-5. Clicking layer selects element on canvas; canvas selection highlights in layers
-6. User can double-click layer name to rename inline
-7. Layers panel appears as tab in LeftPanel
+1. User can see Layers tab in LeftPanel with all user-created layers
+2. User can create new layers with custom name and color
+3. User can toggle visibility (eye icon) - hidden layers' elements don't render
+4. User can toggle lock (lock icon) - locked layers' elements can't be moved/resized
+5. User can drag layers to reorder - layer order determines z-order on canvas
+6. Clicking layer selects first element in that layer on canvas
+7. Selecting element on canvas highlights its layer in panel
+8. User can double-click layer name to rename inline
+9. User can right-click canvas element to "Move to Layer"
+10. User can delete layers (with confirmation showing element count)
+11. Default layer always exists at bottom, cannot be deleted or reordered
+12. Selected elements show layer color on selection handles
 
 ### Phase 43: Help System
 **Goal**: Add contextual help buttons with HTML documentation
@@ -717,7 +724,8 @@ Plans:
 | 39. Parameter Sync | v1.7 | 1/1 | Complete | 2026-01-28 |
 | 40. Bug Fixes & UI Improvements | v1.8 | 8/8 | Complete | 2026-01-29 |
 | 41. Bug Fixes | v1.9 | 2/2 | Complete | 2026-01-29 |
+| 42. Layers Panel | v1.9 | 0/5 | Planned | — |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-29 - Phase 41 complete*
+*Last updated: 2026-01-29 - Phase 42 planned (5 plans)*
