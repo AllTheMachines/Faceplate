@@ -118,7 +118,8 @@ export function BaseElement({ element, children, onClick, isHoldingAltCtrl = fal
             : isSelected
               ? 'grab'
               : 'pointer',
-    userSelect: 'none',
+    // Note: userSelect removed from BaseElement to allow individual renderers
+    // to control text selection (e.g., ASCII Art with selectable property)
   }
 
   return (

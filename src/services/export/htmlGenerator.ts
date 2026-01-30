@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, ArcSliderElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, ArcSliderElementConfig, AsciiSliderElementConfig, AsciiButtonElementConfig, AsciiArtElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -315,6 +315,29 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
         : `width: ${element.strokeWidth}px; height: 100%; background-color: ${element.strokeStyle === 'solid' ? element.strokeColor : 'transparent'}; border-left: ${element.strokeWidth}px ${element.strokeStyle} ${element.strokeColor};`
       return `<div id="${id}" class="${baseClass} line-element" data-type="line" style="${positionStyle}"><div style="${lineStyle}"></div></div>`
     }
+
+    case 'asciiart': {
+      const asciiEl = element as AsciiArtElementConfig
+      const borderStyle = asciiEl.borderWidth > 0
+        ? `border: ${asciiEl.borderWidth}px solid ${asciiEl.borderColor};`
+        : ''
+      const userSelectStyle = asciiEl.selectable
+        ? 'user-select: text; -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; cursor: text;'
+        : 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; cursor: default;'
+      const asciiStyle = `${positionStyle}; font-family: ${asciiEl.fontFamily}; font-size: ${asciiEl.fontSize}px; font-weight: ${asciiEl.fontWeight}; color: ${asciiEl.textColor}; line-height: ${asciiEl.lineHeight}; background-color: ${asciiEl.backgroundColor}; padding: ${asciiEl.padding}px; border-radius: ${asciiEl.borderRadius}px; ${borderStyle} overflow: ${asciiEl.overflow}; white-space: pre; box-sizing: border-box; margin: 0; ${userSelectStyle}`
+
+      // Handle noise mode vs static mode
+      const contentType = asciiEl.contentType || 'static'
+      if (contentType === 'noise') {
+        // Noise mode - render empty and let JS animate
+        const noiseDataAttrs = `data-content-type="noise" data-noise-chars="${escapeHTML(asciiEl.noiseCharacters || '.:!*#$@%&')}" data-noise-intensity="${asciiEl.noiseIntensity ?? 0.5}" data-noise-width="${asciiEl.noiseWidth ?? 40}" data-noise-height="${asciiEl.noiseHeight ?? 20}" data-noise-refresh="${asciiEl.noiseRefreshRate ?? 100}"${asciiEl.noiseParameterId ? ` data-noise-param="${escapeHTML(asciiEl.noiseParameterId)}"` : ''}`
+        return `<pre id="${id}" class="${baseClass} asciiart-element" data-type="asciiart" ${noiseDataAttrs} style="${asciiStyle}"></pre>`
+      }
+
+      // Static mode - render content directly
+      return `<pre id="${id}" class="${baseClass} asciiart-element" data-type="asciiart" data-content-type="static" style="${asciiStyle}">${escapeHTML(asciiEl.content)}</pre>`
+    }
+
     case 'panel': {
       if (element.allowScroll) {
         const scrollbarConfig = getScrollbarConfigAttr(element)
@@ -418,6 +441,12 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
 
     case 'arcslider':
       return generateArcSliderHTML(id, baseClass, positionStyle, element)
+
+    case 'asciislider':
+      return generateAsciiSliderHTML(id, baseClass, positionStyle, element)
+
+    case 'asciibutton':
+      return generateAsciiButtonHTML(id, baseClass, positionStyle, element)
 
     case 'rockerswitch':
       return generateRockerSwitchHTML(id, baseClass, positionStyle, element)
@@ -1186,6 +1215,92 @@ function generateArcSliderHTML(id: string, baseClass: string, positionStyle: str
         <circle class="arcslider-thumb" cx="${thumbPos.x}" cy="${thumbPos.y}" r="${config.thumbRadius}" fill="${config.thumbColor}" />
       </svg>
     </div>`
+}
+
+/**
+ * Generate ASCII Slider HTML
+ */
+function generateAsciiSliderHTML(id: string, baseClass: string, positionStyle: string, config: AsciiSliderElementConfig): string {
+  // Calculate normalized value
+  const range = config.max - config.min
+  const normalizedValue = range > 0 ? (config.value - config.min) / range : 0
+
+  // Build the bar
+  const filledCount = Math.round(normalizedValue * config.barWidth)
+  const emptyCount = config.barWidth - filledCount
+  const filledPart = config.filledChar.repeat(filledCount)
+  const emptyPart = config.emptyChar.repeat(emptyCount)
+  const bar = `${config.leftBracket}${filledPart}${emptyPart}${config.rightBracket}`
+
+  // Format value display
+  let formattedValue = ''
+  if (config.valueFormat === 'percentage') {
+    formattedValue = `${Math.round(normalizedValue * 100)}%`
+  } else if (config.valueFormat === 'numeric') {
+    const actual = config.min + normalizedValue * range
+    formattedValue = actual.toFixed(config.valueDecimalPlaces)
+  } else {
+    const actual = config.min + normalizedValue * range
+    formattedValue = `${actual.toFixed(config.valueDecimalPlaces)}${config.valueSuffix}`
+  }
+
+  // Build display parts
+  const parts: string[] = []
+  if (config.showLabel && config.labelPosition === 'left') parts.push(escapeHTML(config.labelText))
+  if (config.showMinMax) parts.push(escapeHTML(config.minLabel))
+  if (config.showValue && config.valuePosition === 'left') parts.push(escapeHTML(formattedValue))
+  parts.push(escapeHTML(bar))
+  if (config.showValue && config.valuePosition === 'right') parts.push(escapeHTML(formattedValue))
+  if (config.showMinMax) parts.push(escapeHTML(config.maxLabel))
+  if (config.showLabel && config.labelPosition === 'right') parts.push(escapeHTML(config.labelText))
+
+  const displayText = parts.join(' ')
+
+  // Container styles
+  const borderStyle = config.borderWidth > 0
+    ? `border: ${config.borderWidth}px solid ${config.borderColor};`
+    : ''
+  const userSelectStyle = config.selectable
+    ? 'user-select: text; -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text; cursor: text;'
+    : 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; cursor: default;'
+  // Map textAlign to justify-content
+  const justifyMap: Record<string, string> = { left: 'flex-start', center: 'center', right: 'flex-end' }
+  const justifyContent = justifyMap[config.textAlign || 'left'] || 'flex-start'
+  const containerStyle = `${positionStyle}; font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; font-weight: ${config.fontWeight}; color: ${config.textColor}; line-height: ${config.lineHeight}; background-color: ${config.backgroundColor}; padding: ${config.padding}px; border-radius: ${config.borderRadius}px; ${borderStyle} white-space: pre; display: flex; align-items: center; justify-content: ${justifyContent}; box-sizing: border-box; ${userSelectStyle}`
+
+  // Add data-parameter-id attribute for C++ parameter sync
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+
+  return `<div id="${id}" class="${baseClass} slider slider-element asciislider-element" data-type="asciislider"${paramAttr} data-min="${config.min}" data-max="${config.max}" data-value="${normalizedValue}" data-bar-width="${config.barWidth}" data-filled-char="${escapeHTML(config.filledChar)}" data-empty-char="${escapeHTML(config.emptyChar)}" data-left-bracket="${escapeHTML(config.leftBracket)}" data-right-bracket="${escapeHTML(config.rightBracket)}" data-show-value="${config.showValue}" data-value-position="${config.valuePosition}" data-value-format="${config.valueFormat}" data-show-label="${config.showLabel}" data-label-text="${escapeHTML(config.labelText)}" data-label-position="${config.labelPosition}" style="${containerStyle}; cursor: ew-resize;"><span class="asciislider-bar">${displayText}</span></div>`
+}
+
+/**
+ * Generate ASCII Button HTML
+ */
+function generateAsciiButtonHTML(id: string, baseClass: string, positionStyle: string, config: AsciiButtonElementConfig): string {
+  // Use normalArt initially (pressed state handled by JS)
+  const displayArt = config.pressed ? config.pressedArt : config.normalArt
+  const currentColor = config.pressed ? config.pressedTextColor : config.textColor
+  const currentBg = config.pressed ? config.pressedBackgroundColor : config.backgroundColor
+
+  // Container styles
+  const borderStyle = config.borderWidth > 0
+    ? `border: ${config.borderWidth}px solid ${config.borderColor};`
+    : ''
+  const userSelectStyle = config.selectable
+    ? 'user-select: text; -webkit-user-select: text; -moz-user-select: text; -ms-user-select: text;'
+    : 'user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;'
+
+  // Map textAlign to justify-content
+  const justifyMap: Record<string, string> = { left: 'flex-start', center: 'center', right: 'flex-end' }
+  const justifyContent = justifyMap[config.textAlign || 'center'] || 'center'
+
+  const containerStyle = `${positionStyle}; font-family: ${config.fontFamily}; font-size: ${config.fontSize}px; font-weight: ${config.fontWeight}; color: ${currentColor}; line-height: ${config.lineHeight}; background-color: ${currentBg}; padding: ${config.padding}px; border-radius: ${config.borderRadius}px; ${borderStyle} white-space: pre; display: flex; align-items: center; justify-content: ${justifyContent}; box-sizing: border-box; cursor: pointer; ${userSelectStyle}`
+
+  // Add data-parameter-id attribute for C++ parameter sync
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+
+  return `<div id="${id}" class="${baseClass} button button-element asciibutton-element" data-type="asciibutton"${paramAttr} data-mode="${config.mode}" data-pressed="${config.pressed}" data-normal-art="${escapeHTML(config.normalArt)}" data-pressed-art="${escapeHTML(config.pressedArt)}" data-normal-color="${config.textColor}" data-pressed-color="${config.pressedTextColor}" data-normal-bg="${config.backgroundColor}" data-pressed-bg="${config.pressedBackgroundColor}" style="${containerStyle}"><span class="asciibutton-art">${escapeHTML(displayArt)}</span></div>`
 }
 
 /**

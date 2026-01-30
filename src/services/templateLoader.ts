@@ -9,7 +9,7 @@ export interface TemplateDefinition {
   version: string
   name: string
   description: string
-  category: 'effect' | 'instrument'
+  category: 'effect' | 'instrument' | 'test'
   metadata: {
     canvasWidth: number
     canvasHeight: number
@@ -24,7 +24,7 @@ export interface BuiltInTemplate {
   id: string
   name: string
   description: string
-  category: 'effect' | 'instrument'
+  category: 'effect' | 'instrument' | 'test'
 }
 
 // Registry of built-in templates
@@ -40,6 +40,12 @@ export const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     name: 'Instrument Starter',
     description: 'Instrument with ADSR envelope and gain control',
     category: 'instrument',
+  },
+  {
+    id: 'test-template',
+    name: 'Test Template',
+    description: 'All element types for testing (controls, meters, visualizations)',
+    category: 'test',
   },
 ]
 

@@ -24,6 +24,7 @@ const paletteCategories = [
       { id: 'crossfadeslider', type: 'crossfadeslider', name: 'Crossfade' },
       { id: 'notchedslider', type: 'notchedslider', name: 'Notched Slider' },
       { id: 'arcslider', type: 'arcslider', name: 'Arc Slider' },
+      { id: 'asciislider', type: 'asciislider', name: 'ASCII Slider' },
     ],
   },
   {
@@ -37,6 +38,7 @@ const paletteCategories = [
       { id: 'rockerswitch', type: 'rockerswitch', name: 'Rocker Switch' },
       { id: 'rotaryswitch', type: 'rotaryswitch', name: 'Rotary Switch' },
       { id: 'segmentbutton', type: 'segmentbutton', name: 'Segment Button' },
+      { id: 'asciibutton', type: 'asciibutton', name: 'ASCII Button' },
     ],
   },
   {
@@ -162,6 +164,7 @@ const paletteCategories = [
       { id: 'svggraphic', type: 'svggraphic', name: 'SVG Graphic' },
       { id: 'rectangle', type: 'rectangle', name: 'Rectangle' },
       { id: 'line', type: 'line', name: 'Line' },
+      { id: 'asciiart', type: 'asciiart', name: 'ASCII Art' },
     ],
   },
   {

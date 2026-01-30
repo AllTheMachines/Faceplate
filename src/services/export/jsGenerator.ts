@@ -3,7 +3,7 @@
  * Generates bindings.js, components.js, and mock JUCE backend
  */
 
-import type { ElementConfig } from '../../types/elements'
+import type { ElementConfig, AsciiArtElementConfig } from '../../types/elements'
 import { toKebabCase } from './utils'
 
 // ============================================================================
@@ -53,6 +53,8 @@ export function generateBindingsJS(
   const sliders = elements.filter((el) => sliderTypes.includes(el.type))
   // Arc sliders need special SVG-based handling
   const arcsliders = elements.filter((el) => el.type === 'arcslider')
+  const asciisliders = elements.filter((el) => el.type === 'asciislider')
+  const asciibuttons = elements.filter((el) => el.type === 'asciibutton')
   const rangesliders = elements.filter((el) => el.type === 'rangeslider')
   const multisliders = elements.filter((el) => el.type === 'multislider')
   // Include all button types
@@ -79,6 +81,10 @@ export function generateBindingsJS(
   const xyPads = elements.filter((el) => el.type === 'xypad')
   const loopPoints = elements.filter((el) => el.type === 'looppoints')
   const harmonicEditors = elements.filter((el) => el.type === 'harmoniceditor')
+  // ASCII art noise elements
+  const asciiNoiseElements = elements.filter(
+    (el) => el.type === 'asciiart' && (el as AsciiArtElementConfig).contentType === 'noise'
+  ) as AsciiArtElementConfig[]
 
   // Generate setup calls for each element type with default values
   // Use parameterId if set, otherwise use element name as fallback ID
@@ -119,6 +125,27 @@ export function generateBindingsJS(
       const defaultValue = max !== min ? (value - min) / (max - min) : 0.5
       const paramId = slider.parameterId || toKebabCase(slider.name)
       return `    setupArcSliderInteraction('${toKebabCase(slider.name)}', '${paramId}', ${defaultValue});`
+    })
+    .join('\n')
+
+  const asciiSliderSetups = asciisliders
+    .map((slider) => {
+      const sliderWithValue = slider as { value?: number; min?: number; max?: number }
+      const value = sliderWithValue.value ?? 0.5
+      const min = sliderWithValue.min ?? 0
+      const max = sliderWithValue.max ?? 1
+      const defaultValue = max !== min ? (value - min) / (max - min) : 0.5
+      const paramId = slider.parameterId || toKebabCase(slider.name)
+      return `    setupAsciiSliderInteraction('${toKebabCase(slider.name)}', '${paramId}', ${defaultValue});`
+    })
+    .join('\n')
+
+  const asciiButtonSetups = asciibuttons
+    .map((button) => {
+      const buttonConfig = button as { pressed?: boolean; mode?: string }
+      const defaultPressed = buttonConfig.pressed ?? false
+      const paramId = button.parameterId || toKebabCase(button.name)
+      return `    setupAsciiButtonInteraction('${toKebabCase(button.name)}', '${paramId}', ${defaultPressed});`
     })
     .join('\n')
 
@@ -253,6 +280,13 @@ export function generateBindingsJS(
   const harmonicEditorSetups = harmonicEditors
     .map((he) => {
       return `    setupHarmonicEditorInteraction('${toKebabCase(he.name)}');`
+    })
+    .join('\n')
+
+  // ASCII Art noise setups
+  const asciiNoiseSetups = asciiNoiseElements
+    .map((el) => {
+      return `    setupAsciiNoiseAnimation('${toKebabCase(el.name)}');`
     })
     .join('\n')
 
@@ -394,6 +428,17 @@ function setupParameterSyncListener() {
         if (element._arcValue !== undefined) element._arcValue = value;
         syncedCount++;
       }
+      else if (elementType === 'asciislider') {
+        updateAsciiSliderVisual(elementId, value);
+        if (element._asciiValue !== undefined) element._asciiValue = value;
+        syncedCount++;
+      }
+      else if (elementType === 'asciibutton') {
+        const isPressed = value > 0.5;
+        updateAsciiButtonVisual(elementId, isPressed);
+        if (element._asciiPressed !== undefined) element._asciiPressed = isPressed;
+        syncedCount++;
+      }
       else if (elementType === 'button' || elementType === 'iconbutton' ||
                elementType === 'kickbutton') {
         const isPressed = value > 0.5;
@@ -419,6 +464,15 @@ function setupParameterSyncListener() {
         element.dataset.selected = index.toString();
         syncedCount++;
       }
+
+      // Also check for ASCII noise elements with noise parameter binding
+      // (handled by noise animation setup, but update internal state here too)
+      const noiseElements = document.querySelectorAll('[data-noise-param="' + id + '"]');
+      noiseElements.forEach(noiseEl => {
+        if (noiseEl._noiseIntensity !== undefined) {
+          noiseEl._noiseIntensity = Math.max(0, Math.min(1, value));
+        }
+      });
     }
 
     console.log('[ParamSync] Synced ' + syncedCount + ' of ' + params.length + ' parameters');
@@ -459,6 +513,8 @@ async function initializeJUCEBridge() {
 ${knobSetups || '        // No knobs with parameter bindings'}
 ${sliderSetups || '        // No sliders with parameter bindings'}
 ${arcSliderSetups || '        // No arc sliders with parameter bindings'}
+${asciiSliderSetups || '        // No ASCII sliders with parameter bindings'}
+${asciiButtonSetups || '        // No ASCII buttons with parameter bindings'}
 ${rangeSliderSetups || '        // No range sliders with parameter bindings'}
 ${multiSliderSetups || '        // No multi sliders with parameter bindings'}
 ${buttonSetups || '        // No buttons with parameter bindings'}
@@ -479,6 +535,7 @@ ${stepSequencerSetups || '        // No step sequencers'}
 ${xyPadSetups || '        // No XY pads'}
 ${loopPointsSetups || '        // No loop points'}
 ${harmonicEditorSetups || '        // No harmonic editors'}
+${asciiNoiseSetups || '        // No ASCII art noise elements'}
 
         // Request parameter sync from C++ now that UI is fully ready
         if (bridge.requestParamSync) {
@@ -520,6 +577,8 @@ ${harmonicEditorSetups || '        // No harmonic editors'}
 ${knobSetups || '  // No knobs with parameter bindings'}
 ${sliderSetups || '  // No sliders with parameter bindings'}
 ${arcSliderSetups || '  // No arc sliders with parameter bindings'}
+${asciiSliderSetups || '  // No ASCII sliders with parameter bindings'}
+${asciiButtonSetups || '  // No ASCII buttons with parameter bindings'}
 ${rangeSliderSetups || '  // No range sliders with parameter bindings'}
 ${multiSliderSetups || '  // No multi sliders with parameter bindings'}
 ${buttonSetups || '  // No buttons with parameter bindings'}
@@ -540,6 +599,7 @@ ${stepSequencerSetups || '  // No step sequencers'}
 ${xyPadSetups || '  // No XY pads'}
 ${loopPointsSetups || '  // No loop points'}
 ${harmonicEditorSetups || '  // No harmonic editors'}
+${asciiNoiseSetups || '  // No ASCII art noise elements'}
 
   console.log('[JUCEBridge] Standalone mode initialized');
 }
@@ -976,6 +1036,123 @@ function setupArcSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
     bridge.setParameter(paramId, defaultValue).catch(() => {});
     updateArcSliderVisual(sliderId, defaultValue);
   });
+}
+
+/**
+ * Setup ASCII slider interaction (text-based progress bar)
+ * @param {string} sliderId - HTML element ID
+ * @param {string} paramId - Parameter ID for JUCE binding
+ * @param {number} defaultValue - Default normalized value (0-1)
+ */
+function setupAsciiSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) {
+    console.error(\`ASCII slider element not found: \${sliderId}\`);
+    return;
+  }
+
+  let isDragging = false;
+  let startX = 0;
+  let startValue = defaultValue;
+  let currentValue = defaultValue;
+
+  // Initialize visual
+  updateAsciiSliderVisual(sliderId, defaultValue);
+
+  slider.addEventListener('mousedown', (e) => {
+    // Calculate click position within element for click-to-jump behavior
+    const rect = slider.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
+
+    // Jump to clicked position immediately
+    currentValue = clickRatio;
+    bridge.setParameter(paramId, clickRatio).catch(() => {});
+    updateAsciiSliderVisual(sliderId, clickRatio);
+
+    // Setup for drag from this new position
+    isDragging = true;
+    startX = e.clientX;
+    startValue = clickRatio;
+
+    bridge.beginGesture(paramId).catch(() => {});
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - startX;  // Right = increase
+    const sensitivity = 0.005;
+    let newValue = startValue + deltaX * sensitivity;
+    newValue = Math.max(0, Math.min(1, newValue));
+    currentValue = newValue;
+
+    bridge.setParameter(paramId, newValue).catch(() => {});
+    updateAsciiSliderVisual(sliderId, newValue);
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      bridge.endGesture(paramId).catch(() => {});
+    }
+  });
+
+  slider.addEventListener('dblclick', () => {
+    currentValue = defaultValue;
+    bridge.setParameter(paramId, defaultValue).catch(() => {});
+    updateAsciiSliderVisual(sliderId, defaultValue);
+  });
+}
+
+/**
+ * Setup ASCII button interaction (text-based toggle/momentary button)
+ * @param {string} buttonId - HTML element ID
+ * @param {string} paramId - Parameter ID for JUCE binding
+ * @param {boolean} defaultPressed - Default pressed state
+ */
+function setupAsciiButtonInteraction(buttonId, paramId, defaultPressed = false) {
+  const button = document.getElementById(buttonId);
+  if (!button) {
+    console.error(\`ASCII button element not found: \${buttonId}\`);
+    return;
+  }
+
+  let isPressed = defaultPressed;
+  const mode = button.dataset.mode || 'toggle';
+
+  // Initialize visual
+  updateAsciiButtonVisual(buttonId, isPressed);
+
+  if (mode === 'toggle') {
+    button.addEventListener('click', () => {
+      isPressed = !isPressed;
+      bridge.setParameter(paramId, isPressed ? 1 : 0).catch(() => {});
+      updateAsciiButtonVisual(buttonId, isPressed);
+    });
+  } else {
+    // Momentary mode
+    button.addEventListener('mousedown', (e) => {
+      isPressed = true;
+      bridge.beginGesture(paramId).catch(() => {});
+      bridge.setParameter(paramId, 1).catch(() => {});
+      updateAsciiButtonVisual(buttonId, true);
+      e.preventDefault();
+    });
+
+    const release = () => {
+      if (isPressed) {
+        isPressed = false;
+        bridge.setParameter(paramId, 0).catch(() => {});
+        bridge.endGesture(paramId).catch(() => {});
+        updateAsciiButtonVisual(buttonId, false);
+      }
+    };
+
+    button.addEventListener('mouseup', release);
+    button.addEventListener('mouseleave', release);
+  }
 }
 
 /**
@@ -2235,6 +2412,70 @@ function setupHarmonicEditorInteraction(editorId) {
   });
 }
 
+/**
+ * Setup ASCII art procedural noise animation
+ * Reads configuration from data attributes and starts setInterval animation
+ * @param {string} elementId - HTML element ID
+ */
+function setupAsciiNoiseAnimation(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    console.error(\`ASCII noise element not found: \${elementId}\`);
+    return;
+  }
+
+  // Read configuration from data attributes
+  const chars = element.dataset.noiseChars || '.:!*#$@%&';
+  let intensity = parseFloat(element.dataset.noiseIntensity) || 0.5;
+  const width = parseInt(element.dataset.noiseWidth, 10) || 40;
+  const height = parseInt(element.dataset.noiseHeight, 10) || 20;
+  const refreshRate = parseInt(element.dataset.noiseRefresh, 10) || 100;
+  const paramId = element.dataset.noiseParam || '';
+
+  // Store intensity for parameter binding updates
+  element._noiseIntensity = intensity;
+
+  /**
+   * Generate random noise text
+   */
+  function generateNoise() {
+    const currentIntensity = element._noiseIntensity;
+    let output = '';
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        output += Math.random() < currentIntensity
+          ? chars[Math.floor(Math.random() * chars.length)]
+          : ' ';
+      }
+      if (y < height - 1) output += '\\n';
+    }
+    element.textContent = output;
+  }
+
+  // Generate initial noise and start animation
+  generateNoise();
+  const intervalId = setInterval(generateNoise, refreshRate);
+
+  // Store interval for potential cleanup
+  element._noiseIntervalId = intervalId;
+
+  // Setup parameter binding for intensity if configured
+  if (paramId && window.__JUCE__?.backend) {
+    window.__JUCE__.backend.addEventListener('__juce__paramSync', (event) => {
+      const params = event?.params ?? event?.detail?.params ?? event?.[0]?.params;
+      if (!params || !Array.isArray(params)) return;
+
+      for (const { id, value } of params) {
+        if (id === paramId) {
+          element._noiseIntensity = Math.max(0, Math.min(1, value));
+        }
+      }
+    });
+  }
+
+  console.log(\`[AsciiNoise] Started animation for \${elementId} (rate: \${refreshRate}ms, param: \${paramId || 'none'})\`);
+}
+
 // ============================================================================
 // Visual Update Functions
 // ============================================================================
@@ -2470,6 +2711,97 @@ function polarToCartesianArc(cx, cy, radius, angleInDegrees) {
     x: cx + radius * Math.cos(angleInRadians),
     y: cy + radius * Math.sin(angleInRadians)
   };
+}
+
+/**
+ * Update ASCII slider visual representation
+ * @param {string} sliderId - HTML element ID
+ * @param {number} value - Normalized value (0-1)
+ */
+function updateAsciiSliderVisual(sliderId, value) {
+  const element = document.getElementById(sliderId);
+  if (!element) return;
+
+  // Read config from data attributes
+  const barWidth = parseInt(element.dataset.barWidth) || 20;
+  const filledChar = element.dataset.filledChar || '#';
+  const emptyChar = element.dataset.emptyChar || '-';
+  const leftBracket = element.dataset.leftBracket || '[';
+  const rightBracket = element.dataset.rightBracket || ']';
+  const showValue = element.dataset.showValue === 'true';
+  const valuePosition = element.dataset.valuePosition || 'right';
+  const valueFormat = element.dataset.valueFormat || 'percentage';
+  const minVal = parseFloat(element.dataset.min) || 0;
+  const maxVal = parseFloat(element.dataset.max) || 1;
+  const showLabel = element.dataset.showLabel === 'true';
+  const labelText = element.dataset.labelText || '';
+  const labelPosition = element.dataset.labelPosition || 'left';
+
+  // Calculate filled/empty counts
+  const filledCount = Math.round(value * barWidth);
+  const emptyCount = barWidth - filledCount;
+
+  // Build the bar string
+  const bar = leftBracket + filledChar.repeat(filledCount) + emptyChar.repeat(emptyCount) + rightBracket;
+
+  // Format value display
+  let valueText = '';
+  if (showValue) {
+    const actualValue = minVal + value * (maxVal - minVal);
+    if (valueFormat === 'percentage') {
+      valueText = Math.round(value * 100) + '%';
+    } else {
+      valueText = actualValue.toFixed(2);
+    }
+  }
+
+  // Find the bar display element
+  const barDisplay = element.querySelector('.asciislider-bar');
+  if (barDisplay) {
+    const parts = [];
+    if (showLabel && labelPosition === 'left') parts.push(labelText);
+    if (showValue && valuePosition === 'left') parts.push(valueText);
+    parts.push(bar);
+    if (showValue && valuePosition === 'right') parts.push(valueText);
+    if (showLabel && labelPosition === 'right') parts.push(labelText);
+    barDisplay.textContent = parts.join(' ');
+  }
+
+  // Update data attribute
+  element.setAttribute('data-value', value);
+  element._asciiValue = value;
+}
+
+/**
+ * Update ASCII button visual representation
+ * @param {string} buttonId - HTML element ID
+ * @param {boolean} isPressed - Whether button is pressed
+ */
+function updateAsciiButtonVisual(buttonId, isPressed) {
+  const element = document.getElementById(buttonId);
+  if (!element) return;
+
+  // Read config from data attributes
+  const normalArt = element.dataset.normalArt || '';
+  const pressedArt = element.dataset.pressedArt || '';
+  const normalColor = element.dataset.normalColor || '#00ff00';
+  const pressedColor = element.dataset.pressedColor || '#00ffff';
+  const normalBg = element.dataset.normalBg || 'transparent';
+  const pressedBg = element.dataset.pressedBg || 'transparent';
+
+  // Update visual state
+  const artDisplay = element.querySelector('.asciibutton-art');
+  if (artDisplay) {
+    artDisplay.textContent = isPressed ? pressedArt : normalArt;
+  }
+
+  // Update colors
+  element.style.color = isPressed ? pressedColor : normalColor;
+  element.style.backgroundColor = isPressed ? pressedBg : normalBg;
+
+  // Update data attribute
+  element.setAttribute('data-pressed', isPressed);
+  element._asciiPressed = isPressed;
 }
 
 /**

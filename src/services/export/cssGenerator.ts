@@ -630,6 +630,12 @@ ${selector} > div {
   /* Line inner element */
 }`
 
+    case 'asciiart':
+      return `${selector} {
+  /* ASCII Art - styling handled via inline styles */
+  margin: 0;
+}`
+
     case 'dropdown':
       return `${selector} {
   /* Dropdown */
@@ -1260,6 +1266,21 @@ ${selector} .arcslider-value-right {
   top: 50%;
   transform: translateY(-50%);
   margin-left: 4px;
+}`
+
+    case 'asciislider':
+      return `${selector} {
+  cursor: ew-resize;
+  user-select: none;
+}`
+
+    case 'asciibutton':
+      return `${selector} {
+  cursor: pointer;
+  user-select: none;
+}
+${selector}:active {
+  opacity: 0.9;
 }`
 
     case 'rockerswitch':

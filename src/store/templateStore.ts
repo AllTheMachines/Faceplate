@@ -4,6 +4,7 @@ import type { Template } from '../types/template'
 // Import template JSON files
 import effectTemplate from '../../templates/effect-starter.json'
 import instrumentTemplate from '../../templates/instrument-starter.json'
+import testTemplate from '../../templates/test-template.json'
 
 interface TemplateStore {
   templates: Template[]
@@ -16,6 +17,7 @@ export const useTemplateStore = create<TemplateStore>((set, get) => ({
   templates: [
     effectTemplate as unknown as Template,
     instrumentTemplate as unknown as Template,
+    testTemplate as unknown as Template,
   ],
   
   selectedTemplate: null,

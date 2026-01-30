@@ -26,6 +26,8 @@ import {
   CrossfadeSliderRenderer,
   NotchedSliderRenderer,
   ArcSliderRenderer,
+  AsciiSliderRenderer,
+  AsciiButtonRenderer,
   RockerSwitchRenderer,
   RotarySwitchRenderer,
   SegmentButtonRenderer,
@@ -119,6 +121,7 @@ import {
   SvgGraphicRenderer,
   RectangleRenderer,
   LineRenderer,
+  AsciiArtRenderer,
 } from './decorative'
 
 import {
@@ -161,6 +164,8 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['crossfadeslider', CrossfadeSliderRenderer as RendererComponent],
   ['notchedslider', NotchedSliderRenderer as RendererComponent],
   ['arcslider', ArcSliderRenderer as RendererComponent],
+  ['asciislider', AsciiSliderRenderer as RendererComponent],
+  ['asciibutton', AsciiButtonRenderer as RendererComponent],
   ['rockerswitch', RockerSwitchRenderer as RendererComponent],
   ['rotaryswitch', RotarySwitchRenderer as RendererComponent],
   ['segmentbutton', SegmentButtonRenderer as RendererComponent],
@@ -261,6 +266,7 @@ export const rendererRegistry = new Map<ElementConfig['type'], RendererComponent
   ['svggraphic', SvgGraphicRenderer as RendererComponent],
   ['rectangle', RectangleRenderer as RendererComponent],
   ['line', LineRenderer as RendererComponent],
+  ['asciiart', AsciiArtRenderer as RendererComponent],
 
   // Specialized Audio
   ['pianokeyboard', PianoKeyboardRenderer as RendererComponent],
@@ -304,6 +310,8 @@ export {
   CrossfadeSliderRenderer,
   NotchedSliderRenderer,
   ArcSliderRenderer,
+  AsciiSliderRenderer,
+  AsciiButtonRenderer,
   RockerSwitchRenderer,
   RotarySwitchRenderer,
   SegmentButtonRenderer,
@@ -391,6 +399,7 @@ export {
   SvgGraphicRenderer,
   RectangleRenderer,
   LineRenderer,
+  AsciiArtRenderer,
   // Specialized Audio
   PianoKeyboardRenderer,
   DrumPadRenderer,

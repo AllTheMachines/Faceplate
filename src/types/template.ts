@@ -4,7 +4,7 @@ export interface Template {
   version: string
   name: string
   description: string
-  category: 'effect' | 'instrument' | 'utility'
+  category: 'effect' | 'instrument' | 'utility' | 'test'
   metadata: {
     canvasWidth: number
     canvasHeight: number

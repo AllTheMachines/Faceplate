@@ -22,6 +22,7 @@ import { WindowChromeProperties } from './WindowChromeProperties'
 import { SpacerProperties } from './SpacerProperties'
 import { RectangleProperties } from './RectangleProperties'
 import { LineProperties } from './LineProperties'
+import { AsciiArtProperties } from './AsciiArtProperties'
 import { DbDisplayProperties } from './DbDisplayProperties'
 import { FrequencyDisplayProperties } from './FrequencyDisplayProperties'
 import { GainReductionMeterProperties } from './GainReductionMeterProperties'
@@ -44,6 +45,8 @@ import { BipolarSliderProperties } from './BipolarSliderProperties'
 import { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 import { NotchedSliderProperties } from './NotchedSliderProperties'
 import { ArcSliderProperties } from './ArcSliderProperties'
+import { AsciiSliderProperties } from './AsciiSliderProperties'
+import { AsciiButtonProperties } from './AsciiButtonProperties'
 import { IconButtonProperties } from './IconButtonProperties'
 import { KickButtonProperties } from './KickButtonProperties'
 import { ToggleSwitchProperties } from './ToggleSwitchProperties'
@@ -130,6 +133,7 @@ export { WindowChromeProperties } from './WindowChromeProperties'
 export { SpacerProperties } from './SpacerProperties'
 export { RectangleProperties } from './RectangleProperties'
 export { LineProperties } from './LineProperties'
+export { AsciiArtProperties } from './AsciiArtProperties'
 export { DbDisplayProperties } from './DbDisplayProperties'
 export { FrequencyDisplayProperties } from './FrequencyDisplayProperties'
 export { GainReductionMeterProperties } from './GainReductionMeterProperties'
@@ -152,6 +156,8 @@ export { BipolarSliderProperties } from './BipolarSliderProperties'
 export { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 export { NotchedSliderProperties } from './NotchedSliderProperties'
 export { ArcSliderProperties } from './ArcSliderProperties'
+export { AsciiSliderProperties } from './AsciiSliderProperties'
+export { AsciiButtonProperties } from './AsciiButtonProperties'
 export { IconButtonProperties } from './IconButtonProperties'
 export { KickButtonProperties } from './KickButtonProperties'
 export { ToggleSwitchProperties } from './ToggleSwitchProperties'
@@ -251,6 +257,8 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['crossfadeslider', CrossfadeSliderProperties],
   ['notchedslider', NotchedSliderProperties],
   ['arcslider', ArcSliderProperties],
+  ['asciislider', AsciiSliderProperties],
+  ['asciibutton', AsciiButtonProperties],
   ['iconbutton', IconButtonProperties],
   ['kickbutton', KickButtonProperties],
   ['toggleswitch', ToggleSwitchProperties],
@@ -349,6 +357,7 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['svggraphic', SvgGraphicProperties],
   ['rectangle', RectangleProperties],
   ['line', LineProperties],
+  ['asciiart', AsciiArtProperties],
 
   // Specialized Audio
   ['pianokeyboard', PianoKeyboardProperties],

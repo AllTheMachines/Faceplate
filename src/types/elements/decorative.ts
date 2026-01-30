@@ -57,6 +57,44 @@ export interface LineElementConfig extends BaseElementConfig {
   // horizontal: width > height, vertical: height > width
 }
 
+export interface AsciiArtElementConfig extends BaseElementConfig {
+  type: 'asciiart'
+
+  // Content Mode
+  contentType: 'static' | 'noise' // Default: 'static'
+
+  // Static mode content
+  content: string // Multi-line ASCII art text
+
+  // Noise mode properties
+  noiseCharacters: string // Characters to use for noise (default: '.:!*#$@%&')
+  noiseIntensity: number // 0-1, density of non-space characters (default: 0.5)
+  noiseWidth: number // Characters per line (default: 40)
+  noiseHeight: number // Number of lines (default: 20)
+  noiseRefreshRate: number // Milliseconds between updates (default: 100)
+  noiseParameterId: string // Optional parameter binding for intensity
+
+  // Typography
+  fontSize: number // Font size in px (default: 12)
+  fontFamily: string // Monospace font (default: 'Courier New, monospace')
+  fontWeight: number // 100-900 (default: 400)
+  textColor: string // Text color (default: '#00ff00' - classic terminal green)
+  lineHeight: number // Line height multiplier (default: 1.0)
+
+  // Container
+  backgroundColor: string // Background color (default: 'transparent')
+  padding: number // Inner padding (default: 8)
+  borderRadius: number // Corner radius (default: 0)
+  borderWidth: number // Border width (default: 0)
+  borderColor: string // Border color (default: '#374151')
+
+  // Overflow
+  overflow: 'visible' | 'hidden' | 'scroll' // Default: 'hidden'
+
+  // Interaction
+  selectable: boolean // Allow text selection (default: false)
+}
+
 // ============================================================================
 // Decorative Element Union
 // ============================================================================
@@ -66,6 +104,7 @@ export type DecorativeElement =
   | SvgGraphicElementConfig
   | RectangleElementConfig
   | LineElementConfig
+  | AsciiArtElementConfig
 
 // ============================================================================
 // Type Guards
@@ -85,6 +124,10 @@ export function isRectangle(element: { type: string }): element is RectangleElem
 
 export function isLine(element: { type: string }): element is LineElementConfig {
   return element.type === 'line'
+}
+
+export function isAsciiArt(element: { type: string }): element is AsciiArtElementConfig {
+  return element.type === 'asciiart'
 }
 
 // ============================================================================
@@ -171,6 +214,43 @@ export function createLine(overrides?: Partial<LineElementConfig>): LineElementC
     strokeWidth: 2,
     strokeColor: '#374151',
     strokeStyle: 'solid',
+    ...overrides,
+  }
+}
+
+export function createAsciiArt(overrides?: Partial<AsciiArtElementConfig>): AsciiArtElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'asciiart',
+    name: 'ASCII Art',
+    x: 0,
+    y: 0,
+    width: 300,
+    height: 200,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    contentType: 'static',
+    content: '+--------+\n| ASCII  |\n|  ART   |\n+--------+',
+    noiseCharacters: '.:!*#$@%&',
+    noiseIntensity: 0.5,
+    noiseWidth: 40,
+    noiseHeight: 20,
+    noiseRefreshRate: 100,
+    noiseParameterId: '',
+    fontSize: 12,
+    fontFamily: 'Courier New, Consolas, monospace',
+    fontWeight: 400,
+    textColor: '#00ff00',
+    lineHeight: 1.0,
+    backgroundColor: 'transparent',
+    padding: 8,
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: '#374151',
+    overflow: 'hidden',
+    selectable: false,
     ...overrides,
   }
 }

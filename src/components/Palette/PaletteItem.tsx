@@ -34,6 +34,9 @@ import {
   createCrossfadeSlider,
   createNotchedSlider,
   createArcSlider,
+  createAsciiSlider,
+  createAsciiButton,
+  createAsciiArt,
   createIconButton,
   createKickButton,
   createToggleSwitch,
@@ -148,6 +151,9 @@ import {
   CrossfadeSliderRenderer,
   NotchedSliderRenderer,
   ArcSliderRenderer,
+  AsciiSliderRenderer,
+  AsciiButtonRenderer,
+  AsciiArtRenderer,
   IconButtonRenderer,
   KickButtonRenderer,
   ToggleSwitchRenderer,
@@ -367,6 +373,36 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           ...baseOverrides,
           width: 50,
           height: 50,
+          ...variant,
+        })
+      case 'asciislider':
+        return createAsciiSlider({
+          ...baseOverrides,
+          width: 70,
+          height: 20,
+          barWidth: 8,
+          fontSize: 10,
+          showValue: false,
+          showMinMax: false,
+          ...variant,
+        })
+      case 'asciiart':
+        return createAsciiArt({
+          ...baseOverrides,
+          width: 60,
+          height: 40,
+          content: '+-+\n|#|\n+-+',
+          fontSize: 8,
+          ...variant,
+        })
+      case 'asciibutton':
+        return createAsciiButton({
+          ...baseOverrides,
+          width: 55,
+          height: 40,
+          fontSize: 8,
+          normalArt: '┌───┐\n│BTN│\n└───┘',
+          pressedArt: '╔═══╗\n║BTN║\n╚═══╝',
           ...variant,
         })
       case 'button':
@@ -1259,6 +1295,24 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <ArcSliderRenderer config={previewElement} />
+          </div>
+        )
+      case 'asciislider':
+        return (
+          <div style={containerStyle}>
+            <AsciiSliderRenderer config={previewElement} />
+          </div>
+        )
+      case 'asciiart':
+        return (
+          <div style={containerStyle}>
+            <AsciiArtRenderer config={previewElement} />
+          </div>
+        )
+      case 'asciibutton':
+        return (
+          <div style={containerStyle}>
+            <AsciiButtonRenderer config={previewElement} />
           </div>
         )
       case 'button':

@@ -17,6 +17,7 @@ import {
   createModulationMatrix,
   createRectangle,
   createLine,
+  createAsciiArt,
   createDbDisplay,
   createFrequencyDisplay,
   createGainReductionMeter,
@@ -47,6 +48,8 @@ import {
   createCrossfadeSlider,
   createNotchedSlider,
   createArcSlider,
+  createAsciiSlider,
+  createAsciiButton,
   createIconButton,
   createKickButton,
   createToggleSwitch,
@@ -177,6 +180,10 @@ export function createElementFromType(
       return createNotchedSlider({ ...base, width: overrides?.width ?? 200, height: overrides?.height ?? 30 })
     case 'arcslider':
       return createArcSlider({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 100 })
+    case 'asciislider':
+      return createAsciiSlider({ ...base, width: overrides?.width ?? 280, height: overrides?.height ?? 24 })
+    case 'asciibutton':
+      return createAsciiButton({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 60 })
 
     // Buttons
     case 'button':
@@ -391,6 +398,8 @@ export function createElementFromType(
       return createRectangle({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 60 })
     case 'line':
       return createLine({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 2 })
+    case 'asciiart':
+      return createAsciiArt({ ...base, width: overrides?.width ?? 300, height: overrides?.height ?? 200 })
 
     // Complex components
     case 'modulationmatrix':

@@ -34,6 +34,7 @@ import {
   createModulationMatrix,
   createRectangle,
   createLine,
+  createAsciiArt,
   createDbDisplay,
   createFrequencyDisplay,
   createGainReductionMeter,
@@ -64,6 +65,8 @@ import {
   createCrossfadeSlider,
   createNotchedSlider,
   createArcSlider,
+  createAsciiSlider,
+  createAsciiButton,
   createIconButton,
   createKickButton,
   createToggleSwitch,
@@ -485,6 +488,9 @@ function App() {
       case 'line':
         newElement = createLine({ x: canvasX, y: canvasY, ...variant })
         break
+      case 'asciiart':
+        newElement = createAsciiArt({ x: canvasX, y: canvasY, ...variant })
+        break
       case 'dbdisplay':
         newElement = createDbDisplay({ x: canvasX, y: canvasY, ...variant })
         break
@@ -573,6 +579,12 @@ function App() {
         break
       case 'arcslider':
         newElement = createArcSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'asciislider':
+        newElement = createAsciiSlider({ x: canvasX, y: canvasY, ...variant })
+        break
+      case 'asciibutton':
+        newElement = createAsciiButton({ x: canvasX, y: canvasY, ...variant })
         break
       // Additional buttons
       case 'iconbutton':

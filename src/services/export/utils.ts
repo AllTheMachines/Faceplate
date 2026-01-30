@@ -16,6 +16,7 @@
  * @returns kebab-case string suitable for HTML IDs
  */
 export function toKebabCase(str: string): string {
+  if (str == null) return ''
   return str
     .replace(/([a-z])([A-Z])/g, '$1-$2') // camelCase to kebab-case
     .replace(/[\s_]+/g, '-') // spaces and underscores to dashes
@@ -35,6 +36,7 @@ export function toKebabCase(str: string): string {
  * @returns camelCase string suitable for variable names
  */
 export function toCamelCase(str: string): string {
+  if (str == null) return ''
   return str
     .toLowerCase()
     .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase())
@@ -51,6 +53,7 @@ export function toCamelCase(str: string): string {
  * @returns HTML-safe string
  */
 export function escapeHTML(str: string): string {
+  if (str == null) return ''
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

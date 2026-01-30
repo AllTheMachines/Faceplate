@@ -1025,6 +1025,91 @@ export interface TreeViewElementConfig extends BaseElementConfig, ScrollbarConfi
   disableDrag: boolean
 }
 
+export interface AsciiSliderElementConfig extends BaseElementConfig {
+  type: 'asciislider'
+
+  // Value
+  value: number // 0-1 normalized
+  min: number
+  max: number
+
+  // Bar Characters
+  barWidth: number // Number of characters for the bar (default: 20)
+  filledChar: string // Character for filled portion (default: '#')
+  emptyChar: string // Character for empty portion (default: '-')
+  leftBracket: string // Left bracket character (default: '[')
+  rightBracket: string // Right bracket character (default: ']')
+
+  // Label
+  showLabel: boolean // Show label text
+  labelText: string // Label text
+  labelPosition: 'left' | 'right' // Position of label relative to slider
+
+  // Value Display
+  showMinMax: boolean // Show "0%" and "100%" labels
+  showValue: boolean // Show current value
+  valuePosition: 'left' | 'right' | 'above' | 'below' | 'inside'
+  valueFormat: 'percentage' | 'numeric' | 'custom'
+  valueSuffix: string // For custom format
+  valueDecimalPlaces: number
+  minLabel: string // Custom min label (default: '0%')
+  maxLabel: string // Custom max label (default: '100%')
+
+  // Typography
+  fontSize: number
+  fontFamily: string
+  fontWeight: number
+  textColor: string
+  lineHeight: number
+
+  // Container
+  backgroundColor: string
+  padding: number
+  borderRadius: number
+  borderWidth: number
+  borderColor: string
+
+  // Alignment
+  textAlign: 'left' | 'center' | 'right'
+
+  // Interaction
+  selectable: boolean // Allow text selection
+}
+
+export interface AsciiButtonElementConfig extends BaseElementConfig {
+  type: 'asciibutton'
+
+  // State
+  pressed: boolean
+  mode: 'momentary' | 'toggle' // Momentary = only pressed while clicking, toggle = click to toggle
+
+  // ASCII Art for each state (multi-line)
+  normalArt: string
+  pressedArt: string
+
+  // Typography
+  fontSize: number
+  fontFamily: string
+  fontWeight: number
+  textColor: string
+  pressedTextColor: string
+  lineHeight: number
+
+  // Container
+  backgroundColor: string
+  pressedBackgroundColor: string
+  padding: number
+  borderRadius: number
+  borderWidth: number
+  borderColor: string
+
+  // Alignment
+  textAlign: 'left' | 'center' | 'right'
+
+  // Interaction
+  selectable: boolean // Allow text selection
+}
+
 // ============================================================================
 // Control Element Union
 // ============================================================================
@@ -1046,6 +1131,8 @@ export type ControlElement =
   | MultiSliderElementConfig
   | NotchedSliderElementConfig
   | ArcSliderElementConfig
+  | AsciiSliderElementConfig
+  | AsciiButtonElementConfig
   | RockerSwitchElementConfig
   | RotarySwitchElementConfig
   | SegmentButtonElementConfig
@@ -1128,6 +1215,14 @@ export function isNotchedSlider(element: { type: string }): element is NotchedSl
 
 export function isArcSlider(element: { type: string }): element is ArcSliderElementConfig {
   return element.type === 'arcslider'
+}
+
+export function isAsciiSlider(element: { type: string }): element is AsciiSliderElementConfig {
+  return element.type === 'asciislider'
+}
+
+export function isAsciiButton(element: { type: string }): element is AsciiButtonElementConfig {
+  return element.type === 'asciibutton'
 }
 
 export function isRockerSwitch(element: { type: string }): element is RockerSwitchElementConfig {
@@ -1799,6 +1894,89 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     valueFontFamily: 'Inter, system-ui, sans-serif',
     valueFontWeight: '400',
     valueColor: '#a0a0a0',
+    ...overrides,
+  }
+}
+
+export function createAsciiSlider(overrides?: Partial<AsciiSliderElementConfig>): AsciiSliderElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'asciislider',
+    name: 'ASCII Slider',
+    x: 0,
+    y: 0,
+    width: 280,
+    height: 24,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    value: 0.5,
+    min: 0,
+    max: 100,
+    barWidth: 20,
+    filledChar: '█',
+    emptyChar: '░',
+    leftBracket: '',
+    rightBracket: '',
+    showLabel: false,
+    labelText: 'Label',
+    labelPosition: 'left',
+    showMinMax: false,
+    showValue: true,
+    valuePosition: 'right',
+    valueFormat: 'percentage',
+    valueSuffix: '',
+    valueDecimalPlaces: 0,
+    minLabel: '0%',
+    maxLabel: '100%',
+    fontSize: 14,
+    fontFamily: 'Courier New, Consolas, monospace',
+    fontWeight: 400,
+    textColor: '#00ff00',
+    lineHeight: 1.0,
+    backgroundColor: 'transparent',
+    padding: 0,
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: '#374151',
+    textAlign: 'left',
+    selectable: false,
+    ...overrides,
+  }
+}
+
+export function createAsciiButton(overrides?: Partial<AsciiButtonElementConfig>): AsciiButtonElementConfig {
+  return {
+    id: crypto.randomUUID(),
+    type: 'asciibutton',
+    name: 'ASCII Button',
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 60,
+    rotation: 0,
+    zIndex: 0,
+    locked: false,
+    visible: true,
+    pressed: false,
+    mode: 'toggle',
+    normalArt: '┌──────┐\n│ PLAY │\n└──────┘',
+    pressedArt: '╔══════╗\n║ PLAY ║\n╚══════╝',
+    fontSize: 14,
+    fontFamily: 'Courier New, Consolas, monospace',
+    fontWeight: 400,
+    textColor: '#00ff00',
+    pressedTextColor: '#00ffff',
+    lineHeight: 1.0,
+    backgroundColor: 'transparent',
+    pressedBackgroundColor: 'transparent',
+    padding: 4,
+    borderRadius: 0,
+    borderWidth: 0,
+    borderColor: '#374151',
+    textAlign: 'center',
+    selectable: false,
     ...overrides,
   }
 }
