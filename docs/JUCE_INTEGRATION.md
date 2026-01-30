@@ -247,6 +247,206 @@ For projects with multiple windows:
 - Ensure C++ registers the `requestParamSync` native function
 - The JS side gracefully falls back if the function isn't available
 
+## Real-Time Parameter Updates (C++ → JavaScript)
+
+### The Problem
+
+When users interact with host controls (DAW automation, MIDI learn, preset changes), the WebView UI needs to update in real-time to reflect these changes. Without this, the UI shows stale values and feels disconnected.
+
+### Solution: Timer-Based Polling
+
+Use a timer to continuously poll parameter values and emit `__juce__paramSync` events when they change. This works for all parameter change sources: user drag, host automation, MIDI, presets, etc.
+
+**Why not use parameter listeners?**
+- JUCE's `AudioProcessorValueTreeState::Listener::parameterChanged()` only fires on **committed** changes (mouse up, discrete jumps)
+- It does NOT fire during continuous drag operations
+- Result: UI only updates when you release the mouse, not while dragging
+
+### Implementation
+
+**PluginEditor.h:**
+```cpp
+#include <juce_gui_extra/juce_gui_extra.h>
+
+class PluginEditor : public juce::AudioProcessorEditor,
+                     private juce::Timer  // Add Timer inheritance
+{
+public:
+    PluginEditor(PluginProcessor& p);
+    ~PluginEditor() override;
+
+    void resized() override;
+    void pageFinishedLoading();
+
+private:
+    void timerCallback() override;  // Add timer callback
+    void syncAllParametersToWebView();
+
+    PluginProcessor& processor;
+    juce::WebBrowserComponent browser;
+
+    // Track last sent values to avoid redundant updates
+    std::map<juce::String, float> lastSentValues;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginEditor)
+};
+```
+
+**PluginEditor.cpp - Constructor:**
+```cpp
+PluginEditor::PluginEditor(PluginProcessor& p)
+    : AudioProcessorEditor(&p), processor(p),
+      browser(juce::WebBrowserComponent::Options()
+          .withBackend(juce::WebBrowserComponent::Options::Backend::webview2)
+          .withResourceProvider([this](const auto& url) { return getResource(url); })
+          .withNativeFunction("setParameter", [this](auto& args, auto complete) {
+              // ... (see JUCE_PATTERN.md)
+          })
+          .withNativeFunction("requestParamSync", [this](auto& args, auto complete) {
+              syncAllParametersToWebView();
+              complete({});
+          })
+          // ... other native functions
+      )
+{
+    setSize(800, 600);
+    addAndMakeVisible(browser);
+    browser.goToURL("http://localhost/index.html");
+
+    // Initialize tracking map with current parameter values
+    for (auto* param : processor.apvts.getParameters())
+    {
+        if (auto* rangedParam = dynamic_cast<juce::RangedAudioParameter*>(param))
+            lastSentValues[rangedParam->paramID] = rangedParam->getValue();
+    }
+
+    // Start timer for real-time parameter updates
+    // 30 Hz = smooth updates with low CPU overhead
+    // 60 Hz = even smoother, matches display refresh rate
+    startTimerHz(30);
+}
+```
+
+**PluginEditor.cpp - Destructor:**
+```cpp
+PluginEditor::~PluginEditor()
+{
+    stopTimer();
+}
+```
+
+**PluginEditor.cpp - Timer Callback:**
+```cpp
+void PluginEditor::timerCallback()
+{
+    juce::Array<juce::var> changedParams;
+
+    // Poll all parameters for changes
+    for (auto* param : processor.apvts.getParameters())
+    {
+        auto* rangedParam = dynamic_cast<juce::RangedAudioParameter*>(param);
+        if (!rangedParam) continue;
+
+        float currentValue = rangedParam->getValue();
+        float& lastValue = lastSentValues[rangedParam->paramID];
+
+        // Only send if value actually changed (threshold avoids float precision spam)
+        if (std::abs(currentValue - lastValue) > 0.0001f)
+        {
+            juce::DynamicObject::Ptr paramObj = new juce::DynamicObject();
+            paramObj->setProperty("id", rangedParam->paramID);
+            paramObj->setProperty("value", currentValue);
+            changedParams.add(juce::var(paramObj.get()));
+
+            lastValue = currentValue;
+        }
+    }
+
+    // Emit event only if parameters changed
+    if (!changedParams.isEmpty())
+    {
+        juce::DynamicObject::Ptr eventData = new juce::DynamicObject();
+        eventData->setProperty("params", changedParams);
+        browser.emitEvent("__juce__paramSync", juce::var(eventData.get()));
+    }
+}
+```
+
+**Keep the sync method for initial load:**
+```cpp
+void PluginEditor::syncAllParametersToWebView()
+{
+    juce::Array<juce::var> paramArray;
+
+    for (auto* param : processor.apvts.getParameters())
+    {
+        auto* rangedParam = dynamic_cast<juce::RangedAudioParameter*>(param);
+        if (!rangedParam) continue;
+
+        juce::DynamicObject::Ptr paramObj = new juce::DynamicObject();
+        paramObj->setProperty("id", rangedParam->paramID);
+        paramObj->setProperty("value", rangedParam->getValue());
+        paramArray.add(juce::var(paramObj.get()));
+    }
+
+    juce::DynamicObject::Ptr eventData = new juce::DynamicObject();
+    eventData->setProperty("params", paramArray);
+    browser.emitEvent("__juce__paramSync", juce::var(eventData.get()));
+
+    DBG("Synced " << paramArray.size() << " parameters to WebView");
+}
+```
+
+### Performance Considerations
+
+| Update Rate | CPU Impact | User Experience | Best For |
+|-------------|-----------|-----------------|----------|
+| 15 Hz | Very low | Slight lag noticeable | Resource-constrained systems |
+| 30 Hz | Low | Smooth, imperceptible lag | Recommended default |
+| 60 Hz | Moderate | Perfectly smooth | High-end systems, critical UI |
+| 120 Hz | High | Overkill, no benefit | Not recommended |
+
+**Recommended:** Start with 30 Hz. Increase to 60 Hz only if users report lag.
+
+The threshold `0.0001f` prevents redundant updates due to floating-point precision noise.
+
+### What Gets Updated
+
+This approach updates the WebView for parameter changes from ANY source:
+
+- ✅ Host automation (DAW timeline)
+- ✅ MIDI learn / MIDI CC
+- ✅ Preset changes
+- ✅ Other plugin windows (if multi-window)
+- ✅ Manual parameter changes via code
+- ✅ External control surfaces
+
+### Common Use Cases
+
+**ASCII Noise Intensity:**
+If you have an ASCII noise element with `data-noise-param="movement"`, the timer ensures:
+1. User drags the "movement" slider in the DAW
+2. Timer detects change within 33ms (at 30 Hz)
+3. Emits `__juce__paramSync` event with new value
+4. JavaScript updates `element._noiseIntensity`
+5. Noise visual responds in real-time
+
+**Automation Playback:**
+If the DAW plays back automation:
+1. Parameters change at automation resolution (~48 updates/sec typical)
+2. Timer polls at 30 Hz, catches changes
+3. UI updates smoothly during playback
+
+### Troubleshooting
+
+| Issue | Likely Cause | Solution |
+|-------|--------------|----------|
+| UI updates only on mouse up | Not using timer polling | Add Timer inheritance and timerCallback |
+| UI updates but feels laggy | Timer frequency too low | Increase from 30 Hz to 60 Hz |
+| High CPU usage | Timer frequency too high | Reduce from 60 Hz to 30 Hz |
+| UI not updating at all | Timer not started | Check startTimerHz() in constructor |
+| Spam in console | Threshold too low | Keep threshold at 0.0001f or higher |
+
 ## Related Documentation
 
 - [JUCE_PATTERN.md](./JUCE_PATTERN.md) - JS <-> C++ communication pattern
