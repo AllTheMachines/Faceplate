@@ -353,7 +353,17 @@ export function AsciiSliderProperties({ element, onUpdate }: AsciiSliderProperti
 
       {/* Interaction */}
       <PropertySection title="Interaction">
-        <label className="flex items-center gap-2 cursor-pointer">
+        <NumberInput
+          label="Drag Sensitivity"
+          value={element.dragSensitivity ?? 100}
+          onChange={(dragSensitivity) => onUpdate({ dragSensitivity })}
+          min={20}
+          max={500}
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          Pixels for full range. Lower = more sensitive. Hold Shift for fine control.
+        </p>
+        <label className="flex items-center gap-2 cursor-pointer mt-2">
           <input
             type="checkbox"
             checked={element.selectable ?? false}
