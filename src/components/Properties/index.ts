@@ -48,7 +48,6 @@ import { ArcSliderProperties } from './ArcSliderProperties'
 import { AsciiSliderProperties } from './AsciiSliderProperties'
 import { AsciiButtonProperties } from './AsciiButtonProperties'
 import { IconButtonProperties } from './IconButtonProperties'
-import { KickButtonProperties } from './KickButtonProperties'
 import { ToggleSwitchProperties } from './ToggleSwitchProperties'
 import { PowerButtonProperties } from './PowerButtonProperties'
 import { RockerSwitchProperties } from './RockerSwitchProperties'
@@ -159,7 +158,6 @@ export { ArcSliderProperties } from './ArcSliderProperties'
 export { AsciiSliderProperties } from './AsciiSliderProperties'
 export { AsciiButtonProperties } from './AsciiButtonProperties'
 export { IconButtonProperties } from './IconButtonProperties'
-export { KickButtonProperties } from './KickButtonProperties'
 export { ToggleSwitchProperties } from './ToggleSwitchProperties'
 export { PowerButtonProperties } from './PowerButtonProperties'
 export { RockerSwitchProperties } from './RockerSwitchProperties'
@@ -260,7 +258,6 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['asciislider', AsciiSliderProperties],
   ['asciibutton', AsciiButtonProperties],
   ['iconbutton', IconButtonProperties],
-  ['kickbutton', KickButtonProperties],
   ['toggleswitch', ToggleSwitchProperties],
   ['powerbutton', PowerButtonProperties],
   ['rockerswitch', RockerSwitchProperties],
