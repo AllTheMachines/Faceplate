@@ -138,7 +138,7 @@ export function SteppedKnobRenderer({ config }: SteppedKnobRendererProps) {
   const indicatorStart = polarToCartesian(centerX, centerY, radius * 0.4, valueAngle)
   const indicatorEnd = polarToCartesian(centerX, centerY, radius * 0.9, valueAngle)
 
-  // Generate step indicator positions
+  // Generate step indicator positions (dots on arc)
   const stepIndicators: { x: number; y: number }[] = []
   if (config.showStepIndicators) {
     for (let i = 0; i < config.stepCount; i++) {
@@ -146,6 +146,21 @@ export function SteppedKnobRenderer({ config }: SteppedKnobRendererProps) {
       const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
       const pos = polarToCartesian(centerX, centerY, radius, stepAngle)
       stepIndicators.push(pos)
+    }
+  }
+
+  // Tick marks (dial-style, outside knob)
+  const tickMarks: Array<{inner: {x: number, y: number}, outer: {x: number, y: number}}> = []
+  if (config.showStepMarks) {
+    const outerRadius = radius * 1.15
+    const innerRadius = radius * 1.05
+    for (let i = 0; i < config.stepCount; i++) {
+      const stepNormalized = i / (config.stepCount - 1)
+      const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
+      tickMarks.push({
+        inner: polarToCartesian(centerX, centerY, innerRadius, stepAngle),
+        outer: polarToCartesian(centerX, centerY, outerRadius, stepAngle)
+      })
     }
   }
 
@@ -215,16 +230,32 @@ export function SteppedKnobRenderer({ config }: SteppedKnobRendererProps) {
           />
         )}
 
-        {/* Indicator line */}
-        <line
-          x1={indicatorStart.x}
-          y1={indicatorStart.y}
-          x2={indicatorEnd.x}
-          y2={indicatorEnd.y}
-          stroke={config.indicatorColor}
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
+        {/* Tick marks (outside knob edge) */}
+        {tickMarks.map((tick, i) => (
+          <line
+            key={`tick-${i}`}
+            x1={tick.inner.x}
+            y1={tick.inner.y}
+            x2={tick.outer.x}
+            y2={tick.outer.y}
+            stroke={config.trackColor}
+            strokeWidth={Math.max(1, config.trackWidth / 4)}
+            strokeLinecap="round"
+          />
+        ))}
+
+        {/* Indicator line with snap transition */}
+        <g style={{ transition: 'transform 0.05s ease-out' }}>
+          <line
+            x1={indicatorStart.x}
+            y1={indicatorStart.y}
+            x2={indicatorEnd.x}
+            y2={indicatorEnd.y}
+            stroke={config.indicatorColor}
+            strokeWidth={2}
+            strokeLinecap="round"
+          />
+        </g>
       </svg>
     </div>
   )
