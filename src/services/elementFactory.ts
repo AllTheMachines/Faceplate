@@ -51,7 +51,6 @@ import {
   createAsciiSlider,
   createAsciiButton,
   createIconButton,
-  createKickButton,
   createToggleSwitch,
   createPowerButton,
   createRockerSwitch,
@@ -190,8 +189,6 @@ export function createElementFromType(
       return createButton({ ...base, width: overrides?.width ?? 80, height: overrides?.height ?? 30 })
     case 'iconbutton':
       return createIconButton({ ...base, width: overrides?.width ?? 40, height: overrides?.height ?? 40 })
-    case 'kickbutton':
-      return createKickButton({ ...base, width: overrides?.width ?? 60, height: overrides?.height ?? 60 })
     case 'powerbutton':
       return createPowerButton({ ...base, width: overrides?.width ?? 40, height: overrides?.height ?? 40 })
 

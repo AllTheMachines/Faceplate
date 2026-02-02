@@ -718,25 +718,6 @@ export interface IconButtonElementConfig extends BaseElementConfig {
   borderRadius: number
 }
 
-export interface KickButtonElementConfig extends BaseElementConfig {
-  type: 'kickbutton'
-
-  // State (momentary only)
-  pressed: boolean
-
-  // Label
-  label: string
-  fontSize: number
-  fontFamily: string
-  fontWeight: string
-
-  // Colors
-  backgroundColor: string
-  textColor: string
-  borderColor: string
-  borderRadius: number
-}
-
 export interface ToggleSwitchElementConfig extends BaseElementConfig {
   type: 'toggleswitch'
 
@@ -1154,7 +1135,6 @@ export type ControlElement =
   | RotarySwitchElementConfig
   | SegmentButtonElementConfig
   | IconButtonElementConfig
-  | KickButtonElementConfig
   | ToggleSwitchElementConfig
   | PowerButtonElementConfig
   | MultiSelectDropdownElementConfig
@@ -1256,10 +1236,6 @@ export function isSegmentButton(element: { type: string }): element is SegmentBu
 
 export function isIconButton(element: { type: string }): element is IconButtonElementConfig {
   return element.type === 'iconbutton'
-}
-
-export function isKickButton(element: { type: string }): element is KickButtonElementConfig {
-  return element.type === 'kickbutton'
 }
 
 export function isToggleSwitch(element: { type: string }): element is ToggleSwitchElementConfig {
@@ -2123,32 +2099,6 @@ export function createIconButton(overrides?: Partial<IconButtonElementConfig>): 
     pressed: false,
     backgroundColor: '#374151',
     iconColor: '#ffffff',
-    borderColor: '#6b7280',
-    borderRadius: 0,
-    ...overrides,
-  }
-}
-
-export function createKickButton(overrides?: Partial<KickButtonElementConfig>): KickButtonElementConfig {
-  return {
-    id: crypto.randomUUID(),
-    type: 'kickbutton',
-    name: 'Kick Button',
-    x: 0,
-    y: 0,
-    width: 60,
-    height: 40,
-    rotation: 0,
-    zIndex: 0,
-    locked: false,
-    visible: true,
-    pressed: false,
-    label: 'KICK',
-    fontSize: 12,
-    fontFamily: 'Inter, system-ui, sans-serif',
-    fontWeight: '600',
-    backgroundColor: '#374151',
-    textColor: '#ffffff',
     borderColor: '#6b7280',
     borderRadius: 0,
     ...overrides,
