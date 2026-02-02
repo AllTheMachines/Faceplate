@@ -116,7 +116,13 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-(Next milestone requirements will be defined via /gsd:new-milestone)
+**v1.10 Element Bug Fixes (20 requirements):**
+- Navigation Elements: Tree View, Tag Selector, Combo Box, Breadcrumb fixes
+- Sliders: ASCII, Arc, Notched, Bipolar Slider fixes
+- Curves: EQ, Compressor, Envelope, LFO, Filter Response fixes
+- Buttons/Knobs: Segment Button, Kick Button, Stepped Knob fixes
+- Displays/LEDs: Note Display, Bicolor LED fixes
+- Core UI: Color Picker, Related Topics links fixes
 
 ### Out of Scope
 
@@ -224,4 +230,4 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | F1 contextual help | Element-specific help when one selected, general otherwise | Good - context-aware UX |
 
 ---
-*Last updated: 2026-01-29 after v1.9 milestone completion*
+*Last updated: 2026-02-02 after v1.10 milestone definition*

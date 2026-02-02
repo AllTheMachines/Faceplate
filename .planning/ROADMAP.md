@@ -2,18 +2,85 @@
 
 ## Milestones
 
-- ✅ **v1.0 MVP** — Phases 1-13 (shipped 2026-01-25)
-- ✅ **v1.1 SVG Import System** — Phases 14-18 (shipped 2026-01-26)
-- ✅ **v1.2 Complete Element Taxonomy** — Phases 19-30, 27.1 (shipped 2026-01-27)
-- ✅ **v1.3 Workflow & Protection** — Phases 31-33 (shipped 2026-01-27)
-- ✅ **v1.4 Container Editing System** — Phases 34-35 (shipped 2026-01-27)
-- ✅ **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
-- ✅ **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
-- ✅ **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
-- ✅ **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
-- ✅ **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
+- **v1.0 MVP** — Phases 1-13 (shipped 2026-01-25)
+- **v1.1 SVG Import System** — Phases 14-18 (shipped 2026-01-26)
+- **v1.2 Complete Element Taxonomy** — Phases 19-30, 27.1 (shipped 2026-01-27)
+- **v1.3 Workflow & Protection** — Phases 31-33 (shipped 2026-01-27)
+- **v1.4 Container Editing System** — Phases 34-35 (shipped 2026-01-27)
+- **v1.5 Export & Asset Management** — Phases 36-37 (shipped 2026-01-27)
+- **v1.6 Multi-Window System** — Phase 38 (shipped 2026-01-28)
+- **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
+- **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
+- **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
+- **v1.10 Element Bug Fixes** — Phases 44-49 (in progress)
 
 ## Phases
+
+### v1.10 Element Bug Fixes (Phases 44-49)
+
+Bug fix milestone addressing 20 GitHub issues across navigation elements, sliders, curves, buttons, knobs, displays, LEDs, and core UI components.
+
+#### Phase 44: Navigation Element Fixes
+**Goal**: Navigation elements work correctly with full interactivity and visibility
+**Depends on**: None (first phase of milestone)
+**Requirements**: NAV-01, NAV-02, NAV-03, NAV-04
+**Success Criteria** (what must be TRUE):
+  1. Tree View children are visible in the tree and their properties can be edited in the property panel
+  2. Tag Selector shows tag input/suggestions when user starts typing
+  3. Combo Box dropdown remains open and shows all options after user makes a selection
+  4. Breadcrumb navigation allows expanding back to deeper levels after navigating to root
+**Plans**: TBD
+
+#### Phase 45: Slider Fixes
+**Goal**: All slider variants feel natural and display their visual elements correctly
+**Depends on**: Phase 44
+**Requirements**: SLD-01, SLD-02, SLD-03, SLD-04
+**Success Criteria** (what must be TRUE):
+  1. ASCII Slider responds to drag with smooth, predictable value changes
+  2. Arc Slider has configurable distance options for positioning labels and values
+  3. Notched Slider displays visible labels and tick lines at notch positions
+  4. Bipolar Slider renders and operates correctly in horizontal orientation
+**Plans**: TBD
+
+#### Phase 46: Curve Fixes
+**Goal**: All curve/visualization elements render visibly and respond to interaction
+**Depends on**: Phase 45
+**Requirements**: CRV-01, CRV-02, CRV-03, CRV-04, CRV-05
+**Success Criteria** (what must be TRUE):
+  1. EQ Curve displays visible frequency response line and responds to handle dragging
+  2. Compressor Curve displays visible transfer function and responds to threshold/ratio adjustments
+  3. Envelope Display shows visible ADSR curve with draggable control points
+  4. LFO Display shows visible waveform shape that updates when parameters change
+  5. Filter Response shows visible cutoff/resonance curve
+**Plans**: TBD
+
+#### Phase 47: Button & Knob Fixes
+**Goal**: Segment buttons, kick buttons, and stepped knobs behave as expected
+**Depends on**: Phase 46
+**Requirements**: BTN-01, BTN-02, KNB-01
+**Success Criteria** (what must be TRUE):
+  1. Segment Button displays icons in selected segments (not just text)
+  2. Kick Button has documented purpose and provides clear visual/interaction feedback
+  3. Stepped Knob snaps to discrete step positions when dragged
+**Plans**: TBD
+
+#### Phase 48: Display & LED Fixes
+**Goal**: Note displays and bicolor LEDs render with correct visual behavior
+**Depends on**: Phase 47
+**Requirements**: DSP-01, LED-01
+**Success Criteria** (what must be TRUE):
+  1. Note Display font sizes are consistent with other displays and can be adjusted via properties
+  2. Bicolor LED shows distinct two-color behavior (e.g., green/red) based on state
+**Plans**: TBD
+
+#### Phase 49: Core UI Fixes
+**Goal**: Color picker and help system work without frustrating interaction issues
+**Depends on**: Phase 48
+**Requirements**: UI-01, UI-02
+**Success Criteria** (what must be TRUE):
+  1. Color picker popup stays open when user drags to select colors (no premature closing)
+  2. Related Topics links in help system navigate to the correct help section when clicked
+**Plans**: TBD
 
 <details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
@@ -669,7 +736,13 @@ Plans:
 | 41. Bug Fixes | v1.9 | 2/2 | Complete | 2026-01-29 |
 | 42. Layers Panel | v1.9 | 5/5 | Complete | 2026-01-29 |
 | 43. Help System | v1.9 | 4/4 | Complete | 2026-01-29 |
+| 44. Navigation Element Fixes | v1.10 | 0/TBD | Not started | - |
+| 45. Slider Fixes | v1.10 | 0/TBD | Not started | - |
+| 46. Curve Fixes | v1.10 | 0/TBD | Not started | - |
+| 47. Button & Knob Fixes | v1.10 | 0/TBD | Not started | - |
+| 48. Display & LED Fixes | v1.10 | 0/TBD | Not started | - |
+| 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-01-29 - v1.9 milestone complete*
+*Last updated: 2026-02-02 - v1.10 Element Bug Fixes milestone added*
