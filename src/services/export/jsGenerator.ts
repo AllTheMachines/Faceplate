@@ -2008,11 +2008,61 @@ function setupBreadcrumbInteraction(breadcrumbId) {
   const ol = breadcrumb.querySelector('ol');
   if (!ol) return;
 
+  // Get stored data for expansion
+  const allItemsData = breadcrumb.dataset.allItems;
+  const separator = breadcrumb.dataset.separator || '/';
+  let isExpanded = false;
+
+  // Parse all items if available
+  let allItems = [];
+  try {
+    if (allItemsData) {
+      allItems = JSON.parse(allItemsData);
+    }
+  } catch (e) {
+    console.warn('[Breadcrumb] Failed to parse items data');
+  }
+
+  // Rebuild breadcrumb with all items (expanded view)
+  function expandBreadcrumb() {
+    if (allItems.length === 0) return;
+    isExpanded = true;
+
+    ol.innerHTML = '';
+    allItems.forEach((item, index) => {
+      const isLast = index === allItems.length - 1;
+      const li = document.createElement('li');
+
+      if (isLast) {
+        li.innerHTML = \`<span class="breadcrumb-current">\${item.label}</span>\`;
+      } else {
+        li.innerHTML = \`<a href="#" data-item-id="\${item.id}">\${item.label}</a><span class="breadcrumb-separator">\${separator}</span>\`;
+      }
+
+      ol.appendChild(li);
+    });
+
+    // Re-setup click handlers for expanded items
+    setupClickHandlers();
+    console.log('[Breadcrumb] Expanded to show all items');
+  }
+
   // Setup click handlers on all list items
   function setupClickHandlers() {
     const items = ol.querySelectorAll('li');
 
     items.forEach((li, index) => {
+      // Handle ellipsis click
+      const ellipsis = li.querySelector('.breadcrumb-ellipsis');
+      if (ellipsis) {
+        ellipsis.style.cursor = 'pointer';
+        ellipsis.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          expandBreadcrumb();
+        });
+      }
+
       const link = li.querySelector('a[data-item-id]');
       if (!link) return; // Skip if this is the current (span) item
 
@@ -2032,17 +2082,21 @@ function setupBreadcrumbInteraction(breadcrumbId) {
         console.log(\`[Breadcrumb] Navigated to: \${itemId} (\${itemLabel})\`);
 
         // Get all items to rebuild the breadcrumb up to and including clicked item
-        const allItems = ol.querySelectorAll('li');
+        const allListItems = ol.querySelectorAll('li');
 
         // Remove items after the clicked one
-        for (let i = allItems.length - 1; i > index; i--) {
-          allItems[i].remove();
+        for (let i = allListItems.length - 1; i > index; i--) {
+          allListItems[i].remove();
         }
 
         // Convert clicked link to current (span)
-        const clickedLi = allItems[index];
-        const separator = clickedLi.querySelector('.breadcrumb-separator');
-        if (separator) separator.remove();
+        const clickedLi = allListItems[index];
+        const sep = clickedLi.querySelector('.breadcrumb-separator');
+        if (sep) sep.remove();
+
+        // Remove ellipsis if present
+        const ell = clickedLi.querySelector('.breadcrumb-ellipsis');
+        if (ell) ell.remove();
 
         // Replace link with span for current item
         const currentSpan = document.createElement('span');

@@ -2161,10 +2161,17 @@ function generateBreadcrumbHTML(
   positionStyle: string,
   element: BreadcrumbElementConfig
 ): string {
+  // Store all items as JSON for JS to use when expanding
+  const allItemsJSON = JSON.stringify(element.items.map(item => ({
+    id: item.id,
+    label: item.label
+  })))
+
   let itemsToRender: BreadcrumbItem[] = element.items
+  const isTruncated = element.maxVisibleItems > 0 && element.items.length > element.maxVisibleItems
 
   // Handle truncation if maxVisibleItems is set
-  if (element.maxVisibleItems > 0 && element.items.length > element.maxVisibleItems) {
+  if (isTruncated) {
     const firstItem = element.items[0]
     const lastItems = element.items.slice(-(element.maxVisibleItems - 1))
     itemsToRender = [firstItem, ...lastItems]
@@ -2172,7 +2179,7 @@ function generateBreadcrumbHTML(
 
   const itemsHTML = itemsToRender.map((item, index) => {
     const isLast = index === itemsToRender.length - 1
-    const needsEllipsis = element.maxVisibleItems > 0 && element.items.length > element.maxVisibleItems && index === 0
+    const needsEllipsis = isTruncated && index === 0
 
     let html = '<li>'
 
@@ -2187,7 +2194,7 @@ function generateBreadcrumbHTML(
     }
 
     if (needsEllipsis) {
-      html += `<span class="breadcrumb-ellipsis">...</span>`
+      html += `<span class="breadcrumb-ellipsis" title="Click to show all items" style="cursor: pointer;">...</span>`
       html += `<span class="breadcrumb-separator">${escapeHTML(element.separator)}</span>`
     }
 
@@ -2195,7 +2202,7 @@ function generateBreadcrumbHTML(
     return html
   }).join('')
 
-  return `<nav id="${id}" class="${baseClass} breadcrumb-element" data-type="breadcrumb" aria-label="breadcrumb" style="${positionStyle}">
+  return `<nav id="${id}" class="${baseClass} breadcrumb-element" data-type="breadcrumb" aria-label="breadcrumb" style="${positionStyle}" data-all-items='${escapeHTML(allItemsJSON)}' data-separator="${escapeHTML(element.separator)}" data-max-visible="${element.maxVisibleItems}">
   <ol>
     ${itemsHTML}
   </ol>
