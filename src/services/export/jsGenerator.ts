@@ -76,6 +76,7 @@ export function generateBindingsJS(
   const menuButtons = elements.filter((el) => el.type === 'menubutton')
   const breadcrumbs = elements.filter((el) => el.type === 'breadcrumb')
   const treeViews = elements.filter((el) => el.type === 'treeview')
+  const tagSelectors = elements.filter((el) => el.type === 'tagselector')
   // Specialized audio elements
   const stepSequencers = elements.filter((el) => el.type === 'stepsequencer')
   const xyPads = elements.filter((el) => el.type === 'xypad')
@@ -255,6 +256,12 @@ export function generateBindingsJS(
   const treeViewSetups = treeViews
     .map((treeview) => {
       return `    setupTreeViewInteraction('${toKebabCase(treeview.name)}');`
+    })
+    .join('\n')
+
+  const tagSelectorSetups = tagSelectors
+    .map((tagselector) => {
+      return `    setupTagSelectorInteraction('${toKebabCase(tagselector.name)}');`
     })
     .join('\n')
 
@@ -530,6 +537,7 @@ ${comboBoxSetups || '        // No combo boxes'}
 ${menuButtonSetups || '        // No menu buttons'}
 ${breadcrumbSetups || '        // No breadcrumbs'}
 ${treeViewSetups || '        // No tree views'}
+${tagSelectorSetups || '        // No tag selectors'}
 ${stepSequencerSetups || '        // No step sequencers'}
 ${xyPadSetups || '        // No XY pads'}
 ${loopPointsSetups || '        // No loop points'}
@@ -594,6 +602,7 @@ ${comboBoxSetups || '  // No combo boxes'}
 ${menuButtonSetups || '  // No menu buttons'}
 ${breadcrumbSetups || '  // No breadcrumbs'}
 ${treeViewSetups || '  // No tree views'}
+${tagSelectorSetups || '  // No tag selectors'}
 ${stepSequencerSetups || '  // No step sequencers'}
 ${xyPadSetups || '  // No XY pads'}
 ${loopPointsSetups || '  // No loop points'}
@@ -2115,6 +2124,129 @@ function setupTreeViewInteraction(treeviewId) {
       sibling = sibling.nextElementSibling;
     }
   }
+}
+
+/**
+ * Setup tag selector interaction
+ * @param {string} tagselectorId - HTML element ID
+ */
+function setupTagSelectorInteraction(tagselectorId) {
+  const tagselector = document.getElementById(tagselectorId);
+  if (!tagselector) return;
+
+  const inputWrapper = tagselector.querySelector('.tag-input-wrapper');
+  const input = tagselector.querySelector('input');
+  const dropdown = tagselector.querySelector('.tag-dropdown');
+  const tagsContainer = tagselector.querySelector('.tags-container');
+
+  if (!input || !dropdown) return;
+
+  // Track available tags from dropdown items
+  const allItems = Array.from(dropdown.querySelectorAll('.tag-dropdown-item'));
+  const selectedTagIds = new Set();
+
+  // Initialize selected tags from existing chips
+  tagsContainer.querySelectorAll('.tag-chip').forEach(chip => {
+    selectedTagIds.add(chip.dataset.tagId);
+  });
+
+  // Show/hide dropdown
+  function showDropdown() {
+    tagselector.classList.add('open');
+    filterDropdown();
+  }
+
+  function hideDropdown() {
+    tagselector.classList.remove('open');
+  }
+
+  // Filter dropdown based on input and selected tags
+  function filterDropdown() {
+    const filterText = input.value.toLowerCase();
+    let visibleCount = 0;
+
+    allItems.forEach(item => {
+      const tagId = item.dataset.tagId;
+      const label = item.textContent.toLowerCase();
+      const isSelected = selectedTagIds.has(tagId);
+      const matchesFilter = !filterText || label.includes(filterText);
+
+      if (!isSelected && matchesFilter) {
+        item.style.display = 'block';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Show "No matching tags" if nothing visible and filter is active
+    let noMatchEl = dropdown.querySelector('.no-match-message');
+    if (visibleCount === 0 && filterText) {
+      if (!noMatchEl) {
+        noMatchEl = document.createElement('div');
+        noMatchEl.className = 'no-match-message';
+        noMatchEl.style.cssText = 'padding: 8px 12px; color: #6b7280; font-style: italic; font-size: 13px;';
+        noMatchEl.textContent = 'No matching tags';
+        dropdown.appendChild(noMatchEl);
+      }
+      noMatchEl.style.display = 'block';
+    } else if (noMatchEl) {
+      noMatchEl.style.display = 'none';
+    }
+  }
+
+  // Add a tag
+  function addTag(tagId, label) {
+    if (selectedTagIds.has(tagId)) return;
+    selectedTagIds.add(tagId);
+
+    const chip = document.createElement('div');
+    chip.className = 'tag-chip';
+    chip.dataset.tagId = tagId;
+    chip.innerHTML = \`<span>\${label}</span><button class="tag-remove" aria-label="Remove \${label}">×</button>\`;
+
+    chip.querySelector('.tag-remove').addEventListener('click', () => {
+      removeTag(tagId);
+    });
+
+    tagsContainer.appendChild(chip);
+    input.value = '';
+    filterDropdown();
+  }
+
+  // Remove a tag
+  function removeTag(tagId) {
+    selectedTagIds.delete(tagId);
+    const chip = tagsContainer.querySelector(\`.tag-chip[data-tag-id="\${tagId}"]\`);
+    if (chip) chip.remove();
+    filterDropdown();
+  }
+
+  // Event listeners
+  input.addEventListener('focus', showDropdown);
+  input.addEventListener('input', filterDropdown);
+
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if (!tagselector.contains(e.target)) {
+      hideDropdown();
+    }
+  });
+
+  // Dropdown item click
+  allItems.forEach(item => {
+    item.addEventListener('click', () => {
+      addTag(item.dataset.tagId, item.textContent);
+    });
+  });
+
+  // Remove button on existing chips
+  tagsContainer.querySelectorAll('.tag-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chip = btn.closest('.tag-chip');
+      if (chip) removeTag(chip.dataset.tagId);
+    });
+  });
 }
 
 // ============================================================================
