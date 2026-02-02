@@ -69,6 +69,19 @@ export function NoteDisplayProperties({ element, onUpdate }: NoteDisplayProperti
           />
           <span className="text-sm text-gray-300">Show MIDI Number</span>
         </label>
+        <label
+          htmlFor="notedisplay-show-octave"
+          className="flex items-center gap-2 cursor-pointer select-none"
+        >
+          <input
+            type="checkbox"
+            id="notedisplay-show-octave"
+            checked={element.showOctave}
+            onChange={(e) => onUpdate({ showOctave: e.target.checked })}
+            className="bg-gray-700 border border-gray-600 rounded cursor-pointer"
+          />
+          <span className="text-sm text-gray-300">Show Octave Number</span>
+        </label>
       </PropertySection>
 
       {/* Appearance */}

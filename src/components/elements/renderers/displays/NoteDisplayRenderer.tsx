@@ -14,6 +14,12 @@ export function NoteDisplayRenderer({ config }: NoteDisplayRendererProps) {
     { preferSharps: config.preferSharps }
   )
 
+  // Strip octave number if showOctave is false
+  // Regex handles both positive (C4) and negative (C-1) octaves
+  const displayValue = config.showOctave !== false
+    ? formattedValue  // "C4" - full note with octave
+    : formattedValue.replace(/[-]?\d+$/, '')  // "C" - note letter only
+
   // Calculate MIDI number for optional display
   const midiNumber = Math.round(config.min + config.value * (config.max - config.min))
 
@@ -45,7 +51,7 @@ export function NoteDisplayRenderer({ config }: NoteDisplayRendererProps) {
         ...bezelStyle,
       }}
     >
-      <div>{formattedValue}</div>
+      <div>{displayValue}</div>
       {config.showMidiNumber && (
         <div style={{ fontSize: `${config.fontSize * 0.6}px`, opacity: 0.7, marginTop: 2 }}>
           {midiNumber}
