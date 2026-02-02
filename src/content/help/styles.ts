@@ -98,6 +98,21 @@ export const HELP_WINDOW_STYLES = `
     margin-top: 0;
   }
 
+  .related-topics li {
+    margin: 6px 0;
+  }
+
+  .related-topic-link {
+    color: #60a5fa;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .related-topic-link:hover {
+    text-decoration: underline;
+    color: #93c5fd;
+  }
+
   a {
     color: #60a5fa;
     text-decoration: none;
@@ -105,5 +120,85 @@ export const HELP_WINDOW_STYLES = `
 
   a:hover {
     text-decoration: underline;
+  }
+
+  .report-section {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #404040;
+  }
+
+  .report-title {
+    font-size: 13px;
+    color: #a3a3a3;
+    margin-bottom: 12px;
+  }
+
+  .report-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .report-btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background-color 0.15s;
+  }
+
+  .report-btn:hover {
+    text-decoration: none;
+  }
+
+  .report-btn-bug {
+    background: #7f1d1d;
+    color: #fecaca;
+  }
+
+  .report-btn-bug:hover {
+    background: #991b1b;
+  }
+
+  .report-btn-docs {
+    background: #374151;
+    color: #d1d5db;
+  }
+
+  .report-btn-docs:hover {
+    background: #4b5563;
+  }
+
+  /* Navigation highlight animation */
+  .highlight-flash {
+    background-color: rgba(59, 130, 246, 0.2);
+    transition: background-color 1s ease-out;
+  }
+
+  /* Back button styling */
+  .back-btn {
+    position: sticky;
+    top: 0;
+    background: #262626;
+    color: #d4d4d4;
+    border: 1px solid #404040;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .back-btn:hover {
+    background: #333333;
+    color: #ffffff;
+  }
+
+  /* Section anchor offset for sticky back button */
+  .help-section {
+    scroll-margin-top: 60px;
   }
 `
