@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 49 of 49 - Core UI Fixes
-Plan: 01 of 01 complete
-Status: Phase complete (v1.10 milestone complete)
-Last activity: 2026-02-02 - Completed 49-01-PLAN.md (Core UI Fixes)
+Plan: 02 of 02 complete (gap closure)
+Status: Phase complete (v1.10 milestone complete, UAT gaps closed)
+Last activity: 2026-02-02 - Completed 49-02-PLAN.md (Gap Closure)
 
 Progress: [####################] 100% (v1.10 complete)
 
@@ -30,9 +30,9 @@ Progress: [####################] 100% (v1.10 complete)
 | v1.7 Parameter Sync | 39 | 1 | 2026-01-28 |
 | v1.8 Bug Fixes & Improvements | 40 | 8 | 2026-01-29 |
 | v1.9 Layers & Help System | 41-43 | 11 | 2026-01-29 |
-| v1.10 Element Bug Fixes | 44-49 | 15 | 2026-02-02 |
+| v1.10 Element Bug Fixes | 44-49 | 16 | 2026-02-02 |
 
-**Total: 49 phases, 192 plans, 11 days (2026-01-23 to 2026-02-02)**
+**Total: 49 phases, 193 plans, 11 days (2026-01-23 to 2026-02-02)**
 
 ## Accumulated Context
 
@@ -63,6 +63,8 @@ Progress: [####################] 100% (v1.10 complete)
 | 2026-02-02 | 49-01 | stopPropagation on picker container prevents drag closure |
 | 2026-02-02 | 49-01 | Generate all related topics (1 level deep) in same HTML document |
 | 2026-02-02 | 49-01 | Navigation history stores sectionId and scrollY for position restoration |
+| 2026-02-02 | 49-02 | Use isPickingRef to distinguish picker-originated value changes from external selection |
+| 2026-02-02 | 49-02 | Sort knownElementTypes by length descending for longest-first matching |
 
 All prior decisions documented in PROJECT.md Key Decisions table.
 
@@ -77,11 +79,11 @@ None
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed Phase 49 (all 1 plans) - v1.10 milestone complete
+Stopped at: Completed Phase 49 (02 plans) - v1.10 milestone complete with UAT gap closure
 Resume file: None
 
 **Next step:** Check BACKLOG.md for next milestone or user direction
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-02-02 - Completed 49-01-PLAN.md Core UI Fixes*
+*Last updated: 2026-02-02 - Completed 49-02-PLAN.md Gap Closure (UAT failures fixed)*
