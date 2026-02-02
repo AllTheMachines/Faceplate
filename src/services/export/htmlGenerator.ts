@@ -2925,47 +2925,44 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
   const canvas = document.getElementById('${id}-canvas');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
+  const width = ${config.width};
+  const height = ${config.height};
 
-  canvas.width = ${config.width} * dpr;
-  canvas.height = ${config.height} * dpr;
-  canvas.style.width = '${config.width}px';
-  canvas.style.height = '${config.height}px';
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
   ctx.scale(dpr, dpr);
 
-  // Audio math utilities
-  function frequencyToX(freq, width, minFreq, maxFreq) {
-    const minLog = Math.log10(minFreq);
-    const maxLog = Math.log10(maxFreq);
+  let currentBands = ${JSON.stringify(config.bands)};
+  let hoveredHandle = -1;
+
+  function frequencyToX(freq) {
+    const minLog = Math.log10(${config.minFreq});
+    const maxLog = Math.log10(${config.maxFreq});
     return ((Math.log10(freq) - minLog) / (maxLog - minLog)) * width;
   }
 
-  function dbToY(db, height, minDb, maxDb) {
-    return height - ((db - minDb) / (maxDb - minDb)) * height;
+  function dbToY(db) {
+    return height - ((db - ${config.minDb}) / (${config.maxDb} - ${config.minDb})) * height;
   }
 
   function calculateBiquadResponse(freq, centerFreq, gain, Q) {
-    // Simplified biquad calculation for visualization
     const freqRatio = Math.log10(freq / centerFreq);
     const bellShape = Math.exp(-Math.pow(freqRatio * Q * 3, 2));
     return gain * bellShape;
   }
 
-  window.updateEQCurve_${id.replace(/-/g, '_')} = function(bands) {
-    const width = ${config.width};
-    const height = ${config.height};
-
-    // Clear
+  function draw() {
     ctx.fillStyle = '${config.backgroundColor}';
     ctx.fillRect(0, 0, width, height);
 
     ${config.showGrid ? `
-    // Grid lines
     ctx.strokeStyle = '${config.gridColor}';
     ctx.lineWidth = 0.5;
     ctx.globalAlpha = 0.3;
-    const freqs = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
-    freqs.forEach(freq => {
-      const x = frequencyToX(freq, width, ${config.minFreq}, ${config.maxFreq});
+    [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000].forEach(freq => {
+      const x = frequencyToX(freq);
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, height);
@@ -2974,20 +2971,17 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    // Calculate composite response
     const points = [];
     for (let i = 0; i <= 200; i++) {
       const x = (i / 200) * width;
       const freq = Math.pow(10, Math.log10(${config.minFreq}) + (x / width) * (Math.log10(${config.maxFreq}) - Math.log10(${config.minFreq})));
       let totalDb = 0;
-      bands.forEach(band => {
+      currentBands.forEach(band => {
         totalDb += calculateBiquadResponse(freq, band.frequency, band.gain, band.Q);
       });
-      const y = dbToY(totalDb, height, ${config.minDb}, ${config.maxDb});
-      points.push({x, y});
+      points.push({x, y: dbToY(totalDb)});
     }
 
-    // Draw curve
     ctx.strokeStyle = '${config.curveColor}';
     ctx.lineWidth = ${config.lineWidth};
     ctx.beginPath();
@@ -2998,7 +2992,6 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
     ctx.stroke();
 
     ${config.showFill ? `
-    // Fill under curve
     ctx.fillStyle = '${config.fillColor}';
     ctx.globalAlpha = ${config.fillOpacity};
     ctx.lineTo(width, height);
@@ -3007,16 +3000,48 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    // Draw handles
-    bands.forEach((band, i) => {
-      const hx = frequencyToX(band.frequency, width, ${config.minFreq}, ${config.maxFreq});
-      const hy = dbToY(band.gain, height, ${config.minDb}, ${config.maxDb});
-      ctx.fillStyle = '${config.handleColor}';
+    currentBands.forEach((band, i) => {
+      const hx = frequencyToX(band.frequency);
+      const hy = dbToY(band.gain);
+      const isHovered = i === hoveredHandle;
+      ctx.fillStyle = isHovered ? '${config.handleHoverColor ?? '#00ffff'}' : '${config.handleColor}';
       ctx.fillRect(hx - 4, hy - 4, 8, 8);
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 1;
       ctx.strokeRect(hx - 4, hy - 4, 8, 8);
     });
+  }
+
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    let newHovered = -1;
+    currentBands.forEach((band, i) => {
+      const hx = frequencyToX(band.frequency);
+      const hy = dbToY(band.gain);
+      if (Math.abs(mx - hx) < 8 && Math.abs(my - hy) < 8) {
+        newHovered = i;
+      }
+    });
+    if (newHovered !== hoveredHandle) {
+      hoveredHandle = newHovered;
+      canvas.style.cursor = hoveredHandle >= 0 ? 'pointer' : 'default';
+      draw();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    if (hoveredHandle !== -1) {
+      hoveredHandle = -1;
+      canvas.style.cursor = 'default';
+      draw();
+    }
+  });
+
+  window.updateEQCurve_${id.replace(/-/g, '_')} = function(bands) {
+    currentBands = bands;
+    draw();
   };
 
   if (window.__JUCE__) {
@@ -3025,8 +3050,7 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
     });
   }
 
-  // Initial draw
-  window.updateEQCurve_${id.replace(/-/g, '_')}(${JSON.stringify(config.bands)});
+  draw();
 })();
 </script>`
 }
@@ -3046,19 +3070,24 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
   const canvas = document.getElementById('${id}-canvas');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
+  const width = ${config.width};
+  const height = ${config.height};
 
-  canvas.width = ${config.width} * dpr;
-  canvas.height = ${config.height} * dpr;
-  canvas.style.width = '${config.width}px';
-  canvas.style.height = '${config.height}px';
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
   ctx.scale(dpr, dpr);
 
-  function dbToX(db, width, minDb, maxDb) {
-    return ((db - minDb) / (maxDb - minDb)) * width;
+  let currentParams = {threshold: ${config.threshold}, ratio: ${config.ratio}, knee: ${config.knee}};
+  let isHovered = false;
+
+  function dbToX(db) {
+    return ((db - ${config.minDb}) / (${config.maxDb} - ${config.minDb})) * width;
   }
 
-  function dbToY(db, height, minDb, maxDb) {
-    return height - ((db - minDb) / (maxDb - minDb)) * height;
+  function dbToY(db) {
+    return height - ((db - ${config.minDb}) / (${config.maxDb} - ${config.minDb})) * height;
   }
 
   function applyCompression(inputDb, threshold, ratio, knee) {
@@ -3068,7 +3097,6 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
     } else if (inputDb > threshold + halfKnee) {
       return threshold + (inputDb - threshold) / ratio;
     } else {
-      // Soft knee (quadratic interpolation)
       const x = inputDb - threshold + halfKnee;
       const w = 2 * halfKnee;
       const y = x * x / (2 * w);
@@ -3076,38 +3104,27 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
     }
   }
 
-  window.updateCompressorCurve_${id.replace(/-/g, '_')} = function(params) {
-    const width = ${config.width};
-    const height = ${config.height};
-    const threshold = params.threshold || ${config.threshold};
-    const ratio = params.ratio || ${config.ratio};
-    const knee = params.knee || ${config.knee};
+  function draw() {
+    const threshold = currentParams.threshold;
+    const ratio = currentParams.ratio;
+    const knee = currentParams.knee;
 
-    // Clear
     ctx.fillStyle = '${config.backgroundColor}';
     ctx.fillRect(0, 0, width, height);
 
     ${config.showGrid ? `
-    // Grid lines
     ctx.strokeStyle = '${config.gridColor}';
     ctx.lineWidth = 0.5;
     ctx.globalAlpha = 0.3;
     for (let db = ${config.minDb}; db <= ${config.maxDb}; db += 12) {
-      const x = dbToX(db, width, ${config.minDb}, ${config.maxDb});
-      const y = dbToY(db, height, ${config.minDb}, ${config.maxDb});
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, height);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
-      ctx.stroke();
+      const x = dbToX(db);
+      const y = dbToY(db);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
     }
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    // 1:1 reference line
     ctx.strokeStyle = '${config.gridColor}';
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.5;
@@ -3117,22 +3134,20 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
     ctx.stroke();
     ctx.globalAlpha = 1.0;
 
-    // Compression curve
     ctx.strokeStyle = '${config.curveColor}';
     ctx.lineWidth = ${config.lineWidth};
     ctx.beginPath();
     for (let i = 0; i <= 200; i++) {
       const inputDb = ${config.minDb} + (i / 200) * (${config.maxDb} - ${config.minDb});
       const outputDb = applyCompression(inputDb, threshold, ratio, knee);
-      const x = dbToX(inputDb, width, ${config.minDb}, ${config.maxDb});
-      const y = dbToY(outputDb, height, ${config.minDb}, ${config.maxDb});
+      const x = dbToX(inputDb);
+      const y = dbToY(outputDb);
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
     ctx.stroke();
 
     ${config.showFill ? `
-    // Fill under curve
     ctx.fillStyle = '${config.fillColor}';
     ctx.globalAlpha = 0.3;
     ctx.lineTo(width, height);
@@ -3141,14 +3156,40 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    // Threshold handle
-    const tx = dbToX(threshold, width, ${config.minDb}, ${config.maxDb});
-    const ty = dbToY(threshold, height, ${config.minDb}, ${config.maxDb});
-    ctx.fillStyle = '${config.handleColor}';
+    const tx = dbToX(threshold);
+    const ty = dbToY(threshold);
+    ctx.fillStyle = isHovered ? '${config.handleHoverColor ?? '#00ffff'}' : '${config.handleColor}';
     ctx.fillRect(tx - 4, ty - 4, 8, 8);
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1;
     ctx.strokeRect(tx - 4, ty - 4, 8, 8);
+  }
+
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const tx = dbToX(currentParams.threshold);
+    const ty = dbToY(currentParams.threshold);
+    const newHovered = Math.abs(mx - tx) < 8 && Math.abs(my - ty) < 8;
+    if (newHovered !== isHovered) {
+      isHovered = newHovered;
+      canvas.style.cursor = isHovered ? 'pointer' : 'default';
+      draw();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    if (isHovered) {
+      isHovered = false;
+      canvas.style.cursor = 'default';
+      draw();
+    }
+  });
+
+  window.updateCompressorCurve_${id.replace(/-/g, '_')} = function(params) {
+    currentParams = {...currentParams, ...params};
+    draw();
   };
 
   if (window.__JUCE__) {
@@ -3157,8 +3198,7 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
     });
   }
 
-  // Initial draw
-  window.updateCompressorCurve_${id.replace(/-/g, '_')}({threshold: ${config.threshold}, ratio: ${config.ratio}, knee: ${config.knee}});
+  draw();
 })();
 </script>`
 }
@@ -3450,27 +3490,31 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
   const canvas = document.getElementById('${id}-canvas');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
+  const width = ${config.width};
+  const height = ${config.height};
 
-  canvas.width = ${config.width} * dpr;
-  canvas.height = ${config.height} * dpr;
-  canvas.style.width = '${config.width}px';
-  canvas.style.height = '${config.height}px';
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
   ctx.scale(dpr, dpr);
 
-  function frequencyToX(freq, width, minFreq, maxFreq) {
-    const minLog = Math.log10(minFreq);
-    const maxLog = Math.log10(maxFreq);
+  let currentParams = {filterType: '${config.filterType}', cutoffFrequency: ${config.cutoffFrequency}, resonance: ${config.resonance}, gain: ${config.gain}};
+  let isHovered = false;
+
+  function frequencyToX(freq) {
+    const minLog = Math.log10(${config.minFreq});
+    const maxLog = Math.log10(${config.maxFreq});
     return ((Math.log10(freq) - minLog) / (maxLog - minLog)) * width;
   }
 
-  function dbToY(db, height, minDb, maxDb) {
-    return height - ((db - minDb) / (maxDb - minDb)) * height;
+  function dbToY(db) {
+    return height - ((db - ${config.minDb}) / (${config.maxDb} - ${config.minDb})) * height;
   }
 
   function calculateFilterResponse(freq, filterType, cutoff, resonance, gain) {
     const ratio = freq / cutoff;
     let db = 0;
-
     switch (filterType) {
       case 'lowpass':
         db = ratio > 1 ? -12 * Math.log2(ratio) : 0;
@@ -3497,30 +3541,24 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
         db = gain * Math.exp(-Math.pow(Math.log2(ratio) * resonance, 2));
         break;
     }
-
     return db;
   }
 
-  window.updateFilterResponse_${id.replace(/-/g, '_')} = function(params) {
-    const width = ${config.width};
-    const height = ${config.height};
-    const filterType = params.filterType || '${config.filterType}';
-    const cutoff = params.cutoffFrequency || ${config.cutoffFrequency};
-    const resonance = params.resonance || ${config.resonance};
-    const gain = params.gain || ${config.gain};
+  function draw() {
+    const filterType = currentParams.filterType;
+    const cutoff = currentParams.cutoffFrequency;
+    const resonance = currentParams.resonance;
+    const gain = currentParams.gain;
 
-    // Clear
     ctx.fillStyle = '${config.backgroundColor}';
     ctx.fillRect(0, 0, width, height);
 
     ${config.showGrid ? `
-    // Grid lines
     ctx.strokeStyle = '${config.gridColor}';
     ctx.lineWidth = 0.5;
     ctx.globalAlpha = 0.3;
-    const freqs = [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
-    freqs.forEach(freq => {
-      const x = frequencyToX(freq, width, ${config.minFreq}, ${config.maxFreq});
+    [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000].forEach(freq => {
+      const x = frequencyToX(freq);
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, height);
@@ -3529,17 +3567,14 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    // Calculate filter response
     const points = [];
     for (let i = 0; i <= 200; i++) {
       const x = (i / 200) * width;
       const freq = Math.pow(10, Math.log10(${config.minFreq}) + (x / width) * (Math.log10(${config.maxFreq}) - Math.log10(${config.minFreq})));
       const db = calculateFilterResponse(freq, filterType, cutoff, resonance, gain);
-      const y = dbToY(db, height, ${config.minDb}, ${config.maxDb});
-      points.push({x, y});
+      points.push({x, y: dbToY(db)});
     }
 
-    // Draw curve
     ctx.strokeStyle = '${config.curveColor}';
     ctx.lineWidth = ${config.lineWidth};
     ctx.beginPath();
@@ -3550,7 +3585,6 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
     ctx.stroke();
 
     ${config.showFill ? `
-    // Fill under curve
     ctx.fillStyle = '${config.fillColor}';
     ctx.globalAlpha = 0.3;
     ctx.lineTo(width, height);
@@ -3559,15 +3593,42 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    // Cutoff frequency handle
-    const cutoffX = frequencyToX(cutoff, width, ${config.minFreq}, ${config.maxFreq});
+    const cutoffX = frequencyToX(cutoff);
     const cutoffDb = calculateFilterResponse(cutoff, filterType, cutoff, resonance, gain);
-    const cutoffY = dbToY(cutoffDb, height, ${config.minDb}, ${config.maxDb});
-    ctx.fillStyle = '${config.handleColor}';
+    const cutoffY = dbToY(cutoffDb);
+    ctx.fillStyle = isHovered ? '${config.handleHoverColor ?? '#00ffff'}' : '${config.handleColor}';
     ctx.fillRect(cutoffX - 4, cutoffY - 4, 8, 8);
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1;
     ctx.strokeRect(cutoffX - 4, cutoffY - 4, 8, 8);
+  }
+
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const cutoffX = frequencyToX(currentParams.cutoffFrequency);
+    const cutoffDb = calculateFilterResponse(currentParams.cutoffFrequency, currentParams.filterType, currentParams.cutoffFrequency, currentParams.resonance, currentParams.gain);
+    const cutoffY = dbToY(cutoffDb);
+    const newHovered = Math.abs(mx - cutoffX) < 8 && Math.abs(my - cutoffY) < 8;
+    if (newHovered !== isHovered) {
+      isHovered = newHovered;
+      canvas.style.cursor = isHovered ? 'pointer' : 'default';
+      draw();
+    }
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    if (isHovered) {
+      isHovered = false;
+      canvas.style.cursor = 'default';
+      draw();
+    }
+  });
+
+  window.updateFilterResponse_${id.replace(/-/g, '_')} = function(params) {
+    currentParams = {...currentParams, ...params};
+    draw();
   };
 
   if (window.__JUCE__) {
@@ -3576,8 +3637,7 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
     });
   }
 
-  // Initial draw
-  window.updateFilterResponse_${id.replace(/-/g, '_')}({filterType: '${config.filterType}', cutoffFrequency: ${config.cutoffFrequency}, resonance: ${config.resonance}, gain: ${config.gain}});
+  draw();
 })();
 </script>`
 }
