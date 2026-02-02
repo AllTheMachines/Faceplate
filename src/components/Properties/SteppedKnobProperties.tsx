@@ -34,6 +34,15 @@ export function SteppedKnobProperties({ element, onUpdate }: SteppedKnobProperti
           />
           <span className="text-sm text-gray-300">Show Step Indicators</span>
         </label>
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={element.showStepMarks ?? false}
+            onChange={(e) => onUpdate({ showStepMarks: e.target.checked })}
+            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-300">Show Step Marks</span>
+        </label>
       </PropertySection>
 
       {/* Value */}
