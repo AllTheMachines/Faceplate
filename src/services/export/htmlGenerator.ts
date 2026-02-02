@@ -3298,43 +3298,76 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
   const canvas = document.getElementById('${id}-canvas');
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
+  const width = ${config.width};
+  const height = ${config.height};
 
-  canvas.width = ${config.width} * dpr;
-  canvas.height = ${config.height} * dpr;
-  canvas.style.width = '${config.width}px';
-  canvas.style.height = '${config.height}px';
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
   ctx.scale(dpr, dpr);
 
-  function calculateEnvelopeCurve(attack, decay, sustain, release, curveType) {
+  let currentParams = {
+    attack: ${config.attack},
+    decay: ${config.decay},
+    sustain: ${config.sustain},
+    release: ${config.release},
+    curveType: '${config.curveType}'
+  };
+  let hoveredHandle = -1; // 0=attack, 1=decay/sustain, 2=release
+  let isDragging = false;
+  let draggedHandle = -1;
+
+  const sustainTime = 0.3; // Fixed sustain display time
+
+  function getTotalTime() {
+    return currentParams.attack + currentParams.decay + sustainTime + currentParams.release;
+  }
+
+  function getHandlePositions() {
+    const totalTime = getTotalTime();
+    const attack = currentParams.attack;
+    const decay = currentParams.decay;
+    const sustain = currentParams.sustain;
+    const release = currentParams.release;
+
+    return [
+      // Attack peak (end of attack phase)
+      { x: (attack / totalTime) * width, y: 0 },
+      // Decay end / Sustain point
+      { x: ((attack + decay) / totalTime) * width, y: height - sustain * height },
+      // Release end
+      { x: width, y: height }
+    ];
+  }
+
+  function calculateEnvelopeCurve() {
     const points = [];
-    const attackTime = attack;
-    const decayTime = decay;
-    const sustainTime = 0.3; // Fixed for visual display
-    const releaseTime = release;
-    const totalTime = attackTime + decayTime + sustainTime + releaseTime;
+    const attack = currentParams.attack;
+    const decay = currentParams.decay;
+    const sustain = currentParams.sustain;
+    const release = currentParams.release;
+    const curveType = currentParams.curveType;
+    const totalTime = getTotalTime();
 
     for (let i = 0; i <= 200; i++) {
       const t = (i / 200) * totalTime;
       let level = 0;
 
-      if (t < attackTime) {
-        // Attack phase
-        const attackProgress = t / attackTime;
+      if (t < attack) {
+        const attackProgress = t / attack;
         level = curveType === 'exponential' ? Math.pow(attackProgress, 0.3) : attackProgress;
-      } else if (t < attackTime + decayTime) {
-        // Decay phase
-        const decayProgress = (t - attackTime) / decayTime;
+      } else if (t < attack + decay) {
+        const decayProgress = (t - attack) / decay;
         if (curveType === 'exponential') {
           level = sustain + (1 - sustain) * Math.exp(-5 * decayProgress);
         } else {
           level = 1 - (1 - sustain) * decayProgress;
         }
-      } else if (t < attackTime + decayTime + sustainTime) {
-        // Sustain phase
+      } else if (t < attack + decay + sustainTime) {
         level = sustain;
       } else {
-        // Release phase
-        const releaseProgress = (t - attackTime - decayTime - sustainTime) / releaseTime;
+        const releaseProgress = (t - attack - decay - sustainTime) / release;
         if (curveType === 'exponential') {
           level = sustain * Math.exp(-5 * releaseProgress);
         } else {
@@ -3344,25 +3377,14 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
 
       points.push({t, level});
     }
-
     return points;
   }
 
-  window.updateEnvelopeDisplay_${id.replace(/-/g, '_')} = function(params) {
-    const width = ${config.width};
-    const height = ${config.height};
-    const attack = params.attack || ${config.attack};
-    const decay = params.decay || ${config.decay};
-    const sustain = params.sustain || ${config.sustain};
-    const release = params.release || ${config.release};
-    const curveType = params.curveType || '${config.curveType}';
-
-    // Clear
+  function draw() {
     ctx.fillStyle = '${config.backgroundColor}';
     ctx.fillRect(0, 0, width, height);
 
     ${config.showGrid ? `
-    // Grid
     ctx.strokeStyle = '${config.gridColor}';
     ctx.lineWidth = 0.5;
     ctx.globalAlpha = 0.3;
@@ -3373,10 +3395,9 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
     ctx.globalAlpha = 1.0;
     ` : ''}
 
-    const points = calculateEnvelopeCurve(attack, decay, sustain, release, curveType);
-    const totalTime = attack + decay + 0.3 + release;
+    const points = calculateEnvelopeCurve();
+    const totalTime = getTotalTime();
 
-    // Draw envelope curve
     ctx.strokeStyle = '${config.curveColor}';
     ctx.lineWidth = ${config.lineWidth};
     ctx.beginPath();
@@ -3389,7 +3410,6 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
     ctx.stroke();
 
     ${config.showFill ? `
-    // Fill under curve
     ctx.fillStyle = '${config.fillColor}';
     ctx.globalAlpha = 0.3;
     ctx.lineTo(width, height);
@@ -3399,14 +3419,13 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
     ` : ''}
 
     ${config.showStageMarkers ? `
-    // Stage markers
     ctx.strokeStyle = '${config.gridColor}';
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.5;
     ctx.setLineDash([4, 4]);
-    const attackX = (attack / totalTime) * width;
-    const decayX = ((attack + decay) / totalTime) * width;
-    const releaseX = ((attack + decay + 0.3) / totalTime) * width;
+    const attackX = (currentParams.attack / totalTime) * width;
+    const decayX = ((currentParams.attack + currentParams.decay) / totalTime) * width;
+    const releaseX = ((currentParams.attack + currentParams.decay + sustainTime) / totalTime) * width;
     [attackX, decayX, releaseX].forEach(x => {
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -3416,6 +3435,99 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
     ctx.setLineDash([]);
     ctx.globalAlpha = 1.0;
     ` : ''}
+
+    // Draw handles
+    const handles = getHandlePositions();
+    handles.forEach((h, i) => {
+      const isHovered = i === hoveredHandle || i === draggedHandle;
+      ctx.fillStyle = isHovered ? '${config.handleHoverColor ?? '#00ffff'}' : '${config.handleColor ?? '#ffffff'}';
+      ctx.fillRect(h.x - 4, h.y - 4, 8, 8);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(h.x - 4, h.y - 4, 8, 8);
+    });
+  }
+
+  function getHandleAtPosition(mx, my) {
+    const handles = getHandlePositions();
+    for (let i = 0; i < handles.length; i++) {
+      if (Math.abs(mx - handles[i].x) < 8 && Math.abs(my - handles[i].y) < 8) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const handle = getHandleAtPosition(mx, my);
+    if (handle >= 0) {
+      isDragging = true;
+      draggedHandle = handle;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+
+  canvas.addEventListener('mousemove', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    if (isDragging && draggedHandle >= 0) {
+      const totalTime = getTotalTime();
+      const timeAtX = (mx / width) * totalTime;
+
+      if (draggedHandle === 0) {
+        // Attack handle - adjust attack time
+        const newAttack = Math.max(0.01, Math.min(2.0, timeAtX));
+        currentParams.attack = newAttack;
+      } else if (draggedHandle === 1) {
+        // Decay/Sustain handle - adjust decay time and sustain level
+        const newDecayEnd = Math.max(currentParams.attack + 0.01, timeAtX);
+        const newDecay = Math.max(0.01, Math.min(2.0, newDecayEnd - currentParams.attack));
+        const newSustain = Math.max(0, Math.min(1, 1 - my / height));
+        currentParams.decay = newDecay;
+        currentParams.sustain = newSustain;
+      } else if (draggedHandle === 2) {
+        // Release handle - adjust release time based on X position relative to sustain end
+        const sustainEndTime = currentParams.attack + currentParams.decay + sustainTime;
+        const newRelease = Math.max(0.01, Math.min(2.0, (mx / width) * totalTime - sustainEndTime + currentParams.release));
+        if (newRelease > 0.01) {
+          currentParams.release = newRelease;
+        }
+      }
+      draw();
+    } else {
+      const newHovered = getHandleAtPosition(mx, my);
+      if (newHovered !== hoveredHandle) {
+        hoveredHandle = newHovered;
+        canvas.style.cursor = hoveredHandle >= 0 ? 'grab' : 'default';
+        draw();
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (isDragging) {
+      isDragging = false;
+      draggedHandle = -1;
+      canvas.style.cursor = hoveredHandle >= 0 ? 'grab' : 'default';
+    }
+  });
+
+  canvas.addEventListener('mouseleave', function() {
+    if (!isDragging && hoveredHandle !== -1) {
+      hoveredHandle = -1;
+      canvas.style.cursor = 'default';
+      draw();
+    }
+  });
+
+  window.updateEnvelopeDisplay_${id.replace(/-/g, '_')} = function(params) {
+    currentParams = {...currentParams, ...params};
+    draw();
   };
 
   if (window.__JUCE__) {
@@ -3424,8 +3536,7 @@ function generateEnvelopeDisplayHTML(config: EnvelopeDisplayElementConfig): stri
     });
   }
 
-  // Initial draw
-  window.updateEnvelopeDisplay_${id.replace(/-/g, '_')}({attack: ${config.attack}, decay: ${config.decay}, sustain: ${config.sustain}, release: ${config.release}, curveType: '${config.curveType}'});
+  draw();
 })();
 </script>`
 }
