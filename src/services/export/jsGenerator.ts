@@ -1875,9 +1875,16 @@ function setupComboBoxInteraction(comboboxId, paramId) {
     const lowerFilter = filter.toLowerCase();
     let visibleCount = 0;
 
+    // Check if input exactly matches an option (user just selected it)
+    // In that case, show all options instead of filtering
+    const inputMatchesOption = Array.from(items).some(
+      item => item.textContent.toLowerCase() === lowerFilter
+    );
+
     items.forEach((item) => {
       const text = item.textContent.toLowerCase();
-      const matches = !filter || text.includes(lowerFilter);
+      // Show all if input matches a selection, otherwise filter
+      const matches = inputMatchesOption || !filter || text.includes(lowerFilter);
       item.style.display = matches ? 'block' : 'none';
       if (matches) visibleCount++;
     });
