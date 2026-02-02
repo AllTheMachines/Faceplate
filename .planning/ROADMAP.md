@@ -44,7 +44,12 @@ Plans:
   2. Arc Slider has configurable distance options for positioning labels and values
   3. Notched Slider displays visible labels and tick lines at notch positions
   4. Bipolar Slider renders and operates correctly in horizontal orientation
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 45-01-PLAN.md — Fix Notched Slider visibility and Bipolar Slider horizontal orientation
+- [ ] 45-02-PLAN.md — Add Bipolar Slider zone colors and verify Arc Slider distance discoverability
+- [ ] 45-03-PLAN.md — Implement ASCII Slider drag interaction with Shift key fine control
 
 #### Phase 46: Curve Fixes
 **Goal**: All curve/visualization elements render visibly and respond to interaction
@@ -741,7 +746,7 @@ Plans:
 | 42. Layers Panel | v1.9 | 5/5 | Complete | 2026-01-29 |
 | 43. Help System | v1.9 | 4/4 | Complete | 2026-01-29 |
 | 44. Navigation Element Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
-| 45. Slider Fixes | v1.10 | 0/TBD | Not started | - |
+| 45. Slider Fixes | v1.10 | 0/3 | Planning complete | - |
 | 46. Curve Fixes | v1.10 | 0/TBD | Not started | - |
 | 47. Button & Knob Fixes | v1.10 | 0/TBD | Not started | - |
 | 48. Display & LED Fixes | v1.10 | 0/TBD | Not started | - |
@@ -749,4 +754,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 44 complete*
+*Last updated: 2026-02-02 - Phase 45 planning complete*
