@@ -516,6 +516,8 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   notchPositions: number[] | null // Custom positions 0-1, overrides notchCount if provided
   showNotchLabels: boolean // Show value at each notch position
   notchColor: string // Color of notch indicators
+  notchLength: number // Length of tick lines extending from track (default 12)
+  notchLabelFontSize: number // Font size for notch labels (default 10)
 
   // Label Display
   showLabel: boolean
@@ -1830,6 +1832,8 @@ export function createNotchedSlider(overrides?: Partial<NotchedSliderElementConf
     notchPositions: null,
     showNotchLabels: false,
     notchColor: 'rgba(255, 255, 255, 0.5)',
+    notchLength: 12,
+    notchLabelFontSize: 10,
     showLabel: false,
     labelText: 'Notched',
     labelPosition: 'bottom',

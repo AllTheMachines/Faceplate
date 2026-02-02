@@ -53,6 +53,20 @@ export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderProp
           value={element.notchColor}
           onChange={(notchColor) => onUpdate({ notchColor })}
         />
+        <NumberInput
+          label="Tick Length"
+          value={element.notchLength}
+          onChange={(notchLength) => onUpdate({ notchLength })}
+          min={4}
+          max={30}
+        />
+        <NumberInput
+          label="Label Font Size"
+          value={element.notchLabelFontSize}
+          onChange={(notchLabelFontSize) => onUpdate({ notchLabelFontSize })}
+          min={8}
+          max={16}
+        />
       </PropertySection>
 
       {/* Value */}

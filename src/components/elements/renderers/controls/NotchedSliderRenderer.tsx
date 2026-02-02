@@ -104,7 +104,8 @@ export function NotchedSliderRenderer({ config }: NotchedSliderRendererProps) {
   }
 
   // Notch length (perpendicular to track)
-  const notchLength = 8
+  const notchLength = config.notchLength ?? 12
+  const notchLabelFontSize = config.notchLabelFontSize ?? 10
 
   if (config.orientation === 'vertical') {
     // Vertical slider: 0 = bottom, 1 = top
@@ -185,7 +186,7 @@ export function NotchedSliderRenderer({ config }: NotchedSliderRendererProps) {
                     x={centerX + trackWidth / 2 + notchLength + 6}
                     y={notchY}
                     fill={config.notchColor}
-                    fontSize={9}
+                    fontSize={notchLabelFontSize}
                     dominantBaseline="middle"
                   >
                     {(config.min + pos * range).toFixed(1)}
@@ -286,7 +287,7 @@ export function NotchedSliderRenderer({ config }: NotchedSliderRendererProps) {
                     x={notchX}
                     y={centerY + trackWidth / 2 + notchLength + 12}
                     fill={config.notchColor}
-                    fontSize={9}
+                    fontSize={notchLabelFontSize}
                     textAnchor="middle"
                   >
                     {(config.min + pos * range).toFixed(1)}
