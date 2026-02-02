@@ -1,4 +1,6 @@
+import { useState, useRef, useCallback } from 'react'
 import { AsciiSliderElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
 
 interface AsciiSliderRendererProps {
   config: AsciiSliderElementConfig
@@ -26,6 +28,14 @@ function formatValue(
 }
 
 export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false)
+  const dragStartRef = useRef({ mouseY: 0, startValue: 0 })
+  const elementRef = useRef<HTMLDivElement>(null)
+
+  // Get store action for updating element value
+  const updateElement = useStore((state) => state.updateElement)
+
   // Calculate normalized value (0 to 1)
   const range = config.max - config.min
   const normalizedValue = range > 0 ? (config.value - config.min) / range : 0
@@ -46,6 +56,54 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
     config.valueSuffix,
     config.valueDecimalPlaces
   )
+
+  // Drag handlers
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    // CRITICAL: Prevent BaseElement from handling this as canvas drag
+    e.stopPropagation()
+    e.preventDefault()
+
+    setIsDragging(true)
+    dragStartRef.current = {
+      mouseY: e.clientY,
+      startValue: config.value,
+    }
+
+    // Capture pointer for reliable tracking even outside element
+    elementRef.current?.setPointerCapture(e.pointerId)
+  }, [config.value])
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return
+
+    // Shift key = 10x finer control
+    const sensitivity = e.shiftKey ? 0.1 : 1.0
+
+    // Vertical drag: up = increase (inverted Y axis)
+    const pixelsPerFullRange = config.dragSensitivity ?? 100
+    const deltaY = dragStartRef.current.mouseY - e.clientY  // Inverted
+    const normalizedDelta = (deltaY / pixelsPerFullRange) * sensitivity
+
+    // Calculate new value clamped to range
+    const valueRange = config.max - config.min
+    const newValue = Math.max(
+      config.min,
+      Math.min(
+        config.max,
+        dragStartRef.current.startValue + normalizedDelta * valueRange
+      )
+    )
+
+    // Update element in store (live preview)
+    updateElement(config.id, { value: newValue })
+  }, [isDragging, config.id, config.min, config.max, config.dragSensitivity, updateElement])
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return
+
+    setIsDragging(false)
+    elementRef.current?.releasePointerCapture(e.pointerId)
+  }, [isDragging])
 
   // Build the full display string based on settings
   let displayParts: string[] = []
@@ -110,6 +168,7 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
 
     return (
       <div
+        ref={elementRef}
         className="w-full h-full flex flex-col justify-center"
         style={{
           fontFamily: config.fontFamily,
@@ -131,7 +190,12 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
           MozUserSelect: 'none',
           msUserSelect: 'none',
           alignItems: justifyContent,
+          cursor: isDragging ? 'ns-resize' : 'pointer',
         }}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
       >
         {config.valuePosition === 'above' && (
           <div style={{ textAlign: config.textAlign || 'left' }}>{valueLine}</div>
@@ -146,6 +210,7 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
 
   return (
     <div
+      ref={elementRef}
       className="w-full h-full flex items-center"
       style={{
         fontFamily: config.fontFamily,
@@ -167,7 +232,12 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
         MozUserSelect: 'none',
         msUserSelect: 'none',
         justifyContent,
+        cursor: isDragging ? 'ns-resize' : 'pointer',
       }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
     >
       {displayText}
     </div>

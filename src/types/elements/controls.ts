@@ -1084,6 +1084,7 @@ export interface AsciiSliderElementConfig extends BaseElementConfig {
 
   // Interaction
   selectable: boolean // Allow text selection
+  dragSensitivity: number // Pixels per full range (default: 100)
 }
 
 export interface AsciiButtonElementConfig extends BaseElementConfig {
@@ -1958,6 +1959,7 @@ export function createAsciiSlider(overrides?: Partial<AsciiSliderElementConfig>)
     borderColor: '#374151',
     textAlign: 'left',
     selectable: false,
+    dragSensitivity: 100,  // 100px vertical drag = full range
     ...overrides,
   }
 }
