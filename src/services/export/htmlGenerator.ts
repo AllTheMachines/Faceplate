@@ -1052,7 +1052,7 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
       ${valueHTML}
       <div class="slider-track" style="background: ${config.trackColor};"></div>
       <div class="slider-center-mark" style="${centerStyle}; background: ${config.centerLineColor};"></div>
-      <div class="slider-fill" style="${fillStyle}; background: ${config.fillColor};"></div>
+      <div class="slider-fill" style="${fillStyle}; background: ${normalizedValue >= (config.centerValue ?? 0.5) ? (config.positiveFillColor ?? config.trackFillColor) : (config.negativeFillColor ?? config.trackFillColor)};"></div>
       <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
     </div>`
 }
@@ -1111,7 +1111,7 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
     const notchStyle = isVertical
       ? `bottom: ${pos}%`
       : `left: ${pos}%`
-    notchesHTML += `<div class="notch" style="${notchStyle}; background: ${config.indicatorColor};"></div>`
+    notchesHTML += `<div class="notch" style="${notchStyle}; background: ${config.notchColor};"></div>`
   }
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
@@ -1130,7 +1130,7 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
       ${valueHTML}
       <div class="slider-track" style="background: ${config.trackColor};"></div>
       <div class="notches">${notchesHTML}</div>
-      <div class="slider-fill" style="${fillStyle}; background: ${config.fillColor};"></div>
+      <div class="slider-fill" style="${fillStyle}; background: ${config.trackFillColor};"></div>
       <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
     </div>`
 }
