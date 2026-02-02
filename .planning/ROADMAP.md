@@ -104,10 +104,11 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Color picker popup stays open when user drags to select colors (no premature closing)
   2. Related Topics links in help system navigate to the correct help section when clicked
-**Plans**: 1 plan
+**Plans**: 2 plans
 
 Plans:
 - [x] 49-01-PLAN.md — Fix color picker drag and help navigation
+- [ ] 49-02-PLAN.md — Gap closure: Fix color picker useEffect and Related Topics key matching
 
 <details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
@@ -768,8 +769,8 @@ Plans:
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
-| 49. Core UI Fixes | v1.10 | 1/1 | Complete | 2026-02-02 |
+| 49. Core UI Fixes | v1.10 | 1/2 | In Progress | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 49 complete (1 plan) - Milestone v1.10 complete*
+*Last updated: 2026-02-02 - Phase 49 gap closure plan added (49-02)*
