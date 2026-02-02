@@ -1,4 +1,6 @@
 import { SegmentButtonElementConfig, SegmentConfig } from '../../../../types/elements'
+import { builtInIconSVG, BuiltInIcon } from '../../../../utils/builtInIcons'
+import { useStore } from '../../../../store'
 
 interface SegmentButtonRendererProps {
   config: SegmentButtonElementConfig
@@ -14,6 +16,7 @@ interface SegmentButtonRendererProps {
  * - Segments can show icon, text, or icon+text
  */
 export function SegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
+  const getAsset = useStore((state) => state.getAsset)
   const { segments, selectedIndices, orientation, segmentCount } = config
   const isHorizontal = orientation === 'horizontal'
 
@@ -67,7 +70,7 @@ export function SegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
               overflow: 'hidden',
             }}
           >
-            {renderSegmentContent(segment, isSelected)}
+            {renderSegmentContent(segment, isSelected, config, getAsset)}
           </div>
         )
       })}
@@ -78,12 +81,20 @@ export function SegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
 /**
  * Render segment content based on display mode
  */
-function renderSegmentContent(segment: SegmentConfig, isSelected: boolean) {
-  const iconSize = 16
+function renderSegmentContent(
+  segment: SegmentConfig,
+  isSelected: boolean,
+  config: SegmentButtonElementConfig,
+  getAsset: (id: string) => { svgContent?: string } | undefined
+) {
+  const iconSize = config.iconSize ?? 16
+  const iconColor = isSelected
+    ? (config.selectedIconColor ?? '#ffffff')
+    : (config.iconColor ?? '#888888')
 
   switch (segment.displayMode) {
     case 'icon':
-      return renderIcon(segment, iconSize, isSelected)
+      return renderIcon(segment, iconSize, iconColor, getAsset)
 
     case 'text':
       return (
@@ -101,7 +112,7 @@ function renderSegmentContent(segment: SegmentConfig, isSelected: boolean) {
     case 'icon-text':
       return (
         <>
-          {renderIcon(segment, iconSize, isSelected)}
+          {renderIcon(segment, iconSize, iconColor, getAsset)}
           <span
             style={{
               overflow: 'hidden',
@@ -120,75 +131,43 @@ function renderSegmentContent(segment: SegmentConfig, isSelected: boolean) {
 }
 
 /**
- * Render icon based on source type
- * Falls back to placeholder if icon not available
+ * Render icon based on source type using actual SVG content
  */
-function renderIcon(segment: SegmentConfig, size: number, _isSelected: boolean) {
-  // For builtin icons, render a simple placeholder for now
-  // Real icon rendering will use builtInIconSVG utility when available
+function renderIcon(
+  segment: SegmentConfig,
+  size: number,
+  color: string,
+  getAsset: (id: string) => { svgContent?: string } | undefined
+) {
+  let iconContent: string | null = null
+
+  // Get SVG content based on icon source
   if (segment.iconSource === 'builtin' && segment.builtInIcon) {
-    return (
-      <span
-        style={{
-          width: size,
-          height: size,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: size * 0.75,
-        }}
-      >
-        {getBuiltInIconSymbol(segment.builtInIcon)}
-      </span>
-    )
+    iconContent = builtInIconSVG[segment.builtInIcon as BuiltInIcon] ?? null
+  } else if (segment.iconSource === 'asset' && segment.assetId) {
+    const asset = getAsset(segment.assetId)
+    if (asset?.svgContent) {
+      iconContent = asset.svgContent
+    }
   }
 
-  // For asset icons, show placeholder
-  if (segment.iconSource === 'asset' && segment.assetId) {
-    return (
-      <span
-        style={{
-          width: size,
-          height: size,
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'rgba(128,128,128,0.3)',
-          borderRadius: 2,
-          fontSize: 8,
-        }}
-      >
-        IMG
-      </span>
-    )
+  // Fallback to Play icon if no icon found
+  if (!iconContent) {
+    iconContent = builtInIconSVG[BuiltInIcon.Play]
   }
 
-  return null
-}
-
-/**
- * Get simple unicode symbol for common built-in icon names
- */
-function getBuiltInIconSymbol(iconName: string): string {
-  const iconMap: Record<string, string> = {
-    play: '\u25B6',
-    pause: '\u23F8',
-    stop: '\u25A0',
-    record: '\u23FA',
-    forward: '\u23E9',
-    backward: '\u23EA',
-    next: '\u23ED',
-    previous: '\u23EE',
-    loop: '\u21BB',
-    shuffle: '\u21C4',
-    volume: '\u266A',
-    mute: '\u266A',
-    settings: '\u2699',
-    power: '\u23FB',
-    check: '\u2713',
-    close: '\u2715',
-    add: '+',
-    remove: '-',
-  }
-  return iconMap[iconName.toLowerCase()] || '\u25CF' // Default to filled circle
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        color: color,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+      }}
+      dangerouslySetInnerHTML={{ __html: iconContent }}
+    />
+  )
 }
