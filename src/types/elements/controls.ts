@@ -264,7 +264,8 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
 
   // Stepped behavior
   stepCount: number // 12, 24, 36, 48, or 64
-  showStepIndicators: boolean // Show tick marks at each step
+  showStepIndicators: boolean // Show dots on arc track at each step position
+  showStepMarks: boolean // Show tick marks outside knob edge at each step position
 
   // Visual Style
   trackColor: string
@@ -687,6 +688,11 @@ export interface SegmentButtonElementConfig extends BaseElementConfig {
   textColor: string
   selectedTextColor: string
   borderColor: string
+
+  // Icon Style
+  iconSize: number // Size of icons in pixels (default 16)
+  iconColor: string // Icon color for unselected segments (default '#888888')
+  selectedIconColor: string // Icon color for selected segments (default '#ffffff')
 }
 
 // ============================================================================
@@ -2090,6 +2096,9 @@ export function createSegmentButton(overrides?: Partial<SegmentButtonElementConf
     textColor: '#888888',
     selectedTextColor: '#ffffff',
     borderColor: '#6b7280',
+    iconSize: 16,
+    iconColor: '#888888',
+    selectedIconColor: '#ffffff',
     ...overrides,
   }
 }
