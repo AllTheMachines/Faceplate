@@ -32,8 +32,8 @@ Bug fix milestone addressing 20 GitHub issues across navigation elements, slider
 **Plans**: 2 plans
 
 Plans:
-- [ ] 44-01-PLAN.md — Fix Tree View auto-expand and Tag Selector dropdown visibility
-- [ ] 44-02-PLAN.md — Fix Combo Box option filtering and Breadcrumb expansion
+- [x] 44-01-PLAN.md — Fix Tree View auto-expand and Tag Selector dropdown visibility
+- [x] 44-02-PLAN.md — Fix Combo Box option filtering and Breadcrumb expansion
 
 #### Phase 45: Slider Fixes
 **Goal**: All slider variants feel natural and display their visual elements correctly
@@ -740,7 +740,7 @@ Plans:
 | 41. Bug Fixes | v1.9 | 2/2 | Complete | 2026-01-29 |
 | 42. Layers Panel | v1.9 | 5/5 | Complete | 2026-01-29 |
 | 43. Help System | v1.9 | 4/4 | Complete | 2026-01-29 |
-| 44. Navigation Element Fixes | v1.10 | 0/2 | Planned | - |
+| 44. Navigation Element Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 45. Slider Fixes | v1.10 | 0/TBD | Not started | - |
 | 46. Curve Fixes | v1.10 | 0/TBD | Not started | - |
 | 47. Button & Knob Fixes | v1.10 | 0/TBD | Not started | - |
@@ -749,4 +749,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 44 plans created*
+*Last updated: 2026-02-02 - Phase 44 complete*
