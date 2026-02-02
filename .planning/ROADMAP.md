@@ -94,8 +94,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 48-01-PLAN.md — Add showOctave property to Note Display and change default fontSize to 14px
-- [ ] 48-02-PLAN.md — Remove all 6 LED element types entirely (breaking change)
+- [x] 48-01-PLAN.md — Add showOctave property to Note Display and change default fontSize to 14px
+- [x] 48-02-PLAN.md — Remove all 6 LED element types entirely (breaking change)
 
 #### Phase 49: Core UI Fixes
 **Goal**: Color picker and help system work without frustrating interaction issues
@@ -764,9 +764,9 @@ Plans:
 | 45. Slider Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
-| 48. Display & LED Fixes | v1.10 | 0/2 | Not started | - |
+| 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 48 planned (2 plans)*
+*Last updated: 2026-02-02 - Phase 48 complete (2 plans)*
