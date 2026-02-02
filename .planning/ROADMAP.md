@@ -104,7 +104,10 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Color picker popup stays open when user drags to select colors (no premature closing)
   2. Related Topics links in help system navigate to the correct help section when clicked
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 49-01-PLAN.md — Fix color picker drag and help navigation
 
 <details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
@@ -765,7 +768,7 @@ Plans:
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
-| 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
+| 49. Core UI Fixes | v1.10 | 0/1 | Ready | - |
 
 ---
 *Roadmap created: 2026-01-25*
