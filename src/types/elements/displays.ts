@@ -302,6 +302,7 @@ export interface NoteDisplayElementConfig extends BaseElementConfig {
   max: number // MIDI range (e.g., 127)
   preferSharps: boolean // A# vs Bb
   showMidiNumber: boolean // Show MIDI number below note name
+  showOctave: boolean // Show octave number (C4 vs C)
 
   // Appearance
   fontSize: number
@@ -1594,7 +1595,8 @@ export function createNoteDisplay(overrides?: Partial<NoteDisplayElementConfig>)
     max: 127,
     preferSharps: true,
     showMidiNumber: false,
-    fontSize: 20,
+    showOctave: true,
+    fontSize: 14,
     fontFamily: 'Roboto Mono, monospace',
     fontWeight: 400,
     textColor: '#10b981',
