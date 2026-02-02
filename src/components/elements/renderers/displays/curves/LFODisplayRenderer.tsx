@@ -160,8 +160,6 @@ export function LFODisplayRenderer({ config }: LFODisplayRendererProps) {
       ref={canvasRef}
       style={{
         display: 'block',
-        width: '100%',
-        height: '100%',
       }}
     />
   )
