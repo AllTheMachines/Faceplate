@@ -340,7 +340,7 @@ export function exportElementAsSVG(element: UIElement): string {
   if (type.includes('slider') && !type.includes('range')) {
     return exportSliderAsSVG(element)
   }
-  if (type === 'button' || type === 'iconbutton' || type === 'kickbutton') {
+  if (type === 'button' || type === 'iconbutton') {
     return exportButtonAsSVG(element)
   }
   if (type === 'meter' || type.includes('meter')) {

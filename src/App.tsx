@@ -68,7 +68,6 @@ import {
   createAsciiSlider,
   createAsciiButton,
   createIconButton,
-  createKickButton,
   createToggleSwitch,
   createPowerButton,
   createRockerSwitch,
@@ -589,9 +588,6 @@ function App() {
       // Additional buttons
       case 'iconbutton':
         newElement = createIconButton({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'kickbutton':
-        newElement = createKickButton({ x: canvasX, y: canvasY, ...variant })
         break
       case 'toggleswitch':
         newElement = createToggleSwitch({ x: canvasX, y: canvasY, ...variant })

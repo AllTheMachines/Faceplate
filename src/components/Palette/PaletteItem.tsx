@@ -38,7 +38,6 @@ import {
   createAsciiButton,
   createAsciiArt,
   createIconButton,
-  createKickButton,
   createToggleSwitch,
   createPowerButton,
   createRockerSwitch,
@@ -155,7 +154,6 @@ import {
   AsciiButtonRenderer,
   AsciiArtRenderer,
   IconButtonRenderer,
-  KickButtonRenderer,
   ToggleSwitchRenderer,
   PowerButtonRenderer,
   RockerSwitchRenderer,
@@ -418,13 +416,6 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           ...baseOverrides,
           width: 32,
           height: 32,
-          ...variant,
-        })
-      case 'kickbutton':
-        return createKickButton({
-          ...baseOverrides,
-          width: 40,
-          height: 40,
           ...variant,
         })
       case 'toggleswitch':
@@ -1325,12 +1316,6 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <IconButtonRenderer config={previewElement} />
-          </div>
-        )
-      case 'kickbutton':
-        return (
-          <div style={containerStyle}>
-            <KickButtonRenderer config={previewElement} />
           </div>
         )
       case 'toggleswitch':

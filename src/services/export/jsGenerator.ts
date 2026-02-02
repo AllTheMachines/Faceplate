@@ -58,7 +58,7 @@ export function generateBindingsJS(
   const rangesliders = elements.filter((el) => el.type === 'rangeslider')
   const multisliders = elements.filter((el) => el.type === 'multislider')
   // Include all button types
-  const buttonTypes = ['button', 'iconbutton', 'kickbutton', 'toggleswitch', 'powerbutton']
+  const buttonTypes = ['button', 'iconbutton', 'toggleswitch', 'powerbutton']
   const buttons = elements.filter((el) => buttonTypes.includes(el.type))
   // Collapsible containers
   const collapsibles = elements.filter((el) => el.type === 'collapsible')
@@ -439,8 +439,7 @@ function setupParameterSyncListener() {
         if (element._asciiPressed !== undefined) element._asciiPressed = isPressed;
         syncedCount++;
       }
-      else if (elementType === 'button' || elementType === 'iconbutton' ||
-               elementType === 'kickbutton') {
+      else if (elementType === 'button' || elementType === 'iconbutton') {
         const isPressed = value > 0.5;
         element.classList.toggle('pressed', isPressed);
         syncedCount++;
@@ -869,28 +868,6 @@ function setupButtonInteraction(buttonId, paramId) {
   const buttonType = button.dataset.type;
 
   // Handle different button types
-  if (buttonType === 'kickbutton') {
-    // KickButton is always momentary
-    let isPressed = false;
-
-    button.addEventListener('mousedown', () => {
-      isPressed = true;
-      bridge.setParameter(paramId, 1.0).catch(() => {});
-      button.classList.add('pressed');
-      button.dataset.pressed = 'true';
-    });
-
-    document.addEventListener('mouseup', () => {
-      if (isPressed) {
-        isPressed = false;
-        bridge.setParameter(paramId, 0.0).catch(() => {});
-        button.classList.remove('pressed');
-        button.dataset.pressed = 'false';
-      }
-    });
-    return;
-  }
-
   if (buttonType === 'toggleswitch') {
     // Toggle switch uses data-on attribute
     let isOn = button.dataset.on === 'true';
@@ -3127,6 +3104,15 @@ if (typeof window.__JUCE__ === 'undefined') {
               const [paramId, value] = params;
               mockParameters.set(paramId, value);
               console.log(\`[MockJUCE] setParameter('\${paramId}', \${value})\`);
+
+              // Emit paramSync event to notify listeners (e.g., ASCII noise)
+              setTimeout(() => {
+                const syncListeners = eventListeners.get('__juce__paramSync') || [];
+                syncListeners.forEach(listener => {
+                  listener({ params: [{ id: paramId, value }] });
+                });
+              }, 0);
+
               result = true;
               break;
 

@@ -3,7 +3,7 @@
  * Generates style.css with element-specific styling
  */
 
-import type { ElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, PanelElementConfig, FrameElementConfig, GroupBoxElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
+import type { ElementConfig, IconButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, PanelElementConfig, FrameElementConfig, GroupBoxElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
 import { ScrollbarConfig, DEFAULT_SCROLLBAR_CONFIG } from '../../types/elements/containers'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
@@ -1295,9 +1295,6 @@ ${selector}:active {
     case 'iconbutton':
       return generateIconButtonCSS(selector, element)
 
-    case 'kickbutton':
-      return generateKickButtonCSS(selector, element)
-
     case 'toggleswitch':
       return generateToggleSwitchCSS(selector, element)
 
@@ -1743,33 +1740,6 @@ ${selector} .icon {
 ${selector} .icon svg {
   width: 100%;
   height: 100%;
-}`
-}
-
-/**
- * Generate Kick Button CSS
- */
-function generateKickButtonCSS(selector: string, element: KickButtonElementConfig): string {
-  return `/* Kick Button */
-${selector} {
-  background-color: ${element.backgroundColor};
-  color: ${element.textColor};
-  border: 2px solid ${element.borderColor};
-  border-radius: ${element.borderRadius}px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: Inter, system-ui, sans-serif;
-  cursor: pointer;
-  transition: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-${selector}[data-pressed="true"] {
-  filter: brightness(1.2);
 }`
 }
 

@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, KickButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, ArcSliderElementConfig, AsciiSliderElementConfig, AsciiButtonElementConfig, AsciiArtElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, ArcSliderElementConfig, AsciiSliderElementConfig, AsciiButtonElementConfig, AsciiArtElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -459,9 +459,6 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
 
     case 'iconbutton':
       return generateIconButtonHTML(id, baseClass, positionStyle, element)
-
-    case 'kickbutton':
-      return generateKickButtonHTML(id, baseClass, positionStyle, element)
 
     case 'toggleswitch':
       return generateToggleSwitchHTML(id, baseClass, positionStyle, element)
@@ -1633,23 +1630,6 @@ function generateIconButtonHTML(
 
   return `<button id="${id}" class="${baseClass} iconbutton-element" data-type="iconbutton"${paramAttr} data-mode="${element.mode}" data-pressed="${element.pressed}" style="${positionStyle}">
   <span class="icon">${iconSvg}</span>
-</button>`
-}
-
-/**
- * Generate Kick Button HTML
- */
-function generateKickButtonHTML(
-  id: string,
-  baseClass: string,
-  positionStyle: string,
-  element: KickButtonElementConfig
-): string {
-  // Add data-parameter-id attribute for C++ parameter sync
-  const paramAttr = ` data-parameter-id="${element.parameterId || toKebabCase(element.name)}"`
-
-  return `<button id="${id}" class="${baseClass} kickbutton-element" data-type="kickbutton"${paramAttr} data-pressed="${element.pressed}" style="${positionStyle}">
-  ${escapeHTML(element.label)}
 </button>`
 }
 

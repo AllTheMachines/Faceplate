@@ -32,7 +32,6 @@ const paletteCategories = [
     items: [
       { id: 'button', type: 'button', name: 'Button', variant: { mode: 'momentary' } },
       { id: 'iconbutton', type: 'iconbutton', name: 'Icon Button' },
-      { id: 'kickbutton', type: 'kickbutton', name: 'Kick Button' },
       { id: 'toggleswitch', type: 'toggleswitch', name: 'Toggle Switch' },
       { id: 'powerbutton', type: 'powerbutton', name: 'Power Button' },
       { id: 'rockerswitch', type: 'rockerswitch', name: 'Rocker Switch' },

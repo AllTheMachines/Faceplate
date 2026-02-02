@@ -432,16 +432,6 @@ const buttonsHelp: Record<string, HelpContent> = {
     ]
   },
 
-  kickbutton: {
-    title: 'Kick Button Element',
-    description: 'A momentary button styled like a drum machine kick trigger. Visually distinct for percussion/trigger interfaces.',
-    relatedTopics: [
-      'Use for sample triggers',
-      'Part of drum machine UI patterns',
-      'Combine with DrumPad for full kit'
-    ]
-  },
-
   toggleswitch: {
     title: 'Toggle Switch Element',
     description: 'A physical-style toggle switch for on/off states. More tactile appearance than standard toggle button.',
