@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 ## Current Position
 
 Phase: 46 of 49 - Curve Fixes
-Plan: 01 of 03 complete
+Plan: 02 of 03 complete
 Status: In progress
-Last activity: 2026-02-02 - Completed 46-01-PLAN.md
+Last activity: 2026-02-02 - Completed 46-02-PLAN.md
 
-Progress: [##############------] 30% (6/20 requirements in v1.10)
+Progress: [###############-----] 35% (7/20 requirements in v1.10)
 
 ## Milestones Shipped
 
@@ -49,6 +49,8 @@ Progress: [##############------] 30% (6/20 requirements in v1.10)
 | 2026-02-02 | 45-03 | Default dragSensitivity of 100px for full range |
 | 2026-02-02 | 45-03 | Shift key provides 10x finer control (0.1 multiplier) |
 | 2026-02-02 | 46-01 | Remove CSS width/height overrides; let useCanvasSetup hook control dimensions |
+| 2026-02-02 | 46-02 | Canvas style should only set display:block - useCanvasSetup handles sizing |
+| 2026-02-02 | 46-02 | Add onMouseLeave handler for consistent hover state clearing |
 
 All prior decisions documented in PROJECT.md Key Decisions table.
 
@@ -63,11 +65,11 @@ None
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 46-01-PLAN.md
+Stopped at: Completed 46-02-PLAN.md
 Resume file: None
 
-**Next step:** Execute Phase 46-02 (Compressor Curve & Envelope Display Fixes)
+**Next step:** Execute Phase 46-03 (LFO Display)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-02-02 - Completed 46-01-PLAN.md*
+*Last updated: 2026-02-02 - Completed 46-02 Compressor Curve and Envelope Display fixes*
