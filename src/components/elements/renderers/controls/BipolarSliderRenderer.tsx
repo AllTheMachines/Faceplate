@@ -188,19 +188,20 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
   } else {
     // Horizontal slider: 0 = left, 1 = right
     const thumbX = normalizedValue * (config.width - config.thumbWidth)
+    const thumbCenterX = thumbX + config.thumbWidth / 2
     const centerX = centerValue * config.width
 
-    // Calculate fill from center to value
+    // Calculate fill from center to thumb center position
     let fillX: number
     let fillWidth: number
     if (normalizedValue >= centerValue) {
-      // Value right of center: fill from center to value
+      // Value right of center: fill from center to thumb center
       fillX = centerX
-      fillWidth = normalizedValue * config.width - centerX
+      fillWidth = thumbCenterX - centerX
     } else {
-      // Value left of center: fill from value to center
-      fillX = normalizedValue * config.width
-      fillWidth = centerX - fillX
+      // Value left of center: fill from thumb center to center
+      fillX = thumbCenterX
+      fillWidth = centerX - thumbCenterX
     }
 
     return (
