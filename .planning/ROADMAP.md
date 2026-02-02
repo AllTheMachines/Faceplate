@@ -64,9 +64,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 46-01-PLAN.md — Diagnose and fix EQ Curve and Filter Response visibility
-- [ ] 46-02-PLAN.md — Diagnose and fix Compressor Curve and Envelope Display visibility
-- [ ] 46-03-PLAN.md — Diagnose and fix LFO Display and final consistency verification
+- [x] 46-01-PLAN.md — Diagnose and fix EQ Curve and Filter Response visibility
+- [x] 46-02-PLAN.md — Diagnose and fix Compressor Curve and Envelope Display visibility
+- [x] 46-03-PLAN.md — Diagnose and fix LFO Display and final consistency verification
 
 #### Phase 47: Button & Knob Fixes
 **Goal**: Segment buttons, kick buttons, and stepped knobs behave as expected
@@ -752,11 +752,11 @@ Plans:
 | 43. Help System | v1.9 | 4/4 | Complete | 2026-01-29 |
 | 44. Navigation Element Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 45. Slider Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
-| 46. Curve Fixes | v1.10 | 0/3 | Planned | - |
+| 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 0/TBD | Not started | - |
 | 48. Display & LED Fixes | v1.10 | 0/TBD | Not started | - |
 | 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 46 planned*
+*Last updated: 2026-02-02 - Phase 46 Curve Fixes complete*
