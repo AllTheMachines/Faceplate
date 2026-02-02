@@ -69,14 +69,19 @@ Plans:
 - [x] 46-03-PLAN.md — Diagnose and fix LFO Display and final consistency verification
 
 #### Phase 47: Button & Knob Fixes
-**Goal**: Segment buttons, kick buttons, and stepped knobs behave as expected
+**Goal**: Segment buttons display icons correctly, Kick Button removed (redundant), stepped knobs snap properly
 **Depends on**: Phase 46
 **Requirements**: BTN-01, BTN-02, KNB-01
 **Success Criteria** (what must be TRUE):
-  1. Segment Button displays icons in selected segments (not just text)
-  2. Kick Button has documented purpose and provides clear visual/interaction feedback
-  3. Stepped Knob snaps to discrete step positions when dragged
-**Plans**: TBD
+  1. Segment Button displays actual SVG icons in segments (not placeholder unicode symbols)
+  2. Kick Button element type removed from codebase (redundant with Button momentary mode)
+  3. Stepped Knob can display optional tick marks outside the knob edge
+**Plans**: 3 plans
+
+Plans:
+- [ ] 47-01-PLAN.md — Fix Segment Button to display actual SVG icons with configurable colors
+- [ ] 47-02-PLAN.md — Remove Kick Button element type entirely (breaking change)
+- [ ] 47-03-PLAN.md — Add optional tick marks to Stepped Knob with CSS transition for snap
 
 #### Phase 48: Display & LED Fixes
 **Goal**: Note displays and bicolor LEDs render with correct visual behavior
@@ -753,10 +758,10 @@ Plans:
 | 44. Navigation Element Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 45. Slider Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
-| 47. Button & Knob Fixes | v1.10 | 0/TBD | Not started | - |
+| 47. Button & Knob Fixes | v1.10 | 0/3 | Not started | - |
 | 48. Display & LED Fixes | v1.10 | 0/TBD | Not started | - |
 | 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 46 Curve Fixes complete*
+*Last updated: 2026-02-02 - Phase 47 Button & Knob Fixes planned (3 plans)*
