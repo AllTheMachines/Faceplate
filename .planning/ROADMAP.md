@@ -84,13 +84,18 @@ Plans:
 - [x] 47-03-PLAN.md — Add optional tick marks to Stepped Knob with CSS transition for snap
 
 #### Phase 48: Display & LED Fixes
-**Goal**: Note displays and bicolor LEDs render with correct visual behavior
+**Goal**: Note Display font sizing consistent with other displays, all LED element types removed (no longer needed)
 **Depends on**: Phase 47
 **Requirements**: DSP-01, LED-01
 **Success Criteria** (what must be TRUE):
-  1. Note Display font sizes are consistent with other displays and can be adjusted via properties
-  2. Bicolor LED shows distinct two-color behavior (e.g., green/red) based on state
-**Plans**: TBD
+  1. Note Display font sizes are consistent with other displays (14px default) and can be adjusted via properties
+  2. Note Display has showOctave property to toggle octave number display (C4 vs C)
+  3. All 6 LED element types removed from codebase (breaking change - no longer supported)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 48-01-PLAN.md — Add showOctave property to Note Display and change default fontSize to 14px
+- [ ] 48-02-PLAN.md — Remove all 6 LED element types entirely (breaking change)
 
 #### Phase 49: Core UI Fixes
 **Goal**: Color picker and help system work without frustrating interaction issues
@@ -759,9 +764,9 @@ Plans:
 | 45. Slider Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
-| 48. Display & LED Fixes | v1.10 | 0/TBD | Not started | - |
+| 48. Display & LED Fixes | v1.10 | 0/2 | Not started | - |
 | 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 47 Button & Knob Fixes complete (3/3 plans)*
+*Last updated: 2026-02-02 - Phase 48 planned (2 plans)*
