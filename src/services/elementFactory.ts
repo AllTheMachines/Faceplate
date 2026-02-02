@@ -73,13 +73,6 @@ import {
   createBpmDisplay,
   createEditableDisplay,
   createMultiValueDisplay,
-  // LEDs
-  createSingleLED,
-  createBiColorLED,
-  createTriColorLED,
-  createLEDArray,
-  createLEDRing,
-  createLEDMatrix,
   // Professional meters
   createRMSMeterMono,
   createRMSMeterStereo,
@@ -255,20 +248,6 @@ export function createElementFromType(
       return createEditableDisplay({ ...base, width: overrides?.width ?? 80, height: overrides?.height ?? 30 })
     case 'multivaluedisplay':
       return createMultiValueDisplay({ ...base, width: overrides?.width ?? 120, height: overrides?.height ?? 80 })
-
-    // LEDs
-    case 'singleled':
-      return createSingleLED({ ...base, width: overrides?.width ?? 16, height: overrides?.height ?? 16 })
-    case 'bicolorled':
-      return createBiColorLED({ ...base, width: overrides?.width ?? 16, height: overrides?.height ?? 16 })
-    case 'tricolorled':
-      return createTriColorLED({ ...base, width: overrides?.width ?? 16, height: overrides?.height ?? 16 })
-    case 'ledarray':
-      return createLEDArray({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 16 })
-    case 'ledring':
-      return createLEDRing({ ...base, width: overrides?.width ?? 60, height: overrides?.height ?? 60 })
-    case 'ledmatrix':
-      return createLEDMatrix({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 60 })
 
     // Meters - Basic
     case 'meter':

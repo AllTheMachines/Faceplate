@@ -51,12 +51,6 @@ import {
   createBpmDisplay,
   createEditableDisplay,
   createMultiValueDisplay,
-  createSingleLED,
-  createBiColorLED,
-  createTriColorLED,
-  createLEDArray,
-  createLEDRing,
-  createLEDMatrix,
   createRMSMeterMono,
   createRMSMeterStereo,
   createVUMeterMono,
@@ -167,12 +161,6 @@ import {
   BpmDisplayRenderer,
   EditableDisplayRenderer,
   MultiValueDisplayRenderer,
-  SingleLEDRenderer,
-  BiColorLEDRenderer,
-  TriColorLEDRenderer,
-  LEDArrayRenderer,
-  LEDRingRenderer,
-  LEDMatrixRenderer,
   RMSMeterMonoRenderer,
   RMSMeterStereoRenderer,
   VUMeterMonoRenderer,
@@ -530,51 +518,6 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
             { value: 0.5, min: 0, max: 100, format: 'numeric', label: 'V1', decimalPlaces: 0 },
             { value: 0.75, min: 0, max: 100, format: 'numeric', label: 'V2', decimalPlaces: 0 },
           ],
-          ...variant,
-        })
-      case 'singleled':
-        return createSingleLED({
-          ...baseOverrides,
-          width: 16,
-          height: 16,
-          ...variant,
-        })
-      case 'bicolorled':
-        return createBiColorLED({
-          ...baseOverrides,
-          width: 16,
-          height: 16,
-          ...variant,
-        })
-      case 'tricolorled':
-        return createTriColorLED({
-          ...baseOverrides,
-          width: 16,
-          height: 16,
-          ...variant,
-        })
-      case 'ledarray':
-        return createLEDArray({
-          ...baseOverrides,
-          width: 60,
-          height: 16,
-          ledCount: 8,
-          ...variant,
-        })
-      case 'ledring':
-        return createLEDRing({
-          ...baseOverrides,
-          width: 40,
-          height: 40,
-          ...variant,
-        })
-      case 'ledmatrix':
-        return createLEDMatrix({
-          ...baseOverrides,
-          width: 50,
-          height: 40,
-          columns: 8,
-          rows: 6,
           ...variant,
         })
       case 'meter':
@@ -1400,42 +1343,6 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <MultiValueDisplayRenderer config={previewElement} />
-          </div>
-        )
-      case 'singleled':
-        return (
-          <div style={containerStyle}>
-            <SingleLEDRenderer config={previewElement} />
-          </div>
-        )
-      case 'bicolorled':
-        return (
-          <div style={containerStyle}>
-            <BiColorLEDRenderer config={previewElement} />
-          </div>
-        )
-      case 'tricolorled':
-        return (
-          <div style={containerStyle}>
-            <TriColorLEDRenderer config={previewElement} />
-          </div>
-        )
-      case 'ledarray':
-        return (
-          <div style={containerStyle}>
-            <LEDArrayRenderer config={previewElement} />
-          </div>
-        )
-      case 'ledring':
-        return (
-          <div style={containerStyle}>
-            <LEDRingRenderer config={previewElement} />
-          </div>
-        )
-      case 'ledmatrix':
-        return (
-          <div style={containerStyle}>
-            <LEDMatrixRenderer config={previewElement} />
           </div>
         )
       case 'meter':

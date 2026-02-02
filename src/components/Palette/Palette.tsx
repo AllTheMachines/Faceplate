@@ -55,17 +55,6 @@ const paletteCategories = [
     ],
   },
   {
-    name: 'LED Indicators',
-    items: [
-      { id: 'singleled', type: 'singleled', name: 'Single LED' },
-      { id: 'bicolorled', type: 'bicolorled', name: 'Bi-Color LED' },
-      { id: 'tricolorled', type: 'tricolorled', name: 'Tri-Color LED' },
-      { id: 'ledarray', type: 'ledarray', name: 'LED Array' },
-      { id: 'ledring', type: 'ledring', name: 'LED Ring' },
-      { id: 'ledmatrix', type: 'ledmatrix', name: 'LED Matrix' },
-    ],
-  },
-  {
     name: 'Meters',
     items: [
       // Legacy meter (keep for backward compatibility)

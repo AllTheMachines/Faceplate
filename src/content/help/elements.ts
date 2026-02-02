@@ -288,30 +288,6 @@ const displaysHelp: Record<string, HelpContent> = {
       'Use TimeDisplay for time values (ms, s)',
       'Use PercentageDisplay for 0-100% values'
     ]
-  },
-
-  singleled: {
-    title: 'Single LED Element',
-    description: 'A simple on/off indicator light. Shows binary state like active, enabled, or triggered. Configurable colors for on and off states.',
-    examples: [
-      {
-        label: 'Status Indicator',
-        explanation: 'Show if a feature is active (sidechain engaged, limiter triggered, signal present). Bind to boolean parameter.'
-      },
-      {
-        label: 'Activity Light',
-        explanation: 'Indicate when audio is being processed or MIDI received. Brief flashes for momentary events.'
-      },
-      {
-        label: 'Color Coding',
-        explanation: 'Use green for active/good, red for warning/clip, yellow for caution. Set off color to dim version of on color.'
-      }
-    ],
-    relatedTopics: [
-      'Use BicolorLED for two-state color changes',
-      'Use TricolorLED for three-state indication',
-      'Use LEDArray for multi-bit status'
-    ]
   }
 }
 
@@ -555,62 +531,6 @@ const valueDisplaysHelp: Record<string, HelpContent> = {
       'Use for X/Y coordinates',
       'Show range as min-max',
       'Compact multi-parameter readout'
-    ]
-  }
-}
-
-// =============================================================================
-// TIER 2: LEDs
-// =============================================================================
-
-const ledsHelp: Record<string, HelpContent> = {
-  bicolorled: {
-    title: 'Bicolor LED Element',
-    description: 'An LED that switches between two colors based on state. Useful for showing positive/negative or two distinct states.',
-    relatedTopics: [
-      'Use for polarity indication',
-      'Red/green for error/ok pattern',
-      'Bind to bipolar parameter'
-    ]
-  },
-
-  tricolorled: {
-    title: 'Tricolor LED Element',
-    description: 'An LED with three color states. Can show off/green/red or any three states based on value ranges.',
-    relatedTopics: [
-      'Use for multi-level status',
-      'Low/medium/high indication',
-      'Define color thresholds'
-    ]
-  },
-
-  ledarray: {
-    title: 'LED Array Element',
-    description: 'A row or column of LEDs that light up sequentially based on level. Classic VU-style level indication.',
-    relatedTopics: [
-      'Use for level metering',
-      'Configure segment count',
-      'Color zones for level ranges'
-    ]
-  },
-
-  ledring: {
-    title: 'LED Ring Element',
-    description: 'LEDs arranged in a circle around a knob position. Provides visual feedback of knob value in discrete segments.',
-    relatedTopics: [
-      'Use around knobs for value display',
-      'Segment count configurable',
-      'Alternative to knob indicator'
-    ]
-  },
-
-  ledmatrix: {
-    title: 'LED Matrix Element',
-    description: 'A grid of LEDs for displaying patterns, step sequences, or multi-channel status. Each LED independently addressable.',
-    relatedTopics: [
-      'Use for step sequencer display',
-      'Pattern visualization',
-      'Multi-channel status grid'
     ]
   }
 }
@@ -1408,9 +1328,6 @@ export const elementHelp: Record<string, HelpContent> = {
 
   // Tier 2: Value displays
   ...valueDisplaysHelp,
-
-  // Tier 2: LEDs
-  ...ledsHelp,
 
   // Tier 2: Professional meters
   ...professionalMetersHelp,

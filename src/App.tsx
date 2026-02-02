@@ -90,13 +90,6 @@ import {
   createBpmDisplay,
   createEditableDisplay,
   createMultiValueDisplay,
-  // LEDs
-  createSingleLED,
-  createBiColorLED,
-  createTriColorLED,
-  createLEDArray,
-  createLEDRing,
-  createLEDMatrix,
   // Professional meters
   createRMSMeterMono,
   createRMSMeterStereo,
@@ -653,25 +646,6 @@ function App() {
         break
       case 'multivaluedisplay':
         newElement = createMultiValueDisplay({ x: canvasX, y: canvasY, ...variant })
-        break
-      // LEDs
-      case 'singleled':
-        newElement = createSingleLED({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'bicolorled':
-        newElement = createBiColorLED({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'tricolorled':
-        newElement = createTriColorLED({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'ledarray':
-        newElement = createLEDArray({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'ledring':
-        newElement = createLEDRing({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'ledmatrix':
-        newElement = createLEDMatrix({ x: canvasX, y: canvasY, ...variant })
         break
       // Professional meters - RMS
       case 'rmsmetermo':
