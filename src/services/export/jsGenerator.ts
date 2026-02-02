@@ -629,23 +629,73 @@ function setupKnobInteraction(knobId, paramId, defaultValue = 0.5) {
     return;
   }
 
+  // Check if this is a stepped knob
+  const isStepped = knob.classList.contains('steppedknob-element');
+  const stepCount = parseInt(knob.dataset.stepCount) || 0;
+
+  // Get angle range from data attributes
+  const startAngle = parseFloat(knob.dataset.startAngle) || -135;
+  const endAngle = parseFloat(knob.dataset.endAngle) || 135;
+
+  // Snap value to nearest step for stepped knobs
+  function snapToStep(value) {
+    if (!isStepped || stepCount < 2) return value;
+    const stepSize = 1 / (stepCount - 1);
+    return Math.round(value / stepSize) * stepSize;
+  }
+
+  // Calculate value from click position (angle-based)
+  function getClickValue(e) {
+    const rect = knob.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const dx = e.clientX - centerX;
+    const dy = e.clientY - centerY;
+
+    // Calculate angle from center (in degrees, 0 = right, counter-clockwise positive)
+    let clickAngle = Math.atan2(-dy, dx) * (180 / Math.PI);
+    // Convert to our coordinate system (0 = top, clockwise positive)
+    clickAngle = 90 - clickAngle;
+    // Normalize to -180 to 180
+    while (clickAngle > 180) clickAngle -= 360;
+    while (clickAngle < -180) clickAngle += 360;
+
+    // Convert angle to value (0-1) based on start/end angles
+    const angleRange = endAngle - startAngle;
+    let normalizedValue = (clickAngle - startAngle) / angleRange;
+    normalizedValue = Math.max(0, Math.min(1, normalizedValue));
+
+    return normalizedValue;
+  }
+
   let isDragging = false;
   let startY = 0;
   let startValue = defaultValue;
-  let currentValue = defaultValue;
+  let currentValue = snapToStep(defaultValue);
 
   // Initialize visual
-  updateKnobVisual(knobId, defaultValue);
+  updateKnobVisual(knobId, currentValue);
 
-  // Mousedown - start drag
+  // Mousedown - start drag (with click-to-position for stepped knobs)
   knob.addEventListener('mousedown', (e) => {
+    // For stepped knobs, click-to-position
+    if (isStepped) {
+      let clickValue = getClickValue(e);
+      clickValue = snapToStep(clickValue);
+      currentValue = clickValue;
+      bridge.setParameter(paramId, clickValue).catch(() => {});
+      updateKnobVisual(knobId, clickValue);
+      startValue = clickValue;
+    } else {
+      startValue = currentValue;
+    }
+
     isDragging = true;
     startY = e.clientY;
-    startValue = currentValue;
 
     // Fire and forget with .catch() - proven pattern
     bridge.getParameter(paramId).then(v => {
-      if (v !== undefined) startValue = v;
+      if (v !== undefined && !isStepped) startValue = v;
     }).catch(() => {});
 
     bridge.beginGesture(paramId).catch(() => {});
@@ -659,14 +709,18 @@ function setupKnobInteraction(knobId, paramId, defaultValue = 0.5) {
     if (!isDragging) return;
 
     const deltaY = startY - e.clientY;  // Inverted (up = increase)
-    const sensitivity = 0.005;
+    const sensitivity = isStepped ? 0.003 : 0.005; // Finer control for stepped knobs
     let newValue = startValue + deltaY * sensitivity;
     newValue = Math.max(0, Math.min(1, newValue));
-    currentValue = newValue;
+    newValue = snapToStep(newValue);
 
-    // Fire-and-forget with .catch()
-    bridge.setParameter(paramId, newValue).catch(() => {});
-    updateKnobVisual(knobId, newValue);
+    // Only update if value changed (important for stepped knobs)
+    if (newValue !== currentValue) {
+      currentValue = newValue;
+      // Fire-and-forget with .catch()
+      bridge.setParameter(paramId, newValue).catch(() => {});
+      updateKnobVisual(knobId, newValue);
+    }
   });
 
   // Mouseup - end drag
@@ -679,9 +733,9 @@ function setupKnobInteraction(knobId, paramId, defaultValue = 0.5) {
 
   // Double-click - reset to default
   knob.addEventListener('dblclick', () => {
-    currentValue = defaultValue;
-    bridge.setParameter(paramId, defaultValue).catch(() => {});
-    updateKnobVisual(knobId, defaultValue);
+    currentValue = snapToStep(defaultValue);
+    bridge.setParameter(paramId, currentValue).catch(() => {});
+    updateKnobVisual(knobId, currentValue);
   });
 }
 
@@ -703,18 +757,50 @@ function setupSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
   let startValue = defaultValue;
   let currentValue = defaultValue;
   const isVertical = slider.classList.contains('vertical');
+  const isNotched = slider.classList.contains('notchedslider-element');
+
+  // Get notch count for snapping (notched sliders)
+  const notchCount = parseInt(slider.dataset.notchCount) || 0;
+
+  // Snap to notch for notched sliders
+  function snapToNotch(value) {
+    if (!isNotched || notchCount < 2) return value;
+    const stepSize = 1 / (notchCount - 1);
+    return Math.round(value / stepSize) * stepSize;
+  }
+
+  // Calculate click position as normalized value
+  // Use SVG bounds if available (for SVG-based sliders like notched), otherwise use container
+  function getClickValue(e) {
+    const svg = slider.querySelector('svg');
+    const rect = svg ? svg.getBoundingClientRect() : slider.getBoundingClientRect();
+    let clickValue;
+    if (isVertical) {
+      // Vertical: bottom = 0, top = 1
+      clickValue = 1 - (e.clientY - rect.top) / rect.height;
+    } else {
+      // Horizontal: left = 0, right = 1
+      clickValue = (e.clientX - rect.left) / rect.width;
+    }
+    return Math.max(0, Math.min(1, clickValue));
+  }
 
   // Initialize visual
   updateSliderVisual(sliderId, defaultValue);
 
   slider.addEventListener('mousedown', (e) => {
+    // Click-to-position: jump to clicked location
+    let clickValue = getClickValue(e);
+    clickValue = snapToNotch(clickValue);
+
+    currentValue = clickValue;
+    bridge.setParameter(paramId, clickValue).catch(() => {});
+    updateSliderVisual(sliderId, clickValue);
+
+    // Setup for drag from this new position
     isDragging = true;
     startPos = isVertical ? e.clientY : e.clientX;
-    startValue = currentValue;
-
-    bridge.getParameter(paramId).then(v => {
-      if (v !== undefined) startValue = v;
-    }).catch(() => {});
+    startValue = clickValue;
 
     bridge.beginGesture(paramId).catch(() => {});
     e.preventDefault();
@@ -725,13 +811,16 @@ function setupSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
 
     const currentPos = isVertical ? e.clientY : e.clientX;
     const delta = isVertical ? startPos - currentPos : currentPos - startPos;
-    const sensitivity = 0.005;
+    const sensitivity = isNotched ? 0.003 : 0.005;
     let newValue = startValue + delta * sensitivity;
     newValue = Math.max(0, Math.min(1, newValue));
-    currentValue = newValue;
+    newValue = snapToNotch(newValue);
 
-    bridge.setParameter(paramId, newValue).catch(() => {});
-    updateSliderVisual(sliderId, newValue);
+    if (newValue !== currentValue) {
+      currentValue = newValue;
+      bridge.setParameter(paramId, newValue).catch(() => {});
+      updateSliderVisual(sliderId, newValue);
+    }
   });
 
   document.addEventListener('mouseup', () => {
@@ -742,9 +831,9 @@ function setupSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
   });
 
   slider.addEventListener('dblclick', () => {
-    currentValue = defaultValue;
-    bridge.setParameter(paramId, defaultValue).catch(() => {});
-    updateSliderVisual(sliderId, defaultValue);
+    currentValue = snapToNotch(defaultValue);
+    bridge.setParameter(paramId, currentValue).catch(() => {});
+    updateSliderVisual(sliderId, currentValue);
   });
 }
 
@@ -2715,6 +2804,18 @@ function updateKnobVisual(knobId, value) {
     }
   }
 
+  // Update step indicators for stepped knobs
+  const stepIndicators = element.querySelectorAll('.step-indicator');
+  if (stepIndicators.length > 0) {
+    const fillColor = element.dataset.fillColor || '#00ff00';
+    const trackColor = element.dataset.trackColor || '#333333';
+    const stepCount = stepIndicators.length;
+    const currentStepIndex = Math.round(value * (stepCount - 1));
+    stepIndicators.forEach((indicator, index) => {
+      indicator.setAttribute('fill', index <= currentStepIndex ? fillColor : trackColor);
+    });
+  }
+
   // Update data attribute
   element.setAttribute('data-value', value);
 }
@@ -2754,11 +2855,104 @@ function updateSliderVisual(sliderId, value) {
   const isVertical = element.classList.contains('vertical');
   const isBipolar = element.classList.contains('bipolarslider-element');
   const isCrossfade = element.classList.contains('crossfadeslider-element');
+  const isNotched = element.classList.contains('notchedslider-element');
   const thumb = element.querySelector('.slider-thumb');
   const fill = element.querySelector('.slider-fill');
 
-  if (isBipolar || isCrossfade) {
-    // Bipolar and crossfade sliders: fill extends from center (0.5) to value
+  // Check if using SVG-based rendering (notched slider uses SVG)
+  const svg = element.querySelector('svg');
+  const usesSVG = svg && (isNotched || thumb?.tagName === 'rect');
+
+  if (usesSVG) {
+    // SVG-based slider - update SVG attributes
+    const viewBox = svg.getAttribute('viewBox');
+    const [, , vbWidth, vbHeight] = viewBox ? viewBox.split(' ').map(Number) : [0, 0, 100, 100];
+    const trackWidth = 6;
+
+    if (isVertical) {
+      const fillHeight = value * vbHeight;
+      const thumbHeight = parseFloat(thumb?.getAttribute('height')) || 10;
+      // Center thumb on notch positions: notchY = vbHeight - pos * vbHeight
+      // thumbY positions top of thumb, so offset by half thumbHeight
+      const thumbY = vbHeight * (1 - value) - thumbHeight / 2;
+
+      if (fill) {
+        fill.setAttribute('y', (vbHeight - fillHeight).toString());
+        fill.setAttribute('height', fillHeight.toString());
+      }
+      if (thumb) {
+        thumb.setAttribute('y', thumbY.toString());
+      }
+    } else {
+      const fillWidth = value * vbWidth;
+      const thumbWidth = parseFloat(thumb?.getAttribute('width')) || 10;
+      // Center thumb on notch positions: notchX = pos * vbWidth
+      // thumbX positions left of thumb, so offset by half thumbWidth
+      const thumbX = value * vbWidth - thumbWidth / 2;
+
+      if (fill) {
+        fill.setAttribute('width', fillWidth.toString());
+      }
+      if (thumb) {
+        thumb.setAttribute('x', thumbX.toString());
+      }
+    }
+  } else if (isBipolar) {
+    // Bipolar slider uses SVG - update SVG attributes
+    const svg = element.querySelector('svg');
+    if (svg) {
+      const viewBox = svg.getAttribute('viewBox');
+      const [, , vbWidth, vbHeight] = viewBox ? viewBox.split(' ').map(Number) : [0, 0, 100, 100];
+      const centerValue = parseFloat(element.dataset.centerValue) || 0.5;
+      const trackWidth = 6;
+
+      if (isVertical) {
+        const thumbHeight = parseFloat(thumb?.getAttribute('height')) || 10;
+        const thumbY = vbHeight - value * (vbHeight - thumbHeight);
+        const centerY = vbHeight - centerValue * vbHeight;
+
+        let fillY, fillHeight;
+        if (value >= centerValue) {
+          fillY = vbHeight - value * vbHeight;
+          fillHeight = (value - centerValue) * vbHeight;
+        } else {
+          fillY = centerY;
+          fillHeight = (centerValue - value) * vbHeight;
+        }
+
+        if (fill) {
+          fill.setAttribute('y', fillY.toString());
+          fill.setAttribute('height', fillHeight.toString());
+        }
+        if (thumb) {
+          thumb.setAttribute('y', thumbY.toString());
+        }
+      } else {
+        const thumbWidth = parseFloat(thumb?.getAttribute('width')) || 10;
+        const thumbX = value * (vbWidth - thumbWidth);
+        const thumbCenterX = thumbX + thumbWidth / 2;
+        const centerX = centerValue * vbWidth;
+
+        let fillX, fillWidth;
+        if (value >= centerValue) {
+          fillX = centerX;
+          fillWidth = thumbCenterX - centerX;
+        } else {
+          fillX = thumbCenterX;
+          fillWidth = centerX - thumbCenterX;
+        }
+
+        if (fill) {
+          fill.setAttribute('x', fillX.toString());
+          fill.setAttribute('width', fillWidth.toString());
+        }
+        if (thumb) {
+          thumb.setAttribute('x', thumbX.toString());
+        }
+      }
+    }
+  } else if (isCrossfade) {
+    // Crossfade slider: fill extends from center (0.5) to value
     const centerValue = 0.5;
     const fillStart = Math.min(centerValue, value) * 100;
     const fillEnd = Math.max(centerValue, value) * 100;
@@ -3193,6 +3387,18 @@ function updateKnobVisualById(id, value) {
       indicator.setAttribute('cx', cx + outerR * Math.cos(rad));
       indicator.setAttribute('cy', cy + outerR * Math.sin(rad));
     }
+  }
+
+  // Update step indicators for stepped knobs
+  const stepIndicators = element.querySelectorAll('.step-indicator');
+  if (stepIndicators.length > 0) {
+    const fillColor = element.dataset.fillColor || '#00ff00';
+    const trackColor = element.dataset.trackColor || '#333333';
+    const stepCount = stepIndicators.length;
+    const currentStepIndex = Math.round(value * (stepCount - 1));
+    stepIndicators.forEach((indicator, index) => {
+      indicator.setAttribute('fill', index <= currentStepIndex ? fillColor : trackColor);
+    });
   }
 
   element.setAttribute('data-value', value);

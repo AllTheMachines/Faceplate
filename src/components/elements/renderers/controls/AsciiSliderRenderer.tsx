@@ -4,6 +4,7 @@ import { useStore } from '../../../../store'
 
 interface AsciiSliderRendererProps {
   config: AsciiSliderElementConfig
+  isPreview?: boolean
 }
 
 function formatValue(
@@ -27,7 +28,7 @@ function formatValue(
   }
 }
 
-export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
+export function AsciiSliderRenderer({ config, isPreview = false }: AsciiSliderRendererProps) {
   // Drag state
   const [isDragging, setIsDragging] = useState(false)
   const dragStartRef = useRef({ mouseY: 0, startValue: 0 })
@@ -190,12 +191,13 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
           MozUserSelect: 'none',
           msUserSelect: 'none',
           alignItems: justifyContent,
-          cursor: isDragging ? 'ns-resize' : 'pointer',
+          cursor: isPreview ? 'grab' : (isDragging ? 'ns-resize' : 'pointer'),
+          pointerEvents: isPreview ? 'none' : 'auto',
         }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        onPointerDown={isPreview ? undefined : handlePointerDown}
+        onPointerMove={isPreview ? undefined : handlePointerMove}
+        onPointerUp={isPreview ? undefined : handlePointerUp}
+        onPointerCancel={isPreview ? undefined : handlePointerUp}
       >
         {config.valuePosition === 'above' && (
           <div style={{ textAlign: config.textAlign || 'left' }}>{valueLine}</div>
@@ -232,12 +234,13 @@ export function AsciiSliderRenderer({ config }: AsciiSliderRendererProps) {
         MozUserSelect: 'none',
         msUserSelect: 'none',
         justifyContent,
-        cursor: isDragging ? 'ns-resize' : 'pointer',
+        cursor: isPreview ? 'grab' : (isDragging ? 'ns-resize' : 'pointer'),
+        pointerEvents: isPreview ? 'none' : 'auto',
       }}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+      onPointerDown={isPreview ? undefined : handlePointerDown}
+      onPointerMove={isPreview ? undefined : handlePointerMove}
+      onPointerUp={isPreview ? undefined : handlePointerUp}
+      onPointerCancel={isPreview ? undefined : handlePointerUp}
     >
       {displayText}
     </div>

@@ -820,7 +820,7 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
       const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
       const pos = polarToCartesian(centerX, centerY, radius, stepAngle)
       const isFilled = i <= Math.round(steppedValue * (config.stepCount - 1))
-      stepIndicatorsSVG += `<circle cx="${pos.x}" cy="${pos.y}" r="${config.trackWidth / 3}" fill="${isFilled ? config.fillColor : config.trackColor}" />`
+      stepIndicatorsSVG += `<circle class="step-indicator" data-step-index="${i}" cx="${pos.x}" cy="${pos.y}" r="${config.trackWidth / 3}" fill="${isFilled ? config.fillColor : config.trackColor}" />`
     }
   }
 
@@ -844,7 +844,7 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
 
-  return `<div id="${id}" class="${baseClass} knob knob-element steppedknob-element" data-type="steppedknob"${paramAttr} data-value="${steppedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} knob knob-element steppedknob-element" data-type="steppedknob"${paramAttr} data-value="${steppedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" data-step-count="${config.stepCount}" data-fill-color="${config.fillColor}" data-track-color="${config.trackColor}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
@@ -994,26 +994,19 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
 }
 
 /**
- * Generate Bipolar Slider HTML
+ * Generate Bipolar Slider HTML with SVG rendering (matches designer)
  */
 function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle: string, config: BipolarSliderElementConfig): string {
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
-  const normalizedCenter = (config.centerValue - config.min) / (config.max - config.min)
+  const centerValue = config.centerValue
   const orientationClass = isVertical ? 'vertical' : 'horizontal'
+  const trackWidth = 6
 
-  // Fill from center to value
-  const fillStart = Math.min(normalizedCenter, normalizedValue) * 100
-  const fillEnd = Math.max(normalizedCenter, normalizedValue) * 100
-  const fillStyle = isVertical
-    ? `bottom: ${fillStart}%; height: ${fillEnd - fillStart}%`
-    : `left: ${fillStart}%; width: ${fillEnd - fillStart}%`
-  const thumbStyle = isVertical
-    ? `bottom: ${normalizedValue * 100}%`
-    : `left: ${normalizedValue * 100}%`
-  const centerStyle = isVertical
-    ? `bottom: ${normalizedCenter * 100}%`
-    : `left: ${normalizedCenter * 100}%`
+  // Determine fill color based on value position relative to center
+  const fillColor = normalizedValue >= centerValue
+    ? (config.positiveFillColor ?? config.trackFillColor)
+    : (config.negativeFillColor ?? config.trackFillColor)
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
@@ -1026,13 +1019,58 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
 
-  return `<div id="${id}" class="${baseClass} slider slider-element bipolarslider-element ${orientationClass}" data-type="bipolarslider"${paramAttr} data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}">
+  let svgContent: string
+  if (isVertical) {
+    // Vertical slider: 0 = bottom, 1 = top
+    const thumbY = config.height - normalizedValue * (config.height - config.thumbHeight)
+    const centerY = config.height - centerValue * config.height
+
+    // Calculate fill from center to value
+    let fillY: number
+    let fillHeight: number
+    if (normalizedValue >= centerValue) {
+      fillY = config.height - normalizedValue * config.height
+      fillHeight = (normalizedValue - centerValue) * config.height
+    } else {
+      fillY = centerY
+      fillHeight = (centerValue - normalizedValue) * config.height
+    }
+
+    svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${config.width} ${config.height}" style="overflow: visible;">
+        <rect class="slider-track" x="${(config.width - trackWidth) / 2}" y="0" width="${trackWidth}" height="${config.height}" fill="${config.trackColor}" />
+        <rect class="slider-fill" x="${(config.width - trackWidth) / 2}" y="${fillY}" width="${trackWidth}" height="${fillHeight}" fill="${fillColor}" />
+        <line class="slider-center-line" x1="0" y1="${centerY}" x2="${config.width}" y2="${centerY}" stroke="${config.centerLineColor}" stroke-width="2" />
+        <rect class="slider-thumb" x="${(config.width - config.thumbWidth) / 2}" y="${thumbY}" width="${config.thumbWidth}" height="${config.thumbHeight}" fill="${config.thumbColor}" />
+      </svg>`
+  } else {
+    // Horizontal slider: 0 = left, 1 = right
+    const thumbX = normalizedValue * (config.width - config.thumbWidth)
+    const thumbCenterX = thumbX + config.thumbWidth / 2
+    const centerX = centerValue * config.width
+
+    // Calculate fill from center to thumb center position
+    let fillX: number
+    let fillWidth: number
+    if (normalizedValue >= centerValue) {
+      fillX = centerX
+      fillWidth = thumbCenterX - centerX
+    } else {
+      fillX = thumbCenterX
+      fillWidth = centerX - thumbCenterX
+    }
+
+    svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${config.width} ${config.height}" style="overflow: visible;">
+        <rect class="slider-track" x="0" y="${(config.height - trackWidth) / 2}" width="${config.width}" height="${trackWidth}" fill="${config.trackColor}" />
+        <rect class="slider-fill" x="${fillX}" y="${(config.height - trackWidth) / 2}" width="${fillWidth}" height="${trackWidth}" fill="${fillColor}" />
+        <line class="slider-center-line" x1="${centerX}" y1="0" x2="${centerX}" y2="${config.height}" stroke="${config.centerLineColor}" stroke-width="2" />
+        <rect class="slider-thumb" x="${thumbX}" y="${(config.height - config.thumbHeight) / 2}" width="${config.thumbWidth}" height="${config.thumbHeight}" fill="${config.thumbColor}" />
+      </svg>`
+  }
+
+  return `<div id="${id}" class="${baseClass} slider slider-element bipolarslider-element ${orientationClass}" data-type="bipolarslider"${paramAttr} data-orientation="${config.orientation}" data-value="${normalizedValue}" data-center-value="${centerValue}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
-      <div class="slider-track" style="background: ${config.trackColor};"></div>
-      <div class="slider-center-mark" style="${centerStyle}; background: ${config.centerLineColor};"></div>
-      <div class="slider-fill" style="${fillStyle}; background: ${normalizedValue >= (config.centerValue ?? 0.5) ? (config.positiveFillColor ?? config.trackFillColor) : (config.negativeFillColor ?? config.trackFillColor)};"></div>
-      <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
+      ${svgContent}
     </div>`
 }
 
@@ -1075,23 +1113,20 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const orientationClass = isVertical ? 'vertical' : 'horizontal'
+  const range = config.max - config.min
 
-  const fillStyle = isVertical
-    ? `height: ${normalizedValue * 100}%`
-    : `width: ${normalizedValue * 100}%`
-  const thumbStyle = isVertical
-    ? `bottom: ${normalizedValue * 100}%`
-    : `left: ${normalizedValue * 100}%`
+  // Track width
+  const trackWidth = 6
 
-  // Generate notch marks
-  let notchesHTML = ''
-  for (let i = 0; i < config.notchCount; i++) {
-    const pos = (i / (config.notchCount - 1)) * 100
-    const notchStyle = isVertical
-      ? `bottom: ${pos}%`
-      : `left: ${pos}%`
-    notchesHTML += `<div class="notch" style="${notchStyle}; background: ${config.notchColor};"></div>`
-  }
+  // Notch settings
+  const notchLength = config.notchLength ?? 12
+  const notchLabelFontSize = config.notchLabelFontSize ?? 10
+  const showNotchLabels = config.showNotchLabels ?? false
+
+  // Calculate notch positions
+  const notchPositions: number[] = config.notchPositions
+    ? config.notchPositions
+    : Array.from({ length: config.notchCount }, (_, i) => i / (config.notchCount - 1))
 
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
@@ -1104,14 +1139,66 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
 
-  return `<div id="${id}" class="${baseClass} slider slider-element notchedslider-element ${orientationClass}" data-type="notchedslider"${paramAttr} data-orientation="${config.orientation}" data-value="${normalizedValue}" style="${positionStyle}">
+  // Generate SVG-based slider like the renderer
+  if (isVertical) {
+    const centerX = config.width / 2
+    // Center thumb on notch positions: notchY = height - pos * height
+    const thumbY = config.height * (1 - normalizedValue) - config.thumbHeight / 2
+    const fillHeight = normalizedValue * config.height
+
+    // Generate notch marks SVG
+    let notchesSVG = ''
+    notchPositions.forEach((pos, i) => {
+      const notchY = config.height - pos * config.height
+      notchesSVG += `
+        <line x1="${centerX - trackWidth / 2 - 2}" y1="${notchY}" x2="${centerX - trackWidth / 2 - 2 - notchLength}" y2="${notchY}" stroke="${config.notchColor}" stroke-width="1.5" />
+        <line x1="${centerX + trackWidth / 2 + 2}" y1="${notchY}" x2="${centerX + trackWidth / 2 + 2 + notchLength}" y2="${notchY}" stroke="${config.notchColor}" stroke-width="1.5" />`
+      if (showNotchLabels) {
+        const labelValue = (config.min + pos * range).toFixed(1)
+        notchesSVG += `<text x="${centerX + trackWidth / 2 + notchLength + 6}" y="${notchY}" fill="${config.notchColor}" font-size="${notchLabelFontSize}" dominant-baseline="middle">${labelValue}</text>`
+      }
+    })
+
+    return `<div id="${id}" class="${baseClass} slider slider-element notchedslider-element ${orientationClass}" data-type="notchedslider"${paramAttr} data-orientation="${config.orientation}" data-value="${normalizedValue}" data-notch-count="${notchPositions.length}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
-      <div class="slider-track" style="background: ${config.trackColor};"></div>
-      <div class="notches">${notchesHTML}</div>
-      <div class="slider-fill" style="${fillStyle}; background: ${config.trackFillColor};"></div>
-      <div class="slider-thumb" style="${thumbStyle}; background: ${config.thumbColor};"></div>
+      <svg width="100%" height="100%" viewBox="0 0 ${config.width} ${config.height}" style="overflow: visible;">
+        <rect class="slider-track" x="${centerX - trackWidth / 2}" y="0" width="${trackWidth}" height="${config.height}" fill="${config.trackColor}" />
+        <rect class="slider-fill" x="${centerX - trackWidth / 2}" y="${config.height - fillHeight}" width="${trackWidth}" height="${fillHeight}" fill="${config.trackFillColor}" />
+        ${notchesSVG}
+        <rect class="slider-thumb" x="${(config.width - config.thumbWidth) / 2}" y="${thumbY}" width="${config.thumbWidth}" height="${config.thumbHeight}" fill="${config.thumbColor}" />
+      </svg>
     </div>`
+  } else {
+    const centerY = config.height / 2
+    // Center thumb on notch positions: notchX = pos * width
+    const thumbX = normalizedValue * config.width - config.thumbWidth / 2
+    const fillWidth = normalizedValue * config.width
+
+    // Generate notch marks SVG
+    let notchesSVG = ''
+    notchPositions.forEach((pos, i) => {
+      const notchX = pos * config.width
+      notchesSVG += `
+        <line x1="${notchX}" y1="${centerY - trackWidth / 2 - 2}" x2="${notchX}" y2="${centerY - trackWidth / 2 - 2 - notchLength}" stroke="${config.notchColor}" stroke-width="1.5" />
+        <line x1="${notchX}" y1="${centerY + trackWidth / 2 + 2}" x2="${notchX}" y2="${centerY + trackWidth / 2 + 2 + notchLength}" stroke="${config.notchColor}" stroke-width="1.5" />`
+      if (showNotchLabels) {
+        const labelValue = (config.min + pos * range).toFixed(1)
+        notchesSVG += `<text x="${notchX}" y="${centerY + trackWidth / 2 + notchLength + 12}" fill="${config.notchColor}" font-size="${notchLabelFontSize}" text-anchor="middle">${labelValue}</text>`
+      }
+    })
+
+    return `<div id="${id}" class="${baseClass} slider slider-element notchedslider-element ${orientationClass}" data-type="notchedslider"${paramAttr} data-orientation="${config.orientation}" data-value="${normalizedValue}" data-notch-count="${notchPositions.length}" style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <svg width="100%" height="100%" viewBox="0 0 ${config.width} ${config.height}" style="overflow: visible;">
+        <rect class="slider-track" x="0" y="${centerY - trackWidth / 2}" width="${config.width}" height="${trackWidth}" fill="${config.trackColor}" />
+        <rect class="slider-fill" x="0" y="${centerY - trackWidth / 2}" width="${fillWidth}" height="${trackWidth}" fill="${config.trackFillColor}" />
+        ${notchesSVG}
+        <rect class="slider-thumb" x="${thumbX}" y="${(config.height - config.thumbHeight) / 2}" width="${config.thumbWidth}" height="${config.thumbHeight}" fill="${config.thumbColor}" />
+      </svg>
+    </div>`
+  }
 }
 
 /**
@@ -1175,11 +1262,32 @@ function generateArcSliderHTML(id: string, baseClass: string, positionStyle: str
 
   // Format value display
   const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+
+  // Calculate label/value margin based on distance and position
+  const labelDistance = config.labelDistance ?? 8
+  const valueDistance = config.valueDistance ?? 8
+  const getLabelMargin = () => {
+    switch (config.labelPosition) {
+      case 'top': return `margin-bottom: ${labelDistance}px;`
+      case 'bottom': return `margin-top: ${labelDistance}px;`
+      case 'left': return `margin-right: ${labelDistance}px;`
+      case 'right': return `margin-left: ${labelDistance}px;`
+    }
+  }
+  const getValueMargin = () => {
+    switch (config.valuePosition) {
+      case 'top': return `margin-bottom: ${valueDistance}px;`
+      case 'bottom': return `margin-top: ${valueDistance}px;`
+      case 'left': return `margin-right: ${valueDistance}px;`
+      case 'right': return `margin-left: ${valueDistance}px;`
+    }
+  }
+
   const labelHTML = config.showLabel
-    ? `<span class="arcslider-label arcslider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    ? `<span class="arcslider-label arcslider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor}; ${getLabelMargin()}">${escapeHTML(config.labelText)}</span>`
     : ''
   const valueHTML = config.showValue
-    ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor}; ${getValueMargin()}">${escapeHTML(formattedValue)}</span>`
     : ''
 
   // Add data-parameter-id attribute for C++ parameter sync
