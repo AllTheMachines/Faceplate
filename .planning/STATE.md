@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-29)
 
 **Core value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
-**Current focus:** v1.10 Element Bug Fixes - Phase 48 Display & LED Fixes
+**Current focus:** v1.10 Element Bug Fixes - Phase 49 Core UI Fixes (Complete)
 
 ## Current Position
 
-Phase: 48 of 49 - Display & LED Fixes
-Plan: 02 of 02 complete
-Status: Phase complete
-Last activity: 2026-02-02 - Completed 48-02-PLAN.md (LED elements removal)
+Phase: 49 of 49 - Core UI Fixes
+Plan: 01 of 01 complete
+Status: Phase complete (v1.10 milestone complete)
+Last activity: 2026-02-02 - Completed 49-01-PLAN.md (Core UI Fixes)
 
-Progress: [##################--] 57% (13/21 requirements in v1.10)
+Progress: [####################] 100% (v1.10 complete)
 
 ## Milestones Shipped
 
@@ -30,8 +30,9 @@ Progress: [##################--] 57% (13/21 requirements in v1.10)
 | v1.7 Parameter Sync | 39 | 1 | 2026-01-28 |
 | v1.8 Bug Fixes & Improvements | 40 | 8 | 2026-01-29 |
 | v1.9 Layers & Help System | 41-43 | 11 | 2026-01-29 |
+| v1.10 Element Bug Fixes | 44-49 | 15 | 2026-02-02 |
 
-**Total: 43 phases, 177 plans, 7 days (2026-01-23 to 2026-01-29)**
+**Total: 49 phases, 192 plans, 11 days (2026-01-23 to 2026-02-02)**
 
 ## Accumulated Context
 
@@ -59,6 +60,9 @@ Progress: [##################--] 57% (13/21 requirements in v1.10)
 | 2026-02-02 | 47-02 | KickButton removed entirely - Button in momentary mode is equivalent |
 | 2026-02-02 | 48-01 | showOctave defaults to true, uses !== false check for backwards compatibility |
 | 2026-02-02 | 48-02 | LED elements silently removed (no migration warnings) |
+| 2026-02-02 | 49-01 | stopPropagation on picker container prevents drag closure |
+| 2026-02-02 | 49-01 | Generate all related topics (1 level deep) in same HTML document |
+| 2026-02-02 | 49-01 | Navigation history stores sectionId and scrollY for position restoration |
 
 All prior decisions documented in PROJECT.md Key Decisions table.
 
@@ -73,11 +77,11 @@ None
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed Phase 48 (all 2 plans)
+Stopped at: Completed Phase 49 (all 1 plans) - v1.10 milestone complete
 Resume file: None
 
-**Next step:** Proceed to Phase 49
+**Next step:** Check BACKLOG.md for next milestone or user direction
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-02-02 - Completed 48-02-PLAN.md LED elements removal*
+*Last updated: 2026-02-02 - Completed 49-01-PLAN.md Core UI Fixes*
