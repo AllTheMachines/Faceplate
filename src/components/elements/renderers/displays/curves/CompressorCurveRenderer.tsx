@@ -203,14 +203,18 @@ export function CompressorCurveRenderer({ config }: CompressorCurveRendererProps
     showDbLabels,
   ])
 
+  // Mouse leave handler to clear hover state
+  const handleMouseLeave = () => {
+    setHoveredHandle(false)
+  }
+
   return (
     <canvas
       ref={canvasRef}
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         display: 'block',
-        width: '100%',
-        height: '100%',
         cursor: hoveredHandle ? 'pointer' : 'default',
       }}
     />
