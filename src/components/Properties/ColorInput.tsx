@@ -10,12 +10,15 @@ interface ColorInputProps {
 export function ColorInput({ label, value, onChange }: ColorInputProps) {
   const [showPicker, setShowPicker] = useState(false)
   const pickerRef = useRef<HTMLDivElement>(null)
+  // Track when picker is actively being used (during drag/picking)
+  const isPickingRef = useRef(false)
 
   // Close picker when value changes from outside (element selection changed)
+  // But NOT when change comes from picker itself (during drag)
   useEffect(() => {
-    // Close the picker when switching between elements
-    // This prevents showing stale color from previous element
-    setShowPicker(false)
+    if (!isPickingRef.current) {
+      setShowPicker(false)
+    }
   }, [value])
 
   // Close picker when clicking outside
@@ -24,6 +27,7 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
 
     const handleClickOutside = (e: MouseEvent) => {
       if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        isPickingRef.current = false
         setShowPicker(false)
       }
     }
@@ -43,7 +47,12 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
         {/* Color swatch button */}
         <button
           type="button"
-          onClick={() => setShowPicker(!showPicker)}
+          onClick={() => {
+            if (showPicker) {
+              isPickingRef.current = false
+            }
+            setShowPicker(!showPicker)
+          }}
           className="w-12 h-8 rounded border border-gray-600 cursor-pointer hover:border-gray-500 transition-colors flex-shrink-0"
           style={{ backgroundColor: value }}
           aria-label={`Pick ${label}`}
@@ -66,7 +75,17 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
           onMouseDown={(e) => e.stopPropagation()}
         >
           <div className="bg-gray-800 p-3 rounded shadow-xl border border-gray-700">
-            <HexColorPicker color={value} onChange={onChange} />
+            <HexColorPicker
+              color={value}
+              onChange={(newColor) => {
+                isPickingRef.current = true
+                onChange(newColor)
+                // Reset after a brief delay to catch rapid value changes
+                setTimeout(() => {
+                  isPickingRef.current = false
+                }, 100)
+              }}
+            />
           </div>
         </div>
       )}
