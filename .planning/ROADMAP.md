@@ -79,9 +79,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 47-01-PLAN.md — Fix Segment Button to display actual SVG icons with configurable colors
-- [ ] 47-02-PLAN.md — Remove Kick Button element type entirely (breaking change)
-- [ ] 47-03-PLAN.md — Add optional tick marks to Stepped Knob with CSS transition for snap
+- [x] 47-01-PLAN.md — Fix Segment Button to display actual SVG icons with configurable colors
+- [x] 47-02-PLAN.md — Remove Kick Button element type entirely (breaking change)
+- [x] 47-03-PLAN.md — Add optional tick marks to Stepped Knob with CSS transition for snap
 
 #### Phase 48: Display & LED Fixes
 **Goal**: Note displays and bicolor LEDs render with correct visual behavior
@@ -758,10 +758,10 @@ Plans:
 | 44. Navigation Element Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 45. Slider Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
-| 47. Button & Knob Fixes | v1.10 | 0/3 | Not started | - |
+| 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 48. Display & LED Fixes | v1.10 | 0/TBD | Not started | - |
 | 49. Core UI Fixes | v1.10 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 47 Button & Knob Fixes planned (3 plans)*
+*Last updated: 2026-02-02 - Phase 47 Button & Knob Fixes complete (3/3 plans)*
