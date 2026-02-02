@@ -1626,6 +1626,7 @@ export function createSteppedKnob(overrides?: Partial<SteppedKnobElementConfig>)
     endAngle: 135,
     stepCount: 12,
     showStepIndicators: true,
+    showStepMarks: false,
     trackColor: '#374151',
     fillColor: '#949494',
     indicatorColor: '#ffffff',
