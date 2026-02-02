@@ -43,6 +43,11 @@ export function TreeViewProperties({ element, onUpdate }: TreeViewPropertiesProp
       if (!parentNode.children) parentNode.children = []
       parentNode.children.push(newNode)
 
+      // FIX NAV-01: Auto-expand parent so child is immediately visible
+      setExpandedNodeIds((prev) =>
+        prev.includes(parentNode.id) ? prev : [...prev, parentNode.id]
+      )
+
       onUpdate({ data: newData })
     },
     [element.data, onUpdate]
