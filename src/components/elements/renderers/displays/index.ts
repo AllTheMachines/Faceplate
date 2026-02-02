@@ -1,7 +1,7 @@
 /**
  * Display Renderer Exports
  *
- * Read-only visualization elements (labels, meters, visualizers, LEDs).
+ * Read-only visualization elements (labels, meters, visualizers).
  */
 
 export { LabelRenderer } from './LabelRenderer'
@@ -13,14 +13,6 @@ export { WaveformRenderer } from './WaveformRenderer'
 export { OscilloscopeRenderer } from './OscilloscopeRenderer'
 export { PresetBrowserRenderer } from './PresetBrowserRenderer'
 export { ModulationMatrixRenderer } from './ModulationMatrixRenderer'
-
-// LED Indicators
-export { SingleLEDRenderer } from './SingleLEDRenderer'
-export { BiColorLEDRenderer } from './BiColorLEDRenderer'
-export { TriColorLEDRenderer } from './TriColorLEDRenderer'
-export { LEDArrayRenderer } from './LEDArrayRenderer'
-export { LEDRingRenderer } from './LEDRingRenderer'
-export { LEDMatrixRenderer } from './LEDMatrixRenderer'
 
 // Value Displays
 export { NumericDisplayRenderer } from './NumericDisplayRenderer'

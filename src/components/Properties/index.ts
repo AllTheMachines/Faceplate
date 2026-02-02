@@ -61,12 +61,6 @@ import { NoteDisplayProperties } from './NoteDisplayProperties'
 import { BpmDisplayProperties } from './BpmDisplayProperties'
 import { EditableDisplayProperties } from './EditableDisplayProperties'
 import { MultiValueDisplayProperties } from './MultiValueDisplayProperties'
-import { SingleLEDProperties } from './SingleLEDProperties'
-import { BiColorLEDProperties } from './BiColorLEDProperties'
-import { TriColorLEDProperties } from './TriColorLEDProperties'
-import { LEDArrayProperties } from './LEDArrayProperties'
-import { LEDRingProperties } from './LEDRingProperties'
-import { LEDMatrixProperties } from './LEDMatrixProperties'
 import {
   RMSMeterProperties,
   VUMeterProperties,
@@ -171,12 +165,6 @@ export { NoteDisplayProperties } from './NoteDisplayProperties'
 export { BpmDisplayProperties } from './BpmDisplayProperties'
 export { EditableDisplayProperties } from './EditableDisplayProperties'
 export { MultiValueDisplayProperties } from './MultiValueDisplayProperties'
-export { SingleLEDProperties } from './SingleLEDProperties'
-export { BiColorLEDProperties } from './BiColorLEDProperties'
-export { TriColorLEDProperties } from './TriColorLEDProperties'
-export { LEDArrayProperties } from './LEDArrayProperties'
-export { LEDRingProperties } from './LEDRingProperties'
-export { LEDMatrixProperties } from './LEDMatrixProperties'
 export {
   RMSMeterProperties,
   VUMeterProperties,
@@ -282,12 +270,6 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['bpmdisplay', BpmDisplayProperties],
   ['editabledisplay', EditableDisplayProperties],
   ['multivaluedisplay', MultiValueDisplayProperties],
-  ['singleled', SingleLEDProperties],
-  ['bicolorled', BiColorLEDProperties],
-  ['tricolorled', TriColorLEDProperties],
-  ['ledarray', LEDArrayProperties],
-  ['ledring', LEDRingProperties],
-  ['ledmatrix', LEDMatrixProperties],
 
   // Professional Meters
   ['rmsmetermo', RMSMeterProperties],
