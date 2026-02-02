@@ -1,16 +1,24 @@
 ---
 phase: 49-core-ui-fixes
-verified: 2026-02-02T13:31:36Z
+verified: 2026-02-02T13:59:47Z
 status: passed
-score: 4/4 must-haves verified
+score: 6/6 must-haves verified
+re_verification:
+  previous_status: gaps_found
+  previous_score: 4/4 (Plan 01 only, before UAT)
+  gaps_closed:
+    - "Color picker stays open during drag interactions (isPickingRef tracking)"
+    - "Related Topics links navigate to correct linked section (length-sorted keys)"
+  gaps_remaining: []
+  regressions: []
 ---
 
 # Phase 49: Core UI Fixes Verification Report
 
 **Phase Goal:** Color picker and help system work without frustrating interaction issues
-**Verified:** 2026-02-02T13:31:36Z
+**Verified:** 2026-02-02T13:59:47Z
 **Status:** passed
-**Re-verification:** No - initial verification
+**Re-verification:** Yes - after gap closure (49-02 addressed UAT failures)
 
 ## Goal Achievement
 
@@ -18,34 +26,43 @@ score: 4/4 must-haves verified
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Color picker popup stays open during drag interactions | VERIFIED | `onMouseDown={(e) => e.stopPropagation()}` on picker container div (ColorInput.tsx:66) prevents drag events from triggering click-outside handler |
-| 2 | Related Topics links scroll to correct section within help window | VERIFIED | `navigateToSection('help-${elementKey}')` onclick handler (helpService.ts:67) calls `getElementById` and shows section (lines 248, 266) |
-| 3 | Back button appears after navigating and returns to previous position | VERIFIED | `updateBackButton()` shows/hides button based on history length (helpService.ts:301-305), `navigateBack()` restores previous section and scroll position (lines 281-298) |
-| 4 | Navigated section briefly highlights to show target | VERIFIED | `element.classList.add('highlight-flash')` with setTimeout removal after 1000ms (helpService.ts:273-276), CSS animation in styles.ts:175-178 |
+| 1 | Color picker popup stays open during drag interactions | VERIFIED | `isPickingRef` tracks picking state (line 14), useEffect checks `!isPickingRef.current` before closing (line 19), HexColorPicker onChange sets `isPickingRef.current = true` (line 81) |
+| 2 | Color picker closes on click-outside or element change | VERIFIED | handleClickOutside resets `isPickingRef.current = false` then closes (line 30-31), useEffect closes when value changes from external source (lines 17-22) |
+| 3 | Related Topics links navigate to correct section within help window | VERIFIED | `knownElementTypes` sorted by length descending (line 20): `sort((a, b) => b.length - a.length)` ensures "steppedknob" matches before "knob" |
+| 4 | Back button appears after navigating and returns to previous position | VERIFIED | `updateBackButton()` shows/hides based on history length (lines 303-307), `navigateBack()` pops history and restores scroll (lines 283-300), back button onclick calls `navigateBack()` (line 332) |
+| 5 | Navigated section briefly highlights to show target | VERIFIED | `element.classList.add('highlight-flash')` with setTimeout removal after 1000ms (lines 275-278), CSS in styles.ts:175-178 |
+| 6 | stopPropagation prevents mousedown bubbling from picker | VERIFIED | `onMouseDown={(e) => e.stopPropagation()}` on picker container div (line 75) |
 
-**Score:** 4/4 truths verified
+**Score:** 6/6 truths verified
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `src/components/Properties/ColorInput.tsx` | Color picker with stopPropagation on drag | VERIFIED | Line 66: `onMouseDown={(e) => e.stopPropagation()}` on picker popup div |
-| `src/services/helpService.ts` | In-window help navigation with history | VERIFIED | Lines 247-278: `navigateToSection()`, Lines 281-298: `navigateBack()`, Lines 301-305: `updateBackButton()` |
-| `src/content/help/styles.ts` | Highlight animation CSS | VERIFIED | Lines 175-178: `.highlight-flash` class with blue background and 1s transition |
+| `src/components/Properties/ColorInput.tsx` | Color picker with isPickingRef tracking | VERIFIED | Lines 14, 19, 30, 52, 81, 85: isPickingRef usage throughout |
+| `src/components/Properties/ColorInput.tsx` | stopPropagation on picker container | VERIFIED | Line 75: `onMouseDown={(e) => e.stopPropagation()}` |
+| `src/services/helpService.ts` | Length-sorted key matching | VERIFIED | Line 20: `Object.keys(allHelpTopics).sort((a, b) => b.length - a.length)` |
+| `src/services/helpService.ts` | In-window help navigation | VERIFIED | Lines 249-281: `navigateToSection()`, Lines 283-300: `navigateBack()`, Lines 303-307: `updateBackButton()` |
+| `src/content/help/styles.ts` | Highlight animation CSS | VERIFIED | Lines 175-178: `.highlight-flash` class with blue background |
+| `src/content/help/styles.ts` | Back button CSS | VERIFIED | Lines 181-198: `.back-btn` class with sticky positioning |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 |------|----|-----|--------|---------|
-| ColorInput.tsx picker popup div | mousedown event listener | stopPropagation prevents bubbling | WIRED | Line 66: `onMouseDown={(e) => e.stopPropagation()}` on div with `ref={pickerRef}` |
-| Help window Related Topics links | Section elements by ID | navigateToSection function | WIRED | Line 67: `onclick="navigateToSection('help-${elementKey}')"`, Line 248: `document.getElementById(sectionId)` |
+| ColorInput HexColorPicker onChange | isPickingRef tracking | ref set true during picking | WIRED | Line 81: `isPickingRef.current = true` before `onChange(newColor)` |
+| ColorInput useEffect[value] | isPickingRef check | conditional close | WIRED | Line 19: `if (!isPickingRef.current)` gates `setShowPicker(false)` |
+| helpService findElementKeyInTopic | sorted knownElementTypes | longer keys first | WIRED | Line 20: `.sort((a, b) => b.length - a.length)`, Line 40: iterates in sorted order |
+| Help window Related Topics onclick | navigateToSection function | JavaScript in generated HTML | WIRED | Line 69: `onclick="navigateToSection('help-${elementKey}')"` |
+| navigateToSection | highlight-flash CSS | classList.add | WIRED | Line 275: `element.classList.add('highlight-flash')` |
+| Back button | navigateBack function | onclick handler | WIRED | Line 332: `onclick="navigateBack()"` |
 
 ### Requirements Coverage
 
 | Requirement | Status | Blocking Issue |
 |-------------|--------|----------------|
 | UI-01: Color picker popup stays open when user drags to select colors | SATISFIED | - |
-| UI-02: Related Topics links in help system navigate to the correct help section when clicked | SATISFIED | - |
+| UI-02: Related Topics links in help system navigate to correct help section | SATISFIED | - |
 
 ### Anti-Patterns Found
 
@@ -65,28 +82,42 @@ While automated verification confirms all code patterns are correctly implemente
 **Why human:** Visual interaction behavior requires actual user input
 
 #### 2. Help Navigation Flow Test
-**Test:** Open help for any element with Related Topics, click a related topic link
-**Expected:** Content changes within same window (no new popup), back button appears, brief blue highlight on new section
-**Why human:** Window behavior and visual transitions need visual verification
+**Test:** Open help for Knob element, click "Use SteppedKnob for discrete values with detents"
+**Expected:** Content changes to Stepped Knob section (NOT regular Knob), back button appears, brief blue highlight
+**Why human:** Need to verify correct section content appears (not just navigation fires)
 
 #### 3. Navigation History Test
 **Test:** Navigate through 3+ related topics using links, then use back button multiple times
 **Expected:** Each back click restores previous section at correct scroll position
 **Why human:** Scroll position restoration requires visual confirmation
 
+### Gap Closure Summary
+
+| Original Gap | Root Cause | Fix Applied | Status |
+|--------------|------------|-------------|--------|
+| Color picker closes during drag | useEffect[value] closed on every value change | isPickingRef distinguishes picker-originated changes | CLOSED |
+| Related Topics link to wrong section | "knob" matched before "steppedknob" | Length-sorted keys (longer match first) | CLOSED |
+
 ### Summary
 
-All must-haves verified successfully:
+All must-haves verified successfully after gap closure:
 
-1. **Color picker drag fix:** The `onMouseDown={(e) => e.stopPropagation()}` handler on the picker popup container (line 66 of ColorInput.tsx) prevents mousedown events from bubbling to the document-level click-outside handler that closes the picker.
+1. **Color picker drag fix (Plan 01 + 02):** 
+   - `stopPropagation` prevents mousedown bubbling (Plan 01)
+   - `isPickingRef` tracking prevents useEffect from closing during active picking (Plan 02)
 
-2. **In-window help navigation:** The help system now generates all related topics (1 level deep) in the same HTML document and uses JavaScript to show/hide sections, with `navigateToSection()` handling navigation, history tracking, and highlighting.
+2. **In-window help navigation (Plan 01):** 
+   - `navigateToSection()` shows/hides sections and tracks history
+   - `navigateBack()` restores previous section with scroll position
+   - `highlight-flash` CSS provides visual feedback
 
-3. **Back button:** The `navigateBack()` function pops from history and restores the previous section with scroll position, while `updateBackButton()` controls visibility based on history length.
-
-4. **Highlight animation:** The `.highlight-flash` CSS class applies a blue background with 1-second fade-out transition when navigating to a new section.
+3. **Related Topics key matching (Plan 02):**
+   - `knownElementTypes` sorted by length descending
+   - "steppedknob" (11 chars) matches before "knob" (4 chars)
+   - "centerdetentknob" (16 chars) matches before "knob" (4 chars)
 
 ---
 
-*Verified: 2026-02-02T13:31:36Z*
+*Verified: 2026-02-02T13:59:47Z*
 *Verifier: Claude (gsd-verifier)*
+*Re-verification after: 49-02 gap closure plan execution*

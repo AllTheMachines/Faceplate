@@ -12,7 +12,7 @@
 - **v1.7 Parameter Sync** — Phase 39 (shipped 2026-01-28)
 - **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
 - **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
-- **v1.10 Element Bug Fixes** — Phases 44-49 (in progress)
+- **v1.10 Element Bug Fixes** — Phases 44-49 (shipped 2026-02-02)
 
 ## Phases
 
@@ -108,7 +108,7 @@ Plans:
 
 Plans:
 - [x] 49-01-PLAN.md — Fix color picker drag and help navigation
-- [ ] 49-02-PLAN.md — Gap closure: Fix color picker useEffect and Related Topics key matching
+- [x] 49-02-PLAN.md — Gap closure: Fix color picker useEffect and Related Topics key matching
 
 <details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
@@ -769,8 +769,8 @@ Plans:
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
-| 49. Core UI Fixes | v1.10 | 1/2 | In Progress | - |
+| 49. Core UI Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 49 gap closure plan added (49-02)*
+*Last updated: 2026-02-02 - Phase 49 complete, v1.10 milestone shipped*
