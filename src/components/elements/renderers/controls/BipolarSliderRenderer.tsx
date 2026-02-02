@@ -38,9 +38,6 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
   const range = config.max - config.min
   const normalizedValue = (config.value - config.min) / range
 
-  // Track width
-  const trackWidth = 6
-
   // Center position (normalized 0-1)
   const centerValue = config.centerValue
 
@@ -60,7 +57,7 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
   )
 
   // Calculate label/value positioning
-  const getLabelStyle = () => {
+  const getLabelStyle = (): React.CSSProperties => {
     const distance = config.labelDistance ?? 4
     const base: React.CSSProperties = {
       position: 'absolute',
@@ -80,10 +77,12 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
         return { ...base, right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: `${distance}px` }
       case 'right':
         return { ...base, left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: `${distance}px` }
+      default:
+        return base
     }
   }
 
-  const getValueStyle = () => {
+  const getValueStyle = (): React.CSSProperties => {
     const distance = config.valueDistance ?? 4
     const base: React.CSSProperties = {
       position: 'absolute',
@@ -103,177 +102,136 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
         return { ...base, right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: `${distance}px` }
       case 'right':
         return { ...base, left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: `${distance}px` }
+      default:
+        return base
     }
   }
 
-  if (config.orientation === 'vertical') {
-    // Vertical slider: 0 = bottom, 1 = top
-    const thumbY = config.height - normalizedValue * (config.height - config.thumbHeight)
-    const centerY = config.height - centerValue * config.height
+  const isVertical = config.orientation === 'vertical'
 
-    // Calculate fill from center to value
-    let fillY: number
-    let fillHeight: number
-    if (normalizedValue >= centerValue) {
-      // Value above center: fill from center to value
-      fillY = config.height - normalizedValue * config.height
-      fillHeight = (normalizedValue - centerValue) * config.height
-    } else {
-      // Value below center: fill from value to center
-      fillY = centerY
-      fillHeight = (centerValue - normalizedValue) * config.height
-    }
+  // Calculate fill position (CSS-based approach using percentages)
+  const fillStart = Math.min(centerValue, normalizedValue) * 100
+  const fillEnd = Math.max(centerValue, normalizedValue) * 100
+  const fillSize = fillEnd - fillStart
 
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* Label */}
-        {config.showLabel && (
-          <span style={getLabelStyle()}>
-            {config.labelText}
-          </span>
-        )}
+  // Common styles
+  const trackStyle: React.CSSProperties = isVertical
+    ? {
+        position: 'absolute',
+        left: '50%',
+        top: 0,
+        bottom: 0,
+        width: 6,
+        transform: 'translateX(-50%)',
+        backgroundColor: config.trackColor,
+        borderRadius: 0,
+      }
+    : {
+        position: 'absolute',
+        top: '50%',
+        left: 0,
+        right: 0,
+        height: 6,
+        transform: 'translateY(-50%)',
+        backgroundColor: config.trackColor,
+        borderRadius: 0,
+      }
 
-        {/* Value Display */}
-        {config.showValue && (
-          <span style={getValueStyle()}>
-            {formattedValue}
-          </span>
-        )}
+  const fillStyle: React.CSSProperties = isVertical
+    ? {
+        position: 'absolute',
+        left: '50%',
+        bottom: `${fillStart}%`,
+        width: 6,
+        height: `${fillSize}%`,
+        transform: 'translateX(-50%)',
+        backgroundColor: fillColor,
+        borderRadius: 0,
+      }
+    : {
+        position: 'absolute',
+        top: '50%',
+        left: `${fillStart}%`,
+        height: 6,
+        width: `${fillSize}%`,
+        transform: 'translateY(-50%)',
+        backgroundColor: fillColor,
+        borderRadius: 0,
+      }
 
-        {/* Slider SVG */}
-        <svg
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${config.width} ${config.height}`}
-          focusable="false"
-          style={{ overflow: 'visible' }}
-        >
-          {/* Track background */}
-          <rect
-            x={(config.width - trackWidth) / 2}
-            y={0}
-            width={trackWidth}
-            height={config.height}
-            fill={config.trackColor}
-            rx={0}
-          />
+  const centerMarkStyle: React.CSSProperties = isVertical
+    ? {
+        position: 'absolute',
+        left: '50%',
+        bottom: `${centerValue * 100}%`,
+        width: 16,
+        height: 3,
+        transform: 'translate(-50%, 50%)',
+        backgroundColor: config.centerLineColor,
+        pointerEvents: 'none',
+      }
+    : {
+        position: 'absolute',
+        top: '50%',
+        left: `${centerValue * 100}%`,
+        width: 3,
+        height: 16,
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: config.centerLineColor,
+        pointerEvents: 'none',
+      }
 
-          {/* Track fill (from center to value position) */}
-          <rect
-            x={(config.width - trackWidth) / 2}
-            y={fillY}
-            width={trackWidth}
-            height={fillHeight}
-            fill={fillColor}
-            rx={0}
-          />
+  const thumbStyle: React.CSSProperties = isVertical
+    ? {
+        position: 'absolute',
+        left: '50%',
+        bottom: `${normalizedValue * 100}%`,
+        width: config.thumbWidth,
+        height: config.thumbHeight,
+        transform: 'translate(-50%, 50%)',
+        backgroundColor: config.thumbColor,
+        borderRadius: 0,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+      }
+    : {
+        position: 'absolute',
+        top: '50%',
+        left: `${normalizedValue * 100}%`,
+        width: config.thumbWidth,
+        height: config.thumbHeight,
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: config.thumbColor,
+        borderRadius: 0,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+      }
 
-          {/* Center line (perpendicular to track) */}
-          <line
-            x1={0}
-            y1={centerY}
-            x2={config.width}
-            y2={centerY}
-            stroke={config.centerLineColor}
-            strokeWidth={2}
-          />
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* Label */}
+      {config.showLabel && (
+        <span style={getLabelStyle()}>
+          {config.labelText}
+        </span>
+      )}
 
-          {/* Thumb */}
-          <rect
-            x={(config.width - config.thumbWidth) / 2}
-            y={thumbY}
-            width={config.thumbWidth}
-            height={config.thumbHeight}
-            fill={config.thumbColor}
-            rx={0}
-          />
-        </svg>
-      </div>
-    )
-  } else {
-    // Horizontal slider: 0 = left, 1 = right
-    const thumbX = normalizedValue * (config.width - config.thumbWidth)
-    const thumbCenterX = thumbX + config.thumbWidth / 2
-    const centerX = centerValue * config.width
+      {/* Value Display */}
+      {config.showValue && (
+        <span style={getValueStyle()}>
+          {formattedValue}
+        </span>
+      )}
 
-    // Calculate fill from center to thumb center position
-    let fillX: number
-    let fillWidth: number
-    if (normalizedValue >= centerValue) {
-      // Value right of center: fill from center to thumb center
-      fillX = centerX
-      fillWidth = thumbCenterX - centerX
-    } else {
-      // Value left of center: fill from thumb center to center
-      fillX = thumbCenterX
-      fillWidth = centerX - thumbCenterX
-    }
+      {/* Track */}
+      <div style={trackStyle} />
 
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        {/* Label */}
-        {config.showLabel && (
-          <span style={getLabelStyle()}>
-            {config.labelText}
-          </span>
-        )}
+      {/* Fill */}
+      <div style={fillStyle} />
 
-        {/* Value Display */}
-        {config.showValue && (
-          <span style={getValueStyle()}>
-            {formattedValue}
-          </span>
-        )}
+      {/* Center Mark */}
+      <div style={centerMarkStyle} />
 
-        {/* Slider SVG */}
-        <svg
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${config.width} ${config.height}`}
-          focusable="false"
-          style={{ overflow: 'visible' }}
-        >
-          {/* Track background */}
-          <rect
-            x={0}
-            y={(config.height - trackWidth) / 2}
-            width={config.width}
-            height={trackWidth}
-            fill={config.trackColor}
-            rx={0}
-          />
-
-          {/* Track fill (from center to value position) */}
-          <rect
-            x={fillX}
-            y={(config.height - trackWidth) / 2}
-            width={fillWidth}
-            height={trackWidth}
-            fill={fillColor}
-            rx={0}
-          />
-
-          {/* Center line (perpendicular to track) */}
-          <line
-            x1={centerX}
-            y1={0}
-            x2={centerX}
-            y2={config.height}
-            stroke={config.centerLineColor}
-            strokeWidth={2}
-          />
-
-          {/* Thumb */}
-          <rect
-            x={thumbX}
-            y={(config.height - config.thumbHeight) / 2}
-            width={config.thumbWidth}
-            height={config.thumbHeight}
-            fill={config.thumbColor}
-            rx={0}
-          />
-        </svg>
-      </div>
-    )
-  }
+      {/* Thumb */}
+      <div style={thumbStyle} />
+    </div>
+  )
 }

@@ -1106,7 +1106,6 @@ ${selector} .oscilloscope-placeholder {
 ${selector} .slider-track {
   position: absolute;
   ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%);'}
-  border-radius: 3px;
   z-index: 0;
 }
 ${selector} .slider-center-mark {
@@ -1118,13 +1117,11 @@ ${selector} .slider-center-mark {
 ${selector} .slider-fill {
   position: absolute;
   ${isVertical ? 'left: 50%; width: 6px; transform: translateX(-50%);' : 'top: 50%; height: 6px; transform: translateY(-50%);'}
-  border-radius: 3px;
   z-index: 1;
 }
 ${selector} .slider-thumb {
   position: absolute;
-  ${isVertical ? 'left: 50%; width: 20px; height: 10px; transform: translate(-50%, 50%);' : 'top: 50%; width: 10px; height: 20px; transform: translate(-50%, -50%);'}
-  border-radius: 3px;
+  ${isVertical ? 'left: 50%; transform: translate(-50%, 50%);' : 'top: 50%; transform: translate(-50%, -50%);'}
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   z-index: 4;
 }`
@@ -1191,34 +1188,48 @@ ${selector} .slider-thumb {
   user-select: none;
   position: relative;
 }
-${selector} .slider-track {
-  position: absolute;
-  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%);'}
-  border-radius: 3px;
-  z-index: 0;
+
+${selector} svg {
+  display: block;
 }
-${selector} .notches {
+
+${selector} .slider-label,
+${selector} .slider-value {
   position: absolute;
-  ${isVertical ? 'left: 50%; top: 0; bottom: 0; width: 24px; transform: translateX(-50%);' : 'top: 50%; left: 0; right: 0; height: 24px; transform: translateY(-50%);'}
-  z-index: 5;
-  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
 }
-${selector} .notch {
-  position: absolute;
-  ${isVertical ? 'left: 50%; width: 12px; height: 2px; transform: translate(-50%, -50%);' : 'top: 50%; width: 2px; height: 12px; transform: translate(-50%, -50%);'}
+
+${selector} .slider-label-top,
+${selector} .slider-value-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
 }
-${selector} .slider-fill {
-  position: absolute;
-  ${isVertical ? 'left: 50%; bottom: 0; width: 6px; transform: translateX(-50%);' : 'top: 50%; left: 0; height: 6px; transform: translateY(-50%);'}
-  border-radius: 3px;
-  z-index: 1;
+
+${selector} .slider-label-bottom,
+${selector} .slider-value-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
 }
-${selector} .slider-thumb {
-  position: absolute;
-  ${isVertical ? 'left: 50%; width: 20px; height: 10px; transform: translate(-50%, 50%);' : 'top: 50%; width: 10px; height: 20px; transform: translate(-50%, -50%);'}
-  border-radius: 3px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  z-index: 4;
+
+${selector} .slider-label-left,
+${selector} .slider-value-left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 8px;
+}
+
+${selector} .slider-label-right,
+${selector} .slider-value-right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
 }`
     }
 
@@ -2075,6 +2086,7 @@ ${selector} .segment-icon {
 ${selector} .segment-icon svg {
   width: 100%;
   height: 100%;
+  fill: currentColor;
 }
 
 ${selector} .segment-text {

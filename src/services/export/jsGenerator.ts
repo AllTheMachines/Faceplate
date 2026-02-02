@@ -2899,57 +2899,23 @@ function updateSliderVisual(sliderId, value) {
       }
     }
   } else if (isBipolar) {
-    // Bipolar slider uses SVG - update SVG attributes
-    const svg = element.querySelector('svg');
-    if (svg) {
-      const viewBox = svg.getAttribute('viewBox');
-      const [, , vbWidth, vbHeight] = viewBox ? viewBox.split(' ').map(Number) : [0, 0, 100, 100];
-      const centerValue = parseFloat(element.dataset.centerValue) || 0.5;
-      const trackWidth = 6;
+    // Bipolar slider: fill extends from center to value (CSS-based like crossfade)
+    const centerValue = parseFloat(element.dataset.centerValue) || 0.5;
+    const fillStart = Math.min(centerValue, value) * 100;
+    const fillEnd = Math.max(centerValue, value) * 100;
+    const fillSize = fillEnd - fillStart;
 
-      if (isVertical) {
-        const thumbHeight = parseFloat(thumb?.getAttribute('height')) || 10;
-        const thumbY = vbHeight - value * (vbHeight - thumbHeight);
-        const centerY = vbHeight - centerValue * vbHeight;
-
-        let fillY, fillHeight;
-        if (value >= centerValue) {
-          fillY = vbHeight - value * vbHeight;
-          fillHeight = (value - centerValue) * vbHeight;
-        } else {
-          fillY = centerY;
-          fillHeight = (centerValue - value) * vbHeight;
-        }
-
-        if (fill) {
-          fill.setAttribute('y', fillY.toString());
-          fill.setAttribute('height', fillHeight.toString());
-        }
-        if (thumb) {
-          thumb.setAttribute('y', thumbY.toString());
-        }
-      } else {
-        const thumbWidth = parseFloat(thumb?.getAttribute('width')) || 10;
-        const thumbX = value * (vbWidth - thumbWidth);
-        const thumbCenterX = thumbX + thumbWidth / 2;
-        const centerX = centerValue * vbWidth;
-
-        let fillX, fillWidth;
-        if (value >= centerValue) {
-          fillX = centerX;
-          fillWidth = thumbCenterX - centerX;
-        } else {
-          fillX = thumbCenterX;
-          fillWidth = centerX - thumbCenterX;
-        }
-
-        if (fill) {
-          fill.setAttribute('x', fillX.toString());
-          fill.setAttribute('width', fillWidth.toString());
-        }
-        if (thumb) {
-          thumb.setAttribute('x', thumbX.toString());
-        }
+    if (isVertical) {
+      if (thumb) thumb.style.bottom = \`\${value * 100}%\`;
+      if (fill) {
+        fill.style.bottom = \`\${fillStart}%\`;
+        fill.style.height = \`\${fillSize}%\`;
+      }
+    } else {
+      if (thumb) thumb.style.left = \`\${value * 100}%\`;
+      if (fill) {
+        fill.style.left = \`\${fillStart}%\`;
+        fill.style.width = \`\${fillSize}%\`;
       }
     }
   } else if (isCrossfade) {

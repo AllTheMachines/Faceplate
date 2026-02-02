@@ -1001,7 +1001,6 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const centerValue = config.centerValue
   const orientationClass = isVertical ? 'vertical' : 'horizontal'
-  const trackWidth = 6
 
   // Determine fill color based on value position relative to center
   const fillColor = normalizedValue >= centerValue
@@ -1019,58 +1018,34 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
 
-  let svgContent: string
+  // Calculate fill position (CSS-based like crossfade slider)
+  const fillStart = Math.min(centerValue, normalizedValue) * 100
+  const fillEnd = Math.max(centerValue, normalizedValue) * 100
+  const fillSize = fillEnd - fillStart
+
+  let thumbStyle: string
+  let fillStyle: string
+  let centerMarkStyle: string
+
   if (isVertical) {
-    // Vertical slider: 0 = bottom, 1 = top
-    const thumbY = config.height - normalizedValue * (config.height - config.thumbHeight)
-    const centerY = config.height - centerValue * config.height
-
-    // Calculate fill from center to value
-    let fillY: number
-    let fillHeight: number
-    if (normalizedValue >= centerValue) {
-      fillY = config.height - normalizedValue * config.height
-      fillHeight = (normalizedValue - centerValue) * config.height
-    } else {
-      fillY = centerY
-      fillHeight = (centerValue - normalizedValue) * config.height
-    }
-
-    svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${config.width} ${config.height}" style="overflow: visible;">
-        <rect class="slider-track" x="${(config.width - trackWidth) / 2}" y="0" width="${trackWidth}" height="${config.height}" fill="${config.trackColor}" />
-        <rect class="slider-fill" x="${(config.width - trackWidth) / 2}" y="${fillY}" width="${trackWidth}" height="${fillHeight}" fill="${fillColor}" />
-        <line class="slider-center-line" x1="0" y1="${centerY}" x2="${config.width}" y2="${centerY}" stroke="${config.centerLineColor}" stroke-width="2" />
-        <rect class="slider-thumb" x="${(config.width - config.thumbWidth) / 2}" y="${thumbY}" width="${config.thumbWidth}" height="${config.thumbHeight}" fill="${config.thumbColor}" />
-      </svg>`
+    // Vertical: 0 = bottom, 1 = top
+    thumbStyle = `bottom: ${normalizedValue * 100}%; width: ${config.thumbWidth}px; height: ${config.thumbHeight}px; background: ${config.thumbColor};`
+    fillStyle = `bottom: ${fillStart}%; height: ${fillSize}%; background: ${fillColor};`
+    centerMarkStyle = `bottom: ${centerValue * 100}%; background: ${config.centerLineColor};`
   } else {
-    // Horizontal slider: 0 = left, 1 = right
-    const thumbX = normalizedValue * (config.width - config.thumbWidth)
-    const thumbCenterX = thumbX + config.thumbWidth / 2
-    const centerX = centerValue * config.width
-
-    // Calculate fill from center to thumb center position
-    let fillX: number
-    let fillWidth: number
-    if (normalizedValue >= centerValue) {
-      fillX = centerX
-      fillWidth = thumbCenterX - centerX
-    } else {
-      fillX = thumbCenterX
-      fillWidth = centerX - thumbCenterX
-    }
-
-    svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${config.width} ${config.height}" style="overflow: visible;">
-        <rect class="slider-track" x="0" y="${(config.height - trackWidth) / 2}" width="${config.width}" height="${trackWidth}" fill="${config.trackColor}" />
-        <rect class="slider-fill" x="${fillX}" y="${(config.height - trackWidth) / 2}" width="${fillWidth}" height="${trackWidth}" fill="${fillColor}" />
-        <line class="slider-center-line" x1="${centerX}" y1="0" x2="${centerX}" y2="${config.height}" stroke="${config.centerLineColor}" stroke-width="2" />
-        <rect class="slider-thumb" x="${thumbX}" y="${(config.height - config.thumbHeight) / 2}" width="${config.thumbWidth}" height="${config.thumbHeight}" fill="${config.thumbColor}" />
-      </svg>`
+    // Horizontal: 0 = left, 1 = right
+    thumbStyle = `left: ${normalizedValue * 100}%; width: ${config.thumbWidth}px; height: ${config.thumbHeight}px; background: ${config.thumbColor};`
+    fillStyle = `left: ${fillStart}%; width: ${fillSize}%; background: ${fillColor};`
+    centerMarkStyle = `left: ${centerValue * 100}%; background: ${config.centerLineColor};`
   }
 
   return `<div id="${id}" class="${baseClass} slider slider-element bipolarslider-element ${orientationClass}" data-type="bipolarslider"${paramAttr} data-orientation="${config.orientation}" data-value="${normalizedValue}" data-center-value="${centerValue}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
-      ${svgContent}
+      <div class="slider-track" style="background: ${config.trackColor};"></div>
+      <div class="slider-fill" style="${fillStyle}"></div>
+      <div class="slider-center-mark" style="${centerMarkStyle}"></div>
+      <div class="slider-thumb" style="${thumbStyle}"></div>
     </div>`
 }
 
