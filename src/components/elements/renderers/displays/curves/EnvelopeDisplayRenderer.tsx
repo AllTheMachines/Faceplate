@@ -268,14 +268,18 @@ export function EnvelopeDisplayRenderer({ config }: EnvelopeDisplayRendererProps
     hoveredHandle,
   ])
 
+  // Mouse leave handler to clear hover state
+  const handleMouseLeave = () => {
+    setHoveredHandle(null)
+  }
+
   return (
     <canvas
       ref={canvasRef}
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       style={{
         display: 'block',
-        width: '100%',
-        height: '100%',
         cursor: hoveredHandle !== null ? 'pointer' : 'default',
       }}
     />
