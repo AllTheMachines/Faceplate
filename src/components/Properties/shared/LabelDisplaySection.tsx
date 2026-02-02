@@ -84,7 +84,7 @@ export function LabelDisplaySection({
             />
             {onLabelDistanceChange && (
               <NumberInput
-                label="Distance"
+                label="Distance (px)"
                 value={labelDistance ?? 4}
                 onChange={onLabelDistanceChange}
                 min={-20}
