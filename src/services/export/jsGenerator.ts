@@ -2860,8 +2860,9 @@ function updateSliderVisual(sliderId, value) {
   const fill = element.querySelector('.slider-fill');
 
   // Check if using SVG-based rendering (notched slider uses SVG)
+  // Exclude bipolar slider - it needs its own specific handling for center-based fill
   const svg = element.querySelector('svg');
-  const usesSVG = svg && (isNotched || thumb?.tagName === 'rect');
+  const usesSVG = svg && (isNotched || thumb?.tagName === 'rect') && !isBipolar;
 
   if (usesSVG) {
     // SVG-based slider - update SVG attributes
