@@ -60,7 +60,11 @@ export function ColorInput({ label, value, onChange }: ColorInputProps) {
 
       {/* Popup picker */}
       {showPicker && (
-        <div ref={pickerRef} className="absolute z-50 mt-2 left-0">
+        <div
+          ref={pickerRef}
+          className="absolute z-50 mt-2 left-0"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <div className="bg-gray-800 p-3 rounded shadow-xl border border-gray-700">
             <HexColorPicker color={value} onChange={onChange} />
           </div>
