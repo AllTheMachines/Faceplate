@@ -336,6 +336,28 @@ export function SegmentButtonProperties({
           onChange={(borderColor) => onUpdate({ borderColor })}
         />
       </PropertySection>
+
+      {/* Icon Style */}
+      <PropertySection title="Icon Style">
+        <NumberInput
+          label="Icon Size"
+          value={element.iconSize ?? 16}
+          onChange={(iconSize) => onUpdate({ iconSize })}
+          min={8}
+          max={48}
+          step={1}
+        />
+        <ColorInput
+          label="Icon Color"
+          value={element.iconColor ?? '#888888'}
+          onChange={(iconColor) => onUpdate({ iconColor })}
+        />
+        <ColorInput
+          label="Selected Icon Color"
+          value={element.selectedIconColor ?? '#ffffff'}
+          onChange={(selectedIconColor) => onUpdate({ selectedIconColor })}
+        />
+      </PropertySection>
     </>
   )
 }
