@@ -24,9 +24,17 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
   const dropdownClass = `combobox-dropdown-${config.id?.replace(/-/g, '') || 'default'}`
 
   // Filter options based on input
-  const filteredOptions = config.options.filter((option) =>
-    option.toLowerCase().includes(inputValue.toLowerCase())
+  // FIX NAV-03: Show all options when inputValue matches an existing selection
+  const inputMatchesOption = config.options.some(
+    (opt) => opt.toLowerCase() === inputValue.toLowerCase()
   )
+  const filteredOptions = config.options.filter((option) => {
+    // If input exactly matches a selected option, show all options
+    if (inputMatchesOption) {
+      return true
+    }
+    return option.toLowerCase().includes(inputValue.toLowerCase())
+  })
 
   // Click-outside handling
   useEffect(() => {
