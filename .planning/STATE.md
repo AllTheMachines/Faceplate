@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-01-29)
 
 ## Current Position
 
-Phase: 45 of 49 - Slider Fixes
-Plan: 03 of 03 complete
-Status: Phase complete
-Last activity: 2026-02-02 - Completed 45-03-PLAN.md
+Phase: 46 of 49 - Curve Fixes
+Plan: 01 of 03 complete
+Status: In progress
+Last activity: 2026-02-02 - Completed 46-01-PLAN.md
 
-Progress: [#############-------] 25% (5/20 requirements in v1.10)
+Progress: [##############------] 30% (6/20 requirements in v1.10)
 
 ## Milestones Shipped
 
@@ -48,6 +48,7 @@ Progress: [#############-------] 25% (5/20 requirements in v1.10)
 | 2026-02-02 | 45-02 | Arc Slider default distance increased from 4px to 8px |
 | 2026-02-02 | 45-03 | Default dragSensitivity of 100px for full range |
 | 2026-02-02 | 45-03 | Shift key provides 10x finer control (0.1 multiplier) |
+| 2026-02-02 | 46-01 | Remove CSS width/height overrides; let useCanvasSetup hook control dimensions |
 
 All prior decisions documented in PROJECT.md Key Decisions table.
 
@@ -62,11 +63,11 @@ None
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Phase 45 verified and complete
+Stopped at: Completed 46-01-PLAN.md
 Resume file: None
 
-**Next step:** Plan or execute Phase 46 (Curve Fixes)
+**Next step:** Execute Phase 46-02 (Compressor Curve & Envelope Display Fixes)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 45 Slider Fixes complete*
+*Last updated: 2026-02-02 - Completed 46-01-PLAN.md*
