@@ -15,7 +15,9 @@ const allHelpTopics: Record<string, HelpContent> = {
 }
 
 // List of known element type names for detection in related topics
-const knownElementTypes = Object.keys(allHelpTopics)
+// Sort by length descending so longer/more specific keys match first
+// This prevents "knob" from matching before "steppedknob" in topics like "Use SteppedKnob..."
+const knownElementTypes = Object.keys(allHelpTopics).sort((a, b) => b.length - a.length)
 
 /**
  * Escape HTML entities to prevent XSS
