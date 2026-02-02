@@ -404,9 +404,17 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   centerValue: number
   centerLineColor: string
 
+  // Center Snap
+  centerSnap: boolean  // Enable/disable snap to center
+  centerSnapThreshold: number  // Threshold in normalized value (default 0.02 = 2%)
+
   // Track
   trackColor: string
   trackFillColor: string
+
+  // Zone Colors (replaces single trackFillColor for zones)
+  negativeFillColor: string  // Color when value < centerValue
+  positiveFillColor: string  // Color when value >= centerValue
 
   // Thumb
   thumbColor: string
@@ -1748,8 +1756,12 @@ export function createBipolarSlider(overrides?: Partial<BipolarSliderElementConf
     max: 1,
     centerValue: 0.5,
     centerLineColor: 'rgba(255, 255, 255, 0.5)',
+    centerSnap: false,
+    centerSnapThreshold: 0.02,
     trackColor: '#374151',
     trackFillColor: '#949494',
+    negativeFillColor: '#ef4444',  // Red-ish for negative
+    positiveFillColor: '#22c55e',  // Green-ish for positive
     thumbColor: '#ffffff',
     thumbWidth: 20,
     thumbHeight: 20,

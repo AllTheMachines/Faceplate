@@ -45,6 +45,39 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
           value={element.centerLineColor}
           onChange={(centerLineColor) => onUpdate({ centerLineColor })}
         />
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={element.centerSnap ?? false}
+            onChange={(e) => onUpdate({ centerSnap: e.target.checked })}
+            className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-300">Enable Center Snap</span>
+        </label>
+        {element.centerSnap && (
+          <NumberInput
+            label="Snap Threshold %"
+            value={(element.centerSnapThreshold ?? 0.02) * 100}
+            onChange={(val) => onUpdate({ centerSnapThreshold: val / 100 })}
+            min={0.5}
+            max={10}
+            step={0.5}
+          />
+        )}
+      </PropertySection>
+
+      {/* Zone Colors */}
+      <PropertySection title="Zone Colors">
+        <ColorInput
+          label="Negative Zone Color"
+          value={element.negativeFillColor ?? element.trackFillColor}
+          onChange={(negativeFillColor) => onUpdate({ negativeFillColor })}
+        />
+        <ColorInput
+          label="Positive Zone Color"
+          value={element.positiveFillColor ?? element.trackFillColor}
+          onChange={(positiveFillColor) => onUpdate({ positiveFillColor })}
+        />
       </PropertySection>
 
       {/* Value */}

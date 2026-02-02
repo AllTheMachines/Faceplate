@@ -44,6 +44,11 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
   // Center position (normalized 0-1)
   const centerValue = config.centerValue
 
+  // Determine fill color based on value position relative to center
+  const fillColor = normalizedValue >= centerValue
+    ? (config.positiveFillColor ?? config.trackFillColor)
+    : (config.negativeFillColor ?? config.trackFillColor)
+
   // Format value display
   const formattedValue = formatValue(
     normalizedValue,
@@ -159,7 +164,7 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
             y={fillY}
             width={trackWidth}
             height={fillHeight}
-            fill={config.trackFillColor}
+            fill={fillColor}
             rx={0}
           />
 
@@ -244,7 +249,7 @@ export function BipolarSliderRenderer({ config }: BipolarSliderRendererProps) {
             y={(config.height - trackWidth) / 2}
             width={fillWidth}
             height={trackWidth}
-            fill={config.trackFillColor}
+            fill={fillColor}
             rx={0}
           />
 
