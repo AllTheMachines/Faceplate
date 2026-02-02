@@ -3012,27 +3012,73 @@ function generateEQCurveHTML(config: EQCurveElementConfig): string {
     });
   }
 
+  let isDragging = false;
+  let draggedBand = -1;
+
+  function xToFrequency(x) {
+    const minLog = Math.log10(${config.minFreq});
+    const maxLog = Math.log10(${config.maxFreq});
+    return Math.pow(10, minLog + (x / width) * (maxLog - minLog));
+  }
+
+  function yToDb(y) {
+    return ${config.minDb} + ((height - y) / height) * (${config.maxDb} - ${config.minDb});
+  }
+
+  function getHandleAtPosition(mx, my) {
+    for (let i = 0; i < currentBands.length; i++) {
+      const hx = frequencyToX(currentBands[i].frequency);
+      const hy = dbToY(currentBands[i].gain);
+      if (Math.abs(mx - hx) < 8 && Math.abs(my - hy) < 8) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const handle = getHandleAtPosition(mx, my);
+    if (handle >= 0) {
+      isDragging = true;
+      draggedBand = handle;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+
   canvas.addEventListener('mousemove', function(e) {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    let newHovered = -1;
-    currentBands.forEach((band, i) => {
-      const hx = frequencyToX(band.frequency);
-      const hy = dbToY(band.gain);
-      if (Math.abs(mx - hx) < 8 && Math.abs(my - hy) < 8) {
-        newHovered = i;
-      }
-    });
-    if (newHovered !== hoveredHandle) {
-      hoveredHandle = newHovered;
-      canvas.style.cursor = hoveredHandle >= 0 ? 'pointer' : 'default';
+
+    if (isDragging && draggedBand >= 0) {
+      const newFreq = Math.max(${config.minFreq}, Math.min(${config.maxFreq}, xToFrequency(mx)));
+      const newGain = Math.max(${config.minDb}, Math.min(${config.maxDb}, yToDb(my)));
+      currentBands[draggedBand].frequency = newFreq;
+      currentBands[draggedBand].gain = newGain;
       draw();
+    } else {
+      const newHovered = getHandleAtPosition(mx, my);
+      if (newHovered !== hoveredHandle) {
+        hoveredHandle = newHovered;
+        canvas.style.cursor = hoveredHandle >= 0 ? 'grab' : 'default';
+        draw();
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (isDragging) {
+      isDragging = false;
+      draggedBand = -1;
+      canvas.style.cursor = hoveredHandle >= 0 ? 'grab' : 'default';
     }
   });
 
   canvas.addEventListener('mouseleave', function() {
-    if (hoveredHandle !== -1) {
+    if (!isDragging && hoveredHandle !== -1) {
       hoveredHandle = -1;
       canvas.style.cursor = 'default';
       draw();
@@ -3165,22 +3211,56 @@ function generateCompressorCurveHTML(config: CompressorCurveElementConfig): stri
     ctx.strokeRect(tx - 4, ty - 4, 8, 8);
   }
 
+  let isDragging = false;
+
+  function xToDb(x) {
+    return ${config.minDb} + (x / width) * (${config.maxDb} - ${config.minDb});
+  }
+
+  function isOverHandle(mx, my) {
+    const tx = dbToX(currentParams.threshold);
+    const ty = dbToY(currentParams.threshold);
+    return Math.abs(mx - tx) < 8 && Math.abs(my - ty) < 8;
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    if (isOverHandle(mx, my)) {
+      isDragging = true;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+
   canvas.addEventListener('mousemove', function(e) {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    const tx = dbToX(currentParams.threshold);
-    const ty = dbToY(currentParams.threshold);
-    const newHovered = Math.abs(mx - tx) < 8 && Math.abs(my - ty) < 8;
-    if (newHovered !== isHovered) {
-      isHovered = newHovered;
-      canvas.style.cursor = isHovered ? 'pointer' : 'default';
+
+    if (isDragging) {
+      const newThreshold = Math.max(${config.minDb}, Math.min(${config.maxDb}, xToDb(mx)));
+      currentParams.threshold = newThreshold;
       draw();
+    } else {
+      const newHovered = isOverHandle(mx, my);
+      if (newHovered !== isHovered) {
+        isHovered = newHovered;
+        canvas.style.cursor = isHovered ? 'grab' : 'default';
+        draw();
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (isDragging) {
+      isDragging = false;
+      canvas.style.cursor = isHovered ? 'grab' : 'default';
     }
   });
 
   canvas.addEventListener('mouseleave', function() {
-    if (isHovered) {
+    if (!isDragging && isHovered) {
       isHovered = false;
       canvas.style.cursor = 'default';
       draw();
@@ -3603,23 +3683,65 @@ function generateFilterResponseHTML(config: FilterResponseElementConfig): string
     ctx.strokeRect(cutoffX - 4, cutoffY - 4, 8, 8);
   }
 
+  let isDragging = false;
+
+  function xToFrequency(x) {
+    const minLog = Math.log10(${config.minFreq});
+    const maxLog = Math.log10(${config.maxFreq});
+    return Math.pow(10, minLog + (x / width) * (maxLog - minLog));
+  }
+
+  function yToDb(y) {
+    return ${config.minDb} + ((height - y) / height) * (${config.maxDb} - ${config.minDb});
+  }
+
+  function isOverHandle(mx, my) {
+    const cutoffX = frequencyToX(currentParams.cutoffFrequency);
+    const cutoffDb = calculateFilterResponse(currentParams.cutoffFrequency, currentParams.filterType, currentParams.cutoffFrequency, currentParams.resonance, currentParams.gain);
+    const cutoffY = dbToY(cutoffDb);
+    return Math.abs(mx - cutoffX) < 8 && Math.abs(my - cutoffY) < 8;
+  }
+
+  canvas.addEventListener('mousedown', function(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    if (isOverHandle(mx, my)) {
+      isDragging = true;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+
   canvas.addEventListener('mousemove', function(e) {
     const rect = canvas.getBoundingClientRect();
     const mx = e.clientX - rect.left;
     const my = e.clientY - rect.top;
-    const cutoffX = frequencyToX(currentParams.cutoffFrequency);
-    const cutoffDb = calculateFilterResponse(currentParams.cutoffFrequency, currentParams.filterType, currentParams.cutoffFrequency, currentParams.resonance, currentParams.gain);
-    const cutoffY = dbToY(cutoffDb);
-    const newHovered = Math.abs(mx - cutoffX) < 8 && Math.abs(my - cutoffY) < 8;
-    if (newHovered !== isHovered) {
-      isHovered = newHovered;
-      canvas.style.cursor = isHovered ? 'pointer' : 'default';
+
+    if (isDragging) {
+      const newCutoff = Math.max(${config.minFreq}, Math.min(${config.maxFreq}, xToFrequency(mx)));
+      const newResonance = Math.max(0.1, Math.min(10, yToDb(my) / 3 + 1));
+      currentParams.cutoffFrequency = newCutoff;
+      currentParams.resonance = Math.max(0.1, Math.min(10, newResonance));
       draw();
+    } else {
+      const newHovered = isOverHandle(mx, my);
+      if (newHovered !== isHovered) {
+        isHovered = newHovered;
+        canvas.style.cursor = isHovered ? 'grab' : 'default';
+        draw();
+      }
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (isDragging) {
+      isDragging = false;
+      canvas.style.cursor = isHovered ? 'grab' : 'default';
     }
   });
 
   canvas.addEventListener('mouseleave', function() {
-    if (isHovered) {
+    if (!isDragging && isHovered) {
       isHovered = false;
       canvas.style.cursor = 'default';
       draw();
