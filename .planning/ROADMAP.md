@@ -107,7 +107,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 49-01-PLAN.md — Fix color picker drag and help navigation
+- [x] 49-01-PLAN.md — Fix color picker drag and help navigation
 
 <details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
@@ -768,8 +768,8 @@ Plans:
 | 46. Curve Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
-| 49. Core UI Fixes | v1.10 | 0/1 | Ready | - |
+| 49. Core UI Fixes | v1.10 | 1/1 | Complete | 2026-02-02 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 48 complete (2 plans)*
+*Last updated: 2026-02-02 - Phase 49 complete (1 plan) - Milestone v1.10 complete*
