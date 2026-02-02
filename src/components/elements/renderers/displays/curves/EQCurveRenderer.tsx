@@ -231,8 +231,6 @@ export function EQCurveRenderer({ config }: EQCurveRendererProps) {
       onMouseLeave={handleMouseLeave}
       style={{
         display: 'block',
-        width: '100%',
-        height: '100%',
         cursor: hoveredBand !== null ? 'pointer' : 'default',
       }}
     />

@@ -198,8 +198,6 @@ export function FilterResponseRenderer({ config }: FilterResponseRendererProps) 
       onMouseLeave={handleMouseLeave}
       style={{
         display: 'block',
-        width: '100%',
-        height: '100%',
         cursor: hoveredHandle ? 'pointer' : 'default',
       }}
     />
