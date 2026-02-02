@@ -1,4 +1,4 @@
-import { TagSelectorElementConfig, Tag } from '../../../../types/elements'
+import { TagSelectorElementConfig } from '../../../../types/elements'
 import { useState, useRef, useEffect } from 'react'
 import { DEFAULT_SCROLLBAR_CONFIG } from '../../../../types/elements/containers'
 import { CustomScrollbar } from '../containers/CustomScrollbar'
@@ -195,7 +195,7 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
           />
 
           {/* Dropdown list */}
-          {dropdownOpen && filteredAvailable.length > 0 && (
+          {dropdownOpen && (
             <div
               className={dropdownClass}
               style={{
@@ -213,27 +213,41 @@ export function TagSelectorRenderer({ config }: TagSelectorRendererProps) {
                 boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
               }}
             >
-              {filteredAvailable.map((tag) => (
+              {filteredAvailable.length > 0 ? (
+                filteredAvailable.map((tag) => (
+                  <div
+                    key={tag.id}
+                    style={{
+                      padding: '8px 12px',
+                      color: dropdownTextColor,
+                      cursor: 'pointer',
+                      fontSize: '13px',
+                      fontFamily: 'Inter, system-ui, sans-serif',
+                      transition: 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = dropdownHoverColor
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
+                    {tag.label}
+                  </div>
+                ))
+              ) : filterText ? (
                 <div
-                  key={tag.id}
                   style={{
                     padding: '8px 12px',
-                    color: dropdownTextColor,
-                    cursor: 'pointer',
+                    color: '#6b7280',
+                    fontStyle: 'italic',
                     fontSize: '13px',
                     fontFamily: 'Inter, system-ui, sans-serif',
-                    transition: 'none',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = dropdownHoverColor
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
                   }}
                 >
-                  {tag.label}
+                  No matching tags
                 </div>
-              ))}
+              ) : null}
             </div>
           )}
         </div>
