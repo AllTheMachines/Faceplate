@@ -131,12 +131,22 @@ Additional elements and features will be available with a Pro license:
 
 ## License
 
-This project uses an **Open Core** licensing model:
+This project is licensed under the **[Elastic License 2.0 (ELv2)](./LICENSE)**.
 
-- **MIT License** - The core application and basic elements are free and open source
-- **Commercial License** - Pro features (marked with PRO badge) require a [paid license](https://polar.sh/AllTheMachines)
+### What you CAN do:
+- Use Faceplate for free to design plugin UIs
+- Modify the source code for personal use
+- Use basic elements in your commercial audio plugins
 
-See [LICENSE](./LICENSE) for full details.
+### What REQUIRES a Commercial License:
+- **Commercial Redistribution** - Selling or redistributing Faceplate itself
+- **Pro Features** - Using elements marked with the "PRO" badge
+
+### Get a Commercial License
+
+Purchase at: **[polar.sh/AllTheMachines](https://polar.sh/AllTheMachines)**
+
+See [LICENSE](./LICENSE) for full terms.
 
 ---
 
