@@ -18,7 +18,7 @@ export interface LabelElementConfig extends BaseElementConfig {
   text: string
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   color: string
   textAlign: 'left' | 'center' | 'right'
 }
@@ -213,7 +213,7 @@ export interface NumericDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -240,7 +240,7 @@ export interface TimeDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -260,7 +260,7 @@ export interface PercentageDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -283,7 +283,7 @@ export interface RatioDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -306,8 +306,9 @@ export interface NoteDisplayElementConfig extends BaseElementConfig {
 
   // Appearance
   fontSize: number
+  midiNumberFontSize: number // Font size for MIDI number (when showMidiNumber is true)
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -329,7 +330,7 @@ export interface BpmDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   padding: number
@@ -352,7 +353,7 @@ export interface EditableDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   borderColor: string
@@ -376,7 +377,7 @@ export interface MultiValueDisplayElementConfig extends BaseElementConfig {
   // Appearance
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   backgroundColor: string
   borderColor: string
@@ -870,7 +871,7 @@ export function createLabel(overrides?: Partial<LabelElementConfig>): LabelEleme
     text: 'Label',
     fontSize: 14,
     fontFamily: 'Inter, system-ui, sans-serif',
-    fontWeight: 400,
+    fontWeight: '400',
     color: '#ffffff',
     textAlign: 'left',
     ...overrides,
@@ -1126,7 +1127,7 @@ export function createNumericDisplay(overrides?: Partial<NumericDisplayElementCo
     unit: '',
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1160,7 +1161,7 @@ export function createTimeDisplay(overrides?: Partial<TimeDisplayElementConfig>)
     timeSignature: 4,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1189,7 +1190,7 @@ export function createPercentageDisplay(overrides?: Partial<PercentageDisplayEle
     decimalPlaces: 0,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1221,7 +1222,7 @@ export function createRatioDisplay(overrides?: Partial<RatioDisplayElementConfig
     infinityThreshold: 20,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1253,8 +1254,9 @@ export function createNoteDisplay(overrides?: Partial<NoteDisplayElementConfig>)
     showMidiNumber: false,
     showOctave: true,
     fontSize: 14,
+    midiNumberFontSize: 14, // Same as note name by default
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1285,7 +1287,7 @@ export function createBpmDisplay(overrides?: Partial<BpmDisplayElementConfig>): 
     showLabel: true,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     padding: 8,
@@ -1317,7 +1319,7 @@ export function createEditableDisplay(overrides?: Partial<EditableDisplayElement
     decimalPlaces: 2,
     fontSize: 18,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     borderColor: '#374151',
@@ -1346,7 +1348,7 @@ export function createMultiValueDisplay(overrides?: Partial<MultiValueDisplayEle
     layout: 'vertical',
     fontSize: 16,
     fontFamily: 'Roboto Mono, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#10b981',
     backgroundColor: '#1f2937',
     borderColor: '#374151',

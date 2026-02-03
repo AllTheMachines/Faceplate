@@ -48,6 +48,8 @@ export function ExportPanel() {
   const allElements = useStore((state) => state.elements)
   const windows = useStore((state) => state.windows)
   const activeWindow = useStore((state) => state.getActiveWindow())
+  const layers = useStore((state) => state.layers)
+  const getLayersInOrder = useStore((state) => state.getLayersInOrder)
 
   // Helper to get all elements including children (for containers with children not in elementIds)
   const getElementsWithChildren = (windowElementIds: string[]): ElementConfig[] => {
@@ -77,11 +79,32 @@ export function ExportPanel() {
     return result
   }
 
+  // Helper to sort elements by layer order (lowest order first = bottom layer)
+  const sortElementsByLayerOrder = (elements: ElementConfig[]): ElementConfig[] => {
+    const orderedLayers = getLayersInOrder()
+    const layerOrderMap = new Map(orderedLayers.map((layer, index) => [layer.id, index]))
+
+    return [...elements].sort((a, b) => {
+      const layerA = a.layerId || 'default'
+      const layerB = b.layerId || 'default'
+      const orderA = layerOrderMap.get(layerA) ?? 0
+      const orderB = layerOrderMap.get(layerB) ?? 0
+
+      // Sort by layer order first
+      if (orderA !== orderB) {
+        return orderA - orderB
+      }
+
+      // Within same layer, maintain original zIndex order
+      return (a.zIndex || 0) - (b.zIndex || 0)
+    })
+  }
+
   // For backwards compatibility with single-window exports, get active window data
   const elements = useMemo(() => {
     if (!activeWindow) return []
-    return getElementsWithChildren(activeWindow.elementIds)
-  }, [allElements, activeWindow])
+    return sortElementsByLayerOrder(getElementsWithChildren(activeWindow.elementIds))
+  }, [allElements, activeWindow, layers])
 
   const canvasWidth = activeWindow?.width ?? 800
   const canvasHeight = activeWindow?.height ?? 600
@@ -96,9 +119,9 @@ export function ExportPanel() {
       width: w.width,
       height: w.height,
       backgroundColor: w.backgroundColor,
-      elements: getElementsWithChildren(w.elementIds),
+      elements: sortElementsByLayerOrder(getElementsWithChildren(w.elementIds)),
     }))
-  }, [windows, allElements])
+  }, [windows, allElements, layers])
 
   // Window counts for UI
   const releaseWindowCount = windows.filter(w => w.type === 'release').length
@@ -234,7 +257,7 @@ export function ExportPanel() {
           windows: windows.map(w => ({
             id: w.id,
             name: w.name,
-            elements: getElementsWithChildren(w.elementIds),
+            elements: sortElementsByLayerOrder(getElementsWithChildren(w.elementIds)),
             width: w.width,
             height: w.height,
             backgroundColor: w.backgroundColor,
@@ -243,7 +266,7 @@ export function ExportPanel() {
           enableResponsiveScaling: true,
         })
       : await previewHTMLExport({
-          elements,
+          elements: sortElementsByLayerOrder(elements),
           canvasWidth,
           canvasHeight,
           backgroundColor,

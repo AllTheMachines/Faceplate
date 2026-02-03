@@ -77,7 +77,7 @@ export interface AsciiArtElementConfig extends BaseElementConfig {
   // Typography
   fontSize: number // Font size in px (default: 12)
   fontFamily: string // Monospace font (default: 'Courier New, monospace')
-  fontWeight: number // 100-900 (default: 400)
+  fontWeight: string // '100'-'900' (default: '400')
   textColor: string // Text color (default: '#00ff00' - classic terminal green)
   lineHeight: number // Line height multiplier (default: 1.0)
 
@@ -241,7 +241,7 @@ export function createAsciiArt(overrides?: Partial<AsciiArtElementConfig>): Asci
     noiseParameterId: '',
     fontSize: 12,
     fontFamily: 'Courier New, Consolas, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#00ff00',
     lineHeight: 1.0,
     backgroundColor: 'transparent',

@@ -1,9 +1,21 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { PaletteCategory } from './PaletteCategory'
 import { CustomSVGUpload } from './CustomSVGUpload'
 
+interface PaletteCategoryItem {
+  id: string
+  type: string
+  name: string
+  variant?: Record<string, unknown>
+}
+
+interface PaletteCategoryData {
+  name: string
+  items: PaletteCategoryItem[]
+}
+
 // Define palette categories and items
-const paletteCategories = [
+const paletteCategories: PaletteCategoryData[] = [
   {
     name: 'Rotary Controls',
     items: [
@@ -199,8 +211,68 @@ export function Palette() {
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
     new Set([0, 1, 2])
   )
+  const [searchTerm, setSearchTerm] = useState('')
+  const [inputValue, setInputValue] = useState('')
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
+
+  const handleInputChange = (value: string) => {
+    setInputValue(value)
+
+    // Clear existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // Debounce search (200ms for responsive feel)
+    timeoutRef.current = setTimeout(() => {
+      setSearchTerm(value.toLowerCase().trim())
+    }, 200)
+  }
+
+  const handleClear = () => {
+    setInputValue('')
+    setSearchTerm('')
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+  }
+
+  // Filter categories and items based on search
+  const filteredCategories = useMemo(() => {
+    if (!searchTerm) return paletteCategories
+
+    return paletteCategories
+      .map((category) => ({
+        ...category,
+        items: category.items.filter(
+          (item) =>
+            item.name.toLowerCase().includes(searchTerm) ||
+            item.type.toLowerCase().includes(searchTerm)
+        ),
+      }))
+      .filter((category) => category.items.length > 0)
+  }, [searchTerm])
+
+  // When searching, determine which categories to show expanded
+  const getIsExpanded = (index: number, categoryName: string) => {
+    if (searchTerm) {
+      // When searching, expand all matching categories
+      return filteredCategories.some((c) => c.name === categoryName)
+    }
+    return expandedCategories.has(index)
+  }
 
   const toggleCategory = (index: number) => {
+    if (searchTerm) return // Don't toggle during search
     setExpandedCategories((prev) => {
       const next = new Set(prev)
       if (next.has(index)) {
@@ -212,17 +284,84 @@ export function Palette() {
     })
   }
 
+  // Get original index for a filtered category
+  const getOriginalIndex = (categoryName: string) => {
+    return paletteCategories.findIndex((c) => c.name === categoryName)
+  }
+
   return (
     <div className="flex flex-col">
-      {paletteCategories.map((category, index) => (
-        <PaletteCategory
-          key={category.name}
-          category={category}
-          isExpanded={expandedCategories.has(index)}
-          onToggle={() => toggleCategory(index)}
-        />
-      ))}
-      <CustomSVGUpload />
+      {/* Search bar */}
+      <div className="p-2 border-b border-gray-700">
+        <div className="relative">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder="Search elements..."
+            className="w-full px-3 py-1.5 pl-8 pr-8 bg-gray-700 border border-gray-600 rounded text-sm text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          {/* Search icon */}
+          <svg
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          {/* Clear button */}
+          {inputValue && (
+            <button
+              onClick={handleClear}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+        {/* Search results count */}
+        {searchTerm && (
+          <div className="mt-1 text-xs text-gray-500">
+            {filteredCategories.reduce((acc, c) => acc + c.items.length, 0)} element
+            {filteredCategories.reduce((acc, c) => acc + c.items.length, 0) !== 1 ? 's' : ''} found
+          </div>
+        )}
+      </div>
+
+      {/* Categories */}
+      {filteredCategories.map((category) => {
+        const originalIndex = getOriginalIndex(category.name)
+        return (
+          <PaletteCategory
+            key={category.name}
+            category={category}
+            isExpanded={getIsExpanded(originalIndex, category.name)}
+            onToggle={() => toggleCategory(originalIndex)}
+          />
+        )
+      })}
+
+      {/* No results message */}
+      {searchTerm && filteredCategories.length === 0 && (
+        <div className="p-4 text-center text-gray-500 text-sm">
+          No elements found for "{inputValue}"
+        </div>
+      )}
+
+      {!searchTerm && <CustomSVGUpload />}
     </div>
   )
 }

@@ -88,8 +88,36 @@ function ChevronIcon({ expanded }: { expanded: boolean }) {
   )
 }
 
+function getReportBugUrl() {
+  const title = encodeURIComponent('[Bug] ')
+  const body = encodeURIComponent(`## Description
+Describe the bug here...
+
+## Steps to Reproduce
+1.
+2.
+3.
+
+## Expected Behavior
+
+
+## Actual Behavior
+
+
+## Environment
+- Browser: ${navigator.userAgent.split(' ').slice(-2).join(' ')}
+- URL: ${window.location.href}
+- Timestamp: ${new Date().toISOString()}
+`)
+  return `https://github.com/allthecodeDev/vst3-webview-ui-designer/issues/new?title=${title}&body=${body}&labels=bug`
+}
+
 export function HelpPanel() {
   const [expanded, setExpanded] = useState(false)
+
+  const handleReportBug = () => {
+    window.open(getReportBugUrl(), '_blank')
+  }
 
   return (
     <div className="border-t border-gray-700">
@@ -105,6 +133,19 @@ export function HelpPanel() {
           {shortcutCategories.map((category) => (
             <ShortcutSection key={category.name} category={category} />
           ))}
+
+          {/* Report Bug Link */}
+          <div className="pt-3 border-t border-gray-700">
+            <button
+              onClick={handleReportBug}
+              className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Report a Bug
+            </button>
+          </div>
         </div>
       )}
     </div>

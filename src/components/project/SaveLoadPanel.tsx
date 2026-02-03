@@ -77,6 +77,7 @@ export function SaveLoadPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
+  const layers = useStore((state) => state.layers)
 
   // Get dirty state via hook (properly subscribes to all dependencies)
   const { isDirty } = useDirtyState()
@@ -93,6 +94,7 @@ export function SaveLoadPanel() {
   const selectMultiple = useStore((state) => state.selectMultiple)
   const setAssets = useStore((state) => state.setAssets)
   const setKnobStyles = useStore((state) => state.setKnobStyles)
+  const setLayers = useStore((state) => state.setLayers)
   const setLastModified = useStore((state) => state.setLastModified)
   const addWindow = useStore((state) => state.addWindow)
   const addElementToWindow = useStore((state) => state.addElementToWindow)
@@ -112,6 +114,7 @@ export function SaveLoadPanel() {
         gridColor,
         assets,
         knobStyles,
+        layers,
       })
 
       // Serialize current state (adds lastModified timestamp)
@@ -125,6 +128,7 @@ export function SaveLoadPanel() {
         selectedIds,
         assets,
         knobStyles,
+        layers,
       })
 
       // Save to file
@@ -203,6 +207,11 @@ export function SaveLoadPanel() {
         setKnobStyles(data.knobStyles)
       }
 
+      // Restore layers if present
+      if (data.layers) {
+        setLayers(data.layers)
+      }
+
       // Restore timestamp from project file (or null if old file without timestamp)
       setLastModified(data.lastModified || null)
 
@@ -216,6 +225,7 @@ export function SaveLoadPanel() {
         gridColor: data.gridColor,
         assets: data.assets,
         knobStyles: data.knobStyles,
+        layers: data.layers,
       })
       setSavedState(loadedSnapshot, data.lastModified || Date.now())
 

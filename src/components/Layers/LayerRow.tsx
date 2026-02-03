@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { useStore } from '../../store'
 import { Layer, LAYER_COLOR_MAP } from '../../types/layer'
 
@@ -71,8 +73,29 @@ export function LayerRow({ layer, isSelected, hasSelectedElements, onSelect, onD
   const isDefault = layer.id === 'default'
   const colorHex = LAYER_COLOR_MAP[layer.color]
 
+  // Setup sortable for drag-and-drop (disabled for default layer)
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: layer.id,
+    disabled: isDefault,
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+  }
+
   return (
     <div
+      ref={setNodeRef}
+      style={style}
       className={`
         group flex items-center gap-2 px-3 py-2 cursor-pointer h-10
         ${isSelected ? 'bg-blue-600/30' : 'hover:bg-gray-700/50'}
@@ -84,7 +107,11 @@ export function LayerRow({ layer, isSelected, hasSelectedElements, onSelect, onD
     >
       {/* Drag handle grip icon (not on default layer) */}
       {!isDefault ? (
-        <div className="flex-shrink-0 text-gray-600 group-hover:text-gray-400 cursor-grab active:cursor-grabbing">
+        <div
+          {...attributes}
+          {...listeners}
+          className="flex-shrink-0 text-gray-600 group-hover:text-gray-400 cursor-grab active:cursor-grabbing"
+        >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
             <circle cx="9" cy="6" r="1.5" />
             <circle cx="15" cy="6" r="1.5" />

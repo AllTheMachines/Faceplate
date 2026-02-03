@@ -69,6 +69,16 @@ export function NoteDisplayProperties({ element, onUpdate }: NoteDisplayProperti
           />
           <span className="text-sm text-gray-300">Show MIDI Number</span>
         </label>
+        {element.showMidiNumber && (
+          <NumberInput
+            label="MIDI Number Font Size"
+            value={element.midiNumberFontSize ?? element.fontSize}
+            onChange={(midiNumberFontSize) => onUpdate({ midiNumberFontSize })}
+            min={6}
+            max={72}
+            step={1}
+          />
+        )}
         <label
           htmlFor="notedisplay-show-octave"
           className="flex items-center gap-2 cursor-pointer select-none"

@@ -34,6 +34,16 @@ export function SteppedKnobProperties({ element, onUpdate }: SteppedKnobProperti
           />
           <span className="text-sm text-gray-300">Show Step Indicators</span>
         </label>
+        {element.showStepIndicators && (
+          <NumberInput
+            label="Indicator Size"
+            value={element.stepIndicatorSize ?? 1.3}
+            onChange={(stepIndicatorSize) => onUpdate({ stepIndicatorSize })}
+            min={0.5}
+            max={10}
+            step={0.1}
+          />
+        )}
         <label className="flex items-center gap-2 cursor-pointer select-none">
           <input
             type="checkbox"
@@ -43,6 +53,26 @@ export function SteppedKnobProperties({ element, onUpdate }: SteppedKnobProperti
           />
           <span className="text-sm text-gray-300">Show Step Marks</span>
         </label>
+        {element.showStepMarks && (
+          <div className="grid grid-cols-2 gap-3">
+            <NumberInput
+              label="Mark Length"
+              value={element.stepMarkLength ?? 6}
+              onChange={(stepMarkLength) => onUpdate({ stepMarkLength })}
+              min={1}
+              max={20}
+              step={1}
+            />
+            <NumberInput
+              label="Mark Width"
+              value={element.stepMarkWidth ?? 1}
+              onChange={(stepMarkWidth) => onUpdate({ stepMarkWidth })}
+              min={0.5}
+              max={10}
+              step={0.5}
+            />
+          </div>
+        )}
       </PropertySection>
 
       {/* Value */}

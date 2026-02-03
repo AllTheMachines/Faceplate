@@ -6,6 +6,7 @@
  */
 
 import { fileSave, fileOpen } from 'browser-fs-access'
+import { DIR_KEYS, getFileHandle, storeFileHandle } from './directoryStorage'
 
 /**
  * Save project as .json file using browser save dialog
@@ -19,12 +20,21 @@ export async function saveProjectFile(
 ): Promise<void> {
   const blob = new Blob([jsonContent], { type: 'application/json' })
 
-  await fileSave(blob, {
+  // Try to get last used project file as starting point (opens in same folder)
+  const lastProjectFile = await getFileHandle(DIR_KEYS.PROJECT_FILE).catch(() => null)
+
+  const fileHandle = await fileSave(blob, {
     fileName: suggestedName || 'project.json',
     extensions: ['.json'],
     description: 'VST3 WebView UI Project',
     mimeTypes: ['application/json'],
+    startIn: lastProjectFile || 'documents',
   })
+
+  // Store the file handle for next time (dialog will open in same folder)
+  if (fileHandle) {
+    await storeFileHandle(DIR_KEYS.PROJECT_FILE, fileHandle).catch(() => {})
+  }
 }
 
 /**
@@ -47,14 +57,25 @@ export type LoadResult =
  */
 export async function loadProjectFile(): Promise<LoadResult> {
   try {
+    // Try to get last used project file as starting point (opens in same folder)
+    const lastProjectFile = await getFileHandle(DIR_KEYS.PROJECT_FILE).catch(() => null)
+
     const blob = await fileOpen({
       extensions: ['.json'],
       description: 'VST3 WebView UI Project',
       mimeTypes: ['application/json'],
+      startIn: lastProjectFile || 'documents',
     })
 
     // Read blob content as text
     const content = await blob.text()
+
+    // Store the file handle for next time (dialog will open in same folder)
+    // browser-fs-access adds a 'handle' property when File System Access API is available
+    const fileHandle = (blob as any).handle as FileSystemFileHandle | undefined
+    if (fileHandle) {
+      await storeFileHandle(DIR_KEYS.PROJECT_FILE, fileHandle).catch(() => {})
+    }
 
     return {
       success: true,

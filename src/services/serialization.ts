@@ -36,6 +36,7 @@ export interface SerializationInput {
   selectedIds: string[]
   assets: Asset[]
   knobStyles: KnobStyle[]
+  layers: import('../types/layer').Layer[]
 }
 
 /**
@@ -63,6 +64,7 @@ export function serializeProject(state: SerializationInput): string {
     selectedIds: state.selectedIds,
     assets: state.assets,
     knobStyles: state.knobStyles,
+    layers: state.layers,
     snapToGrid: state.snapToGrid,
     gridSize: state.gridSize,
     showGrid: state.showGrid,
@@ -227,6 +229,7 @@ function migrateV1ToV2(data: ProjectDataV1): ProjectData {
     elements: data.elements,
     assets: data.assets || [],
     knobStyles: data.knobStyles || [],
+    layers: data.layers || [],
     selectedIds: data.selectedIds,
     snapToGrid: data.canvas.snapToGrid,
     gridSize: data.canvas.gridSize,

@@ -28,6 +28,9 @@ const BaseElementSchema = z.object({
 
   // JUCE Binding (optional)
   parameterId: z.string().optional(),
+
+  // Layer assignment (optional)
+  layerId: z.string().optional(),
 })
 
 // ============================================================================
@@ -168,6 +171,22 @@ export const SVGAssetSchema = z.object({
 export type SVGAsset = z.infer<typeof SVGAssetSchema>
 
 // ============================================================================
+// Layer Schema
+// ============================================================================
+
+export const LayerSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  color: z.enum(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'gray']),
+  visible: z.boolean(),
+  locked: z.boolean(),
+  order: z.number(),
+  createdAt: z.number(),
+})
+
+export type Layer = z.infer<typeof LayerSchema>
+
+// ============================================================================
 // Knob Style Schema
 // ============================================================================
 
@@ -275,6 +294,7 @@ export const ProjectSchemaV1 = z.object({
   elements: z.array(ElementConfigSchema),
   assets: z.array(SVGAssetSchema).optional().default([]),
   knobStyles: z.array(KnobStyleSchema).optional().default([]),
+  layers: z.array(LayerSchema).optional().default([]),
   selectedIds: z.array(z.string()).optional(),
   lastModified: z.number().optional(),
 })
@@ -286,6 +306,7 @@ export const ProjectSchemaV2 = z.object({
   elements: z.array(ElementConfigSchema), // All elements across all windows
   assets: z.array(SVGAssetSchema).optional().default([]),
   knobStyles: z.array(KnobStyleSchema).optional().default([]),
+  layers: z.array(LayerSchema).optional().default([]),
   selectedIds: z.array(z.string()).optional(),
   // Global canvas/grid settings (not per-window)
   snapToGrid: z.boolean().optional().default(false),

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useStore } from '../../store'
 import { Layer, LayerColor, LAYER_COLORS, LAYER_COLOR_MAP } from '../../types/layer'
 import { LayerRow } from './LayerRow'
@@ -17,6 +19,7 @@ export function LayersPanel() {
   const addLayer = useStore((state) => state.addLayer)
   const getLayersInOrder = useStore((state) => state.getLayersInOrder)
   const toggleLayerVisibility = useStore((state) => state.toggleLayerVisibility)
+  const reorderLayers = useStore((state) => state.reorderLayers)
   const elements = useStore((state) => state.elements)
   const selectedIds = useStore((state) => state.selectedIds)
   const selectElement = useStore((state) => state.selectElement)
@@ -100,6 +103,31 @@ export function LayersPanel() {
   const orderedLayers = getLayersInOrder()
   const sortedLayers = orderedLayers.slice().reverse()
 
+  // Create sortable layer IDs from reversed list (must match display order)
+  // Exclude default layer
+  const sortableLayerIds = sortedLayers
+    .filter(layer => layer.id !== 'default')
+    .map(layer => layer.id)
+
+  // Handle drag end event
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    // Find indices in the REVERSED display order
+    const oldIndex = sortedLayers.findIndex(l => l.id === active.id)
+    const newIndex = sortedLayers.findIndex(l => l.id === over.id)
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      // Convert reversed indices to actual order indices
+      const layers = getLayersInOrder()
+      const actualOldIndex = layers.length - 1 - oldIndex
+      const actualNewIndex = layers.length - 1 - newIndex
+
+      reorderLayers(actualOldIndex, actualNewIndex)
+    }
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* Header with add button */}
@@ -177,7 +205,7 @@ export function LayersPanel() {
         </div>
       )}
 
-      {/* Layer list - simple version without drag-drop for now */}
+      {/* Layer list with drag-and-drop */}
       <div className="flex-1 overflow-y-auto">
         {sortedLayers.length === 0 ? (
           <div className="flex items-center justify-center h-full p-6">
@@ -202,18 +230,22 @@ export function LayersPanel() {
             </div>
           </div>
         ) : (
-          <div>
-            {sortedLayers.map((layer) => (
-              <LayerRow
-                key={layer.id}
-                layer={layer}
-                isSelected={selectedLayerId === layer.id}
-                hasSelectedElements={layersWithSelectedElements.has(layer.id)}
-                onSelect={handleLayerClick}
-                onDelete={(l) => setLayerToDelete(l)}
-              />
-            ))}
-          </div>
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={sortableLayerIds} strategy={verticalListSortingStrategy}>
+              <div>
+                {sortedLayers.map((layer) => (
+                  <LayerRow
+                    key={layer.id}
+                    layer={layer}
+                    isSelected={selectedLayerId === layer.id}
+                    hasSelectedElements={layersWithSelectedElements.has(layer.id)}
+                    onSelect={handleLayerClick}
+                    onDelete={(l) => setLayerToDelete(l)}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
 

@@ -29,17 +29,42 @@ function escapeHtml(text: string): string {
 }
 
 /**
+ * Known false positive patterns where a short key appears inside an unrelated word
+ * Maps: key -> array of words that contain the key but shouldn't match
+ */
+const falsePositivePatterns: Record<string, string[]> = {
+  'meter': ['parameter', 'parameters', 'perimeter'],
+  'lock': ['block', 'blocks', 'blocking', 'clock'],
+  'image': ['damage'],
+  'label': ['relabel', 'relabels'],
+}
+
+/**
  * Find element type key mentioned in topic text
  * Returns the key if found, null otherwise
  */
 function findElementKeyInTopic(topic: string): string | null {
   // Normalize topic: remove spaces, lowercase
   const normalizedTopic = topic.toLowerCase().replace(/\s+/g, '')
+  const topicLower = topic.toLowerCase()
 
   // Check each known element type
   for (const key of knownElementTypes) {
     // Direct substring match (handles "SteppedKnob", "Stepped Knob", "stepped knob")
     if (normalizedTopic.includes(key)) {
+      // Check for false positives
+      const falsePatterns = falsePositivePatterns[key]
+      if (falsePatterns) {
+        // If any false positive word is in the topic AND the key isn't there as a standalone word, skip
+        const hasFalsePositive = falsePatterns.some(fp => topicLower.includes(fp))
+        const hasRealMatch = new RegExp(`\\b${key}\\b`, 'i').test(topic) ||
+                            topicLower.includes(key + ' ') ||
+                            topicLower.includes(' ' + key) ||
+                            knownElementTypes.some(k => k.includes(key) && k !== key && normalizedTopic.includes(k))
+        if (hasFalsePositive && !hasRealMatch) {
+          continue // Skip this key, try next
+        }
+      }
       return key
     }
   }

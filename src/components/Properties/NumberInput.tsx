@@ -27,20 +27,25 @@ export function NumberInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
-    setLocalValue(inputValue)
 
-    // Parse and call onChange if valid number
-    const num = Number(inputValue)
-    if (!isNaN(num)) {
-      onChange(num)
+    // Allow empty, minus sign, or valid number patterns (including intermediate states like "-", "-.", ".")
+    // This regex allows: optional minus, digits, optional decimal point, more digits
+    if (inputValue === '' || inputValue === '-' || inputValue === '.' || inputValue === '-.' || /^-?\d*\.?\d*$/.test(inputValue)) {
+      setLocalValue(inputValue)
+
+      // Only call onChange if it's a complete valid number (not intermediate state)
+      const num = parseFloat(inputValue)
+      if (!isNaN(num)) {
+        onChange(num)
+      }
     }
   }
 
   const handleBlur = () => {
-    const num = Number(localValue)
+    const num = parseFloat(localValue)
 
-    // Handle NaN by reverting to prop value
-    if (isNaN(num)) {
+    // Handle NaN or incomplete input by reverting to prop value
+    if (isNaN(num) || localValue === '-' || localValue === '.' || localValue === '-.') {
       setLocalValue(String(value))
       return
     }
@@ -53,17 +58,28 @@ export function NumberInput({
     }
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Handle arrow keys for increment/decrement
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault()
+      const currentNum = parseFloat(localValue) || 0
+      const delta = e.key === 'ArrowUp' ? step : -step
+      const newValue = Math.max(min, Math.min(max, currentNum + delta))
+      setLocalValue(String(newValue))
+      onChange(newValue)
+    }
+  }
+
   return (
     <div className="mb-3">
       <label className="block text-xs text-gray-400 mb-1">{label}</label>
       <input
-        type="number"
+        type="text"
+        inputMode="decimal"
         value={localValue}
         onChange={handleChange}
         onBlur={handleBlur}
-        min={min}
-        max={max}
-        step={step}
+        onKeyDown={handleKeyDown}
         className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500"
       />
     </div>

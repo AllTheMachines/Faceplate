@@ -121,7 +121,7 @@ export function PropertyPanel() {
   return (
     <div className="space-y-6">
       {/* Position & Size */}
-      <PropertySection title="Position & Size" helpContent={sectionHelp['position-size']}>
+      <PropertySection title="Position & Size" helpContent={sectionHelp['position-size']} elementType={element.type}>
         <div className="grid grid-cols-2 gap-3">
           <NumberInput
             label="X"
@@ -149,7 +149,7 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Identity */}
-      <PropertySection title="Identity" helpContent={sectionHelp['identity']}>
+      <PropertySection title="Identity" helpContent={sectionHelp['identity']} elementType={element.type}>
         <TextInput
           label="Name"
           value={element.name}
@@ -166,7 +166,7 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Lock */}
-      <PropertySection title="Lock" helpContent={sectionHelp['lock']}>
+      <PropertySection title="Lock" helpContent={sectionHelp['lock']} elementType={element.type}>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -182,7 +182,7 @@ export function PropertyPanel() {
       </PropertySection>
 
       {/* Export / Import */}
-      <PropertySection title="SVG" helpContent={sectionHelp['svg']}>
+      <PropertySection title="SVG" helpContent={sectionHelp['svg']} elementType={element.type}>
         <div className="flex gap-2">
           <button
             onClick={() => downloadElementSVG(element)}

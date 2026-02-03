@@ -4,15 +4,15 @@ import { NumberInput, ColorInput, PropertySection } from './'
 import { useStore } from '../../store'
 
 const FONT_WEIGHTS = [
-  { value: 100, label: 'Thin' },
-  { value: 200, label: 'Extra Light' },
-  { value: 300, label: 'Light' },
-  { value: 400, label: 'Regular' },
-  { value: 500, label: 'Medium' },
-  { value: 600, label: 'Semi Bold' },
-  { value: 700, label: 'Bold' },
-  { value: 800, label: 'Extra Bold' },
-  { value: 900, label: 'Black' },
+  { value: '100', label: 'Thin' },
+  { value: '200', label: 'Extra Light' },
+  { value: '300', label: 'Light' },
+  { value: '400', label: 'Regular' },
+  { value: '500', label: 'Medium' },
+  { value: '600', label: 'Semi Bold' },
+  { value: '700', label: 'Bold' },
+  { value: '800', label: 'Extra Bold' },
+  { value: '900', label: 'Black' },
 ] as const
 
 const MONOSPACE_FONTS = [
@@ -338,7 +338,7 @@ export function AsciiArtProperties({ element, onUpdate }: AsciiArtPropertiesProp
           <label className="block text-xs text-gray-400 mb-1">Font Weight</label>
           <select
             value={element.fontWeight}
-            onChange={(e) => onUpdate({ fontWeight: Number(e.target.value) })}
+            onChange={(e) => onUpdate({ fontWeight: e.target.value })}
             className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
           >
             {FONT_WEIGHTS.map(({ value, label }) => (

@@ -1,5 +1,6 @@
 import { CrossfadeSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection, TextInput } from './'
+import { FontFamilySelect, FontWeightSelect } from './shared'
 
 interface CrossfadeSliderPropertiesProps {
   element: CrossfadeSliderElementConfig
@@ -34,6 +35,18 @@ export function CrossfadeSliderProperties({ element, onUpdate }: CrossfadeSlider
           onChange={(labelFontSize) => onUpdate({ labelFontSize })}
           min={8}
           max={24}
+        />
+        <FontFamilySelect
+          label="Label Font Family"
+          value={element.labelFontFamily}
+          onChange={(labelFontFamily) => onUpdate({ labelFontFamily })}
+        />
+        <FontWeightSelect
+          label="Label Font Weight"
+          value={element.labelFontWeight}
+          onChange={(labelFontWeight) => onUpdate({ labelFontWeight: labelFontWeight as string })}
+          valueType="string"
+          fontFamily={element.labelFontFamily}
         />
       </PropertySection>
 

@@ -9,12 +9,22 @@ import type { HelpContent } from '../../content/help/types'
 interface HelpButtonProps {
   content: HelpContent
   className?: string
+  /** Optional element type context for bug reports */
+  elementType?: string
 }
 
-export function HelpButton({ content, className = '' }: HelpButtonProps) {
+export function HelpButton({ content, className = '', elementType }: HelpButtonProps) {
+  const handleClick = () => {
+    // Add element context if provided
+    const contentWithContext: HelpContent = elementType
+      ? { ...content, elementContext: elementType }
+      : content
+    openHelpWindow(contentWithContext)
+  }
+
   return (
     <button
-      onClick={() => openHelpWindow(content)}
+      onClick={handleClick}
       className={`text-gray-400 hover:text-gray-200 transition-colors ${className}`}
       title="Show help"
       aria-label={`Help for ${content.title}`}

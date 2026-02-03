@@ -53,7 +53,7 @@ export function NoteDisplayRenderer({ config }: NoteDisplayRendererProps) {
     >
       <div>{displayValue}</div>
       {config.showMidiNumber && (
-        <div style={{ fontSize: `${config.fontSize * 0.6}px`, opacity: 0.7, marginTop: 2 }}>
+        <div style={{ fontSize: `${config.midiNumberFontSize ?? config.fontSize}px`, opacity: 0.7, marginTop: 2 }}>
           {midiNumber}
         </div>
       )}

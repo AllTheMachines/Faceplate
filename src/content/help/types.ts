@@ -12,4 +12,6 @@ export interface HelpContent {
     explanation: string
   }>
   relatedTopics?: string[]
+  /** Element type context - which element this help was opened from */
+  elementContext?: string
 }

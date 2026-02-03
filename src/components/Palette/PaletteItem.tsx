@@ -1234,7 +1234,7 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
       case 'asciislider':
         return (
           <div style={containerStyle}>
-            <AsciiSliderRenderer config={previewElement} />
+            <AsciiSliderRenderer config={previewElement} isPreview={true} />
           </div>
         )
       case 'asciiart':

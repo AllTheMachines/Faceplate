@@ -436,6 +436,7 @@ function ElementComponent({ element }: ElementProps) {
   }
 
   const Renderer = getRenderer(element.type)
+
   if (!Renderer) {
     console.warn(`No renderer found for element type: ${element.type}`)
     return null

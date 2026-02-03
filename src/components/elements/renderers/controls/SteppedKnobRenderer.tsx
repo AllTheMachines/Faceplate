@@ -74,6 +74,7 @@ function getLabelStyle(config: SteppedKnobElementConfig): React.CSSProperties {
     position: 'absolute',
     fontSize: `${config.labelFontSize}px`,
     fontFamily: config.labelFontFamily,
+    fontWeight: config.labelFontWeight,
     color: config.labelColor,
     whiteSpace: 'nowrap',
     userSelect: 'none',
@@ -97,6 +98,7 @@ function getValueStyle(config: SteppedKnobElementConfig): React.CSSProperties {
     position: 'absolute',
     fontSize: `${config.valueFontSize}px`,
     fontFamily: config.valueFontFamily,
+    fontWeight: config.valueFontWeight,
     color: config.valueColor,
     whiteSpace: 'nowrap',
     userSelect: 'none',
@@ -152,8 +154,9 @@ export function SteppedKnobRenderer({ config }: SteppedKnobRendererProps) {
   // Tick marks (dial-style, outside knob)
   const tickMarks: Array<{inner: {x: number, y: number}, outer: {x: number, y: number}}> = []
   if (config.showStepMarks) {
-    const outerRadius = radius * 1.15
-    const innerRadius = radius * 1.05
+    const markLength = config.stepMarkLength ?? 6
+    const innerRadius = radius + 2 // Small gap from track
+    const outerRadius = innerRadius + markLength
     for (let i = 0; i < config.stepCount; i++) {
       const stepNormalized = i / (config.stepCount - 1)
       const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
@@ -213,7 +216,7 @@ export function SteppedKnobRenderer({ config }: SteppedKnobRendererProps) {
             key={i}
             cx={pos.x}
             cy={pos.y}
-            r={config.trackWidth / 3}
+            r={config.stepIndicatorSize ?? (config.trackWidth / 3)}
             fill={i <= Math.round(steppedValue * (config.stepCount - 1)) ? config.fillColor : config.trackColor}
             stroke="none"
           />
@@ -239,7 +242,7 @@ export function SteppedKnobRenderer({ config }: SteppedKnobRendererProps) {
             x2={tick.outer.x}
             y2={tick.outer.y}
             stroke={config.trackColor}
-            strokeWidth={Math.max(1, config.trackWidth / 4)}
+            strokeWidth={config.stepMarkWidth ?? Math.max(1, config.trackWidth / 4)}
             strokeLinecap="round"
           />
         ))}

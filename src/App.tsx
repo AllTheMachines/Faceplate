@@ -17,6 +17,7 @@ import { ContainerEditorLayout } from './components/ContainerEditor'
 import { useHistoryPanel } from './hooks/useHistoryPanel'
 import { useBeforeUnload } from './hooks/useBeforeUnload'
 import { useHelpShortcut } from './hooks/useHelpShortcut'
+import { usePreviewShortcut } from './hooks/usePreviewShortcut'
 import { useStore } from './store'
 import { snapValue } from './store/canvasSlice'
 import { getSVGNaturalSize } from './services/svg'
@@ -197,6 +198,9 @@ function App() {
 
   // F1 help shortcut - opens contextual or general help
   useHelpShortcut()
+
+  // Ctrl+Shift+P preview shortcut - opens browser preview
+  usePreviewShortcut()
 
   // Configure sensors with activation constraint to prevent accidental drags
   const sensors = useSensors(

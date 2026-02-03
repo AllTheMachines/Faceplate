@@ -266,6 +266,9 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   stepCount: number // 12, 24, 36, 48, or 64
   showStepIndicators: boolean // Show dots on arc track at each step position
   showStepMarks: boolean // Show tick marks outside knob edge at each step position
+  stepIndicatorSize: number // Radius of indicator dots (default: trackWidth / 3)
+  stepMarkLength: number // Length of tick marks in pixels (default: 6)
+  stepMarkWidth: number // Stroke width of tick marks (default: trackWidth / 4)
 
   // Visual Style
   trackColor: string
@@ -1055,7 +1058,7 @@ export interface AsciiSliderElementConfig extends BaseElementConfig {
   // Typography
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   lineHeight: number
 
@@ -1088,7 +1091,7 @@ export interface AsciiButtonElementConfig extends BaseElementConfig {
   // Typography
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   textColor: string
   pressedTextColor: string
   lineHeight: number
@@ -1603,6 +1606,9 @@ export function createSteppedKnob(overrides?: Partial<SteppedKnobElementConfig>)
     stepCount: 12,
     showStepIndicators: true,
     showStepMarks: false,
+    stepIndicatorSize: 1.3,
+    stepMarkLength: 6,
+    stepMarkWidth: 1,
     trackColor: '#374151',
     fillColor: '#949494',
     indicatorColor: '#ffffff',
@@ -1932,7 +1938,7 @@ export function createAsciiSlider(overrides?: Partial<AsciiSliderElementConfig>)
     maxLabel: '100%',
     fontSize: 14,
     fontFamily: 'Courier New, Consolas, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#00ff00',
     lineHeight: 1.0,
     backgroundColor: 'transparent',
@@ -1966,7 +1972,7 @@ export function createAsciiButton(overrides?: Partial<AsciiButtonElementConfig>)
     pressedArt: '╔══════╗\n║ PLAY ║\n╚══════╝',
     fontSize: 14,
     fontFamily: 'Courier New, Consolas, monospace',
-    fontWeight: 400,
+    fontWeight: '400',
     textColor: '#00ff00',
     pressedTextColor: '#00ffff',
     lineHeight: 1.0,

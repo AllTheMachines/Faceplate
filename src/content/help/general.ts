@@ -15,7 +15,7 @@ export const generalHelp: HelpContent = {
     },
     {
       label: 'Keyboard Shortcuts',
-      explanation: 'Ctrl/Cmd+C/V: Copy/Paste | Ctrl/Cmd+Z/Y: Undo/Redo | Arrow keys: Nudge 1px | Shift+Arrow: Nudge 10px | Ctrl+G: Toggle grid | Delete: Remove element | F1: Context help'
+      explanation: 'Ctrl/Cmd+C/V: Copy/Paste | Ctrl/Cmd+Z/Y: Undo/Redo | Arrow keys: Nudge 1px | Shift+Arrow: Nudge 10px | Ctrl+G: Toggle grid | Delete: Remove element | F1: Context help | Ctrl+Shift+P: Preview'
     },
     {
       label: 'Workflow',

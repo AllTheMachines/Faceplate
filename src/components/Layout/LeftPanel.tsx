@@ -4,12 +4,10 @@ import { formatDistanceToNow } from 'date-fns'
 import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
 import { LayersPanel } from '../Layers'
-import { TemplateImporter } from '../Import/TemplateImporter'
 import { FontSettings } from '../Settings/FontSettings'
 import { useStore as useAppStore } from '../../store'
 
 export function LeftPanel() {
-  const [importerOpen, setImporterOpen] = useState(false)
   const [fontSettingsOpen, setFontSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'elements' | 'assets' | 'layers'>('elements')
   const [, forceUpdate] = useState(0)
@@ -50,13 +48,6 @@ export function LeftPanel() {
         <div className="flex flex-col gap-0.5">
           <span className="text-xs text-gray-500">VST3 UI Designer</span>
           <span className="text-xs text-gray-500">{lastSavedText}</span>
-          <button
-            onClick={() => setFontSettingsOpen(true)}
-            className="text-xs text-gray-400 hover:text-blue-400 transition-colors text-left"
-            title="Manage custom fonts"
-          >
-            Fonts
-          </button>
         </div>
       </div>
 
@@ -135,20 +126,18 @@ export function LeftPanel() {
         {activeTab === 'layers' && <LayersPanel />}
       </div>
 
-      {/* Import Template button visible on both tabs */}
+      {/* Manage Fonts button */}
       <div className="p-3 border-t border-gray-700">
         <button
-          onClick={() => setImporterOpen(true)}
+          onClick={() => setFontSettingsOpen(true)}
           className="w-full py-2 px-3 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600 flex items-center justify-center gap-2"
         >
-          <span>Import Template</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+          </svg>
+          <span>Manage Fonts</span>
         </button>
       </div>
-
-      <TemplateImporter
-        isOpen={importerOpen}
-        onClose={() => setImporterOpen(false)}
-      />
 
       <FontSettings
         isOpen={fontSettingsOpen}
