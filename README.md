@@ -110,7 +110,6 @@ In the **Project** section (right panel, top):
 ## Documentation
 
 - [JUCE_INTEGRATION.md](./docs/JUCE_INTEGRATION.md) - WebView2 setup and parameter sync
-- [WORKFLOW.md](./docs/WORKFLOW.md) - Complete development workflow
 - [ELEMENT_REFERENCE.md](./docs/ELEMENT_REFERENCE.md) - All element types
 - [BEST_PRACTICES.md](./docs/BEST_PRACTICES.md) - Design guidelines
 - [EXPORT_FORMAT.md](./docs/EXPORT_FORMAT.md) - Export file format
@@ -128,7 +127,12 @@ Additional elements and features will be available with a Pro license:
 
 ## License
 
-MIT
+This project uses an **Open Core** licensing model:
+
+- **MIT License** - The core application and basic elements are free and open source
+- **Commercial License** - Pro features (marked with PRO badge) require a [paid license](https://polar.sh/AllTheMachines)
+
+See [LICENSE](./LICENSE) for full details.
 
 ---
 
