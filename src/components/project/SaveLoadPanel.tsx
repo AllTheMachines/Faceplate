@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useStore } from '../../store'
 import { useDirtyState } from '../../hooks/useDirtyState'
 import { serializeProject, deserializeProject } from '../../services/serialization'
 import { saveProjectFile, loadProjectFile } from '../../services/fileSystem'
 import { BUILT_IN_TEMPLATES, loadBuiltInTemplate } from '../../services/templateLoader'
 import { UnsavedChangesDialog } from '../dialogs/UnsavedChangesDialog'
+import { isProElement } from '../../services/proElements'
 
 function SaveIcon() {
   return (
@@ -188,6 +190,19 @@ export function SaveLoadPanel() {
       // Replace all elements (setElements replaces, doesn't append)
       // Cast needed: Zod schema type != TypeScript type due to Phase 13 extended elements
       setElements(data.elements as import('../../types/elements').ElementConfig[])
+
+      // Check for Pro elements in loaded project and warn if user is unlicensed
+      const proElementCount = data.elements.filter(el => isProElement(el.type)).length
+      const userIsPro = useStore.getState().isPro
+      if (proElementCount > 0 && !userIsPro) {
+        toast(
+          `This project contains ${proElementCount} Pro element${proElementCount > 1 ? 's' : ''}. These elements are read-only without a Pro license.`,
+          {
+            icon: '\u26A0\uFE0F',
+            duration: 6000,
+          }
+        )
+      }
 
       // Restore selection if present (filter to valid element IDs)
       if (data.selectedIds) {

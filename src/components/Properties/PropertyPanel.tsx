@@ -6,6 +6,7 @@ import { NumberInput, TextInput, PropertySection, getPropertyComponent } from '.
 import { downloadElementSVG, getLayerNamesForType } from '../../services/export/svgElementExport'
 import { validateSVGForElement, detectLayersForType } from '../../services/svgLayerDetection'
 import { sectionHelp } from '../../content/help/sections'
+import { useLicense } from '../../hooks/useLicense'
 
 export function PropertyPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
@@ -51,6 +52,10 @@ export function PropertyPanel() {
     )
   }
 
+  // Check if Pro element and user is unlicensed
+  const { isPro: userIsPro } = useLicense()
+  const isReadOnly = element.isPro && !userIsPro
+
   // Update helper
   const update = (updates: Partial<ElementConfig>) => {
     updateElement(element.id, updates)
@@ -62,6 +67,67 @@ export function PropertyPanel() {
   const displayY = liveValues?.y ?? element.y
   const displayWidth = liveValues?.width ?? element.width
   const displayHeight = liveValues?.height ?? element.height
+
+  // If Pro element and user is unlicensed, show read-only view
+  if (isReadOnly) {
+    return (
+      <div className="space-y-6">
+        {/* Read-only notice */}
+        <div className="bg-violet-500/20 border border-violet-500/50 rounded p-3">
+          <div className="flex items-center gap-2 text-violet-300 text-sm font-medium">
+            <span>PRO</span>
+            <span>Read-only</span>
+          </div>
+          <p className="text-xs text-gray-400 mt-1">
+            This Pro element's properties cannot be edited without a Pro license.
+          </p>
+        </div>
+
+        {/* Position & Size - read-only display */}
+        <PropertySection title="Position & Size" helpContent={sectionHelp['position-size']} elementType={element.type}>
+          <div className="grid grid-cols-2 gap-3 opacity-60">
+            <div className="text-sm text-gray-400">
+              <span className="text-xs text-gray-500">X</span>
+              <div className="bg-gray-800 px-2 py-1 rounded">{displayX}</div>
+            </div>
+            <div className="text-sm text-gray-400">
+              <span className="text-xs text-gray-500">Y</span>
+              <div className="bg-gray-800 px-2 py-1 rounded">{displayY}</div>
+            </div>
+            <div className="text-sm text-gray-400">
+              <span className="text-xs text-gray-500">Width</span>
+              <div className="bg-gray-800 px-2 py-1 rounded">{displayWidth}</div>
+            </div>
+            <div className="text-sm text-gray-400">
+              <span className="text-xs text-gray-500">Height</span>
+              <div className="bg-gray-800 px-2 py-1 rounded">{displayHeight}</div>
+            </div>
+          </div>
+        </PropertySection>
+
+        {/* Identity - read-only display */}
+        <PropertySection title="Identity" helpContent={sectionHelp['identity']} elementType={element.type}>
+          <div className="space-y-2 opacity-60">
+            <div className="text-sm text-gray-400">
+              <span className="text-xs text-gray-500">Name</span>
+              <div className="bg-gray-800 px-2 py-1 rounded">{element.name}</div>
+            </div>
+            <div className="text-sm text-gray-400">
+              <span className="text-xs text-gray-500">Parameter ID</span>
+              <div className="bg-gray-800 px-2 py-1 rounded">{element.parameterId || '(none)'}</div>
+            </div>
+          </div>
+        </PropertySection>
+
+        {/* Type indicator */}
+        <PropertySection title="Element Type" helpContent={sectionHelp['identity']} elementType={element.type}>
+          <div className="text-sm text-gray-400 opacity-60">
+            <div className="bg-gray-800 px-2 py-1 rounded capitalize">{element.type}</div>
+          </div>
+        </PropertySection>
+      </div>
+    )
+  }
 
   // Handle SVG import with validation
   const handleSVGImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
