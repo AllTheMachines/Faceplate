@@ -32,3 +32,4 @@ screenshots/
 .planning/
 .env.free
 UI_SPECS_PLUGINS/
+templates/test-template.json

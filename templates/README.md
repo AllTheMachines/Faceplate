@@ -1,79 +1,66 @@
-# VST3 UI Templates
+# VST3 Project Templates
 
-Pre-built starter templates for common plugin types.
+This folder contains starter templates for integrating Faceplate UIs into VST3 projects.
 
-## Available Templates
+## vst-base/
 
-### Effect Starter (`effect-starter.json`)
-- **For:** Audio effects (EQ, compressor, reverb, distortion, etc.)
-- **VST3 Template:** [EFXvst](https://github.com/yourusername/EFXvst)
-- **Canvas:** 500x300px
-- **Includes:**
-  - Volume knob (SVG arc style)
-  - Output meter (vertical, gradient)
-  - Plugin title label
-  - Status indicator
+A complete JUCE-based VST3 project template with WebView UI support.
 
-**Parameter IDs:**
-- `volume` - Main volume control
-- `outputLevel` - Output meter value
+### Quick Start
 
-### Instrument Starter (`instrument-starter.json`)
-- **For:** Synthesizers, samplers, drum machines
-- **VST3 Template:** [INSTvst](https://github.com/yourusername/INSTvst)
-- **Canvas:** 600x400px
-- **Includes:**
-  - Gain knob
-  - ADSR envelope (4 knobs: attack, decay, sustain, release)
-  - Section labels
-  - Status indicator
+1. Copy `vst-base/` to your project location
+2. Rename the folder to your plugin name
+3. Edit `plugin.config` with your plugin details
+4. Run `build.bat` (Windows) or configure CMake manually
 
-**Parameter IDs:**
-- `gain` - Main output gain
-- `envAttack` - Envelope attack time
-- `envDecay` - Envelope decay time
-- `envSustain` - Envelope sustain level
-- `envRelease` - Envelope release time
+### Project Structure
 
-## Using Templates
-
-1. Open UI Designer
-2. Click "New Project" → "From Template"
-3. Select "Effect Starter" or "Instrument Starter"
-4. Designer loads with pre-configured elements
-5. Customize colors, positions, add/remove elements
-6. Export to your VST3 project
-
-## Template Structure
-
-Templates are JSON files following this schema:
-```json
-{
-  "version": "1.0",
-  "name": "Template Name",
-  "description": "Brief description",
-  "category": "effect" | "instrument" | "utility",
-  "metadata": {
-    "canvasWidth": 600,
-    "canvasHeight": 400,
-    "backgroundColor": "#1a1a2e",
-    "created": "2026-01-24",
-    "author": "Author Name",
-    "recommendedVST3Repo": "https://github.com/..."
-  },
-  "elements": [
-    // Array of ElementConfig objects
-    // See src/types/elements.ts for schema
-  ]
-}
+```
+vst-base/
+├── CMakeLists.txt      # Build configuration
+├── plugin.config       # Plugin name, vendor, IDs
+├── src/
+│   ├── PluginProcessor.cpp/h   # Audio processing
+│   └── PluginEditor.cpp/h      # WebView UI host
+├── ui/
+│   ├── index.html      # Main UI entry point
+│   ├── style.css       # Styles
+│   ├── components.js   # UI components
+│   └── bindings.js     # Parameter bindings
+├── build.bat           # Windows build script
+└── rebuild.bat         # Clean rebuild script
 ```
 
-## Creating Custom Templates
+### Requirements
 
-1. Design your UI in the designer
-2. Save project as JSON
-3. Add metadata section
-4. Place in `templates/` folder
-5. Optionally add to template store
+- JUCE 7.x or later
+- CMake 3.22+
+- C++17 compatible compiler
+- WebView2 (Windows) / WKWebView (macOS)
 
-See existing templates for reference.
+### Parameter Binding
+
+Export your Faceplate design and place generated files in `ui/`. Parameters are bound via `parameterId` attributes matching your processor's parameter IDs.
+
+```javascript
+// bindings.js example
+bindParameter('volume', 'volumeKnob');
+bindParameter('cutoff', 'filterKnob');
+```
+
+## UI Starter Templates
+
+### effect-starter.json
+Basic effect plugin layout (500x300px) with volume knob, output meter, and status indicator.
+
+### instrument-starter.json
+Synth/sampler layout (600x400px) with gain control, ADSR envelope knobs, and section labels.
+
+Load these in Faceplate via File > Open, customize as needed, then export to your VST3 project's `ui/` folder.
+
+## Integration Workflow
+
+1. Design UI in Faceplate
+2. Export to your VST3 project's `ui/` folder
+3. Ensure parameter IDs match between UI and processor
+4. Build and test
