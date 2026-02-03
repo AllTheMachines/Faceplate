@@ -143,6 +143,7 @@ export function LeftPanel() {
           </svg>
           <span>Manage Fonts</span>
         </button>
+{/* License button hidden until Pro features are ready
         <button
           onClick={() => setLicenseSettingsOpen(true)}
           className={`w-full py-2 px-3 rounded text-sm flex items-center justify-center gap-2 ${
@@ -156,16 +157,19 @@ export function LeftPanel() {
           </svg>
           <span>{isPro ? 'Pro License' : 'Manage License'}</span>
         </button>
+        */}
       </div>
 
       <FontSettings
         isOpen={fontSettingsOpen}
         onClose={() => setFontSettingsOpen(false)}
       />
+{/* License dialog hidden until Pro features are ready
       <LicenseSettings
         isOpen={licenseSettingsOpen}
         onClose={() => setLicenseSettingsOpen(false)}
       />
+      */}
     </div>
   )
 }
