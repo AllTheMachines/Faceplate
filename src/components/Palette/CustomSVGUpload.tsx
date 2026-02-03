@@ -5,8 +5,15 @@ import { useStore } from '../../store';
 import { createImage } from '../../types/elements';
 import { SVGDesignMode } from '../DesignMode/SVGDesignMode';
 import { SVGDesignResult } from '../../types/svg';
+import { useLicense } from '../../hooks/useLicense';
 
 export function CustomSVGUpload() {
+  const { isPro } = useLicense();
+
+  // Hide feature for non-Pro users
+  if (!isPro) {
+    return null;
+  }
   const [parsedSVG, setParsedSVG] = useState<ParsedSVG | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);

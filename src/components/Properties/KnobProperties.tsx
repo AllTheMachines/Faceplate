@@ -4,6 +4,7 @@ import { NumberInput, ColorInput, PropertySection, TextInput } from './'
 import { useStore } from '../../store'
 import { ManageKnobStylesDialog } from '../dialogs'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
+import { useLicense } from '../../hooks/useLicense'
 
 interface KnobPropertiesProps {
   element: KnobElementConfig
@@ -13,43 +14,46 @@ interface KnobPropertiesProps {
 export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
   const [showManageDialog, setShowManageDialog] = useState(false)
   const knobStyles = useStore((state) => state.knobStyles)
+  const { isPro } = useLicense()
   const getKnobStyle = useStore((state) => state.getKnobStyle)
 
   return (
     <>
-      {/* Knob Style */}
-      <PropertySection title="Knob Style">
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Style</label>
-          <select
-            value={element.styleId || ''}
-            onChange={(e) => {
-              const value = e.target.value
-              onUpdate({
-                styleId: value === '' ? undefined : value,
-                colorOverrides: undefined // Reset color overrides when changing style
-              })
-            }}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+      {/* Knob Style - Pro feature */}
+      {isPro && (
+        <PropertySection title="Knob Style">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Style</label>
+            <select
+              value={element.styleId || ''}
+              onChange={(e) => {
+                const value = e.target.value
+                onUpdate({
+                  styleId: value === '' ? undefined : value,
+                  colorOverrides: undefined // Reset color overrides when changing style
+                })
+              }}
+              className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            >
+              <option value="">Default (CSS Gradient)</option>
+              {knobStyles.map((style) => (
+                <option key={style.id} value={style.id}>
+                  {style.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={() => setShowManageDialog(true)}
+            className="w-full text-left text-sm text-blue-400 hover:text-blue-300 mt-1"
           >
-            <option value="">Default (CSS Gradient)</option>
-            {knobStyles.map((style) => (
-              <option key={style.id} value={style.id}>
-                {style.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          onClick={() => setShowManageDialog(true)}
-          className="w-full text-left text-sm text-blue-400 hover:text-blue-300 mt-1"
-        >
-          Manage styles...
-        </button>
-      </PropertySection>
+            Manage styles...
+          </button>
+        </PropertySection>
+      )}
 
-      {/* Color Overrides (only when SVG style is selected) */}
-      {element.styleId && (() => {
+      {/* Color Overrides (only when SVG style is selected) - Pro feature */}
+      {isPro && element.styleId && (() => {
         const style = getKnobStyle(element.styleId)
         if (!style) return null
 
