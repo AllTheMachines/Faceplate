@@ -142,9 +142,9 @@ This project is licensed under the **[Elastic License 2.0 (ELv2)](./LICENSE)**.
 - **Commercial Redistribution** - Selling or redistributing Faceplate itself
 - **Pro Features** - Using elements marked with the "PRO" badge
 
-### Get a Commercial License
+### Get a Commercial License (Coming Soon)
 
-Purchase at: **[polar.sh/AllTheMachines](https://polar.sh/AllTheMachines)**
+Commercial licensing will be available at: **[polar.sh/AllTheMachines](https://polar.sh/AllTheMachines)**
 
 See [LICENSE](./LICENSE) for full terms.
 
