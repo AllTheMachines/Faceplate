@@ -1,6 +1,8 @@
 import { useDraggable } from '@dnd-kit/core'
 import { useStore } from '../../store'
 import { createElementFromType } from '../../services/elementFactory'
+import { useLicense } from '../../hooks/useLicense'
+import { isProElement } from '../../services/proElements'
 import {
   createKnob,
   createSlider,
@@ -232,14 +234,19 @@ interface PaletteItemProps {
 export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps) {
   const editingContainerId = useStore((state) => state.editingContainerId)
   const addChildToContainer = useStore((state) => state.addChildToContainer)
+  const { isPro: userIsPro } = useLicense()
+  const elementIsPro = isProElement(elementType)
+  const canDrag = !elementIsPro || userIsPro
 
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${id}`,
     data: { elementType, variant },
+    disabled: !canDrag,  // Disable drag for Pro elements when unlicensed
   })
 
   // Handle click to add element when in container editing mode
   const handleClick = () => {
+    if (!canDrag) return  // Block adding Pro elements when unlicensed
     if (editingContainerId) {
       // Get current children count to offset new element position
       const container = useStore.getState().elements.find(el => el.id === editingContainerId)
@@ -1834,21 +1841,33 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
+      {...(canDrag ? listeners : {})}
       {...attributes}
       onClick={handleClick}
       className={`
-        flex flex-col items-center gap-1 p-2
+        relative flex flex-col items-center gap-1 p-2
         border border-gray-700 rounded
-        ${editingContainerId ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing'}
+        ${editingContainerId ? 'cursor-pointer' : canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-not-allowed'}
         hover:bg-gray-700 hover:border-gray-600
         transition-colors
         ${isDragging ? 'opacity-50' : 'opacity-100'}
       `}
+      title={!canDrag ? 'Pro feature - upgrade to use' : undefined}
     >
       <div className="flex items-center justify-center min-h-16">
         {renderPreview()}
       </div>
+
+      {/* Pro badge overlay */}
+      {elementIsPro && !userIsPro && (
+        <div
+          className="absolute top-1 right-1 bg-violet-500 text-white font-bold px-1.5 py-0.5 rounded pointer-events-none select-none"
+          style={{ fontSize: '8px', lineHeight: '10px' }}
+        >
+          PRO
+        </div>
+      )}
+
       <span className="text-xs text-gray-300 text-center">{name}</span>
     </div>
   )
