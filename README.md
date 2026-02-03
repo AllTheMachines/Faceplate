@@ -2,6 +2,8 @@
 
 A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI components onto a canvas, configure properties, and export working code for JUCE WebView2 plugins.
 
+> **⚠️ Work in Progress**: This project is under active development. Bugs are expected. Please report issues on [GitHub](https://github.com/AllTheMachines/Faceplate/issues).
+
 ## Getting Started
 
 ### Prerequisites
