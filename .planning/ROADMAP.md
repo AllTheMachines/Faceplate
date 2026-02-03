@@ -51,8 +51,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 51-01-PLAN.md — Data layer: Pro elements registry, license slice, useLicense hook, isPro wiring
-- [ ] 51-02-PLAN.md — UI layer: Palette badges, drag blocking, canvas badges, read-only PropertyPanel, warning toast
+- [x] 51-01-PLAN.md — Data layer: Pro elements registry, license slice, useLicense hook, isPro wiring
+- [x] 51-02-PLAN.md — UI layer: Palette badges, drag blocking, canvas badges, read-only PropertyPanel, warning toast
 
 #### Phase 52: License Validation & Export Blocking
 **Goal**: Polar.sh license validation working with export gating
@@ -835,9 +835,9 @@ Plans:
 | 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 49. Core UI Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 50. Rebranding | v2.0 | 1/1 | Complete | 2026-02-03 |
-| 51. Feature Gating System | v2.0 | 0/2 | Pending | — |
+| 51. Feature Gating System | v2.0 | 2/2 | Complete | 2026-02-03 |
 | 52. License Validation & Export Blocking | v2.0 | 0/2 | Pending | — |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-03 - Phase 51 plans revised*
+*Last updated: 2026-02-03 - Phase 51 Feature Gating System complete*
