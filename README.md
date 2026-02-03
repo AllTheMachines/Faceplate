@@ -77,7 +77,15 @@ In the **Project** section (right panel, top):
 
 ## Roadmap
 
-Track development progress and upcoming features on our [Project Roadmap](https://github.com/users/AllTheMachines/projects/1).
+**Current Phase: v2.0 Pro Licensing**
+
+| Status | Version | Description |
+|--------|---------|-------------|
+| Shipped | v1.0 - v1.10 | Core designer with 60+ elements, SVG import, multi-window, JUCE export |
+| In Progress | v2.0 | Pro licensing with 51 specialized elements (LUFS meters, spectrograms, XY pads) |
+| Planned | v2.1+ | Community-requested features |
+
+View the live development board: [Faceplate Roadmap](https://github.com/users/AllTheMachines/projects/1)
 
 ## Features
 
