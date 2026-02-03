@@ -28,6 +28,9 @@ export interface BaseElementConfig {
 
   // Layer assignment (optional)
   layerId?: string // Layer this element belongs to (defaults to 'default' if not set)
+
+  // Pro feature gating (optional)
+  isPro?: boolean // true = Pro element, undefined/false = Free element
 }
 
 /**

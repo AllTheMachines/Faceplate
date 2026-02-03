@@ -10,6 +10,7 @@ import { createContainerEditorSlice, ContainerEditorSlice } from './containerEdi
 import { createFontsSlice, FontsSlice } from './fontsSlice'
 import { createWindowsSlice, WindowsSlice } from './windowsSlice'
 import { createLayersSlice, LayersSlice } from './layersSlice'
+import { createLicenseSlice, LicenseSlice, initializeLicenseFromStorage } from './licenseSlice'
 import type { Template } from '../types/template'
 
 // Template functionality
@@ -39,7 +40,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice & LayersSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice & LayersSlice & LicenseSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -56,6 +57,7 @@ export const useStore = create<Store>()(
       ...createFontsSlice(...a),
       ...createWindowsSlice(...a),
       ...createLayersSlice(...a),
+      ...createLicenseSlice(...a),
     }),
     {
       limit: 50,
@@ -77,6 +79,8 @@ export const useStore = create<Store>()(
           customFonts, fontsDirectoryPath, fontsLoading, fontsError, lastScanTime,
           activeWindowId, windowViewports,
           selectedLayerId,
+          // License state (runtime state, not undoable)
+          isPro, license, validationState, lastValidation,
           ...rest
         } = state
         return rest
@@ -84,6 +88,12 @@ export const useStore = create<Store>()(
     }
   )
 )
+
+// Initialize license from localStorage
+const licenseInit = initializeLicenseFromStorage()
+if (Object.keys(licenseInit).length > 0) {
+  useStore.setState(licenseInit)
+}
 
 // Export temporal access for undo/redo
 // Note: Access temporal store directly via useStore.temporal
