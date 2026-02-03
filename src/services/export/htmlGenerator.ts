@@ -270,11 +270,15 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
       const actionAttr = btnEl.action && btnEl.action !== 'none' ? ` data-action="${btnEl.action}"` : ''
       const targetAttr = btnEl.targetWindowId ? ` data-target-window="${btnEl.targetWindowId}"` : ''
       const paramAttr = ` data-parameter-id="${element.parameterId || toKebabCase(element.name)}"`
-      return `<button id="${id}" class="${baseClass} button-element" data-type="button"${paramAttr} data-mode="${element.mode}"${actionAttr}${targetAttr} style="${positionStyle}">${escapeHTML(element.label)}</button>`
+      const btnStyle = `${positionStyle} font-size: ${btnEl.fontSize}px; font-family: ${btnEl.fontFamily}; font-weight: ${btnEl.fontWeight}; color: ${btnEl.textColor}; background-color: ${btnEl.backgroundColor}; border: ${btnEl.borderWidth}px solid ${btnEl.borderColor}; border-radius: ${btnEl.borderRadius}px;`
+      return `<button id="${id}" class="${baseClass} button-element" data-type="button"${paramAttr} data-mode="${element.mode}"${actionAttr}${targetAttr} style="${btnStyle}">${escapeHTML(element.label)}</button>`
     }
 
-    case 'label':
-      return `<span id="${id}" class="${baseClass} label-element" data-type="label" style="${positionStyle}">${escapeHTML(element.text)}</span>`
+    case 'label': {
+      const lblEl = element as import('../../types/elements').LabelElementConfig
+      const lblStyle = `${positionStyle} font-size: ${lblEl.fontSize}px; font-family: ${lblEl.fontFamily}; font-weight: ${lblEl.fontWeight}; color: ${lblEl.color}; text-align: ${lblEl.textAlign}; display: flex; align-items: center; justify-content: ${lblEl.textAlign === 'left' ? 'flex-start' : lblEl.textAlign === 'right' ? 'flex-end' : 'center'};`
+      return `<span id="${id}" class="${baseClass} label-element" data-type="label" style="${lblStyle}">${escapeHTML(element.text)}</span>`
+    }
 
     case 'meter':
       return generateMeterHTML(id, baseClass, positionStyle, element)
@@ -812,15 +816,32 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
   const indicatorStart = polarToCartesian(centerX, centerY, radius * 0.4, valueAngle)
   const indicatorEnd = polarToCartesian(centerX, centerY, radius * 0.9, valueAngle)
 
-  // Step indicators
+  // Step indicators (dots on arc track)
   let stepIndicatorsSVG = ''
   if (config.showStepIndicators) {
+    const indicatorRadius = config.stepIndicatorSize ?? (config.trackWidth / 3)
     for (let i = 0; i < config.stepCount; i++) {
       const stepNormalized = i / (config.stepCount - 1)
       const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
       const pos = polarToCartesian(centerX, centerY, radius, stepAngle)
       const isFilled = i <= Math.round(steppedValue * (config.stepCount - 1))
-      stepIndicatorsSVG += `<circle class="step-indicator" data-step-index="${i}" cx="${pos.x}" cy="${pos.y}" r="${config.trackWidth / 3}" fill="${isFilled ? config.fillColor : config.trackColor}" />`
+      stepIndicatorsSVG += `<circle class="step-indicator" data-step-index="${i}" cx="${pos.x}" cy="${pos.y}" r="${indicatorRadius}" fill="${isFilled ? config.fillColor : config.trackColor}" />`
+    }
+  }
+
+  // Step marks (tick marks outside knob edge)
+  let stepMarksSVG = ''
+  if (config.showStepMarks) {
+    const markLength = config.stepMarkLength ?? 6
+    const markWidth = config.stepMarkWidth ?? Math.max(1, config.trackWidth / 4)
+    const innerRadius = radius + 2 // Small gap from track
+    const outerRadius = innerRadius + markLength
+    for (let i = 0; i < config.stepCount; i++) {
+      const stepNormalized = i / (config.stepCount - 1)
+      const stepAngle = config.startAngle + stepNormalized * (config.endAngle - config.startAngle)
+      const inner = polarToCartesian(centerX, centerY, innerRadius, stepAngle)
+      const outer = polarToCartesian(centerX, centerY, outerRadius, stepAngle)
+      stepMarksSVG += `<line class="step-mark" x1="${inner.x}" y1="${inner.y}" x2="${outer.x}" y2="${outer.y}" stroke="${config.trackColor}" stroke-width="${markWidth}" stroke-linecap="round" />`
     }
   }
 
@@ -844,13 +865,14 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
 
-  return `<div id="${id}" class="${baseClass} knob knob-element steppedknob-element" data-type="steppedknob"${paramAttr} data-value="${steppedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" data-step-count="${config.stepCount}" data-fill-color="${config.fillColor}" data-track-color="${config.trackColor}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} knob knob-element steppedknob-element" data-type="steppedknob"${paramAttr} data-value="${steppedValue}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" data-step-count="${config.stepCount}" data-fill-color="${config.fillColor}" data-track-color="${config.trackColor}" data-step-indicator-size="${config.stepIndicatorSize ?? (config.trackWidth / 3)}" data-step-mark-length="${config.stepMarkLength ?? 6}" data-step-mark-width="${config.stepMarkWidth ?? Math.max(1, config.trackWidth / 4)}" style="${positionStyle}">
       ${labelHTML}
       ${valueHTML}
       <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
         <path class="knob-arc-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
         ${stepIndicatorsSVG}
         ${valueFillWithClass}
+        ${stepMarksSVG}
         <line class="knob-indicator" x1="${indicatorStart.x}" y1="${indicatorStart.y}" x2="${indicatorEnd.x}" y2="${indicatorEnd.y}" stroke="${config.indicatorColor}" stroke-width="2" stroke-linecap="round" />
       </svg>
     </div>`
@@ -1071,8 +1093,8 @@ function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyl
       ${labelHTML}
       ${valueHTML}
       <div class="crossfade-labels">
-        <span class="label-a" style="color: ${config.labelColor};">${escapeHTML(config.labelA)}</span>
-        <span class="label-b" style="color: ${config.labelColor};">${escapeHTML(config.labelB)}</span>
+        <span class="label-a" style="color: ${config.labelColor}; font-size: ${config.labelFontSize}px; font-family: ${config.labelFontFamily}; font-weight: ${config.labelFontWeight};">${escapeHTML(config.labelA)}</span>
+        <span class="label-b" style="color: ${config.labelColor}; font-size: ${config.labelFontSize}px; font-family: ${config.labelFontFamily}; font-weight: ${config.labelFontWeight};">${escapeHTML(config.labelB)}</span>
       </div>
       <div class="slider-track" style="background: ${config.trackColor};"></div>
       <div class="slider-fill" style="width: ${normalizedValue >= 0.5 ? (normalizedValue - 0.5) * 200 : (0.5 - normalizedValue) * 200}%; left: ${normalizedValue >= 0.5 ? '50%' : normalizedValue * 100 + '%'}; background: ${config.trackFillColor};"></div>
@@ -1473,8 +1495,9 @@ function generateModulationMatrixHTML(id: string, baseClass: string, positionSty
 function generateDbDisplayHTML(id: string, baseClass: string, positionStyle: string, config: DbDisplayElementConfig): string {
   const formattedValue = config.value.toFixed(config.decimalPlaces)
   const displayText = config.showUnit ? `${formattedValue} dB` : formattedValue
+  const fullStyle = `${positionStyle} font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor}; background-color: ${config.backgroundColor}; padding: ${config.padding}px; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} dbdisplay-element" data-type="dbdisplay" data-value="${config.value}" data-min="${config.minDb}" data-max="${config.maxDb}" style="${positionStyle}">${escapeHTML(displayText)}</div>`
+  return `<div id="${id}" class="${baseClass} dbdisplay-element" data-type="dbdisplay" data-value="${config.value}" data-min="${config.minDb}" data-max="${config.maxDb}" style="${fullStyle}">${escapeHTML(displayText)}</div>`
 }
 
 /**
@@ -1486,8 +1509,9 @@ function generateFrequencyDisplayHTML(id: string, baseClass: string, positionSty
   const unit = useKHz ? 'kHz' : 'Hz'
   const formattedValue = displayValue.toFixed(config.decimalPlaces)
   const displayText = config.showUnit ? `${formattedValue} ${unit}` : formattedValue
+  const fullStyle = `${positionStyle} font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor}; background-color: ${config.backgroundColor}; padding: ${config.padding}px; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} frequencydisplay-element" data-type="frequencydisplay" data-value="${config.value}" data-auto-khz="${config.autoSwitchKHz}" style="${positionStyle}">${escapeHTML(displayText)}</div>`
+  return `<div id="${id}" class="${baseClass} frequencydisplay-element" data-type="frequencydisplay" data-value="${config.value}" data-auto-khz="${config.autoSwitchKHz}" style="${fullStyle}">${escapeHTML(displayText)}</div>`
 }
 
 /**
@@ -1499,15 +1523,16 @@ function generateGainReductionMeterHTML(id: string, baseClass: string, positionS
   const isVertical = config.orientation === 'vertical'
 
   const fillStyle = isVertical
-    ? `top: 0; left: 0; right: 0; height: ${fillPercent}%;`
-    : `top: 0; right: 0; bottom: 0; width: ${fillPercent}%;`
+    ? `top: 0; left: 0; right: 0; height: ${fillPercent}%; background-color: ${config.meterColor};`
+    : `top: 0; right: 0; bottom: 0; width: ${fillPercent}%; background-color: ${config.meterColor};`
 
   const valueDisplay = config.showValue
-    ? `<div class="gr-value">${dbValue.toFixed(1)}</div>`
+    ? `<div class="gr-value" style="font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor};">${dbValue.toFixed(1)}</div>`
     : ''
+  const fullStyle = `${positionStyle} background-color: ${config.backgroundColor}; position: relative;`
 
-  return `<div id="${id}" class="${baseClass} gainreductionmeter-element" data-type="gainreductionmeter" data-value="${config.value}" data-max-reduction="${config.maxReduction}" data-orientation="${config.orientation}" style="${positionStyle}">
-      <div class="gr-fill" style="${fillStyle}"></div>
+  return `<div id="${id}" class="${baseClass} gainreductionmeter-element" data-type="gainreductionmeter" data-value="${config.value}" data-max-reduction="${config.maxReduction}" data-orientation="${config.orientation}" style="${fullStyle}">
+      <div class="gr-fill" style="position: absolute; ${fillStyle}"></div>
       ${valueDisplay}
     </div>`
 }
@@ -1522,8 +1547,9 @@ function generateDropdownHTML(id: string, baseClass: string, positionStyle: stri
 
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+  const fullStyle = `${positionStyle} font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor}; background-color: ${config.backgroundColor}; border: 1px solid ${config.borderColor}; border-radius: ${config.borderRadius}px;`
 
-  return `<select id="${id}" class="${baseClass} dropdown-element" data-type="dropdown"${paramAttr} style="${positionStyle}">
+  return `<select id="${id}" class="${baseClass} dropdown-element" data-type="dropdown"${paramAttr} style="${fullStyle}">
       ${options}
     </select>`
 }
@@ -1531,8 +1557,9 @@ function generateDropdownHTML(id: string, baseClass: string, positionStyle: stri
 function generateCheckboxHTML(id: string, baseClass: string, positionStyle: string, config: CheckboxElementConfig): string {
   const checked = config.checked ? ' checked' : ''
   const labelId = `${id}-label`
+  const fullStyle = `${positionStyle} font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor}; background-color: ${config.backgroundColor}; display: flex; align-items: center; gap: 8px; flex-direction: ${config.labelPosition === 'left' ? 'row-reverse' : 'row'};`
 
-  return `<div id="${id}" class="${baseClass} checkbox-element" data-type="checkbox" data-label-position="${config.labelPosition}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} checkbox-element" data-type="checkbox" data-label-position="${config.labelPosition}" style="${fullStyle}">
       <input type="checkbox" id="${id}-input"${checked} />
       <label id="${labelId}" for="${id}-input">${escapeHTML(config.label)}</label>
     </div>`
@@ -1543,14 +1570,15 @@ function generateRadioGroupHTML(id: string, baseClass: string, positionStyle: st
     .map((option, index) => {
       const radioId = `${id}-option-${index}`
       const checked = index === config.selectedIndex ? ' checked' : ''
-      return `<div class="radio-option">
+      return `<div class="radio-option" style="display: flex; align-items: center; gap: 8px;">
         <input type="radio" id="${radioId}" name="${id}" value="${index}"${checked} />
         <label for="${radioId}">${escapeHTML(option)}</label>
       </div>`
     })
     .join('')
+  const fullStyle = `${positionStyle} font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor}; background-color: ${config.backgroundColor}; display: flex; flex-direction: ${config.orientation === 'vertical' ? 'column' : 'row'}; gap: ${config.spacing}px;`
 
-  return `<div id="${id}" class="${baseClass} radiogroup-element" data-type="radiogroup" data-orientation="${config.orientation}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} radiogroup-element" data-type="radiogroup" data-orientation="${config.orientation}" style="${fullStyle}">
       ${radios}
     </div>`
 }
@@ -1559,8 +1587,9 @@ function generateTextFieldHTML(id: string, baseClass: string, positionStyle: str
   const maxLengthAttr = config.maxLength > 0 ? ` maxlength="${config.maxLength}"` : ''
   const value = config.value ? ` value="${escapeHTML(config.value)}"` : ''
   const placeholder = config.placeholder ? ` placeholder="${escapeHTML(config.placeholder)}"` : ''
+  const fullStyle = `${positionStyle} font-size: ${config.fontSize}px; font-family: ${config.fontFamily}; font-weight: ${config.fontWeight}; color: ${config.textColor}; text-align: ${config.textAlign}; background-color: ${config.backgroundColor}; padding: ${config.padding}px; border: ${config.borderWidth}px solid ${config.borderColor}; border-radius: ${config.borderRadius}px;`
 
-  return `<input type="text" id="${id}" class="${baseClass} textfield-element" data-type="textfield"${value}${placeholder}${maxLengthAttr} style="${positionStyle}" />`
+  return `<input type="text" id="${id}" class="${baseClass} textfield-element" data-type="textfield"${value}${placeholder}${maxLengthAttr} style="${fullStyle}" />`
 }
 
 /**
@@ -1919,8 +1948,9 @@ function generateNumericDisplayHTML(
   const unitHTML = element.unitDisplay === 'label' && element.unit
     ? `<span class="unit">${escapeHTML(element.unit)}</span>`
     : ''
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} numericdisplay-element" data-type="numericdisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} numericdisplay-element" data-type="numericdisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${fullStyle}">
   ${ghostHTML}
   <span class="value">${escapeHTML(formattedValue)}</span>
   ${unitHTML}
@@ -1944,8 +1974,9 @@ function generateTimeDisplayHTML(
   const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
     ? `<span class="ghost">88:88:88</span>`
     : ''
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} timedisplay-element" data-type="timedisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} timedisplay-element" data-type="timedisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${fullStyle}">
   ${ghostHTML}
   <span class="value">${escapeHTML(formattedTime)}</span>
 </div>`
@@ -1964,8 +1995,9 @@ function generatePercentageDisplayHTML(
   const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
     ? `<span class="ghost">888%</span>`
     : ''
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} percentagedisplay-element" data-type="percentagedisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} percentagedisplay-element" data-type="percentagedisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${fullStyle}">
   ${ghostHTML}
   <span class="value">${escapeHTML(formattedPercentage)}</span>
 </div>`
@@ -1984,8 +2016,9 @@ function generateRatioDisplayHTML(
   const ghostHTML = element.showGhostSegments && element.fontStyle === '7segment'
     ? `<span class="ghost">88:1</span>`
     : ''
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} ratiodisplay-element" data-type="ratiodisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} ratiodisplay-element" data-type="ratiodisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${fullStyle}">
   ${ghostHTML}
   <span class="value">${escapeHTML(formattedRatio)}</span>
 </div>`
@@ -2006,11 +2039,12 @@ function generateNoteDisplayHTML(
   const octave = Math.floor(midiNumber / 12) - 1
   const noteName = noteNames[midiNumber % 12]
   const midiHTML = element.showMidiNumber
-    ? `<span class="midi">${midiNumber}</span>`
+    ? `<span class="midi" style="font-size: ${element.midiNumberFontSize}px;">${midiNumber}</span>`
     : ''
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} notedisplay-element" data-type="notedisplay" data-bezel="${element.bezelStyle}" style="${positionStyle}">
-  <span class="note">${noteName}${octave}</span>
+  return `<div id="${id}" class="${baseClass} notedisplay-element" data-type="notedisplay" data-bezel="${element.bezelStyle}" style="${fullStyle}">
+  <span class="note">${noteName}${element.showOctave ? octave : ''}</span>
   ${midiHTML}
 </div>`
 }
@@ -2031,8 +2065,9 @@ function generateBpmDisplayHTML(
   const labelHTML = element.showLabel
     ? `<span class="label">BPM</span>`
     : ''
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; align-items: center; justify-content: center; gap: 4px;`
 
-  return `<div id="${id}" class="${baseClass} bpmdisplay-element" data-type="bpmdisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} bpmdisplay-element" data-type="bpmdisplay" data-font-style="${element.fontStyle}" data-bezel="${element.bezelStyle}" style="${fullStyle}">
   ${ghostHTML}
   <span class="value">${escapeHTML(formattedBpm.replace(' BPM', ''))}</span>
   ${labelHTML}
@@ -2059,8 +2094,9 @@ function generateEditableDisplayHTML(
     const displayFormat = element.format as 'numeric' | 'percentage'
     formattedValue = formatDisplayValue(element.value, element.min, element.max, displayFormat, { decimals: element.decimalPlaces })
   }
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; padding: ${element.padding}px; border: 1px solid ${element.borderColor}; display: flex; align-items: center; justify-content: center;`
 
-  return `<div id="${id}" class="${baseClass} editabledisplay-element" data-type="editabledisplay" data-format="${element.format}" data-min="${element.min}" data-max="${element.max}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} editabledisplay-element" data-type="editabledisplay" data-format="${element.format}" data-min="${element.min}" data-max="${element.max}" style="${fullStyle}">
   <span class="value">${escapeHTML(formattedValue)}</span>
 </div>`
 }
@@ -2094,8 +2130,9 @@ function generateMultiValueDisplayHTML(
       <span class="value">${escapeHTML(formattedValue)}</span>
     </div>`
   }).join('')
+  const fullStyle = `${positionStyle} font-size: ${element.fontSize}px; font-family: ${element.fontFamily}; font-weight: ${element.fontWeight}; color: ${element.textColor}; background-color: ${element.backgroundColor}; border: 1px solid ${element.borderColor}; display: flex; flex-direction: ${element.layout === 'vertical' ? 'column' : 'row'}; align-items: center; justify-content: center; gap: 8px;`
 
-  return `<div id="${id}" class="${baseClass} multivaluedisplay-element" data-type="multivaluedisplay" data-layout="${element.layout}" style="${positionStyle}">
+  return `<div id="${id}" class="${baseClass} multivaluedisplay-element" data-type="multivaluedisplay" data-layout="${element.layout}" style="${fullStyle}">
   ${valuesHTML}
 </div>`
 }

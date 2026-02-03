@@ -5,11 +5,11 @@ import { FontWeightSelect } from './FontWeightSelect'
 interface FontSectionProps {
   fontSize: number
   fontFamily: string
-  fontWeight: number
+  fontWeight: string
   padding: number
   onFontSizeChange: (size: number) => void
   onFontFamilyChange: (family: string) => void
-  onFontWeightChange: (weight: number) => void
+  onFontWeightChange: (weight: string) => void
   onPaddingChange: (padding: number) => void
   title?: string
 }
@@ -38,9 +38,9 @@ export function FontSection({
       <FontFamilySelect value={fontFamily} onChange={onFontFamilyChange} />
       <FontWeightSelect
         value={fontWeight}
-        onChange={(val) => onFontWeightChange(val as number)}
+        onChange={(val) => onFontWeightChange(val as string)}
         variant="full"
-        valueType="number"
+        valueType="string"
         fontFamily={fontFamily}
       />
       <NumberInput

@@ -13,6 +13,7 @@ import { generateBindingsJS, generateComponentsJS, generateMockJUCE, generateRes
 import { generateReadme, generateREADME } from './documentationGenerator'
 import { optimizeSVG } from './svgOptimizer'
 import { useStore } from '../../store'
+import { DIR_KEYS, storeDirectoryHandle, getDirectoryHandle } from '../directoryStorage'
 
 // ============================================================================
 // Types
@@ -355,11 +356,13 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
       // Generate ZIP blob
       const blob = await zip.generateAsync({ type: 'blob' })
 
-      // Trigger download using browser-fs-access
+      // Trigger download using browser-fs-access, starting from last export folder
       const filename = `${options.projectName || 'webview-ui'}-juce.zip`
+      const lastExportDir = await getDirectoryHandle(DIR_KEYS.EXPORT).catch(() => null)
       await fileSave(blob, {
         fileName: filename,
         extensions: ['.zip'],
+        startIn: lastExportDir || 'downloads',
       })
 
       return { success: true, sizeSavings }
@@ -488,11 +491,13 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
       // Generate ZIP blob
       const blob = await zip.generateAsync({ type: 'blob' })
 
-      // Trigger download using browser-fs-access
+      // Trigger download using browser-fs-access, starting from last export folder
       const filename = `${options.projectName || 'webview-ui'}-preview.zip`
+      const lastExportDir = await getDirectoryHandle(DIR_KEYS.EXPORT).catch(() => null)
       await fileSave(blob, {
         fileName: filename,
         extensions: ['.zip'],
+        startIn: lastExportDir || 'downloads',
       })
 
       return { success: true, sizeSavings }
@@ -661,11 +666,13 @@ export async function exportMultiWindowBundle(
       // Generate ZIP blob
       const blob = await zip.generateAsync({ type: 'blob' })
 
-      // Trigger download
+      // Trigger download, starting from last export folder
       const filename = `${options.projectName || 'webview-ui'}-bundle.zip`
+      const lastExportDir = await getDirectoryHandle(DIR_KEYS.EXPORT).catch(() => null)
       await fileSave(blob, {
         fileName: filename,
         extensions: ['.zip'],
+        startIn: lastExportDir || 'downloads',
       })
 
       return { success: true, sizeSavings }
@@ -852,13 +859,19 @@ export async function exportMultiWindowToFolder(
       }
     }
 
-    // Show directory picker
+    // Show directory picker, starting from last used export folder if available
     let dirHandle: FileSystemDirectoryHandle
     try {
+      // Try to get last used export directory
+      const lastExportDir = await getDirectoryHandle(DIR_KEYS.EXPORT)
+
       dirHandle = await window.showDirectoryPicker({
         mode: 'readwrite',
-        startIn: 'documents',
+        startIn: lastExportDir || 'documents',
       })
+
+      // Remember this directory for next time
+      await storeDirectoryHandle(DIR_KEYS.EXPORT, dirHandle)
     } catch (e) {
       // User cancelled the picker
       if (e instanceof Error && e.name === 'AbortError') {
