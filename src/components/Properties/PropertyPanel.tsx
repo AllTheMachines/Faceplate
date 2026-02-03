@@ -247,41 +247,43 @@ export function PropertyPanel() {
         </p>
       </PropertySection>
 
-      {/* Export / Import */}
-      <PropertySection title="SVG" helpContent={sectionHelp['svg']} elementType={element.type}>
-        <div className="flex gap-2">
-          <button
-            onClick={() => downloadElementSVG(element)}
-            className="flex-1 py-2 px-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm flex items-center justify-center gap-2 transition-colors"
-            title="Export element as SVG with named layers"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Export
-          </button>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="flex-1 py-2 px-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm flex items-center justify-center gap-2 transition-colors"
-            title="Import and validate SVG layers"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m4-8l-4-4m0 0l-4 4m4-4v12" />
-            </svg>
-            Import
-          </button>
-        </div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".svg,image/svg+xml"
-          onChange={handleSVGImport}
-          className="hidden"
-        />
-        <p className="text-xs text-gray-500 mt-2">
-          Expected layers: {getLayerNamesForType(element.type).slice(0, 3).join(', ')}...
-        </p>
-      </PropertySection>
+      {/* Export / Import - Pro feature */}
+      {userIsPro && (
+        <PropertySection title="SVG" helpContent={sectionHelp['svg']} elementType={element.type}>
+          <div className="flex gap-2">
+            <button
+              onClick={() => downloadElementSVG(element)}
+              className="flex-1 py-2 px-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm flex items-center justify-center gap-2 transition-colors"
+              title="Export element as SVG with named layers"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 py-2 px-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm flex items-center justify-center gap-2 transition-colors"
+              title="Import and validate SVG layers"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m4-8l-4-4m0 0l-4 4m4-4v12" />
+              </svg>
+              Import
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".svg,image/svg+xml"
+            onChange={handleSVGImport}
+            className="hidden"
+          />
+          <p className="text-xs text-gray-500 mt-2">
+            Expected layers: {getLayerNamesForType(element.type).slice(0, 3).join(', ')}...
+          </p>
+        </PropertySection>
+      )}
 
       {/* Type-specific properties */}
       {(() => {
