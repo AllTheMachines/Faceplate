@@ -1,131 +1,136 @@
-# VST3 WebView UI Designer
+# Faceplate
 
-A browser-based visual design tool for creating audio plugin user interfaces. Drag-and-drop 100+ UI components onto a canvas, configure properties, organize with layers, and export working code for JUCE WebView2 plugins.
+A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI components onto a canvas, configure properties, and export working code for JUCE WebView2 plugins.
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18 or later
+- npm (comes with Node.js)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/AllTheMachines/Faceplate.git
+cd Faceplate
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## How to Use
+
+### Step 1: Create a New Project
+
+- Click **File** > **New Project** to start fresh
+- Or **File** > **Open** to load an existing `.json` project
+
+### Step 2: Add Elements
+
+1. Open the **Elements** tab in the left panel
+2. Browse categories: Controls, Displays, Decorative, etc.
+3. **Drag** any element onto the canvas
+4. Elements snap to grid by default (toggle with **Ctrl+G**)
+
+### Step 3: Configure Properties
+
+1. **Click** an element on the canvas to select it
+2. Use the **Properties** panel (right side) to configure:
+   - Position & Size
+   - Colors and styling
+   - Parameter ID (for JUCE binding)
+   - Element-specific options
+3. Press **F1** for help on the selected element
+
+### Step 4: Organize with Layers
+
+1. Open the **Layers** tab in the left panel
+2. Create layers to group related elements
+3. Toggle visibility (eye icon) to focus on specific parts
+4. Lock layers to prevent accidental changes
+5. Drag layers to change z-order (stacking)
+
+### Step 5: Export to JUCE
+
+1. Click **Export** in the toolbar
+2. Choose **JUCE Bundle**
+3. Select an output folder
+4. The export includes:
+   - `index.html` - Main UI file
+   - `style.css` - Styles
+   - `components.js` - UI component code
+   - `bindings.js` - Parameter binding helpers
+
+### Step 6: Integrate with Your Plugin
+
+1. Copy the exported files to your JUCE project's WebView folder
+2. Use the parameter IDs you set in Faceplate to bind UI elements to your C++ parameters
+3. See [INTEGRATION_GUIDE.md](./docs/INTEGRATION_GUIDE.md) for detailed instructions
 
 ## Features
 
 ### Visual Design
-- **100+ Element Types**: Knobs, sliders, buttons, meters, LEDs, visualizations, curves, and more
-- **Drag-and-Drop Canvas**: Position, resize, and configure elements visually
-- **Property Panel**: Configure all element properties with contextual help
-- **Dark Theme**: Professional audio plugin aesthetic
+- **60+ Element Types**: Knobs, sliders, buttons, meters, LEDs, labels, and more
+- **Drag-and-Drop Canvas**: Position, resize, rotate elements visually
+- **Property Panel**: Configure all properties with contextual help
+- **Snap Grid**: Align elements precisely
 
-### Organization (v1.9)
-- **Layers System**: Organize elements into named layers with custom colors
-- **Visibility Toggle**: Hide layers to work on specific parts of your UI
-- **Lock Toggle**: Lock layers to prevent accidental changes
-- **Z-Order Control**: Drag layers to control element stacking order
-
-### Help System (v1.9)
-- **Contextual Help**: (?) buttons on every property section
-- **F1 Shortcut**: Press F1 for help on selected element
-- **Dark Themed Docs**: Help windows match app styling
-- **102 Element Types Documented**: Comprehensive reference
-
-### Multi-Window Support (v1.6+)
-- **Multiple Windows**: Create main, settings, and developer windows
-- **Window Types**: Release vs developer windows for export filtering
-- **Button Navigation**: Configure buttons to switch between windows
-
-### Asset Management
-- **SVG Import**: Import custom SVG assets with security sanitization
-- **Custom Fonts**: Select fonts folder, preview in dropdown, export bundled
-- **Knob Styles**: Create reusable SVG knob designs with layer mapping
+### Organization
+- **Layers System**: Group elements, control visibility and locking
+- **Multi-Window Support**: Create main, settings, and developer windows
+- **Undo/Redo**: Full history with Ctrl+Z / Ctrl+Y
 
 ### Export
-- **JUCE WebView2 Bundle**: HTML/CSS/JS + C++ snippets
-- **Browser Preview**: Test UI before JUCE integration
-- **Multi-Window Export**: Separate folders per window
-- **Parameter Sync**: Exported code syncs with C++ parameter values
-
-## Quick Start
-
-### 1. Start the Designer
-```bash
-npm install
-npm run dev
-```
-Navigate to `http://localhost:5173`
-
-### 2. Create Your UI
-- Drag elements from the **Elements** palette (left panel)
-- Configure properties in the **Properties** panel (right panel)
-- Organize with the **Layers** tab
-- Press **F1** for help on any selected element
-
-### 3. Export to JUCE
-- Click **Export** > **JUCE Bundle**
-- Extract to your VST3 project's WebUI folder
-- Integrate C++ bindings from `bindings.cpp`
-
-## Quick Start with VST3 Templates
-
-The fastest way to create a JUCE WebView2 VST3 plugin:
-
-1. **Clone a VST3 template:**
-```bash
-git clone https://github.com/yourusername/EFXvst  # For effects
-# OR
-git clone https://github.com/yourusername/INSTvst # For instruments
-```
-
-2. **Start the UI designer:**
-```bash
-npm install
-npm run dev
-```
-
-3. **Create from template:**
-   - Click "New Project" > "Effect Starter" or "Instrument Starter"
-   - Customize your UI
-   - Export to your VST3 project folder
-
-4. **Build your plugin:**
-   - Integrate exported code (see [WORKFLOW.md](./docs/WORKFLOW.md))
-   - Build in JUCE
-   - Load in your DAW
-
-See the complete [VST3 Workflow Guide](./docs/WORKFLOW.md) for detailed instructions.
-
-## Documentation
-
-- [WORKFLOW.md](./docs/WORKFLOW.md) - Complete VST3 development workflow
-- [ELEMENT_REFERENCE.md](./docs/ELEMENT_REFERENCE.md) - All 100+ element types
-- [BEST_PRACTICES.md](./docs/BEST_PRACTICES.md) - Design guidelines
-- [INTEGRATION_GUIDE.md](./docs/INTEGRATION_GUIDE.md) - JUCE integration
-- [EXPORT_FORMAT.md](./docs/EXPORT_FORMAT.md) - Export file format details
+- **JUCE WebView2 Bundle**: Ready-to-use HTML/CSS/JS
+- **Browser Preview**: Test your UI before integration
+- **Parameter Binding**: Exported code syncs with C++ parameters
 
 ## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| F1 | Open help for selected element |
-| Ctrl+G | Toggle snap grid |
-| Ctrl+Z / Ctrl+Y | Undo / Redo |
-| Ctrl+C / Ctrl+V | Copy / Paste |
-| Delete | Delete selected |
-| Arrow keys | Nudge selected elements |
-| Shift+Drag | Constrained movement |
-| H | Toggle layer visibility (when layer selected) |
+| **F1** | Help for selected element |
+| **Ctrl+N** | New project |
+| **Ctrl+O** | Open project |
+| **Ctrl+S** | Save project |
+| **Ctrl+Z** | Undo |
+| **Ctrl+Y** | Redo |
+| **Ctrl+G** | Toggle snap grid |
+| **Ctrl+C / Ctrl+V** | Copy / Paste |
+| **Delete** | Delete selected |
+| **Arrow keys** | Nudge selected (1px) |
+| **Shift+Arrow** | Nudge selected (10px) |
 
-## Related Repositories
+## Documentation
 
-- **[EFXvst](https://github.com/yourusername/EFXvst)** - Effect VST3 template with WebView2
-- **[INSTvst](https://github.com/yourusername/INSTvst)** - Instrument VST3 template with WebView2
+- [WORKFLOW.md](./docs/WORKFLOW.md) - Complete development workflow
+- [INTEGRATION_GUIDE.md](./docs/INTEGRATION_GUIDE.md) - JUCE integration details
+- [ELEMENT_REFERENCE.md](./docs/ELEMENT_REFERENCE.md) - All element types
+- [BEST_PRACTICES.md](./docs/BEST_PRACTICES.md) - Design guidelines
+- [EXPORT_FORMAT.md](./docs/EXPORT_FORMAT.md) - Export file format
 
-## Version History
+## Pro Features (Coming Soon)
 
-- **v1.9** - Layers system, help system, bug fixes
-- **v1.8** - Bug fixes & UI improvements
-- **v1.7** - Parameter sync for C++ integration
-- **v1.6** - Multi-window system
-- **v1.5** - Font management, SVG export
-- **v1.4** - Container editing system
-- **v1.3** - Undo history, unsaved changes protection
-- **v1.2** - 78 new element types (100+ total)
-- **v1.1** - SVG import system
-- **v1.0** - Initial MVP
+Additional elements and features will be available with a Pro license:
+
+- **Advanced Meters**: VU, PPM, RMS, LUFS, True Peak, K-System meters
+- **Visualizations**: Spectrum analyzer, spectrogram, goniometer, vectorscope
+- **Curves**: EQ curve, compressor curve, envelope displays
+- **Specialized Audio**: Piano keyboard, drum pads, step sequencer, XY pad
+- **Asset Library**: Manage and reuse custom SVG assets
+- **Knob Styles**: Create reusable custom knob designs
+
+## License
+
+MIT
 
 ---
 
-*Built with React, TypeScript, Vite, Zustand, @dnd-kit, and Tailwind CSS*
+*Built with React, TypeScript, Vite, and Tailwind CSS*
