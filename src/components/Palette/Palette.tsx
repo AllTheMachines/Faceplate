@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { PaletteCategory } from './PaletteCategory'
 import { CustomSVGUpload } from './CustomSVGUpload'
+import { isProElement } from '../../services/proElements'
 
 interface PaletteCategoryItem {
   id: string
@@ -214,6 +215,10 @@ export function Palette() {
   const [searchTerm, setSearchTerm] = useState('')
   const [inputValue, setInputValue] = useState('')
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [hideProElements, setHideProElements] = useState(() => {
+    // Initialize from localStorage
+    return localStorage.getItem('palette-hide-pro') === 'true'
+  })
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -246,21 +251,55 @@ export function Palette() {
     }
   }
 
-  // Filter categories and items based on search
-  const filteredCategories = useMemo(() => {
-    if (!searchTerm) return paletteCategories
+  const handleToggleHidePro = () => {
+    setHideProElements(prev => {
+      const newValue = !prev
+      localStorage.setItem('palette-hide-pro', String(newValue))
+      return newValue
+    })
+  }
 
-    return paletteCategories
-      .map((category) => ({
-        ...category,
-        items: category.items.filter(
-          (item) =>
-            item.name.toLowerCase().includes(searchTerm) ||
-            item.type.toLowerCase().includes(searchTerm)
-        ),
-      }))
-      .filter((category) => category.items.length > 0)
-  }, [searchTerm])
+  // Filter categories and items based on search and Pro toggle
+  const filteredCategories = useMemo(() => {
+    let categories = paletteCategories
+
+    // Sort items within each category: Free first, Pro last
+    categories = categories.map((category) => ({
+      ...category,
+      items: [...category.items].sort((a, b) => {
+        const aIsPro = isProElement(a.type)
+        const bIsPro = isProElement(b.type)
+        if (aIsPro === bIsPro) return 0
+        return aIsPro ? 1 : -1  // Pro items go to end
+      }),
+    }))
+
+    // Filter by search term
+    if (searchTerm) {
+      categories = categories
+        .map((category) => ({
+          ...category,
+          items: category.items.filter(
+            (item) =>
+              item.name.toLowerCase().includes(searchTerm) ||
+              item.type.toLowerCase().includes(searchTerm)
+          ),
+        }))
+        .filter((category) => category.items.length > 0)
+    }
+
+    // Filter out Pro elements if toggle is on
+    if (hideProElements) {
+      categories = categories
+        .map((category) => ({
+          ...category,
+          items: category.items.filter((item) => !isProElement(item.type)),
+        }))
+        .filter((category) => category.items.length > 0)
+    }
+
+    return categories
+  }, [searchTerm, hideProElements])
 
   // When searching, determine which categories to show expanded
   const getIsExpanded = (index: number, categoryName: string) => {
@@ -339,6 +378,25 @@ export function Palette() {
             {filteredCategories.reduce((acc, c) => acc + c.items.length, 0) !== 1 ? 's' : ''} found
           </div>
         )}
+      </div>
+
+      {/* Hide Pro elements toggle */}
+      <div className="px-2 py-1.5 border-b border-gray-700 flex items-center justify-between">
+        <span className="text-xs text-gray-400">Hide Pro elements</span>
+        <button
+          onClick={handleToggleHidePro}
+          className={`
+            relative w-8 h-4 rounded-full transition-colors
+            ${hideProElements ? 'bg-violet-500' : 'bg-gray-600'}
+          `}
+        >
+          <div
+            className={`
+              absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform
+              ${hideProElements ? 'left-4' : 'left-0.5'}
+            `}
+          />
+        </button>
       </div>
 
       {/* Categories */}
