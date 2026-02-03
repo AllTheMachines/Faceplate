@@ -26,3 +26,9 @@ dist-ssr
 # TypeScript build info
 *.tsbuildinfo
 screenshots/
+
+# Development/internal files
+.claude/
+.planning/
+.env.free
+UI_SPECS_PLUGINS/
