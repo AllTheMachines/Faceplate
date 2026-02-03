@@ -2,46 +2,11 @@
 
 Complete guide for integrating Faceplate-generated UI bundles with JUCE WebView2 plugins.
 
-## Overview
-
-### What is Faceplate?
-
-Faceplate is a browser-based visual design tool for creating audio plugin user interfaces. It provides:
-
-- **Drag-and-drop UI design** with 100+ element types
-- **Real-time preview** of interactive behaviors
-- **Code export** for JUCE WebView2 plugins
-- **SVG asset management** with security sanitization
-- **Multi-window support** for complex plugin UIs
-
-### What Does Faceplate Generate?
-
-Faceplate exports a self-contained bundle of web files that JUCE's WebBrowserComponent renders as the plugin UI:
-
-```
-my-plugin-juce.zip
-├── index.html          # Main UI structure
-├── style.css           # Element styling and layout
-├── components.js       # UI update functions
-├── bindings.js         # JUCE parameter bindings
-├── README.md           # Integration documentation
-└── assets/             # Images and fonts (if used)
-    ├── image1.png
-    └── font.woff2
-```
-
-### Why Use Faceplate?
-
-1. **Visual Design** - See exactly what your plugin will look like as you build it
-2. **Rapid Prototyping** - Test UI concepts without writing code
-3. **Consistent Output** - Generated code follows proven patterns
-4. **WYSIWYG Export** - What you design is what gets rendered
-
----
-
 ## Export Format
 
 ### File Structure
+
+When you export from Faceplate, you get these files:
 
 | File | Purpose |
 |------|---------|
@@ -49,7 +14,6 @@ my-plugin-juce.zip
 | `style.css` | CSS styling, fonts, responsive scaling |
 | `components.js` | Functions to update UI visuals (knobs, sliders, etc.) |
 | `bindings.js` | JUCE bridge + interaction handlers + responsive scaling |
-| `README.md` | Integration instructions specific to your project |
 
 ### How Files Work Together
 
@@ -335,33 +299,24 @@ target_link_libraries(${PROJECT_NAME}
 
 ## Step-by-Step Integration
 
-### 1. Design UI in Faceplate
+### 1. Export from Faceplate
 
-1. Open Faceplate in your browser
-2. Set canvas dimensions (match your desired plugin size)
-3. Drag elements from the palette onto the canvas
-4. Configure properties for each element
-5. Set **Parameter ID** for interactive elements (must match C++ APVTS)
-6. Preview to test interactions
+1. Click **Export** in the right panel
+2. Choose **JUCE Bundle**
+3. Save and extract to your JUCE project (e.g., `Source/ui/`)
 
-### 2. Export Project
-
-1. Click **Export** > **JUCE Bundle**
-2. Save the ZIP file
-3. Extract contents to your JUCE project (e.g., `Source/ui/`)
-
-### 3. Update CMakeLists.txt
+### 2. Update CMakeLists.txt
 
 Add the `juce_add_binary_data` call as shown above.
 
-### 4. Set Up PluginEditor
+### 3. Set Up PluginEditor
 
 1. Add WebBrowserComponent member
 2. Register the 4 native functions
 3. Implement resource provider
 4. Set editor size to match canvas
 
-### 5. Connect Parameters
+### 4. Connect Parameters
 
 Ensure parameter IDs in Faceplate match your APVTS:
 
@@ -388,7 +343,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 }
 ```
 
-### 6. Build and Test
+### 5. Build and Test
 
 1. Build your plugin
 2. Load in a DAW
@@ -469,13 +424,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 
 ---
 
-## Next Steps
+## Related Documentation
 
-- See [JUCE_PATTERN.md](./JUCE_PATTERN.md) for the complete communication pattern
-- See [EXPORT_FORMAT.md](./EXPORT_FORMAT.md) for detailed file format reference
-- See [ELEMENT_REFERENCE.md](./ELEMENT_REFERENCE.md) for all available elements
-- See [BEST_PRACTICES.md](./BEST_PRACTICES.md) for design guidelines
-
----
-
-*Last updated: 28 January 2026*
+- [JUCE_INTEGRATION.md](./JUCE_INTEGRATION.md) - WebView2 loading timing and parameter sync
+- [JUCE_PATTERN.md](./JUCE_PATTERN.md) - Complete communication pattern
+- [EXPORT_FORMAT.md](./EXPORT_FORMAT.md) - Detailed file format reference
