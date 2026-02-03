@@ -635,7 +635,32 @@ function setupSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
   const slider = document.getElementById(sliderId);
   if (!slider) return;
 
-  // Similar pattern to knob...
+  // Similar pattern to knob - drag to adjust value
+  // Does NOT support click-to-jump (linear sliders use drag-only interaction)
+}
+
+function setupAsciiSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
+  const slider = document.getElementById(sliderId);
+  if (!slider) return;
+
+  // ASCII sliders support BOTH click-to-jump and drag:
+  // - Click anywhere on the slider → value jumps to that position immediately
+  // - Click and drag → value jumps, then continues following mouse
+  // - Double-click → resets to default value
+
+  slider.addEventListener('mousedown', (e) => {
+    // Calculate click position within element for click-to-jump behavior
+    const rect = slider.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickRatio = Math.max(0, Math.min(1, clickX / rect.width));
+
+    // Jump to clicked position immediately
+    bridge.setParameter(paramId, clickRatio).catch(() => {});
+    updateAsciiSliderVisual(sliderId, clickRatio);
+
+    // Setup for drag from this new position
+    // (drag handling similar to knob pattern...)
+  });
 }
 
 function setupButtonInteraction(buttonId, paramId) {
@@ -679,7 +704,33 @@ function setupButtonInteraction(buttonId, paramId) {
 }
 
 // ==========================================================================
-// 3. ELEMENT INITIALIZATION
+// 3. INTERACTION BEHAVIOR REFERENCE
+// ==========================================================================
+
+/*
+ * Different element types have different interaction models:
+ *
+ * DRAG-ONLY CONTROLS (knobs, linear sliders):
+ *   - Click and hold to start dragging
+ *   - Value changes based on mouse movement distance from click position
+ *   - Does NOT jump to click position
+ *   - Double-click resets to default
+ *   - Common in professional audio plugins for precise control
+ *
+ * CLICK-TO-JUMP CONTROLS (ASCII sliders):
+ *   - Click anywhere → value jumps to that position immediately
+ *   - Can continue dragging from the new position
+ *   - Double-click resets to default
+ *   - More intuitive for direct value setting
+ *
+ * BUTTONS (all button types):
+ *   - Momentary: Press and hold (sends 1 on press, 0 on release)
+ *   - Toggle: Click to toggle state (alternates between 0 and 1)
+ *   - Navigation: Click to switch windows (uses window-mapping.json)
+ */
+
+// ==========================================================================
+// 4. ELEMENT INITIALIZATION
 // ==========================================================================
 
 function initializeAllElements() {
@@ -837,7 +888,7 @@ Before export, Faceplate validates the design:
 
 ---
 
-*Last updated: 29 January 2026*
+*Last updated: 30 January 2026*
 
 ---
 
