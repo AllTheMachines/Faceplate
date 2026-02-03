@@ -75,6 +75,10 @@ In the **Project** section (right panel, top):
 2. Use the parameter IDs you set in Faceplate to bind UI elements to your C++ parameters
 3. See [JUCE_INTEGRATION.md](./docs/JUCE_INTEGRATION.md) for WebView2 loading timing and parameter sync
 
+## Roadmap
+
+Track development progress and upcoming features on our [Project Roadmap](https://github.com/users/AllTheMachines/projects/1).
+
 ## Features
 
 ### Visual Design
