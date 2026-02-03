@@ -121,7 +121,7 @@ function getHelpIssueUrl(helpTitle: string): string {
 ## Suggested Fix
 
 `)
-  return `https://github.com/allthecodeDev/vst3-webview-ui-designer/issues/new?title=${title}&body=${body}&labels=documentation`
+  return `https://github.com/AllTheMachines/Faceplate/issues/new?title=${title}&body=${body}&labels=documentation`
 }
 
 /**
@@ -150,7 +150,7 @@ Describe the bug here...
 If applicable, add screenshots.
 
 `)
-  return `https://github.com/allthecodeDev/vst3-webview-ui-designer/issues/new?title=${title}&body=${body}&labels=bug`
+  return `https://github.com/AllTheMachines/Faceplate/issues/new?title=${title}&body=${body}&labels=bug`
 }
 
 /**

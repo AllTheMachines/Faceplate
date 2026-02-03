@@ -13,7 +13,7 @@ Complete guide for creating VST3 plugins with visual UI design.
    - Ensure WebView2 is enabled
 
 3. **UI Designer**
-   - Clone this repo: `git clone https://github.com/yourusername/vst3-webview-ui-designer`
+   - Clone this repo: `git clone https://github.com/AllTheMachines/Faceplate`
    - Run: `npm install && npm run dev`
 
 ## Step-by-Step Workflow
@@ -31,7 +31,7 @@ cd MyAwesomeSynth
 
 ### 2. Open UI Designer
 ```bash
-cd /path/to/vst3-webview-ui-designer
+cd /path/to/Faceplate
 npm run dev
 ```
 

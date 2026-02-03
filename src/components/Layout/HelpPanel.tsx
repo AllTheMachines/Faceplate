@@ -109,7 +109,7 @@ Describe the bug here...
 - URL: ${window.location.href}
 - Timestamp: ${new Date().toISOString()}
 `)
-  return `https://github.com/allthecodeDev/vst3-webview-ui-designer/issues/new?title=${title}&body=${body}&labels=bug`
+  return `https://github.com/AllTheMachines/Faceplate/issues/new?title=${title}&body=${body}&labels=bug`
 }
 
 export function HelpPanel() {

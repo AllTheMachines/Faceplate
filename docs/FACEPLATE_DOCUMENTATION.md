@@ -675,8 +675,8 @@ const ProjectSchemaV2 = z.object({
 
 ```bash
 # Clone repository
-git clone https://github.com/allthecodeDev/vst3-webview-ui-designer
-cd vst3-webview-ui-designer
+git clone https://github.com/AllTheMachines/Faceplate
+cd Faceplate
 
 # Install dependencies
 npm install
@@ -1843,7 +1843,7 @@ cmake --build build --config Debug
 ### Designer Source Structure
 
 ```
-vst3-webview-ui-designer/
+Faceplate/
 ├── src/
 │   ├── components/
 │   │   ├── Canvas/              # Konva.js canvas rendering
@@ -2091,9 +2091,9 @@ webview-ui-juce.zip
 
 ### Official Documentation
 
-- GitHub: https://github.com/allthecodeDev/vst3-webview-ui-designer
-- Issues: https://github.com/allthecodeDev/vst3-webview-ui-designer/issues
-- Discussions: https://github.com/allthecodeDev/vst3-webview-ui-designer/discussions
+- GitHub: https://github.com/AllTheMachines/Faceplate
+- Issues: https://github.com/AllTheMachines/Faceplate/issues
+- Discussions: https://github.com/AllTheMachines/Faceplate/discussions
 
 ### Related Projects
 
@@ -2115,7 +2115,7 @@ webview-ui-juce.zip
 
 **Last Updated:** January 30, 2026
 **Version:** 1.9
-**Author:** allthecodeDev
+**Author:** AllTheMachines
 **License:** [Check repository for license information]
 
 ---

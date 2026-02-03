@@ -18,7 +18,7 @@ Read docs/FACEPLATE_SYNC_GUIDE.md and follow the sync instructions
 
 Fetches the latest Faceplate (VST3 UI Designer) documentation from GitHub and creates a condensed reference for this project.
 
-**Source:** https://github.com/allthecodeDev/vst3-webview-ui-designer  
+**Source:** https://github.com/AllTheMachines/Faceplate  
 **Creates:** `docs/FACEPLATE_REFERENCE.md`
 
 ---
@@ -32,11 +32,11 @@ When asked to sync Faceplate documentation, follow these steps:
 Use the `web_fetch` tool to get each documentation file:
 
 ```
-https://raw.githubusercontent.com/allthecodeDev/vst3-webview-ui-designer/main/docs/INTEGRATION_GUIDE.md
-https://raw.githubusercontent.com/allthecodeDev/vst3-webview-ui-designer/main/docs/JUCE_PATTERN.md
-https://raw.githubusercontent.com/allthecodeDev/vst3-webview-ui-designer/main/docs/EXPORT_FORMAT.md
-https://raw.githubusercontent.com/allthecodeDev/vst3-webview-ui-designer/main/docs/ELEMENT_REFERENCE.md
-https://raw.githubusercontent.com/allthecodeDev/vst3-webview-ui-designer/main/docs/BEST_PRACTICES.md
+https://raw.githubusercontent.com/AllTheMachines/Faceplate/main/docs/INTEGRATION_GUIDE.md
+https://raw.githubusercontent.com/AllTheMachines/Faceplate/main/docs/JUCE_PATTERN.md
+https://raw.githubusercontent.com/AllTheMachines/Faceplate/main/docs/EXPORT_FORMAT.md
+https://raw.githubusercontent.com/AllTheMachines/Faceplate/main/docs/ELEMENT_REFERENCE.md
+https://raw.githubusercontent.com/AllTheMachines/Faceplate/main/docs/BEST_PRACTICES.md
 ```
 
 ### Step 2: Create Condensed Reference
@@ -47,7 +47,7 @@ Create `docs/FACEPLATE_REFERENCE.md` with the following structure:
 # Faceplate UI Designer Reference
 
 **Synced:** [current date]  
-**Source:** github.com/allthecodeDev/vst3-webview-ui-designer
+**Source:** github.com/AllTheMachines/Faceplate
 
 ## Quick Facts
 
@@ -122,7 +122,7 @@ If no UI folder yet:
 ## Full Documentation
 
 For complete documentation, visit:
-https://github.com/allthecodeDev/vst3-webview-ui-designer/tree/main/docs
+https://github.com/AllTheMachines/Faceplate/tree/main/docs
 ```
 
 ### Step 3: Save Version Info
@@ -132,7 +132,7 @@ Create `docs/FACEPLATE_VERSION.txt`:
 ```
 Version: [extract from docs if available]
 Synced: [current date and time]
-Source: https://github.com/allthecodeDev/vst3-webview-ui-designer
+Source: https://github.com/AllTheMachines/Faceplate
 Branch: main
 ```
 
@@ -225,7 +225,7 @@ Then proceed with sync.
 
 If automatic sync fails, you can manually:
 
-1. Visit: https://github.com/allthecodeDev/vst3-webview-ui-designer/tree/main/docs
+1. Visit: https://github.com/AllTheMachines/Faceplate/tree/main/docs
 2. Read the documentation files
 3. Create a condensed reference in `docs/FACEPLATE_REFERENCE.md`
 4. Include the key information needed for integration
@@ -245,4 +245,4 @@ Sync documentation when:
 
 **Last Updated:** January 2026  
 **For:** VST3 projects using Faceplate UI Designer  
-**Source:** https://github.com/allthecodeDev/vst3-webview-ui-designer
+**Source:** https://github.com/AllTheMachines/Faceplate

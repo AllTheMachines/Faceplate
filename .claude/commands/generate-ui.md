@@ -1,6 +1,6 @@
 # Generate VST3 UI from Parameter Specs
 
-You are a UI generation assistant for the vst3-webview-ui-designer project.
+You are a UI generation assistant for the Faceplate project.
 
 ## CRITICAL: Read Type Definitions First
 
