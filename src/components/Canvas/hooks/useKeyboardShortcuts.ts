@@ -21,7 +21,6 @@ export function useKeyboardShortcuts() {
     (e) => {
       e.preventDefault()
       e.stopPropagation()
-      console.log('[Undo] Triggered via', e.key, 'ctrl:', e.ctrlKey, 'meta:', e.metaKey)
       useStore.temporal.getState().undo()
     },
     { preventDefault: true, enableOnFormTags: true, enableOnContentEditable: true }
@@ -33,7 +32,6 @@ export function useKeyboardShortcuts() {
     (e) => {
       e.preventDefault()
       e.stopPropagation()
-      console.log('[Redo] Triggered via', e.key)
       useStore.temporal.getState().redo()
     },
     { preventDefault: true, enableOnFormTags: true, enableOnContentEditable: true }

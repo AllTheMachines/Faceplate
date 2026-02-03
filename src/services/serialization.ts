@@ -276,7 +276,6 @@ type MigrationResult =
 function migrateProject(data: unknown): MigrationResult {
   // Check if this is v1.x format and needs migration
   if (isV1Format(data)) {
-    console.log('[Serialization] Migrating project from v1.x to v2.0.0')
     return { success: true, data: migrateV1ToV2(data) }
   }
 
@@ -294,7 +293,6 @@ function migrateProject(data: unknown): MigrationResult {
   if (!('version' in obj)) {
     // If has windows array, assume v2.0.0 (missing version in saved file)
     if ('windows' in obj && Array.isArray(obj.windows)) {
-      console.log('[Serialization] Adding missing version field to v2.0.0 project')
       return {
         success: true,
         data: { ...obj, version: '2.0.0' }
@@ -310,7 +308,6 @@ function migrateProject(data: unknown): MigrationResult {
     }
 
     // Has canvas but no version, treat as v1.0.0
-    console.log('[Serialization] Migrating project from v1.0.0 to v2.0.0')
     return { success: true, data: migrateV1ToV2(obj as ProjectDataV1) }
   }
 

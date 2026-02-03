@@ -209,11 +209,7 @@ export function generateHTML(
 
   // Generate HTML for each element (pass all elements for child lookup)
   const elementsHTML = sortedElements
-    .map((element) => {
-      const html = generateElementHTML(element, elements)
-      console.log(`[HTML] ${element.type} "${element.name}":`, html.substring(0, 100) + '...')
-      return html
-    })
+    .map((element) => generateElementHTML(element, elements))
     .join('\n    ')
 
   return `<!DOCTYPE html>

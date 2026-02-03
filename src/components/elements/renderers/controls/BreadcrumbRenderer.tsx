@@ -62,11 +62,8 @@ export function BreadcrumbRenderer({ config }: BreadcrumbRendererProps) {
                 if (isEllipsis) {
                   // Expand to show all items
                   setIsExpanded(true)
-                  console.log('Breadcrumb: Expanded to show all items')
                 } else if (!isLast) {
-                  // Navigation click - in designer mode, log for debugging
-                  // In exported runtime, this would trigger actual navigation
-                  console.log(`Breadcrumb: Navigate to ${item.id}`)
+                  // Navigation click - in exported runtime, this triggers actual navigation
                 }
               }}
               style={{

@@ -95,7 +95,6 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     if (!preview || !activeWindow) return
 
     setImporting(true)
-    console.log('Starting import:', preview.elements.length, 'elements')
 
     // Update active window size
     updateWindow(activeWindow.id, {
@@ -107,18 +106,12 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
     clearSelection()
 
     // Add all elements in a single batch update
-    console.log('Adding elements to store...')
     addElements(preview.elements)
 
     // Add imported elements to active window
     preview.elements.forEach(el => {
       addElementToWindow(el.id)
     })
-
-    // Verify elements were added to store
-    const currentElements = useStore.getState().elements
-    console.log('Elements in store after import:', currentElements.length)
-    console.log('Import complete')
 
     // Clear saved state (imported template is new, unsaved content)
     clearSavedState()

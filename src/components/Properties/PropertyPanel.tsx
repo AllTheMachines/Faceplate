@@ -160,14 +160,6 @@ export function PropertyPanel() {
           { duration: 4000 }
         )
 
-        // Log detailed results to console for debugging
-        console.log('SVG Import Validation:', {
-          elementType: element.type,
-          matched: detection.matched,
-          missing: detection.missing,
-          unmapped: detection.unmapped,
-        })
-
         // Show warnings if any
         validation.warnings.forEach(warning => {
           toast(warning, { icon: '⚠️', duration: 5000 })

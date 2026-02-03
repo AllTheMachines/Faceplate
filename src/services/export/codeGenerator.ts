@@ -87,15 +87,11 @@ function collectImageAssets(elements: ElementConfig[]): ImageAsset[] {
  * Fetch image assets and add them to ZIP
  */
 async function bundleImageAssets(zip: JSZip, assets: ImageAsset[]): Promise<void> {
-  console.log('[Export] Bundling images:', assets.map(a => a.path))
-
   for (const asset of assets) {
     try {
-      console.log(`[Export] Fetching: ${asset.srcUrl}`)
       const response = await fetch(asset.srcUrl)
       if (response.ok) {
         const blob = await response.blob()
-        console.log(`[Export] Adding to ZIP: ${asset.path} (${blob.size} bytes)`)
         zip.file(asset.path, blob)
       } else {
         console.error(`[Export] Failed to fetch image: ${asset.srcUrl} (${response.status})`)
@@ -195,8 +191,6 @@ async function optimizeSVGAssets(
     optimized: totalOptimizedSize,
     percent: savingsPercent,
   }
-
-  console.log(`[Export] SVG optimization: ${totalOriginalSize} → ${totalOptimizedSize} bytes (${savingsPercent.toFixed(1)}% saved)`)
 
   return { optimizedMap, sizeSavings }
 }

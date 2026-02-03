@@ -38,12 +38,6 @@ export async function previewHTMLExport(options: PreviewOptions): Promise<{ succ
   try {
     const { elements, canvasWidth, canvasHeight, backgroundColor, enableResponsiveScaling = true } = options;
 
-    // Debug: Log elements being exported
-    console.log('[Preview] Exporting elements:', elements.length);
-    elements.forEach((el, i) => {
-      console.log(`  [${i}] ${el.type}: "${el.name}" at (${el.x}, ${el.y})`);
-    });
-
     // Generate HTML structure
     const html = generateHTML(elements, {
       canvasWidth,

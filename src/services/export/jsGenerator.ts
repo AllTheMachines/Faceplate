@@ -369,7 +369,6 @@ function createJUCEFunctionWrappers() {
     };
   }
 
-  console.log('[JUCEBridge] Created wrappers for:', functions);
   return wrappers;
 }
 
@@ -405,7 +404,6 @@ function setupParameterSyncListener() {
       return;
     }
 
-    console.log('[ParamSync] Received ' + params.length + ' parameter states from C++');
     let syncedCount = 0;
 
     for (const { id, value } of params) {
@@ -481,10 +479,7 @@ function setupParameterSyncListener() {
       });
     }
 
-    console.log('[ParamSync] Synced ' + syncedCount + ' of ' + params.length + ' parameters');
   });
-
-  console.log('[ParamSync] Listener registered for __juce__paramSync events');
 }
 
 /**
@@ -492,8 +487,6 @@ function setupParameterSyncListener() {
  * CRITICAL: Waits for functions.length > 0 before initializing UI.
  */
 async function initializeJUCEBridge() {
-  console.log('[JUCEBridge] Starting initialization...');
-
   for (let i = 0; i < 100; i++) {
     const juce = window.__JUCE__;
 
@@ -502,7 +495,6 @@ async function initializeJUCEBridge() {
 
       // CRITICAL: Wait for functions to be registered
       if (functions.length > 0) {
-        console.log('[JUCEBridge] JUCE available with functions:', functions);
         bridge = createJUCEFunctionWrappers();
 
         // Setup parameter sync listener for C++ -> JS updates
@@ -548,15 +540,10 @@ ${asciiNoiseSetups || '        // No ASCII art noise elements'}
         if (bridge.requestParamSync) {
           try {
             await bridge.requestParamSync();
-            console.log('[JUCEBridge] Parameter sync requested from C++');
           } catch (e) {
-            console.warn('[JUCEBridge] requestParamSync failed:', e);
+            // Param sync request failed - C++ may use timer-based sync instead
           }
-        } else {
-          console.log('[JUCEBridge] requestParamSync not available (C++ may use timer-based sync)');
         }
-
-        console.log('[JUCEBridge] Initialization complete');
         return;
       }
     }
@@ -608,8 +595,6 @@ ${xyPadSetups || '  // No XY pads'}
 ${loopPointsSetups || '  // No loop points'}
 ${harmonicEditorSetups || '  // No harmonic editors'}
 ${asciiNoiseSetups || '  // No ASCII art noise elements'}
-
-  console.log('[JUCEBridge] Standalone mode initialized');
 }
 
 // ============================================================================
@@ -2039,7 +2024,6 @@ function setupMenuButtonInteraction(buttonId) {
       e.preventDefault();
 
       const itemId = item.dataset.itemId;
-      console.log(\`[MenuButton] Selected: \${itemId}\`);
 
       // Close menu
       isOpen = false;
@@ -2133,7 +2117,6 @@ function setupBreadcrumbInteraction(breadcrumbId) {
 
     // Re-setup click handlers for expanded items
     setupClickHandlers();
-    console.log('[Breadcrumb] Expanded to show all items');
   }
 
   // Setup click handlers on all list items
@@ -2168,7 +2151,6 @@ function setupBreadcrumbInteraction(breadcrumbId) {
 
         const itemId = newLink.dataset.itemId;
         const itemLabel = newLink.textContent;
-        console.log(\`[Breadcrumb] Navigated to: \${itemId} (\${itemLabel})\`);
 
         // Get all items to rebuild the breadcrumb up to and including clicked item
         const allListItems = ol.querySelectorAll('li');
@@ -2203,7 +2185,6 @@ function setupBreadcrumbInteraction(breadcrumbId) {
   }
 
   setupClickHandlers();
-  console.log(\`[Breadcrumb] Setup complete for \${breadcrumbId}\`);
 }
 
 /**
@@ -2254,8 +2235,6 @@ function setupTreeViewInteraction(treeviewId) {
         // Select this node
         node.dataset.selected = 'true';
         treeview.dataset.selectedId = nodeId;
-
-        console.log(\`[TreeView] Selected: \${nodeId}\`);
 
         // Dispatch custom event
         treeview.dispatchEvent(new CustomEvent('nodeselect', {
@@ -2732,7 +2711,6 @@ function setupAsciiNoiseAnimation(elementId) {
     });
   }
 
-  console.log(\`[AsciiNoise] Started animation for \${elementId} (rate: \${refreshRate}ms, param: \${paramId || 'none'})\`);
 }
 
 // ============================================================================
@@ -3441,8 +3419,6 @@ export function generateMockJUCE(): string {
 // ============================================================================
 
 if (typeof window.__JUCE__ === 'undefined') {
-  console.log('[MockJUCE] Initializing mock JUCE backend (preview mode)');
-
   // Mock parameter storage
   const mockParameters = new Map();
   const eventListeners = new Map();
@@ -3469,7 +3445,6 @@ if (typeof window.__JUCE__ === 'undefined') {
             case 'setParameter':
               const [paramId, value] = params;
               mockParameters.set(paramId, value);
-              console.log(\`[MockJUCE] setParameter('\${paramId}', \${value})\`);
 
               // Emit paramSync event to notify listeners (e.g., ASCII noise)
               setTimeout(() => {
@@ -3484,16 +3459,13 @@ if (typeof window.__JUCE__ === 'undefined') {
 
             case 'getParameter':
               result = mockParameters.get(params[0]) ?? 0.5;
-              console.log(\`[MockJUCE] getParameter('\${params[0]}') -> \${result}\`);
               break;
 
             case 'beginGesture':
-              console.log(\`[MockJUCE] beginGesture('\${params[0]}')\`);
               result = true;
               break;
 
             case 'endGesture':
-              console.log(\`[MockJUCE] endGesture('\${params[0]}')\`);
               result = true;
               break;
 
@@ -3534,11 +3506,6 @@ if (typeof window.__JUCE__ === 'undefined') {
     }
   };
 
-  // Add test controls for interactive preview
-  window.addEventListener('DOMContentLoaded', () => {
-    console.log('[MockJUCE] Mock JUCE backend ready');
-    console.log('[MockJUCE] Available functions:', window.__JUCE__.initialisationData.__juce__functions);
-  });
 }
 `
 }
@@ -3672,13 +3639,10 @@ export function generateCustomScrollbarJS(): string {
         e.preventDefault();
         e.stopPropagation();
         const amount = (direction === 'up' || direction === 'left') ? -30 : 30;
-        console.log('[Scrollbar] Arrow click:', direction, 'amount:', amount, 'scrollTop before:', scrollContainer.scrollTop, 'scrollHeight:', scrollContainer.scrollHeight, 'clientHeight:', scrollContainer.clientHeight);
         if (isVertical) {
           scrollContainer.scrollTop += amount;
-          console.log('[Scrollbar] scrollTop after:', scrollContainer.scrollTop);
         } else {
           scrollContainer.scrollLeft += amount;
-          console.log('[Scrollbar] scrollLeft after:', scrollContainer.scrollLeft);
         }
       });
       return btn;
@@ -3783,18 +3747,11 @@ export function generateCustomScrollbarJS(): string {
     const trackColor = config.trackColor || '#1a1a1a';
     const parent = scrollContainer.parentElement;
 
-    console.log('[Scrollbar] Init for:', scrollContainer);
-    console.log('[Scrollbar] Parent:', parent);
-    console.log('[Scrollbar] scrollHeight:', scrollContainer.scrollHeight, 'clientHeight:', scrollContainer.clientHeight);
-    console.log('[Scrollbar] scrollWidth:', scrollContainer.scrollWidth, 'clientWidth:', scrollContainer.clientWidth);
-    console.log('[Scrollbar] overflow style:', getComputedStyle(scrollContainer).overflow);
-
     parent.style.position = 'relative';
 
     // Check which scrollbars are needed
     let needsV = scrollContainer.scrollHeight > scrollContainer.clientHeight + 1;
     let needsH = scrollContainer.scrollWidth > scrollContainer.clientWidth + 1;
-    console.log('[Scrollbar] needsV:', needsV, 'needsH:', needsH);
     const cornerSize = (needsV && needsH) ? width : 0;
 
     // Create scrollbars
