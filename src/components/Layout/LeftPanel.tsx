@@ -5,12 +5,14 @@ import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
 import { LayersPanel } from '../Layers'
 import { FontSettings } from '../Settings/FontSettings'
+import { LicenseSettings } from '../Settings/LicenseSettings'
 import { useStore as useAppStore } from '../../store'
 import { useLicense } from '../../hooks/useLicense'
 
 export function LeftPanel() {
   const { isPro } = useLicense()
   const [fontSettingsOpen, setFontSettingsOpen] = useState(false)
+  const [licenseSettingsOpen, setLicenseSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'elements' | 'assets' | 'layers'>('elements')
   const [, forceUpdate] = useState(0)
 
@@ -130,8 +132,8 @@ export function LeftPanel() {
         {activeTab === 'layers' && <LayersPanel />}
       </div>
 
-      {/* Manage Fonts button */}
-      <div className="p-3 border-t border-gray-700">
+      {/* Settings buttons */}
+      <div className="p-3 border-t border-gray-700 space-y-2">
         <button
           onClick={() => setFontSettingsOpen(true)}
           className="w-full py-2 px-3 bg-gray-700 text-gray-300 rounded text-sm hover:bg-gray-600 flex items-center justify-center gap-2"
@@ -141,11 +143,28 @@ export function LeftPanel() {
           </svg>
           <span>Manage Fonts</span>
         </button>
+        <button
+          onClick={() => setLicenseSettingsOpen(true)}
+          className={`w-full py-2 px-3 rounded text-sm flex items-center justify-center gap-2 ${
+            isPro
+              ? 'bg-violet-600 text-white hover:bg-violet-500'
+              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          </svg>
+          <span>{isPro ? 'Pro License' : 'Manage License'}</span>
+        </button>
       </div>
 
       <FontSettings
         isOpen={fontSettingsOpen}
         onClose={() => setFontSettingsOpen(false)}
+      />
+      <LicenseSettings
+        isOpen={licenseSettingsOpen}
+        onClose={() => setLicenseSettingsOpen(false)}
       />
     </div>
   )

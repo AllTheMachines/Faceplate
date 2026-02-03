@@ -10,6 +10,8 @@ import {
   validateForExport,
 } from '../../services/export'
 import type { WindowExportData, ExportError } from '../../services/export'
+import { useLicense } from '../../hooks/useLicense'
+import { ProElementsBlockingModal, hasProElements } from './ProElementsBlockingModal'
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return (
@@ -43,6 +45,9 @@ export function ExportPanel() {
   const [enableResponsiveScaling, setEnableResponsiveScaling] = useState(true)
   const [includeDeveloperWindows, setIncludeDeveloperWindows] = useState(false)
   const [exportMode, setExportMode] = useState<'zip' | 'folder'>('zip')
+  const [showProBlockingModal, setShowProBlockingModal] = useState(false)
+
+  const { isPro } = useLicense()
 
   // Get state from store
   const allElements = useStore((state) => state.elements)
@@ -149,6 +154,12 @@ export function ExportPanel() {
   }, [windowsData])
 
   const handleExportJUCE = async () => {
+    // Check for Pro elements if not licensed
+    if (!isPro && hasProElements(allElements)) {
+      setShowProBlockingModal(true)
+      return
+    }
+
     setIsExporting(true)
     setError(null)
     setLastExport(null)
@@ -212,6 +223,12 @@ export function ExportPanel() {
   }
 
   const handleExportPreview = async () => {
+    // Check for Pro elements if not licensed
+    if (!isPro && hasProElements(allElements)) {
+      setShowProBlockingModal(true)
+      return
+    }
+
     setIsExporting(true)
     setError(null)
     setLastExport(null)
@@ -517,6 +534,17 @@ export function ExportPanel() {
           </div>
         </div>
       )}
+
+      {/* Pro Elements Blocking Modal */}
+      <ProElementsBlockingModal
+        isOpen={showProBlockingModal}
+        onClose={() => setShowProBlockingModal(false)}
+        onUpgrade={() => {
+          setShowProBlockingModal(false)
+          window.open('https://polar.sh/all-the-machines', '_blank')
+        }}
+        elements={allElements}
+      />
     </div>
   )
 }
