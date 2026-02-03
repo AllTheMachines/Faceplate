@@ -52,6 +52,7 @@ Progress: [████████░░░░░░░░░░░░] 67% (v2
 | 2026-02-03 | 51-02 | Hide Pro elements toggle defaults ON for new users |
 | 2026-02-03 | 51-02 | VITE_DEV_PRO=true enables Pro features in development |
 | 2026-02-03 | 51-02 | Pro badges use violet-500 (#8B5CF6) for visual consistency |
+| 2026-02-03 | 51 | Accept client-side gating risk for now; revisit if revenue justifies stronger protection |
 
 All prior decisions documented in PROJECT.md Key Decisions table.
 
