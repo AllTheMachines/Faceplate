@@ -45,7 +45,7 @@ Plans:
   3. Pro elements can be placed on canvas but show "Pro" badge overlay
   4. LicenseSlice in Zustand store tracks isPro, license data, validation state
   5. useLicense hook available for components to check Pro status
-  6. 50 elements correctly marked as Pro (ASCII 3, Advanced Meters 24, Visualizations 5, Curves 5, Navigation 1, Specialized Audio 12)
+  6. 51 elements correctly marked as Pro (ASCII 3, Advanced Meters 24, Visualizations 5, Curves 5, Navigation 1, SVG 1, Specialized Audio 12)
   7. Loading project with Pro elements shows warning toast when unlicensed
   8. Pro elements have read-only PropertyPanel when unlicensed
 **Plans**: 2 plans

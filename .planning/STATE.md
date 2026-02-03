@@ -46,7 +46,7 @@ Progress: [████████░░░░░░░░░░░░] 67% (v2
 | 2026-02-03 | 50 | Pro elements: ASCII (3), Advanced Meters (24), Visualizations (5), Curves (5), Navigation (1), Specialized Audio (12) |
 | 2026-02-03 | 50 | Pro features: /generate-ui and /generate-vst commands |
 | 2026-02-03 | 50-01 | Local filesystem paths in generate-vst.md left unchanged (dev environment reference, not repo name) |
-| 2026-02-03 | 51-01 | 50 Pro elements total (3 ASCII + 24 Meters + 5 Viz + 5 Curves + 1 Nav + 12 Specialized) |
+| 2026-02-03 | 51-01 | 51 Pro elements total (3 ASCII + 24 Meters + 5 Viz + 5 Curves + 1 Nav + 1 SVG + 12 Specialized) |
 | 2026-02-03 | 51-01 | isPro field is optional boolean (undefined/false = Free, true = Pro) |
 | 2026-02-03 | 51-01 | License state excluded from undo/redo history (user-level, not document) |
 | 2026-02-03 | 51-02 | Hide Pro elements toggle defaults ON for new users |
