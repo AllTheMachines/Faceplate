@@ -216,8 +216,9 @@ export function Palette() {
   const [inputValue, setInputValue] = useState('')
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [hideProElements, setHideProElements] = useState(() => {
-    // Initialize from localStorage
-    return localStorage.getItem('palette-hide-pro') === 'true'
+    // Initialize from localStorage (default: hide Pro elements for new users)
+    const stored = localStorage.getItem('palette-hide-pro')
+    return stored === null ? true : stored === 'true'
   })
 
   // Clear timeout on unmount

@@ -30,8 +30,11 @@ export interface LicenseSlice {
   clearLicense: () => void
 }
 
+// Dev mode: set VITE_DEV_PRO=true in .env.local to bypass license checks
+const isDevPro = import.meta.env.VITE_DEV_PRO === 'true'
+
 export const createLicenseSlice: StateCreator<LicenseSlice, [], [], LicenseSlice> = (set) => ({
-  isPro: false,
+  isPro: isDevPro,
   license: null,
   validationState: 'unchecked',
   lastValidation: null,
