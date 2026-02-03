@@ -1,4 +1,4 @@
-# VST3 WebView UI Designer
+# Faceplate
 
 ## What This Is
 
