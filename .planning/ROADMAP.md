@@ -41,16 +41,18 @@ Plans:
 **Requirements**: GATE-01, GATE-02, GATE-03, PRO-01, PRO-02, PRO-03, PRO-04, PRO-05, STORE-01, STORE-02, STORE-03, UI-01
 **Success Criteria** (what must be TRUE):
   1. Element registry has `isPro` boolean for all 100+ element types
-  2. Pro elements show lock icon in palette when user is unlicensed
+  2. Pro elements show PRO badge in palette when user is unlicensed
   3. Pro elements can be placed on canvas but show "Pro" badge overlay
   4. LicenseSlice in Zustand store tracks isPro, license data, validation state
   5. useLicense hook available for components to check Pro status
-  6. 42 elements correctly marked as Pro (ASCII, Advanced Meters, Visualizations, Specialized Audio)
-**Plans**: 2-3 plans
+  6. 43 elements correctly marked as Pro (ASCII 3, Advanced Meters 23, Visualizations 5, Specialized Audio 12)
+  7. Loading project with Pro elements shows warning toast when unlicensed
+  8. Pro elements have read-only PropertyPanel when unlicensed
+**Plans**: 2 plans
 
 Plans:
-- [ ] 51-01-PLAN.md — Add isPro to element registry and LicenseSlice to store
-- [ ] 51-02-PLAN.md — Implement Pro element UI (lock icon, badges, palette indicators)
+- [ ] 51-01-PLAN.md — Data layer: Pro elements registry, license slice, useLicense hook, isPro wiring
+- [ ] 51-02-PLAN.md — UI layer: Palette badges, drag blocking, canvas badges, read-only PropertyPanel, warning toast
 
 #### Phase 52: License Validation & Export Blocking
 **Goal**: Polar.sh license validation working with export gating
@@ -838,4 +840,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-03 - Phase 50 Rebranding complete*
+*Last updated: 2026-02-03 - Phase 51 plans revised*
