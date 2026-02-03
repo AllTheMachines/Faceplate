@@ -21,6 +21,7 @@ import { usePreviewShortcut } from './hooks/usePreviewShortcut'
 import { useStore } from './store'
 import { snapValue } from './store/canvasSlice'
 import { getSVGNaturalSize } from './services/svg'
+import { isProElement } from './services/proElements'
 import {
   createKnob,
   createSlider,
@@ -793,6 +794,10 @@ function App() {
       newElement.y = canvasY - newElement.height / 2
       // Assign to selected layer (or default)
       newElement.layerId = selectedLayerId || 'default'
+      // Set isPro flag based on element type
+      if (isProElement(newElement.type)) {
+        newElement.isPro = true
+      }
     }
 
     addElement(newElement)

@@ -15,6 +15,7 @@ import type { UIWindow } from '../store/windowsSlice'
 import type { Asset } from '../types/asset'
 import type { KnobStyle } from '../types/knobStyle'
 import { sanitizeSVG } from '../lib/svg-sanitizer'
+import { isProElement } from './proElements'
 
 // Current application version
 export const CURRENT_VERSION = '2.0.0'
@@ -181,6 +182,16 @@ export function deserializeProject(json: string): DeserializeResult {
         svgContent: resanitized
       }
     })
+  }
+
+  // Populate isPro field on all elements based on registry
+  // This ensures elements loaded from project files (which may not have isPro saved)
+  // get the correct isPro value based on the current PRO_ELEMENTS registry
+  if (data.elements && data.elements.length > 0) {
+    data.elements = data.elements.map(el => ({
+      ...el,
+      isPro: isProElement(el.type) || undefined, // Only set if true
+    }))
   }
 
   return {
