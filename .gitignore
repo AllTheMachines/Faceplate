@@ -33,3 +33,9 @@ screenshots/
 .env.free
 UI_SPECS_PLUGINS/
 templates/
+
+# Internal/Pro documentation (not for public repo)
+docs/GENERATE_UI_SKILL.md
+docs/CLAUDE_CHROME_TESTING.md
+docs/SAMPLE_TEST_FAILURE_ISSUE.md
+docs/WORKFLOW.md
