@@ -36,7 +36,7 @@
     ]
   },
   "statusLine": {
-  "type": "command",
-  "command": "input=$(cat); used=$(echo \"$input\" | jq -r '.context_window.used_percentage // 0'); echo \"Context: $used%\""
+    "type": "command",
+    "command": "node .claude/hooks/gsd-statusline.cjs"
   }
 }

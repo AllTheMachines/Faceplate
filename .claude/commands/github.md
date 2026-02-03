@@ -227,6 +227,29 @@ Sync open GitHub issues into this milestone?
 
 ---
 
+## Windows PATH Issue
+
+On Windows, `gh` may not be in the shell PATH even after installation. If `gh` command is not found:
+
+1. Check if installed:
+```bash
+powershell -Command "Test-Path 'C:\Program Files\GitHub CLI\gh.exe'"
+```
+
+2. Use full path via PowerShell:
+```bash
+powershell -Command "& 'C:\Program Files\GitHub CLI\gh.exe' issue list --state open --json number,title,body,labels,milestone --limit 100"
+```
+
+3. For all gh commands, wrap with:
+```bash
+powershell -Command "& 'C:\Program Files\GitHub CLI\gh.exe' {command} {args}"
+```
+
+This bypasses PATH issues by calling gh.exe directly through PowerShell.
+
+---
+
 ## Example Workflow
 
 ```
