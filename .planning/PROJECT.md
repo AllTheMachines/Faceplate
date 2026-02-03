@@ -116,13 +116,13 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-**v1.10 Element Bug Fixes (20 requirements):**
-- Navigation Elements: Tree View, Tag Selector, Combo Box, Breadcrumb fixes
-- Sliders: ASCII, Arc, Notched, Bipolar Slider fixes
-- Curves: EQ, Compressor, Envelope, LFO, Filter Response fixes
-- Buttons/Knobs: Segment Button, Kick Button, Stepped Knob fixes
-- Displays/LEDs: Note Display, Bicolor LED fixes
-- Core UI: Color Picker, Related Topics links fixes
+**v2.0 Pro Licensing (32 requirements):**
+- Rebranding: allthecode → AllTheMachines, vst3-webview-ui-designer → Faceplate
+- Feature Gating: isPro boolean per element, lock icons, Pro badges
+- Pro Elements: ASCII (3), Advanced Meters (14), Visualizations (12), Specialized Audio (13)
+- License Validation: Polar.sh API, settings panel, 7-day cache, offline handling
+- Export Blocking: Pro element check, upgrade modal, command gating
+- Pro Features: /generate-ui, /generate-vst commands
 
 ### Out of Scope
 
@@ -136,6 +136,8 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Context
 
 **Current State:**
+- v2.0 Pro Licensing in progress (started 2026-02-03)
+- v1.10 Element Bug Fixes shipped (2026-02-02)
 - v1.9 Layers & Help System shipped (2026-01-29)
 - v1.8 Bug Fixes & Improvements shipped (2026-01-29)
 - v1.7 Parameter Sync shipped (2026-01-28)
@@ -150,10 +152,11 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - 102+ element types supported with comprehensive help documentation
 - Tech stack: React 18, Vite, Zustand, @dnd-kit, Tailwind CSS, SVGO, DOMPurify, opentype.js, react-arborist
 - GitHub Issues integration via `/github` skill
+- Repository: private (AllTheMachines/Faceplate)
 
 **Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds.
 
-**10 milestones shipped** across 43 phases, 177 plans in 7 days (2026-01-23 to 2026-01-29).
+**11 milestones shipped** across 49 phases, 193 plans in 11 days (2026-01-23 to 2026-02-02).
 
 ## Constraints
 
@@ -230,4 +233,4 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | F1 contextual help | Element-specific help when one selected, general otherwise | Good - context-aware UX |
 
 ---
-*Last updated: 2026-02-02 after v1.10 milestone definition*
+*Last updated: 2026-02-03 after v2.0 Pro Licensing milestone definition*

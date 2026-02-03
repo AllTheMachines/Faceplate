@@ -1,4 +1,4 @@
-# Roadmap: VST3 WebView UI Designer
+# Roadmap: Faceplate
 
 ## Milestones
 
@@ -13,8 +13,68 @@
 - **v1.8 Bug Fixes & Improvements** — Phase 40 (shipped 2026-01-29)
 - **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
 - **v1.10 Element Bug Fixes** — Phases 44-49 (shipped 2026-02-02)
+- **v2.0 Pro Licensing** — Phases 50-52 (current)
 
 ## Phases
+
+### v2.0 Pro Licensing (Phases 50-52)
+
+Rebrand to Faceplate and implement Pro licensing with Polar.sh integration.
+
+#### Phase 50: Rebranding
+**Goal**: Complete rebrand from 'vst3-webview-ui-designer' and 'allthecode' to 'Faceplate' and 'AllTheMachines'
+**Depends on**: None (first phase of milestone)
+**Requirements**: BRAND-01, BRAND-02, BRAND-03, BRAND-04
+**Success Criteria** (what must be TRUE):
+  1. No references to 'allthecode' remain in codebase (case-insensitive search returns 0)
+  2. No references to 'vst3-webview-ui-designer' remain in codebase
+  3. Package.json name is 'faceplate', title/branding reflects 'Faceplate'
+  4. All documentation headers and references updated to 'Faceplate'
+**Plans**: 1 plan
+
+Plans:
+- [ ] 50-01-PLAN.md — Bulk rename allthecode → AllTheMachines, vst3-webview-ui-designer → Faceplate
+
+#### Phase 51: Feature Gating System
+**Goal**: Element registry supports Pro/Free classification with UI indicators
+**Depends on**: Phase 50
+**Requirements**: GATE-01, GATE-02, GATE-03, PRO-01, PRO-02, PRO-03, PRO-04, PRO-05, STORE-01, STORE-02, STORE-03, UI-01
+**Success Criteria** (what must be TRUE):
+  1. Element registry has `isPro` boolean for all 100+ element types
+  2. Pro elements show lock icon in palette when user is unlicensed
+  3. Pro elements can be placed on canvas but show "Pro" badge overlay
+  4. LicenseSlice in Zustand store tracks isPro, license data, validation state
+  5. useLicense hook available for components to check Pro status
+  6. 42 elements correctly marked as Pro (ASCII, Advanced Meters, Visualizations, Specialized Audio)
+**Plans**: 2-3 plans
+
+Plans:
+- [ ] 51-01-PLAN.md — Add isPro to element registry and LicenseSlice to store
+- [ ] 51-02-PLAN.md — Implement Pro element UI (lock icon, badges, palette indicators)
+
+#### Phase 52: License Validation & Export Blocking
+**Goal**: Polar.sh license validation working with export gating
+**Depends on**: Phase 51
+**Requirements**: GATE-04, GATE-05, GATE-06, LIC-01, LIC-02, LIC-03, LIC-04, LIC-05, LIC-06, LIC-07, EXP-01, EXP-02, EXP-03, EXP-04, UI-02, UI-03
+**Success Criteria** (what must be TRUE):
+  1. License settings panel with key input field accessible from UI
+  2. Validate button calls Polar.sh API and shows success/error toast
+  3. Valid license cached in localStorage for 7 days
+  4. License status indicator shows Free/Pro/Expired/Revoked
+  5. Export to JUCE blocked when project contains Pro elements and license is Free
+  6. Blocking modal shows list of Pro elements with upgrade option
+  7. /generate-ui and /generate-vst commands check license before executing
+  8. Offline graceful degradation - uses cached license when network unavailable
+**Plans**: 2-3 plans
+
+Plans:
+- [ ] 52-01-PLAN.md — License service and settings UI with Polar.sh API integration
+- [ ] 52-02-PLAN.md — Export blocking modal and command gating
+
+---
+
+<details>
+<summary>v1.10 Element Bug Fixes (Phases 44-49) - SHIPPED 2026-02-02</summary>
 
 ### v1.10 Element Bug Fixes (Phases 44-49)
 
@@ -109,6 +169,8 @@ Plans:
 Plans:
 - [x] 49-01-PLAN.md — Fix color picker drag and help navigation
 - [x] 49-02-PLAN.md — Gap closure: Fix color picker useEffect and Related Topics key matching
+
+</details>
 
 <details>
 <summary>v1.9 Layers & Help System (Phases 41-43) - SHIPPED 2026-01-29</summary>
@@ -770,7 +832,10 @@ Plans:
 | 47. Button & Knob Fixes | v1.10 | 3/3 | Complete | 2026-02-02 |
 | 48. Display & LED Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
 | 49. Core UI Fixes | v1.10 | 2/2 | Complete | 2026-02-02 |
+| 50. Rebranding | v2.0 | 0/1 | Pending | — |
+| 51. Feature Gating System | v2.0 | 0/2 | Pending | — |
+| 52. License Validation & Export Blocking | v2.0 | 0/2 | Pending | — |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-02 - Phase 49 complete, v1.10 milestone shipped*
+*Last updated: 2026-02-03 - v2.0 Pro Licensing milestone started*
