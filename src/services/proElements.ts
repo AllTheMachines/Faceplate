@@ -7,11 +7,12 @@
  * - Project load/deserialization (serialization.ts)
  * - Palette display for Pro badges (Plan 02)
  *
- * Total: 49 Pro element types
+ * Total: 50 Pro element types
  * - ASCII: 3
  * - Advanced Meters: 24 (mono/stereo variants)
  * - Visualizations: 5
  * - Curves: 5
+ * - Navigation: 1 (breadcrumb)
  * - Specialized Audio: 12
  */
 
@@ -81,6 +82,11 @@ export const PRO_ELEMENTS = {
   envelopedisplay: true,
   lfodisplay: true,
   filterresponse: true,
+
+  // ============================================================================
+  // Navigation (1)
+  // ============================================================================
+  breadcrumb: true,
 
   // ============================================================================
   // Specialized Audio (12)
