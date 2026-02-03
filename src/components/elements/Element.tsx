@@ -4,6 +4,7 @@ import { ScrollbarConfig, DEFAULT_SCROLLBAR_CONFIG } from '../../types/elements/
 import { useStore } from '../../store'
 import { BaseElement } from './BaseElement'
 import { getRenderer } from './renderers'
+import { useLicense } from '../../hooks/useLicense'
 
 // Container types that can have children
 const CONTAINER_TYPES = ['panel', 'frame', 'groupbox', 'collapsible', 'windowchrome', 'tooltip']
@@ -378,6 +379,8 @@ function ElementComponent({ element }: ElementProps) {
   const elements = useStore((state) => state.elements)
   const childrenRef = useRef<HTMLDivElement>(null)
   const [isHoldingAltCtrl, setIsHoldingAltCtrl] = useState(false)
+  const { isPro: userIsPro } = useLicense()
+  const showProBadge = element.isPro && !userIsPro
 
   // Track Alt/Ctrl key state for cursor feedback
   useEffect(() => {
@@ -491,6 +494,20 @@ function ElementComponent({ element }: ElementProps) {
       <Suspense fallback={<RendererFallback />}>
         <Renderer config={element} />
       </Suspense>
+      {/* Pro badge overlay for unlicensed users */}
+      {showProBadge && (
+        <div
+          className="absolute bg-violet-500 text-white font-bold px-2 py-1 rounded pointer-events-none select-none z-50"
+          style={{
+            fontSize: '10px',
+            lineHeight: '12px',
+            top: '-4px',
+            right: '-4px',
+          }}
+        >
+          PRO
+        </div>
+      )}
       {/* Render children inside container with custom scrollbar */}
       {childElements.length > 0 && (
         <div
