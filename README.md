@@ -27,10 +27,11 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## How to Use
 
-### Step 1: Create a New Project
+### Step 1: Start a Project
 
-- Click **File** > **New Project** to start fresh
-- Or **File** > **Open** to load an existing `.json` project
+In the **Project** section (right panel, top):
+- Click **Load Project** to open an existing `.json` project
+- Or select a template from the **Load Template...** dropdown to start with a preset layout
 
 ### Step 2: Add Elements
 
@@ -59,7 +60,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### Step 5: Export to JUCE
 
-1. Click **Export** in the toolbar
+1. Click **Export** in the right panel
 2. Choose **JUCE Bundle**
 3. Select an output folder
 4. The export includes:
@@ -72,12 +73,12 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 1. Copy the exported files to your JUCE project's WebView folder
 2. Use the parameter IDs you set in Faceplate to bind UI elements to your C++ parameters
-3. See [INTEGRATION_GUIDE.md](./docs/INTEGRATION_GUIDE.md) for detailed instructions
+3. See [JUCE_INTEGRATION.md](./docs/JUCE_INTEGRATION.md) for WebView2 loading timing and parameter sync
 
 ## Features
 
 ### Visual Design
-- **60+ Element Types**: Knobs, sliders, buttons, meters, LEDs, labels, and more
+- **60+ Element Types**: Knobs, sliders, buttons, labels, panels, and more
 - **Drag-and-Drop Canvas**: Position, resize, rotate elements visually
 - **Property Panel**: Configure all properties with contextual help
 - **Snap Grid**: Align elements precisely
@@ -97,8 +98,6 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 | Shortcut | Action |
 |----------|--------|
 | **F1** | Help for selected element |
-| **Ctrl+N** | New project |
-| **Ctrl+O** | Open project |
 | **Ctrl+S** | Save project |
 | **Ctrl+Z** | Undo |
 | **Ctrl+Y** | Redo |
@@ -110,8 +109,8 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Documentation
 
+- [JUCE_INTEGRATION.md](./docs/JUCE_INTEGRATION.md) - WebView2 setup and parameter sync
 - [WORKFLOW.md](./docs/WORKFLOW.md) - Complete development workflow
-- [INTEGRATION_GUIDE.md](./docs/INTEGRATION_GUIDE.md) - JUCE integration details
 - [ELEMENT_REFERENCE.md](./docs/ELEMENT_REFERENCE.md) - All element types
 - [BEST_PRACTICES.md](./docs/BEST_PRACTICES.md) - Design guidelines
 - [EXPORT_FORMAT.md](./docs/EXPORT_FORMAT.md) - Export file format
@@ -120,7 +119,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 Additional elements and features will be available with a Pro license:
 
-- **Advanced Meters**: VU, PPM, RMS, LUFS, True Peak, K-System meters
+- **Professional Meters**: VU, PPM, RMS, LUFS, True Peak, K-System meters
 - **Visualizations**: Spectrum analyzer, spectrogram, goniometer, vectorscope
 - **Curves**: EQ curve, compressor curve, envelope displays
 - **Specialized Audio**: Piano keyboard, drum pads, step sequencer, XY pad
