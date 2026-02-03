@@ -9,11 +9,6 @@ import { useLicense } from '../../hooks/useLicense';
 
 export function CustomSVGUpload() {
   const { isPro } = useLicense();
-
-  // Hide feature for non-Pro users
-  if (!isPro) {
-    return null;
-  }
   const [parsedSVG, setParsedSVG] = useState<ParsedSVG | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +42,11 @@ export function CustomSVGUpload() {
     },
     maxFiles: 1,
   });
+
+  // Hide feature for non-Pro users (must be after all hooks)
+  if (!isPro) {
+    return null;
+  }
 
   const handleAddToCanvas = () => {
     if (!parsedSVG) return;
