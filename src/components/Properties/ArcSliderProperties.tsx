@@ -1,6 +1,8 @@
 import { ArcSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
-import { LabelDisplaySection, ValueDisplaySection } from './shared'
+import { LabelDisplaySection, ValueDisplaySection, ColorPicker } from './shared'
+import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
 
 interface ArcSliderPropertiesProps {
   element: ArcSliderElementConfig
@@ -8,8 +10,102 @@ interface ArcSliderPropertiesProps {
 }
 
 export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesProps) {
+  const { isPro } = useLicense()
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  // Note: Arc Slider uses 'arc' category, not 'linear'
+  const arcStyles = getStylesByCategory('arc')
+  const currentStyle = element.styleId
+    ? arcStyles.find(s => s.id === element.styleId)
+    : undefined
+
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        {/* Style Dropdown */}
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className="w-full bg-gray-700 text-white text-sm rounded px-2 py-1.5 border border-gray-600"
+            disabled={!isPro && arcStyles.length > 0}
+          >
+            <option value="">Default (CSS)</option>
+            {arcStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
+          </select>
+          {!isPro && arcStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
+        </div>
+
+        {/* Thumb Rotation (only when style is selected) */}
+        {currentStyle && isPro && (
+          <div className="flex items-center gap-2 mt-3">
+            <input
+              type="checkbox"
+              id="rotateThumbToTangent"
+              checked={element.rotateThumbToTangent ?? false}
+              onChange={(e) => onUpdate({
+                rotateThumbToTangent: e.target.checked
+              })}
+              className="rounded border-gray-600 bg-gray-700 text-blue-500"
+            />
+            <label htmlFor="rotateThumbToTangent" className="text-sm text-gray-300">
+              Rotate thumb to tangent
+            </label>
+          </div>
+        )}
+
+        {/* Color Overrides (only when style is selected) */}
+        {currentStyle && isPro && (
+          <div className="space-y-2 mt-3">
+            <label className="block text-xs text-gray-400">Color Overrides</label>
+            {currentStyle.layers.thumb && (
+              <ColorPicker
+                label="Thumb"
+                value={element.colorOverrides?.thumb || ''}
+                onChange={(color) => onUpdate({
+                  colorOverrides: { ...element.colorOverrides, thumb: color || undefined }
+                })}
+              />
+            )}
+            {currentStyle.layers.track && (
+              <ColorPicker
+                label="Track"
+                value={element.colorOverrides?.track || ''}
+                onChange={(color) => onUpdate({
+                  colorOverrides: { ...element.colorOverrides, track: color || undefined }
+                })}
+              />
+            )}
+            {currentStyle.layers.fill && (
+              <ColorPicker
+                label="Fill"
+                value={element.colorOverrides?.fill || ''}
+                onChange={(color) => onUpdate({
+                  colorOverrides: { ...element.colorOverrides, fill: color || undefined }
+                })}
+              />
+            )}
+            {currentStyle.layers.arc && (
+              <ColorPicker
+                label="Arc Path"
+                value={element.colorOverrides?.arc || ''}
+                onChange={(color) => onUpdate({
+                  colorOverrides: { ...element.colorOverrides, arc: color || undefined }
+                })}
+              />
+            )}
+          </div>
+        )}
+      </PropertySection>
+
       {/* Diameter */}
       <PropertySection title="Size">
         <NumberInput
