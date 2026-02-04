@@ -47,13 +47,35 @@ export interface ArcLayers {
 
 /**
  * Button control layers (buttons, switches, toggles)
+ * Supports: Button, Icon Button, Toggle Switch, Power Button, Rocker Switch, Rotary Switch, Segment Button
  */
 export interface ButtonLayers {
-  body?: string       // Main button body
+  // Common layers
+  body?: string       // Main button/switch body (backward compat)
   label?: string      // Text label
-  icon?: string       // Icon element
-  pressed?: string    // Pressed state layer
-  normal?: string     // Normal state layer
+
+  // Button state layers (Button, Icon Button, Power Button)
+  normal?: string     // Normal/idle state
+  pressed?: string    // Pressed state
+  icon?: string       // Icon element (colorable via fill replacement)
+
+  // Toggle/Power button layers
+  on?: string         // On state layer (Toggle Switch)
+  off?: string        // Off state layer (Toggle Switch)
+  indicator?: string  // LED/indicator (toggles with state, Toggle Switch)
+  led?: string        // LED indicator (Power Button, colorable)
+
+  // Multi-position layers (Rocker Switch)
+  'position-0'?: string  // Down/first position
+  'position-1'?: string  // Center/second position
+  'position-2'?: string  // Up/third position
+
+  // Rotary Switch layers
+  base?: string       // Static background (Rotary Switch, Rocker Switch)
+  selector?: string   // Rotating pointer/selector (Rotary Switch)
+
+  // Segment Button layers
+  highlight?: string  // Selection highlight (Segment Button)
 }
 
 /**
