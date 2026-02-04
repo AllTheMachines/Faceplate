@@ -35,8 +35,8 @@ interface StyledMeterRendererProps {
     orientation: 'vertical' | 'horizontal'
     showPeakHold: boolean
 
-    // Styling properties
-    styleId: string
+    // Styling properties (styleId checked by caller, but typed optional for spread compatibility)
+    styleId?: string
     colorOverrides?: ColorOverrides
   }
 }
@@ -148,27 +148,27 @@ export function StyledMeterRenderer({ config }: StyledMeterRendererProps) {
 
   // Clip-path calculations for vertical meter (bottom-up fill)
   // inset(top right bottom left) - clip from top to reveal from bottom
-  const getZoneClipPath = (zoneThreshold: number, value: number): string => {
+  const getZoneClipPath = (value: number): string => {
     // Zone fills from bottom up to value position
-    // Green: fills from 0 to min(value, yellowThreshold)
-    // Yellow: fills from yellowThreshold to min(value, redThreshold)
-    // Red: fills from redThreshold to value
+    // Green: fills from 0 to value
+    // Yellow: fills from yellowThreshold to value (when value > yellowThreshold)
+    // Red: fills from redThreshold to value (when value > redThreshold)
     const effectiveValue = Math.min(1, Math.max(0, value))
     const clipFromTop = (1 - effectiveValue) * 100
     return `inset(${clipFromTop}% 0 0 0)`
   }
 
   // For zone fills, calculate individual zone clip paths
-  const greenClipPath = getZoneClipPath(0, normalizedValue)
+  const greenClipPath = getZoneClipPath(normalizedValue)
   const yellowClipPath = normalizedValue > yellowThreshold
-    ? getZoneClipPath(yellowThreshold, normalizedValue)
+    ? getZoneClipPath(normalizedValue)
     : 'inset(100% 0 0 0)' // Fully clipped (hidden)
   const redClipPath = normalizedValue > redThreshold
-    ? getZoneClipPath(redThreshold, normalizedValue)
+    ? getZoneClipPath(normalizedValue)
     : 'inset(100% 0 0 0)' // Fully clipped (hidden)
 
   // Single fill clip path (fallback if no zone layers)
-  const singleFillClipPath = getZoneClipPath(0, normalizedValue)
+  const singleFillClipPath = getZoneClipPath(normalizedValue)
 
   // Peak indicator position (vertical: bottom-up)
   const peakPosition = `${normalizedValue * 100}%`

@@ -2,12 +2,13 @@ import React from 'react'
 import type { VUMeterMonoElementConfig, VUMeterStereoElementConfig } from '../../../../../types/elements/displays'
 import { SegmentedMeter } from './SegmentedMeter'
 import { MeterScale } from './MeterScale'
+import { StyledMeterRenderer } from './StyledMeterRenderer'
 
 interface MonoProps {
   config: VUMeterMonoElementConfig
 }
 
-export function VUMeterMonoRenderer({ config }: MonoProps) {
+function DefaultVUMeterMonoRenderer({ config }: MonoProps) {
   const { width, height, orientation, scalePosition, showMajorTicks, showMinorTicks } = config
   const isVertical = orientation === 'vertical'
   const scaleWidth = scalePosition !== 'none' ? 30 : 0
@@ -58,11 +59,18 @@ export function VUMeterMonoRenderer({ config }: MonoProps) {
   )
 }
 
+export function VUMeterMonoRenderer({ config }: MonoProps) {
+  if (config.styleId) {
+    return <StyledMeterRenderer config={config} />
+  }
+  return <DefaultVUMeterMonoRenderer config={config} />
+}
+
 interface StereoProps {
   config: VUMeterStereoElementConfig
 }
 
-export function VUMeterStereoRenderer({ config }: StereoProps) {
+function DefaultVUMeterStereoRenderer({ config }: StereoProps) {
   const { width, height, orientation, scalePosition, showMajorTicks, showMinorTicks, showChannelLabels } = config
   const isVertical = orientation === 'vertical'
   const scaleWidth = scalePosition !== 'none' ? 30 : 0
@@ -136,4 +144,36 @@ export function VUMeterStereoRenderer({ config }: StereoProps) {
       )}
     </div>
   )
+}
+
+export function VUMeterStereoRenderer({ config }: StereoProps) {
+  if (config.styleId) {
+    const { width, height, orientation, showChannelLabels } = config
+    const isVertical = orientation === 'vertical'
+    const channelGap = 8
+    const labelHeight = showChannelLabels ? 16 : 0
+    const meterWidth = isVertical ? (width - channelGap) / 2 : width
+    const meterHeight = isVertical ? height - labelHeight : (height - channelGap) / 2
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', width, height }}>
+        <div style={{ display: 'flex', flexDirection: isVertical ? 'row' : 'column', flex: 1 }}>
+          <div style={{ width: isVertical ? meterWidth : '100%', height: isVertical ? '100%' : meterHeight }}>
+            <StyledMeterRenderer config={{ ...config, value: config.valueL, width: meterWidth, height: meterHeight }} />
+          </div>
+          <div style={{ width: isVertical ? channelGap : undefined, height: isVertical ? undefined : channelGap }} />
+          <div style={{ width: isVertical ? meterWidth : '100%', height: isVertical ? '100%' : meterHeight }}>
+            <StyledMeterRenderer config={{ ...config, value: config.valueR, width: meterWidth, height: meterHeight }} />
+          </div>
+        </div>
+        {showChannelLabels && (
+          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: 10, color: '#999' }}>
+            <span>L</span>
+            <span>R</span>
+          </div>
+        )}
+      </div>
+    )
+  }
+  return <DefaultVUMeterStereoRenderer config={config} />
 }

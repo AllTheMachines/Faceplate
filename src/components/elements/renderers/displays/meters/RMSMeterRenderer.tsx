@@ -2,12 +2,13 @@ import React from 'react'
 import type { RMSMeterMonoElementConfig, RMSMeterStereoElementConfig } from '../../../../../types/elements/displays'
 import { SegmentedMeter } from './SegmentedMeter'
 import { MeterScale } from './MeterScale'
+import { StyledMeterRenderer } from './StyledMeterRenderer'
 
 interface MonoProps {
   config: RMSMeterMonoElementConfig
 }
 
-export function RMSMeterMonoRenderer({ config }: MonoProps) {
+function DefaultRMSMeterMonoRenderer({ config }: MonoProps) {
   const { width, height, orientation, scalePosition, showMajorTicks, showMinorTicks } = config
   const isVertical = orientation === 'vertical'
   const scaleWidth = scalePosition !== 'none' ? 30 : 0
@@ -58,11 +59,18 @@ export function RMSMeterMonoRenderer({ config }: MonoProps) {
   )
 }
 
+export function RMSMeterMonoRenderer({ config }: MonoProps) {
+  if (config.styleId) {
+    return <StyledMeterRenderer config={config} />
+  }
+  return <DefaultRMSMeterMonoRenderer config={config} />
+}
+
 interface StereoProps {
   config: RMSMeterStereoElementConfig
 }
 
-export function RMSMeterStereoRenderer({ config }: StereoProps) {
+function DefaultRMSMeterStereoRenderer({ config }: StereoProps) {
   const { width, height, orientation, scalePosition, showMajorTicks, showMinorTicks, showChannelLabels } = config
   const isVertical = orientation === 'vertical'
   const scaleWidth = scalePosition !== 'none' ? 30 : 0
@@ -136,4 +144,37 @@ export function RMSMeterStereoRenderer({ config }: StereoProps) {
       )}
     </div>
   )
+}
+
+export function RMSMeterStereoRenderer({ config }: StereoProps) {
+  if (config.styleId) {
+    // Render two StyledMeterRenderer instances side-by-side for stereo
+    const { width, height, orientation, showChannelLabels } = config
+    const isVertical = orientation === 'vertical'
+    const channelGap = 8
+    const labelHeight = showChannelLabels ? 16 : 0
+    const meterWidth = isVertical ? (width - channelGap) / 2 : width
+    const meterHeight = isVertical ? height - labelHeight : (height - channelGap) / 2
+
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', width, height }}>
+        <div style={{ display: 'flex', flexDirection: isVertical ? 'row' : 'column', flex: 1 }}>
+          <div style={{ width: isVertical ? meterWidth : '100%', height: isVertical ? '100%' : meterHeight }}>
+            <StyledMeterRenderer config={{ ...config, value: config.valueL, width: meterWidth, height: meterHeight }} />
+          </div>
+          <div style={{ width: isVertical ? channelGap : undefined, height: isVertical ? undefined : channelGap }} />
+          <div style={{ width: isVertical ? meterWidth : '100%', height: isVertical ? '100%' : meterHeight }}>
+            <StyledMeterRenderer config={{ ...config, value: config.valueR, width: meterWidth, height: meterHeight }} />
+          </div>
+        </div>
+        {showChannelLabels && (
+          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: 10, color: '#999' }}>
+            <span>L</span>
+            <span>R</span>
+          </div>
+        )}
+      </div>
+    )
+  }
+  return <DefaultRMSMeterStereoRenderer config={config} />
 }
