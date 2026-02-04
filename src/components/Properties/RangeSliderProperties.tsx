@@ -1,5 +1,9 @@
 import { RangeSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { SELECT_CLASSNAME } from './constants'
+import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { LinearLayers } from '../../types/elementStyle'
 
 interface RangeSliderPropertiesProps {
   element: RangeSliderElementConfig
@@ -7,6 +11,11 @@ interface RangeSliderPropertiesProps {
 }
 
 export function RangeSliderProperties({ element, onUpdate }: RangeSliderPropertiesProps) {
+  const { isPro } = useLicense()
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const linearStyles = getStylesByCategory('linear')
+
   // Ensure min/max value constraints
   const handleMinValueChange = (newMinValue: number) => {
     // Clamp to bounds and ensure it doesn't exceed maxValue
@@ -22,6 +31,81 @@ export function RangeSliderProperties({ element, onUpdate }: RangeSliderProperti
 
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+            disabled={!isPro && linearStyles.length > 0}
+          >
+            <option value="">Default (CSS)</option>
+            {linearStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
+          </select>
+          {!isPro && linearStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
+        </div>
+      </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'linear') return null
+
+        // Range Slider supports thumb-low, thumb-high, track, fill
+        // Check for explicit layers and fall back to generic thumb
+        const layersObj = style.layers as Record<string, string | undefined>
+        const layerNames: string[] = []
+
+        // Check for dual thumb layers
+        if (layersObj['thumb-low']) layerNames.push('thumb-low')
+        if (layersObj['thumb-high']) layerNames.push('thumb-high')
+        // Fall back to generic thumb if no specific thumb layers
+        if (!layersObj['thumb-low'] && !layersObj['thumb-high'] && layersObj['thumb']) {
+          layerNames.push('thumb')
+        }
+        // Add track and fill
+        if (layersObj['track']) layerNames.push('track')
+        if (layersObj['fill']) layerNames.push('fill')
+
+        if (layerNames.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {layerNames.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
       {/* Orientation */}
       <PropertySection title="Orientation">
         <div>
@@ -33,7 +117,7 @@ export function RangeSliderProperties({ element, onUpdate }: RangeSliderProperti
                 orientation: e.target.value as RangeSliderElementConfig['orientation'],
               })
             }
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="vertical">Vertical</option>
             <option value="horizontal">Horizontal</option>
