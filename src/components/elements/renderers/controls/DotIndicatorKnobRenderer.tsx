@@ -1,4 +1,9 @@
+import { useMemo } from 'react'
 import { DotIndicatorKnobElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
+import { SafeSVG } from '../../../SafeSVG'
+import { extractElementLayer } from '../../../../services/elementLayers'
+import { applyAllColorOverrides } from '../../../../services/knobLayers'
 
 interface DotIndicatorKnobRendererProps {
   config: DotIndicatorKnobElementConfig
@@ -117,10 +122,10 @@ function getValueStyle(config: DotIndicatorKnobElementConfig): React.CSSProperti
 }
 
 // ============================================================================
-// Dot Indicator Knob Renderer
+// Default CSS Dot Indicator Knob
 // ============================================================================
 
-export function DotIndicatorKnobRenderer({ config }: DotIndicatorKnobRendererProps) {
+function DefaultDotIndicatorKnobRenderer({ config }: DotIndicatorKnobRendererProps) {
   const centerX = config.diameter / 2
   const centerY = config.diameter / 2
   const radius = (config.diameter - config.trackWidth) / 2
@@ -189,4 +194,144 @@ export function DotIndicatorKnobRenderer({ config }: DotIndicatorKnobRendererPro
       </svg>
     </div>
   )
+}
+
+// ============================================================================
+// Styled SVG Dot Indicator Knob
+// ============================================================================
+
+function StyledDotIndicatorKnobRenderer({ config }: DotIndicatorKnobRendererProps) {
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const style = config.styleId ? getElementStyle(config.styleId) : undefined
+
+  // Category validation - must be rotary
+  if (style && style.category !== 'rotary') {
+    console.warn('DotIndicatorKnob requires rotary category style')
+    return null
+  }
+
+  // Calculate normalized value
+  const normalizedValue = (config.value - config.min) / (config.max - config.min)
+
+  // Memoize SVG content with color overrides
+  const svgContent = useMemo(() => {
+    if (!style) return ''
+    return applyAllColorOverrides(style.svgContent, style.layers, config.colorOverrides)
+  }, [style, config.colorOverrides])
+
+  // Calculate rotation angle (dot rotates around arc path)
+  // Indicator layer contains the dot, positioned at arc radius in the SVG
+  // Rotating the entire layer makes dot travel along arc edge
+  const indicatorAngle = useMemo(() => {
+    if (!style) return 0
+    const rotationRange = style.maxAngle - style.minAngle
+    return style.minAngle + normalizedValue * rotationRange
+  }, [style, normalizedValue])
+
+  // Extract layers
+  const layers = useMemo(() => {
+    if (!style || !svgContent) return null
+    return {
+      track: style.layers.track ? extractElementLayer(svgContent, style.layers.track) : null,
+      shadow: style.layers.shadow ? extractElementLayer(svgContent, style.layers.shadow) : null,
+      arc: style.layers.arc ? extractElementLayer(svgContent, style.layers.arc) : null,
+      indicator: style.layers.indicator ? extractElementLayer(svgContent, style.layers.indicator) : null,
+      glow: style.layers.glow ? extractElementLayer(svgContent, style.layers.glow) : null,
+    }
+  }, [style, svgContent])
+
+  // Format value
+  const formattedValue = formatValue(
+    normalizedValue,
+    config.min,
+    config.max,
+    config.valueFormat,
+    config.valueSuffix,
+    config.valueDecimalPlaces
+  )
+
+  // Style not found fallback
+  if (!style) {
+    return (
+      <div style={{
+        width: '100%', height: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: '#374151', borderRadius: '50%',
+        color: '#9CA3AF', fontSize: '12px', textAlign: 'center', padding: '8px',
+      }}>
+        Style not found
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* Track - static background */}
+      {layers?.track && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SafeSVG content={layers.track} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Shadow - static */}
+      {layers?.shadow && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SafeSVG content={layers.shadow} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Arc - optional value fill */}
+      {layers?.arc && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          opacity: normalizedValue,
+          transition: 'opacity 0.05s ease-out',
+        }}>
+          <SafeSVG content={layers.arc} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Indicator (dot) - rotates around center */}
+      {/* The SVG indicator layer should have the dot positioned at the arc radius */}
+      {/* Rotating this layer makes the dot travel along the arc edge */}
+      {layers?.indicator && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          transform: `rotate(${indicatorAngle}deg)`,
+          transformOrigin: 'center center',
+          transition: 'transform 0.05s ease-out',
+        }}>
+          <SafeSVG content={layers.indicator} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Glow - intensity by value */}
+      {layers?.glow && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          opacity: normalizedValue * 0.7 + 0.3,
+          transition: 'opacity 0.05s ease-out',
+        }}>
+          <SafeSVG content={layers.glow} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Label */}
+      {config.showLabel && <span style={getLabelStyle(config)}>{config.labelText}</span>}
+
+      {/* Value Display */}
+      {config.showValue && <span style={getValueStyle(config)}>{formattedValue}</span>}
+    </div>
+  )
+}
+
+// ============================================================================
+// Main DotIndicatorKnobRenderer (delegates to default or styled)
+// ============================================================================
+
+export function DotIndicatorKnobRenderer({ config }: DotIndicatorKnobRendererProps) {
+  if (!config.styleId) {
+    return <DefaultDotIndicatorKnobRenderer config={config} />
+  }
+  return <StyledDotIndicatorKnobRenderer config={config} />
 }

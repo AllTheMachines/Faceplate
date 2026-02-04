@@ -105,6 +105,12 @@ export interface SliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export type ButtonAction = 'none' | 'navigate-window'
@@ -132,6 +138,12 @@ export interface ButtonElementConfig extends BaseElementConfig {
   borderColor: string
   borderRadius: number
   borderWidth: number
+
+  // SVG Style (optional - if undefined, render default CSS button)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface RangeSliderElementConfig extends BaseElementConfig {
@@ -154,6 +166,12 @@ export interface RangeSliderElementConfig extends BaseElementConfig {
   thumbColor: string
   thumbWidth: number
   thumbHeight: number
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface DropdownElementConfig extends BaseElementConfig {
@@ -297,6 +315,12 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface CenterDetentKnobElementConfig extends BaseElementConfig {
@@ -345,6 +369,12 @@ export interface CenterDetentKnobElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
@@ -391,6 +421,13 @@ export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  // Note: 'indicator' layer contains the dot - use 'indicator' key for dot color override
+  colorOverrides?: ColorOverrides
 }
 
 export interface BipolarSliderElementConfig extends BaseElementConfig {
@@ -446,6 +483,12 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface CrossfadeSliderElementConfig extends BaseElementConfig {
@@ -472,6 +515,12 @@ export interface CrossfadeSliderElementConfig extends BaseElementConfig {
   thumbColor: string
   thumbWidth: number
   thumbHeight: number
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface MultiSliderElementConfig extends BaseElementConfig {
@@ -501,6 +550,12 @@ export interface MultiSliderElementConfig extends BaseElementConfig {
 
   // Layout
   bandGap: number // Pixel gap between bands (default 2)
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface NotchedSliderElementConfig extends BaseElementConfig {
@@ -552,6 +607,12 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface ArcSliderElementConfig extends BaseElementConfig {
@@ -599,6 +660,16 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS arc)
+  // Note: Arc Slider uses 'arc' category, not 'linear'
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
+
+  // Thumb rotation (optional - rotate thumb to follow arc tangent)
+  rotateThumbToTangent?: boolean
 }
 
 // ============================================================================
@@ -719,6 +790,12 @@ export interface IconButtonElementConfig extends BaseElementConfig {
   iconColor: string
   borderColor: string
   borderRadius: number
+
+  // SVG Style (optional - if undefined, render default CSS button)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface ToggleSwitchElementConfig extends BaseElementConfig {
@@ -743,6 +820,12 @@ export interface ToggleSwitchElementConfig extends BaseElementConfig {
   labelFontFamily: string
   labelFontWeight: string
   labelColor: string
+
+  // SVG Style (optional - if undefined, render default CSS toggle)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface PowerButtonElementConfig extends BaseElementConfig {
@@ -768,6 +851,12 @@ export interface PowerButtonElementConfig extends BaseElementConfig {
   textColor: string
   borderColor: string
   borderRadius: number
+
+  // SVG Style (optional - if undefined, render default CSS button)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 // ============================================================================
@@ -1900,6 +1989,7 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     valueFontFamily: 'Inter, system-ui, sans-serif',
     valueFontWeight: '400',
     valueColor: '#a0a0a0',
+    rotateThumbToTangent: false,
     ...overrides,
   }
 }

@@ -21,3 +21,15 @@ export const lastUpdated = '30 Jan 21:35 CET'
 ```
 
 Format: `DD Mon HH:MM CET`
+
+## Releases
+
+**ALWAYS test before creating a release.**
+
+Before running `gh release create`:
+
+1. Run `npm run dev` and verify the UI loads correctly
+2. Test the specific fix or feature that prompted the release
+3. Check for console errors in the browser
+
+Never create multiple rapid-fire releases to fix issues - test locally first, then release once when it works.

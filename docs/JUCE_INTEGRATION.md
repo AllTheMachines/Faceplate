@@ -2,6 +2,8 @@
 
 Complete guide to integrating Faceplate-exported WebView UIs with JUCE plugins.
 
+> **Note**: This guide has been tested with JUCE WebView2 on **Windows** only. macOS (WKWebView) and Linux may work but are currently untested.
+
 ## Quick Start
 
 1. Copy exported files to your project's Resources folder

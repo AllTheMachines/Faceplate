@@ -1,10 +1,19 @@
+import { useMemo } from 'react'
 import { PowerButtonElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
+import { SafeSVG } from '../../../SafeSVG'
+import { extractElementLayer } from '../../../../services/elementLayers'
+import { applyAllColorOverrides } from '../../../../services/knobLayers'
 
 interface PowerButtonRendererProps {
   config: PowerButtonElementConfig
 }
 
-export function PowerButtonRenderer({ config }: PowerButtonRendererProps) {
+// ============================================================================
+// Default CSS Power Button (original implementation)
+// ============================================================================
+
+function DefaultPowerButtonRenderer({ config }: PowerButtonRendererProps) {
   const { ledPosition, ledSize, ledOnColor, ledOffColor, isOn } = config
 
   // Calculate LED position styles
@@ -88,4 +97,120 @@ export function PowerButtonRenderer({ config }: PowerButtonRendererProps) {
       )}
     </div>
   )
+}
+
+// ============================================================================
+// Styled SVG Power Button
+// ============================================================================
+
+function StyledPowerButtonRenderer({ config }: PowerButtonRendererProps) {
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const style = config.styleId ? getElementStyle(config.styleId) : undefined
+
+  // Category validation - must be button
+  if (style && style.category !== 'button') {
+    console.warn('PowerButton requires button category style')
+    return null
+  }
+
+  // Memoize SVG content with color overrides
+  const svgContent = useMemo(() => {
+    if (!style) return ''
+    return applyAllColorOverrides(style.svgContent, style.layers, config.colorOverrides)
+  }, [style, config.colorOverrides])
+
+  // Extract layers
+  const layers = useMemo(() => {
+    if (!style || !svgContent) return null
+    return {
+      normal: style.layers.normal ? extractElementLayer(svgContent, style.layers.normal) : null,
+      pressed: style.layers.pressed ? extractElementLayer(svgContent, style.layers.pressed) : null,
+      icon: style.layers.icon ? extractElementLayer(svgContent, style.layers.icon) : null,
+      led: style.layers.led ? extractElementLayer(svgContent, style.layers.led) : null,
+    }
+  }, [style, svgContent])
+
+  // Style not found fallback
+  if (!style) {
+    return (
+      <div style={{
+        width: '100%', height: '100%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: '#374151', borderRadius: '4px',
+        color: '#9CA3AF', fontSize: '12px', textAlign: 'center', padding: '8px',
+      }}>
+        Style not found
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* Normal state - visible when NOT on */}
+      {layers?.normal && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          opacity: config.isOn ? 0 : 1,
+          transition: 'none',
+        }}>
+          <SafeSVG content={layers.normal} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Pressed state - visible when on */}
+      {layers?.pressed && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          opacity: config.isOn ? 1 : 0,
+          transition: 'none',
+        }}>
+          <SafeSVG content={layers.pressed} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Icon layer - always visible */}
+      {layers?.icon && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SafeSVG content={layers.icon} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* LED indicator - toggles with isOn, colorable via led color override */}
+      {layers?.led && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          opacity: config.isOn ? 1 : 0,
+          transition: 'none',
+        }}>
+          <SafeSVG content={layers.led} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Text label (fallback if no label layer) */}
+      {config.label && (
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: config.textColor,
+          fontSize: `${config.fontSize}px`,
+          fontFamily: config.fontFamily,
+          fontWeight: config.fontWeight,
+          pointerEvents: 'none',
+        }}>
+          {config.label}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
+// Main PowerButtonRenderer (delegates to default or styled)
+// ============================================================================
+
+export function PowerButtonRenderer({ config }: PowerButtonRendererProps) {
+  if (!config.styleId) {
+    return <DefaultPowerButtonRenderer config={config} />
+  }
+  return <StyledPowerButtonRenderer config={config} />
 }

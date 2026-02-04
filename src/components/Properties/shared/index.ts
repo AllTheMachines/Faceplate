@@ -1,4 +1,5 @@
 // Shared property components
+export { ColorPicker } from './ColorPicker'
 export { FontDropdown } from './FontDropdown'
 export { FontFamilySelect } from './FontFamilySelect'
 export { FontWeightSelect } from './FontWeightSelect'

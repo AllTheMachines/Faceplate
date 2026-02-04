@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { RotarySwitchElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { SELECT_CLASSNAME } from './constants'
+import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { ButtonLayers } from '../../types/elementStyle'
 
 interface RotarySwitchPropertiesProps {
   element: RotarySwitchElementConfig
@@ -8,6 +12,11 @@ interface RotarySwitchPropertiesProps {
 }
 
 export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchPropertiesProps) {
+  const { isPro } = useLicense()
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const buttonStyles = getStylesByCategory('button')
+
   // Local state for textarea to allow typing commas
   const [labelsText, setLabelsText] = useState(element.positionLabels?.join(', ') ?? '')
 
@@ -53,6 +62,68 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
 
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+            disabled={!isPro && buttonStyles.length > 0}
+          >
+            <option value="">Default (CSS)</option>
+            {buttonStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
+          </select>
+          {!isPro && buttonStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
+        </div>
+      </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'button') return null
+
+        const layerNames: Array<keyof ButtonLayers> = ['base', 'selector']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
       {/* Position */}
       <PropertySection title="Position">
         <NumberInput
@@ -80,7 +151,7 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
             onChange={(e) =>
               onUpdate({ labelLayout: e.target.value as RotarySwitchElementConfig['labelLayout'] })
             }
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="radial">Radial</option>
             <option value="legend">Legend</option>
@@ -121,24 +192,26 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
         />
       </PropertySection>
 
-      {/* Colors */}
-      <PropertySection title="Colors">
-        <ColorInput
-          label="Background Color"
-          value={element.backgroundColor}
-          onChange={(backgroundColor) => onUpdate({ backgroundColor })}
-        />
-        <ColorInput
-          label="Pointer Color"
-          value={element.pointerColor}
-          onChange={(pointerColor) => onUpdate({ pointerColor })}
-        />
-        <ColorInput
-          label="Border Color"
-          value={element.borderColor}
-          onChange={(borderColor) => onUpdate({ borderColor })}
-        />
-      </PropertySection>
+      {/* Colors - only shown when no SVG style selected */}
+      {!element.styleId && (
+        <PropertySection title="Colors">
+          <ColorInput
+            label="Background Color"
+            value={element.backgroundColor}
+            onChange={(backgroundColor) => onUpdate({ backgroundColor })}
+          />
+          <ColorInput
+            label="Pointer Color"
+            value={element.pointerColor}
+            onChange={(pointerColor) => onUpdate({ pointerColor })}
+          />
+          <ColorInput
+            label="Border Color"
+            value={element.borderColor}
+            onChange={(borderColor) => onUpdate({ borderColor })}
+          />
+        </PropertySection>
+      )}
 
       {/* Geometry */}
       <PropertySection title="Geometry">

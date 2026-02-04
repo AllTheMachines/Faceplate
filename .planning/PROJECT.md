@@ -114,15 +114,26 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 - F1 keyboard shortcut opens contextual help for selected element - v1.9
 - 102 element types documented with comprehensive help content - v1.9
 
+**v2.0 Pro Licensing:**
+- Rebranding: allthecode → AllTheMachines, vst3-webview-ui-designer → Faceplate - v2.0
+- Feature Gating: isPro boolean per element, lock icons, Pro badges - v2.0
+- Pro Elements: ASCII (3), Advanced Meters (14), Visualizations (12), Specialized Audio (13) - v2.0
+- License Validation: Polar.sh API, settings panel, 7-day cache, offline handling - v2.0
+- Export Blocking: Pro element check, upgrade modal, command gating - v2.0
+- Pro Features: /generate-ui, /generate-vst commands - v2.0
+
 ### Active
 
-**v2.0 Pro Licensing (32 requirements):**
-- Rebranding: allthecode → AllTheMachines, vst3-webview-ui-designer → Faceplate
-- Feature Gating: isPro boolean per element, lock icons, Pro badges
-- Pro Elements: ASCII (3), Advanced Meters (14), Visualizations (12), Specialized Audio (13)
-- License Validation: Polar.sh API, settings panel, 7-day cache, offline handling
-- Export Blocking: Pro element check, upgrade modal, command gating
-- Pro Features: /generate-ui, /generate-vst commands
+**v0.10.0 SVG Styling for Visual Controls:**
+- Unified ElementStyle system replacing knobStyles with category-specific layers
+- SVG styling for 4 knob variants (steppedknob, centerdetentknob, dotindicatorknob + existing knob)
+- SVG styling for 7 slider types (slider, rangeslider, multislider, bipolarslider, crossfadeslider, notchedslider, arcslider)
+- SVG styling for 7 button/switch types (button, iconbutton, toggleswitch, powerbutton, rockerswitch, rotaryswitch, segmentbutton)
+- SVG styling for meter element
+- Layer detection service with category-aware layer names
+- Updated HTML/JS export with SVG styling support
+- ManageElementStylesDialog and ElementLayerMappingDialog UI
+- Project schema migration from knobStyles to elementStyles
 
 ### Out of Scope
 
@@ -136,7 +147,8 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Context
 
 **Current State:**
-- v2.0 Pro Licensing in progress (started 2026-02-03)
+- v0.10.0 SVG Styling for Visual Controls in progress (started 2026-02-04)
+- v2.0 Pro Licensing shipped (2026-02-03)
 - v1.10 Element Bug Fixes shipped (2026-02-02)
 - v1.9 Layers & Help System shipped (2026-01-29)
 - v1.8 Bug Fixes & Improvements shipped (2026-01-29)
@@ -156,7 +168,7 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 **Problem solved:** No visual design tool existed for JUCE WebView2 plugin UIs. Previous workflow was hand-coding SVG/HTML/CSS, tweaking values, rebuilding, loading in DAW, checking, repeating. Iteration took minutes instead of seconds.
 
-**11 milestones shipped** across 49 phases, 193 plans in 11 days (2026-01-23 to 2026-02-02).
+**12 milestones shipped** across 52 phases, 198 plans in 12 days (2026-01-23 to 2026-02-03).
 
 ## Constraints
 
@@ -233,4 +245,4 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | F1 contextual help | Element-specific help when one selected, general otherwise | Good - context-aware UX |
 
 ---
-*Last updated: 2026-02-03 after v2.0 Pro Licensing milestone definition*
+*Last updated: 2026-02-04 after v0.10.0 SVG Styling milestone started*

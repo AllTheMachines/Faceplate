@@ -211,6 +211,99 @@ export const KnobStyleSchema = z.object({
 export type KnobStyle = z.infer<typeof KnobStyleSchema>
 
 // ============================================================================
+// Element Style Schema (v3.0.0+)
+// ============================================================================
+
+// Layer schemas per category
+const RotaryLayersSchema = z.object({
+  indicator: z.string().optional(),
+  track: z.string().optional(),
+  arc: z.string().optional(),
+  glow: z.string().optional(),
+  shadow: z.string().optional(),
+})
+
+const LinearLayersSchema = z.object({
+  thumb: z.string().optional(),
+  track: z.string().optional(),
+  fill: z.string().optional(),
+})
+
+const ArcLayersSchema = z.object({
+  thumb: z.string().optional(),
+  track: z.string().optional(),
+  fill: z.string().optional(),
+  arc: z.string().optional(),
+})
+
+const ButtonLayersSchema = z.object({
+  body: z.string().optional(),
+  label: z.string().optional(),
+  icon: z.string().optional(),
+  pressed: z.string().optional(),
+  normal: z.string().optional(),
+})
+
+const MeterLayersSchema = z.object({
+  body: z.string().optional(),
+  fill: z.string().optional(),
+  scale: z.string().optional(),
+  peak: z.string().optional(),
+  segments: z.string().optional(),
+})
+
+// ElementStyle discriminated union
+export const ElementStyleSchema = z.discriminatedUnion('category', [
+  z.object({
+    category: z.literal('rotary'),
+    id: z.string(),
+    name: z.string(),
+    svgContent: z.string(),
+    layers: RotaryLayersSchema,
+    minAngle: z.number(),
+    maxAngle: z.number(),
+    createdAt: z.number(),
+  }),
+  z.object({
+    category: z.literal('linear'),
+    id: z.string(),
+    name: z.string(),
+    svgContent: z.string(),
+    layers: LinearLayersSchema,
+    createdAt: z.number(),
+  }),
+  z.object({
+    category: z.literal('arc'),
+    id: z.string(),
+    name: z.string(),
+    svgContent: z.string(),
+    layers: ArcLayersSchema,
+    minAngle: z.number(),
+    maxAngle: z.number(),
+    arcRadius: z.number(),
+    createdAt: z.number(),
+  }),
+  z.object({
+    category: z.literal('button'),
+    id: z.string(),
+    name: z.string(),
+    svgContent: z.string(),
+    layers: ButtonLayersSchema,
+    createdAt: z.number(),
+  }),
+  z.object({
+    category: z.literal('meter'),
+    id: z.string(),
+    name: z.string(),
+    svgContent: z.string(),
+    layers: MeterLayersSchema,
+    createdAt: z.number(),
+  }),
+])
+
+export type ElementStyle = z.infer<typeof ElementStyleSchema>
+
+// ============================================================================
 // Discriminated Union for Element Types
 // ============================================================================
 
@@ -316,9 +409,27 @@ export const ProjectSchemaV2 = z.object({
   lastModified: z.number().optional(),
 })
 
-// Combined schema that accepts both formats
-// During parsing, v1 will be migrated to v2 format
-export const ProjectSchema = z.union([ProjectSchemaV2, ProjectSchemaV1])
+// v3.0.0+ schema (elementStyles support)
+export const ProjectSchemaV3 = z.object({
+  version: z.string(),
+  windows: z.array(UIWindowSchema),
+  elements: z.array(ElementConfigSchema), // All elements across all windows
+  assets: z.array(SVGAssetSchema).optional().default([]),
+  knobStyles: z.array(KnobStyleSchema).optional().default([]), // Keep for backward compat
+  elementStyles: z.array(ElementStyleSchema).optional().default([]), // NEW
+  layers: z.array(LayerSchema).optional().default([]),
+  selectedIds: z.array(z.string()).optional(),
+  // Global canvas/grid settings (not per-window)
+  snapToGrid: z.boolean().optional().default(false),
+  gridSize: z.number().optional().default(10),
+  showGrid: z.boolean().optional().default(false),
+  gridColor: z.string().optional().default('#ffffff'),
+  lastModified: z.number().optional(),
+})
+
+// Combined schema that accepts all formats
+// During parsing, v1 will be migrated to v2, v2 will be migrated to v3
+export const ProjectSchema = z.union([ProjectSchemaV3, ProjectSchemaV2, ProjectSchemaV1])
 
 // ============================================================================
 // Exported Types
@@ -326,7 +437,8 @@ export const ProjectSchema = z.union([ProjectSchemaV2, ProjectSchemaV1])
 
 export type ProjectDataV1 = z.infer<typeof ProjectSchemaV1>
 export type ProjectDataV2 = z.infer<typeof ProjectSchemaV2>
-export type ProjectData = ProjectDataV2 // v2 is the canonical format
+export type ProjectDataV3 = z.infer<typeof ProjectSchemaV3>
+export type ProjectData = ProjectDataV3 // v3 is the canonical format
 export type CanvasConfig = z.infer<typeof CanvasConfigSchema>
 export type ElementConfig = z.infer<typeof ElementConfigSchema>
 export type GradientConfig = z.infer<typeof GradientConfigSchema>

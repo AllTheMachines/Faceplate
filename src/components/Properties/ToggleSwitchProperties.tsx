@@ -1,6 +1,10 @@
 import { ToggleSwitchElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
+import { useLicense } from '../../hooks/useLicense'
+import { useStore } from '../../store'
+import { ButtonLayers } from '../../types/elementStyle'
+import { SELECT_CLASSNAME } from './constants'
 
 interface ToggleSwitchPropertiesProps {
   element: ToggleSwitchElementConfig
@@ -8,8 +12,75 @@ interface ToggleSwitchPropertiesProps {
 }
 
 export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchPropertiesProps) {
+  const { isPro } = useLicense()
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const buttonStyles = getStylesByCategory('button')
+
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+            disabled={!isPro && buttonStyles.length > 0}
+          >
+            <option value="">Default (CSS)</option>
+            {buttonStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
+          </select>
+          {!isPro && buttonStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
+        </div>
+      </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'button') return null
+
+        const layerNames: Array<keyof ButtonLayers> = ['body', 'on', 'off', 'indicator']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
       {/* State */}
       <PropertySection title="State">
         <label
@@ -83,7 +154,7 @@ export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchProper
               <select
                 value={element.labelFontFamily}
                 onChange={(e) => onUpdate({ labelFontFamily: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+                className={SELECT_CLASSNAME}
               >
                 {AVAILABLE_FONTS.map((font) => (
                   <option key={font.family} value={font.family}>
@@ -97,7 +168,7 @@ export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchProper
               <select
                 value={element.labelFontWeight}
                 onChange={(e) => onUpdate({ labelFontWeight: e.target.value })}
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+                className={SELECT_CLASSNAME}
               >
                 <option value="300">Light (300)</option>
                 <option value="400">Regular (400)</option>

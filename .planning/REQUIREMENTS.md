@@ -1,116 +1,123 @@
-# Requirements: Faceplate v2.0
+# Requirements: Faceplate v0.10.0
 
-**Defined:** 2026-02-03
+**Defined:** 2026-02-04
 **Core Value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
 
-## v2.0 Requirements
+## v0.10.0 Requirements
 
-Requirements for Pro Licensing milestone.
+Requirements for SVG Styling for Visual Controls milestone.
 
-### Rebranding
+### Foundation
 
-- [x] **BRAND-01**: All references to 'allthecode' updated to 'AllTheMachines' in codebase
-- [x] **BRAND-02**: All references to 'vst3-webview-ui-designer' updated to 'Faceplate'
-- [x] **BRAND-03**: Package.json name, title, and metadata reflect 'Faceplate' branding
-- [x] **BRAND-04**: Documentation updated with new branding
+- [x] **FND-01**: ElementStyle type with category discriminant (rotary, linear, arc, button, meter)
+- [x] **FND-02**: Layer schemas per category (SliderLayers, ButtonLayers, MeterLayers)
+- [x] **FND-03**: elementStylesSlice in Zustand store with CRUD operations
+- [x] **FND-04**: getStylesByCategory() selector for filtering
+- [x] **FND-05**: Generalized layer detection service for all categories
+- [x] **FND-06**: Project schema v3.0.0 with elementStyles array
+- [x] **FND-07**: Additive migration from knobStyles (backward compatible)
 
-### Feature Gating System
+### Knob Variants
 
-- [ ] **GATE-01**: Element registry includes `isPro` boolean for each element type
-- [ ] **GATE-02**: Pro elements show lock icon overlay in palette when unlicensed
-- [ ] **GATE-03**: Pro elements can be dragged to canvas but show "Pro" badge
-- [ ] **GATE-04**: Attempting to export project with Pro elements while unlicensed shows upgrade prompt
-- [ ] **GATE-05**: /generate-ui command checks license before executing
-- [ ] **GATE-06**: /generate-vst command checks license before executing
+- [x] **KNB-01**: steppedknob supports styleId and SVG rendering
+- [x] **KNB-02**: centerdetentknob supports styleId and SVG rendering
+- [x] **KNB-03**: dotindicatorknob supports styleId and SVG rendering
 
-### Pro Element Classification
+### Slider Styling
 
-- [ ] **PRO-01**: ASCII elements marked as Pro (ASCII Art, ASCII Button, ASCII Slider)
-- [ ] **PRO-02**: Advanced meters marked as Pro (RMS, VU, PPM, True Peak, LUFS, K-System, GR, Correlation, Stereo Width)
-- [ ] **PRO-03**: All visualizations marked as Pro (12 types)
-- [ ] **PRO-04**: All specialized audio elements marked as Pro (13 types)
-- [ ] **PRO-05**: Basic Meter element remains Free
+- [ ] **SLD-01**: slider supports styleId with thumb/track/fill layers
+- [ ] **SLD-02**: rangeslider supports styleId (dual thumbs)
+- [ ] **SLD-03**: multislider supports styleId (multiple parallel sliders)
+- [ ] **SLD-04**: bipolarslider supports styleId with center-zero styling
+- [ ] **SLD-05**: crossfadeslider supports styleId with A/B balance
+- [ ] **SLD-06**: notchedslider supports styleId with tick marks
+- [ ] **SLD-07**: arcslider supports styleId with curved path
 
-### License Validation
+### Button & Switch Styling
 
-- [ ] **LIC-01**: License settings panel with key input field in Settings/Preferences area
-- [ ] **LIC-02**: Validate button calls Polar.sh API and shows success/error feedback
-- [ ] **LIC-03**: Valid license stored in localStorage with 7-day cache
-- [ ] **LIC-04**: License status displayed (Free / Pro / Expired / Revoked)
-- [ ] **LIC-05**: Deactivate/Clear license button to reset to Free
-- [ ] **LIC-06**: Automatic background revalidation when cache expires
-- [ ] **LIC-07**: Graceful offline handling - use cached status when network unavailable
+- [ ] **BTN-01**: button supports styleId with normal/pressed layers
+- [ ] **BTN-02**: iconbutton supports styleId with icon layer
+- [ ] **BTN-03**: toggleswitch supports styleId with on/off states
+- [ ] **BTN-04**: powerbutton supports styleId with LED indicator layer
+- [ ] **BTN-05**: rockerswitch supports styleId with 3-position states
+- [ ] **BTN-06**: rotaryswitch supports styleId with position labels
+- [ ] **BTN-07**: segmentbutton supports styleId with segment layers
 
-### Zustand Store
+### Meter Styling
 
-- [ ] **STORE-01**: LicenseSlice added to store with isPro, license, validation state
-- [ ] **STORE-02**: useLicense hook for components to check Pro status
-- [ ] **STORE-03**: License state persists across sessions via localStorage
+- [ ] **MTR-01**: meter supports styleId with segments/background/peak layers
 
-### Export Blocking
+### Export
 
-- [ ] **EXP-01**: Export to JUCE checks for Pro elements in project
-- [ ] **EXP-02**: If Pro elements found and license is Free, show modal with list of Pro elements
-- [ ] **EXP-03**: Modal offers options: Remove Pro Elements / Enter License Key / Cancel
-- [ ] **EXP-04**: Preview export works regardless of license (for testing)
+- [ ] **EXP-01**: HTML export generates correct structure for styled sliders
+- [ ] **EXP-02**: HTML export generates correct structure for styled buttons/switches
+- [ ] **EXP-03**: HTML export generates correct structure for styled meters
+- [ ] **EXP-04**: CSS export includes layer positioning and animations
+- [ ] **EXP-05**: JS export includes category-specific animation logic
 
-### UI/UX
+### UI
 
-- [ ] **UI-01**: Pro badge/icon consistent across palette, canvas, and property panel
-- [ ] **UI-02**: License status indicator in header or settings
-- [ ] **UI-03**: Upgrade prompt links to Polar.sh purchase page
+- [ ] **UI-01**: ManageElementStylesDialog with category tabs/filter
+- [ ] **UI-02**: ElementLayerMappingDialog for layer assignment
+- [ ] **UI-03**: Style dropdown in PropertyPanel for all supported elements
+- [ ] **UI-04**: Color override controls in PropertyPanel
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Server-side validation | Not needed - repo is private, client-side sufficient |
-| Activation/device limits | Browser apps don't have stable device IDs |
-| Multiple license tiers | Single Pro tier is sufficient for v2.0 |
-| Offline-first design | 7-day cache is sufficient grace period |
+| Raster-based styling | SVG-only for scalability and export quality |
+| Complex animation timelines | Beyond JUCE WebView2 capabilities |
+| Per-segment meter styling | Over-engineering, single style per meter sufficient |
+| CSS-in-SVG styling | Security risk with user-supplied SVG |
+| 3D/WebGL effects | Not needed for audio plugin UIs |
+| Live SVG editing | Design in Figma/Illustrator, import to Faceplate |
+| Multi-resolution variants | SVG scales natively |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BRAND-01 | Phase 50 | Complete |
-| BRAND-02 | Phase 50 | Complete |
-| BRAND-03 | Phase 50 | Complete |
-| BRAND-04 | Phase 50 | Complete |
-| GATE-01 | Phase 51 | Pending |
-| GATE-02 | Phase 51 | Pending |
-| GATE-03 | Phase 51 | Pending |
-| GATE-04 | Phase 52 | Pending |
-| GATE-05 | Phase 52 | Pending |
-| GATE-06 | Phase 52 | Pending |
-| PRO-01 | Phase 51 | Pending |
-| PRO-02 | Phase 51 | Pending |
-| PRO-03 | Phase 51 | Pending |
-| PRO-04 | Phase 51 | Pending |
-| PRO-05 | Phase 51 | Pending |
-| LIC-01 | Phase 52 | Pending |
-| LIC-02 | Phase 52 | Pending |
-| LIC-03 | Phase 52 | Pending |
-| LIC-04 | Phase 52 | Pending |
-| LIC-05 | Phase 52 | Pending |
-| LIC-06 | Phase 52 | Pending |
-| LIC-07 | Phase 52 | Pending |
-| STORE-01 | Phase 51 | Pending |
-| STORE-02 | Phase 51 | Pending |
-| STORE-03 | Phase 51 | Pending |
-| EXP-01 | Phase 52 | Pending |
-| EXP-02 | Phase 52 | Pending |
-| EXP-03 | Phase 52 | Pending |
-| EXP-04 | Phase 52 | Pending |
-| UI-01 | Phase 51 | Pending |
-| UI-02 | Phase 52 | Pending |
-| UI-03 | Phase 52 | Pending |
+| FND-01 | Phase 53 | Complete |
+| FND-02 | Phase 53 | Complete |
+| FND-03 | Phase 53 | Complete |
+| FND-04 | Phase 53 | Complete |
+| FND-05 | Phase 53 | Complete |
+| FND-06 | Phase 53 | Complete |
+| FND-07 | Phase 53 | Complete |
+| KNB-01 | Phase 54 | Complete |
+| KNB-02 | Phase 54 | Complete |
+| KNB-03 | Phase 54 | Complete |
+| SLD-01 | Phase 55 | Pending |
+| SLD-02 | Phase 55 | Pending |
+| SLD-03 | Phase 55 | Pending |
+| SLD-04 | Phase 55 | Pending |
+| SLD-05 | Phase 55 | Pending |
+| SLD-06 | Phase 55 | Pending |
+| SLD-07 | Phase 55 | Pending |
+| BTN-01 | Phase 56 | Pending |
+| BTN-02 | Phase 56 | Pending |
+| BTN-03 | Phase 56 | Pending |
+| BTN-04 | Phase 56 | Pending |
+| BTN-05 | Phase 56 | Pending |
+| BTN-06 | Phase 56 | Pending |
+| BTN-07 | Phase 56 | Pending |
+| MTR-01 | Phase 57 | Pending |
+| EXP-01 | Phase 58 | Pending |
+| EXP-02 | Phase 58 | Pending |
+| EXP-03 | Phase 58 | Pending |
+| EXP-04 | Phase 58 | Pending |
+| EXP-05 | Phase 58 | Pending |
+| UI-01 | Phase 59 | Pending |
+| UI-02 | Phase 59 | Pending |
+| UI-03 | Phase 59 | Pending |
+| UI-04 | Phase 59 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 32 total
-- Mapped to phases: 32
-- Unmapped: 0 ✓
+- v0.10.0 requirements: 34 total
+- Mapped to phases: 34
+- Unmapped: 0
 
 ---
-*Requirements defined: 2026-02-03*
-*Last updated: 2026-02-03 - Phase 50 requirements complete*
+*Requirements defined: 2026-02-04*
+*Last updated: 2026-02-04 - Phase 54 requirements completed*

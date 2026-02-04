@@ -2,6 +2,9 @@ import { ButtonElementConfig, ElementConfig, ButtonAction } from '../../types/el
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { ButtonLayers } from '../../types/elementStyle'
+import { SELECT_CLASSNAME } from './constants'
 
 interface ButtonPropertiesProps {
   element: ButtonElementConfig
@@ -9,14 +12,80 @@ interface ButtonPropertiesProps {
 }
 
 export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
+  const { isPro } = useLicense()
   const windows = useStore((state) => state.windows)
   const activeWindowId = useStore((state) => state.activeWindowId)
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const buttonStyles = getStylesByCategory('button')
 
   // Filter out current window from target options
   const targetWindows = windows.filter((w) => w.id !== activeWindowId)
 
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+            disabled={!isPro && buttonStyles.length > 0}
+          >
+            <option value="">Default (CSS)</option>
+            {buttonStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
+          </select>
+          {!isPro && buttonStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
+        </div>
+      </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'button') return null
+
+        const layerNames: Array<keyof ButtonLayers> = ['normal', 'pressed', 'icon', 'label']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
       {/* Behavior */}
       <PropertySection title="Behavior">
         <div>
@@ -26,7 +95,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
             onChange={(e) =>
               onUpdate({ mode: e.target.value as ButtonElementConfig['mode'] })
             }
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="momentary">Momentary</option>
             <option value="toggle">Toggle</option>
@@ -66,7 +135,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
                 targetWindowId: action === 'none' ? undefined : element.targetWindowId,
               })
             }}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="none">None (parameter binding only)</option>
             <option value="navigate-window">Navigate to Window</option>
@@ -79,7 +148,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
               <select
                 value={element.targetWindowId || ''}
                 onChange={(e) => onUpdate({ targetWindowId: e.target.value || undefined })}
-                className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+                className={SELECT_CLASSNAME}
               >
                 <option value="">Select a window...</option>
                 {targetWindows.map((w) => (
@@ -104,7 +173,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
           <select
             value={element.fontFamily}
             onChange={(e) => onUpdate({ fontFamily: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             {AVAILABLE_FONTS.map((font) => (
               <option key={font.family} value={font.family}>
@@ -118,7 +187,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
           <select
             value={element.fontWeight}
             onChange={(e) => onUpdate({ fontWeight: e.target.value })}
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="300">Light (300)</option>
             <option value="400">Regular (400)</option>

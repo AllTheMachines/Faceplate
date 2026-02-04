@@ -5,6 +5,7 @@ import { createViewportSlice, ViewportSlice } from './viewportSlice'
 import { createElementsSlice, ElementsSlice } from './elementsSlice'
 import { createAssetsSlice, AssetsSlice } from './assetsSlice'
 import { createKnobStylesSlice, KnobStylesSlice } from './knobStylesSlice'
+import { createElementStylesSlice, ElementStylesSlice } from './elementStylesSlice'
 import { createDirtyStateSlice, DirtyStateSlice } from './dirtyStateSlice'
 import { createContainerEditorSlice, ContainerEditorSlice } from './containerEditorSlice'
 import { createFontsSlice, FontsSlice } from './fontsSlice'
@@ -40,7 +41,7 @@ const createTemplateSlice: StateCreator<Store, [], [], TemplateSlice> = (set) =>
 })
 
 // Combined store type
-export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice & LayersSlice & LicenseSlice
+export type Store = CanvasSlice & ViewportSlice & ElementsSlice & TemplateSlice & AssetsSlice & KnobStylesSlice & ElementStylesSlice & DirtyStateSlice & ContainerEditorSlice & FontsSlice & WindowsSlice & LayersSlice & LicenseSlice
 
 // Create the combined store with temporal middleware
 export const useStore = create<Store>()(
@@ -52,6 +53,7 @@ export const useStore = create<Store>()(
       ...createTemplateSlice(...a),
       ...createAssetsSlice(...a),
       ...createKnobStylesSlice(...a),
+      ...createElementStylesSlice(...a),
       ...createDirtyStateSlice(...a),
       ...createContainerEditorSlice(...a),
       ...createFontsSlice(...a),

@@ -2,6 +2,9 @@ import { IconButtonElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
 import { BuiltInIcon } from '../../utils/builtInIcons'
 import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { ButtonLayers } from '../../types/elementStyle'
+import { SELECT_CLASSNAME } from './constants'
 
 interface IconButtonPropertiesProps {
   element: IconButtonElementConfig
@@ -64,7 +67,12 @@ function formatIconName(icon: BuiltInIcon): string {
 }
 
 export function IconButtonProperties({ element, onUpdate }: IconButtonPropertiesProps) {
+  const { isPro } = useLicense()
   const assets = useStore((state) => state.assets)
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const buttonStyles = getStylesByCategory('button')
+
   // All assets in store are SVGs; filter for icon or decoration categories
   const svgAssets = assets.filter(
     (asset) => asset.categories.includes('icon') || asset.categories.includes('decoration')
@@ -72,66 +80,130 @@ export function IconButtonProperties({ element, onUpdate }: IconButtonProperties
 
   return (
     <>
-      {/* Icon Source */}
-      <PropertySection title="Icon Source">
+      {/* Style Section */}
+      <PropertySection title="Style">
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Source</label>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
           <select
-            value={element.iconSource}
-            onChange={(e) =>
-              onUpdate({ iconSource: e.target.value as IconButtonElementConfig['iconSource'] })
-            }
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+            disabled={!isPro && buttonStyles.length > 0}
           >
-            <option value="builtin">Built-In Icon</option>
-            <option value="asset">Asset Library</option>
+            <option value="">Default (CSS)</option>
+            {buttonStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
           </select>
+          {!isPro && buttonStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
         </div>
-
-        {element.iconSource === 'builtin' && (
-          <div>
-            <label className="block text-xs text-gray-400 mb-1">Icon</label>
-            <select
-              value={element.builtInIcon || BuiltInIcon.Play}
-              onChange={(e) => onUpdate({ builtInIcon: e.target.value as BuiltInIcon })}
-              className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-            >
-              {Object.entries(iconCategories).map(([category, icons]) => (
-                <optgroup key={category} label={category}>
-                  {icons.map((icon) => (
-                    <option key={icon} value={icon}>
-                      {formatIconName(icon)}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </div>
-        )}
-
-        {element.iconSource === 'asset' && (
-          <div>
-            <label className="block text-xs text-gray-400 mb-1">Asset</label>
-            <select
-              value={element.assetId || ''}
-              onChange={(e) => onUpdate({ assetId: e.target.value })}
-              className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-            >
-              <option value="">Select an asset...</option>
-              {svgAssets.map((asset) => (
-                <option key={asset.id} value={asset.id}>
-                  {asset.name}
-                </option>
-              ))}
-            </select>
-            {svgAssets.length === 0 && (
-              <p className="text-xs text-gray-500 mt-1">
-                No SVG assets available. Upload icons in the Asset Library.
-              </p>
-            )}
-          </div>
-        )}
       </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'button') return null
+
+        const layerNames: Array<keyof ButtonLayers> = ['normal', 'pressed', 'icon']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
+      {/* Icon Source - only show if not using SVG style */}
+      {!element.styleId && (
+        <PropertySection title="Icon Source">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Source</label>
+            <select
+              value={element.iconSource}
+              onChange={(e) =>
+                onUpdate({ iconSource: e.target.value as IconButtonElementConfig['iconSource'] })
+              }
+              className={SELECT_CLASSNAME}
+            >
+              <option value="builtin">Built-In Icon</option>
+              <option value="asset">Asset Library</option>
+            </select>
+          </div>
+
+          {element.iconSource === 'builtin' && (
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Icon</label>
+              <select
+                value={element.builtInIcon || BuiltInIcon.Play}
+                onChange={(e) => onUpdate({ builtInIcon: e.target.value as BuiltInIcon })}
+                className={SELECT_CLASSNAME}
+              >
+                {Object.entries(iconCategories).map(([category, icons]) => (
+                  <optgroup key={category} label={category}>
+                    {icons.map((icon) => (
+                      <option key={icon} value={icon}>
+                        {formatIconName(icon)}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {element.iconSource === 'asset' && (
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Asset</label>
+              <select
+                value={element.assetId || ''}
+                onChange={(e) => onUpdate({ assetId: e.target.value })}
+                className={SELECT_CLASSNAME}
+              >
+                <option value="">Select an asset...</option>
+                {svgAssets.map((asset) => (
+                  <option key={asset.id} value={asset.id}>
+                    {asset.name}
+                  </option>
+                ))}
+              </select>
+              {svgAssets.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  No SVG assets available. Upload icons in the Asset Library.
+                </p>
+              )}
+            </div>
+          )}
+        </PropertySection>
+      )}
 
       {/* Button Mode */}
       <PropertySection title="Behavior">
@@ -142,7 +214,7 @@ export function IconButtonProperties({ element, onUpdate }: IconButtonProperties
             onChange={(e) =>
               onUpdate({ mode: e.target.value as IconButtonElementConfig['mode'] })
             }
-            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            className={SELECT_CLASSNAME}
           >
             <option value="momentary">Momentary</option>
             <option value="toggle">Toggle</option>
@@ -163,35 +235,39 @@ export function IconButtonProperties({ element, onUpdate }: IconButtonProperties
         </label>
       </PropertySection>
 
-      {/* Colors */}
-      <PropertySection title="Colors">
-        <ColorInput
-          label="Icon Color"
-          value={element.iconColor}
-          onChange={(iconColor) => onUpdate({ iconColor })}
-        />
-        <ColorInput
-          label="Background Color"
-          value={element.backgroundColor}
-          onChange={(backgroundColor) => onUpdate({ backgroundColor })}
-        />
-        <ColorInput
-          label="Border Color"
-          value={element.borderColor}
-          onChange={(borderColor) => onUpdate({ borderColor })}
-        />
-      </PropertySection>
+      {/* Colors - only show if not using SVG style */}
+      {!element.styleId && (
+        <PropertySection title="Colors">
+          <ColorInput
+            label="Icon Color"
+            value={element.iconColor}
+            onChange={(iconColor) => onUpdate({ iconColor })}
+          />
+          <ColorInput
+            label="Background Color"
+            value={element.backgroundColor}
+            onChange={(backgroundColor) => onUpdate({ backgroundColor })}
+          />
+          <ColorInput
+            label="Border Color"
+            value={element.borderColor}
+            onChange={(borderColor) => onUpdate({ borderColor })}
+          />
+        </PropertySection>
+      )}
 
-      {/* Style */}
-      <PropertySection title="Style">
-        <NumberInput
-          label="Border Radius"
-          value={element.borderRadius}
-          onChange={(borderRadius) => onUpdate({ borderRadius })}
-          min={0}
-          max={20}
-        />
-      </PropertySection>
+      {/* Style - only show if not using SVG style */}
+      {!element.styleId && (
+        <PropertySection title="Appearance">
+          <NumberInput
+            label="Border Radius"
+            value={element.borderRadius}
+            onChange={(borderRadius) => onUpdate({ borderRadius })}
+            min={0}
+            max={20}
+          />
+        </PropertySection>
+      )}
     </>
   )
 }
