@@ -1,5 +1,9 @@
 import { MultiSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { SELECT_CLASSNAME } from './constants'
+import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { LinearLayers } from '../../types/elementStyle'
 
 interface MultiSliderPropertiesProps {
   element: MultiSliderElementConfig
@@ -17,6 +21,11 @@ const BAND_PRESETS = [
 ]
 
 export function MultiSliderProperties({ element, onUpdate }: MultiSliderPropertiesProps) {
+  const { isPro } = useLicense()
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const linearStyles = getStylesByCategory('linear')
+
   const isPresetBandCount = BAND_PRESETS.some(p => p.value === element.bandCount)
 
   // Update band count and resize bandValues array accordingly
@@ -41,6 +50,69 @@ export function MultiSliderProperties({ element, onUpdate }: MultiSliderProperti
 
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">SVG Style (shared by all bands)</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => onUpdate({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? element.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+            disabled={!isPro && linearStyles.length > 0}
+          >
+            <option value="">Default (CSS)</option>
+            {linearStyles.map(style => (
+              <option key={style.id} value={style.id}>{style.name}</option>
+            ))}
+          </select>
+          {!isPro && linearStyles.length > 0 && (
+            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
+          )}
+        </div>
+      </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'linear') return null
+
+        const layerNames: Array<keyof LinearLayers> = ['thumb', 'track', 'fill']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            <p className="text-xs text-gray-500 mb-2">Applied to all bands</p>
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
       {/* Band Configuration */}
       <PropertySection title="Band Configuration">
         <div>
