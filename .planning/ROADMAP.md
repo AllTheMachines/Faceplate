@@ -90,7 +90,14 @@ Plans:
   5. Rocker switch renders with 3-position SVG states (up/center/down)
   6. Rotary switch renders with position labels around rotating selector
   7. Segment button renders with segment SVG layers for multi-option selection
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 56-01-PLAN.md — Foundation types and layer conventions
+- [ ] 56-02-PLAN.md — Button and Icon Button SVG styling
+- [ ] 56-03-PLAN.md — Toggle Switch and Power Button SVG styling
+- [ ] 56-04-PLAN.md — Rocker Switch and Rotary Switch SVG styling
+- [ ] 56-05-PLAN.md — Segment Button SVG styling
 
 #### Phase 57: Meter Styling
 **Goal**: Meter element supports SVG styling with value-driven animation
@@ -953,11 +960,11 @@ Plans:
 | 53. Foundation | v0.10.0 | 3/3 | Complete | 2026-02-04 |
 | 54. Knob Variants | v0.10.0 | 3/3 | Complete | 2026-02-04 |
 | 55. Slider Styling | v0.10.0 | 6/6 | Complete | 2026-02-04 |
-| 56. Button & Switch Styling | v0.10.0 | 0/TBD | Not started | - |
+| 56. Button & Switch Styling | v0.10.0 | 0/5 | Not started | - |
 | 57. Meter Styling | v0.10.0 | 0/TBD | Not started | - |
 | 58. Export | v0.10.0 | 0/TBD | Not started | - |
 | 59. UI Dialogs | v0.10.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-04 - Phase 55 Slider Styling complete*
+*Last updated: 2026-02-04 - Phase 56 planned (5 plans)*
