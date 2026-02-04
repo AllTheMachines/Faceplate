@@ -14,8 +14,108 @@
 - **v1.9 Layers & Help System** — Phases 41-43 (shipped 2026-01-29)
 - **v1.10 Element Bug Fixes** — Phases 44-49 (shipped 2026-02-02)
 - **v2.0 Pro Licensing** — Phases 50-52 (shipped 2026-02-03)
+- **v0.10.0 SVG Styling for Visual Controls** — Phases 53-59 (in progress)
 
 ## Phases
+
+### v0.10.0 SVG Styling for Visual Controls (Phases 53-59)
+
+Extend the proven KnobStyle system to 19 additional visual controls (sliders, buttons, switches, meters). Unified ElementStyle architecture with category-based layer schemas replaces the knob-specific system.
+
+#### Phase 53: Foundation
+**Goal**: Type system and services support SVG styling for all control categories
+**Depends on**: None (first phase of milestone)
+**Requirements**: FND-01, FND-02, FND-03, FND-04, FND-05, FND-06, FND-07
+**Success Criteria** (what must be TRUE):
+  1. ElementStyle type exists with category discriminant (rotary, linear, arc, button, meter)
+  2. Layer schemas exist for each category (SliderLayers, ButtonLayers, MeterLayers)
+  3. elementStylesSlice in store provides CRUD operations and getStylesByCategory() selector
+  4. detectElementLayers() service identifies layers for any category from SVG content
+  5. Project schema v3.0.0 loads and saves elementStyles array alongside existing data
+  6. Old projects with knobStyles migrate automatically to elementStyles on load
+**Plans**: 3 plans
+
+Plans:
+- [ ] 53-01-PLAN.md — Types and store slice (ElementStyle type, layer schemas, elementStylesSlice)
+- [ ] 53-02-PLAN.md — Layer detection service (detectElementLayers, extractElementLayer)
+- [ ] 53-03-PLAN.md — Schema v3.0.0 and migration (elementStyles array, v2 to v3 migration)
+
+#### Phase 54: Knob Variants
+**Goal**: All knob variants support SVG styling with shared layer structure
+**Depends on**: Phase 53
+**Requirements**: KNB-01, KNB-02, KNB-03
+**Success Criteria** (what must be TRUE):
+  1. Stepped Knob accepts styleId and renders with SVG layers (indicator rotates to discrete positions)
+  2. Center Detent Knob accepts styleId and renders with SVG layers (snaps visually at center)
+  3. Dot Indicator Knob accepts styleId and renders with SVG layers (dot indicator rotates)
+  4. All three variants share rotary layer structure with existing knob element
+**Plans**: TBD
+
+#### Phase 55: Slider Styling
+**Goal**: All slider variants support SVG styling with thumb/track/fill layers
+**Depends on**: Phase 53
+**Requirements**: SLD-01, SLD-02, SLD-03, SLD-04, SLD-05, SLD-06, SLD-07
+**Success Criteria** (what must be TRUE):
+  1. Basic slider renders with SVG thumb and track layers that translate on drag
+  2. Range slider renders with two SVG thumbs on shared track
+  3. Multi-slider renders parallel SVG sliders sharing style configuration
+  4. Bipolar slider renders with center-origin fill that grows left or right
+  5. Crossfade slider renders with A/B balance indicators
+  6. Notched slider renders with tick marks at notch positions
+  7. Arc slider renders with curved track and thumb that follows arc path
+**Plans**: TBD
+
+#### Phase 56: Button & Switch Styling
+**Goal**: All button and switch variants support SVG styling with state layers
+**Depends on**: Phase 53
+**Requirements**: BTN-01, BTN-02, BTN-03, BTN-04, BTN-05, BTN-06, BTN-07
+**Success Criteria** (what must be TRUE):
+  1. Button renders with normal/pressed SVG layers that swap on click
+  2. Icon button renders with SVG icon layer that can be colored
+  3. Toggle switch renders with on/off SVG states
+  4. Power button renders with LED indicator layer that lights on active
+  5. Rocker switch renders with 3-position SVG states (up/center/down)
+  6. Rotary switch renders with position labels around rotating selector
+  7. Segment button renders with segment SVG layers for multi-option selection
+**Plans**: TBD
+
+#### Phase 57: Meter Styling
+**Goal**: Meter element supports SVG styling with value-driven animation
+**Depends on**: Phase 53
+**Requirements**: MTR-01
+**Success Criteria** (what must be TRUE):
+  1. Meter renders with SVG background, fill, and peak indicator layers
+  2. Fill layer animates (clip-path or scaleY) based on value
+  3. Peak indicator layer shows and holds at maximum value
+**Plans**: TBD
+
+#### Phase 58: Export
+**Goal**: Exported bundles correctly render all styled elements in JUCE WebView2
+**Depends on**: Phases 54, 55, 56, 57
+**Requirements**: EXP-01, EXP-02, EXP-03, EXP-04, EXP-05
+**Success Criteria** (what must be TRUE):
+  1. HTML export generates correct DOM structure for styled sliders (thumb, track, fill elements)
+  2. HTML export generates correct DOM structure for styled buttons/switches (state layers)
+  3. HTML export generates correct DOM structure for styled meters (background, fill, peak)
+  4. CSS export includes layer positioning and transform origins for animations
+  5. JS export includes category-specific animation logic (translate for linear, opacity swap for buttons, clip for meters)
+**Plans**: TBD
+
+#### Phase 59: UI Dialogs
+**Goal**: Users can manage, assign, and override element styles through unified UI
+**Depends on**: Phase 53
+**Requirements**: UI-01, UI-02, UI-03, UI-04
+**Success Criteria** (what must be TRUE):
+  1. ManageElementStylesDialog shows all styles with category tabs/filter for organization
+  2. ElementLayerMappingDialog allows assigning SVG layers to style roles
+  3. Style dropdown appears in PropertyPanel for all supported element types
+  4. Color override controls in PropertyPanel allow per-instance customization
+**Plans**: TBD
+
+---
+
+<details>
+<summary>v2.0 Pro Licensing (Phases 50-52) - SHIPPED 2026-02-03</summary>
 
 ### v2.0 Pro Licensing (Phases 50-52)
 
@@ -73,7 +173,7 @@ Plans:
 - [x] 52-01-PLAN.md — License service and settings UI with Polar.sh API integration
 - [x] 52-02-PLAN.md — Export blocking modal and command gating
 
----
+</details>
 
 <details>
 <summary>v1.10 Element Bug Fixes (Phases 44-49) - SHIPPED 2026-02-02</summary>
@@ -837,7 +937,14 @@ Plans:
 | 50. Rebranding | v2.0 | 1/1 | Complete | 2026-02-03 |
 | 51. Feature Gating System | v2.0 | 2/2 | Complete | 2026-02-03 |
 | 52. License Validation & Export Blocking | v2.0 | 2/2 | Complete | 2026-02-03 |
+| 53. Foundation | v0.10.0 | 0/3 | Not started | - |
+| 54. Knob Variants | v0.10.0 | 0/TBD | Not started | - |
+| 55. Slider Styling | v0.10.0 | 0/TBD | Not started | - |
+| 56. Button & Switch Styling | v0.10.0 | 0/TBD | Not started | - |
+| 57. Meter Styling | v0.10.0 | 0/TBD | Not started | - |
+| 58. Export | v0.10.0 | 0/TBD | Not started | - |
+| 59. UI Dialogs | v0.10.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-03 - Phase 51 Feature Gating System complete*
+*Last updated: 2026-02-04 - Phase 53 planned with 3 plans*
