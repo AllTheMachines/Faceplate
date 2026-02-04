@@ -1,4 +1,9 @@
+import { useMemo } from 'react'
 import { CenterDetentKnobElementConfig } from '../../../../types/elements'
+import { useStore } from '../../../../store'
+import { SafeSVG } from '../../../SafeSVG'
+import { extractElementLayer } from '../../../../services/elementLayers'
+import { applyAllColorOverrides } from '../../../../services/knobLayers'
 
 interface CenterDetentKnobRendererProps {
   config: CenterDetentKnobElementConfig
@@ -117,10 +122,10 @@ function getValueStyle(config: CenterDetentKnobElementConfig): React.CSSProperti
 }
 
 // ============================================================================
-// Center Detent Knob Renderer
+// Default CSS Center Detent Knob (existing implementation)
 // ============================================================================
 
-export function CenterDetentKnobRenderer({ config }: CenterDetentKnobRendererProps) {
+function DefaultCenterDetentKnobRenderer({ config }: CenterDetentKnobRendererProps) {
   const centerX = config.diameter / 2
   const centerY = config.diameter / 2
   const radius = (config.diameter - config.trackWidth) / 2
@@ -232,4 +237,172 @@ export function CenterDetentKnobRenderer({ config }: CenterDetentKnobRendererPro
       </svg>
     </div>
   )
+}
+
+// ============================================================================
+// Styled SVG Center Detent Knob (new implementation)
+// ============================================================================
+
+function StyledCenterDetentKnobRenderer({ config }: CenterDetentKnobRendererProps) {
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const style = config.styleId ? getElementStyle(config.styleId) : undefined
+
+  // Category validation - must be rotary
+  if (style && style.category !== 'rotary') {
+    console.warn('CenterDetentKnob requires rotary category style')
+    return null
+  }
+
+  // Calculate normalized value (0-1)
+  const normalizedValue = (config.value - config.min) / (config.max - config.min)
+
+  // Check if value is at center (within snap threshold)
+  const isAtCenter = Math.abs(normalizedValue - 0.5) < config.snapThreshold
+
+  // Memoize SVG content with color overrides applied
+  const svgContent = useMemo(() => {
+    if (!style) return ''
+    return applyAllColorOverrides(style.svgContent, style.layers, config.colorOverrides)
+  }, [style, config.colorOverrides])
+
+  // Calculate rotation angle for indicator
+  const indicatorAngle = useMemo(() => {
+    if (!style) return 0
+    const rotationRange = style.maxAngle - style.minAngle
+    return style.minAngle + normalizedValue * rotationRange
+  }, [style, normalizedValue])
+
+  // Memoize layer extraction (expensive DOM operations)
+  const layers = useMemo(() => {
+    if (!style || !svgContent) return null
+    return {
+      track: style.layers.track ? extractElementLayer(svgContent, style.layers.track) : null,
+      shadow: style.layers.shadow ? extractElementLayer(svgContent, style.layers.shadow) : null,
+      arc: style.layers.arc ? extractElementLayer(svgContent, style.layers.arc) : null,
+      indicator: style.layers.indicator ? extractElementLayer(svgContent, style.layers.indicator) : null,
+      glow: style.layers.glow ? extractElementLayer(svgContent, style.layers.glow) : null,
+    }
+  }, [style, svgContent])
+
+  // Format value display
+  const formattedValue = formatValue(
+    normalizedValue,
+    config.min,
+    config.max,
+    config.valueFormat,
+    config.valueSuffix,
+    config.valueDecimalPlaces
+  )
+
+  // If style was deleted, show placeholder
+  if (!style) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: '#374151',
+          borderRadius: '50%',
+          color: '#9CA3AF',
+          fontSize: '12px',
+          textAlign: 'center',
+          padding: '8px',
+        }}
+      >
+        Style not found
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {/* Track - static background */}
+      {layers?.track && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SafeSVG content={layers.track} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Shadow - static */}
+      {layers?.shadow && (
+        <div style={{ position: 'absolute', inset: 0 }}>
+          <SafeSVG content={layers.shadow} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Arc - HIDES when at center (key difference from regular knob) */}
+      {layers?.arc && !isAtCenter && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: normalizedValue,
+            transition: 'opacity 0.05s ease-out',
+          }}
+        >
+          <SafeSVG content={layers.arc} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Indicator - rotates */}
+      {layers?.indicator && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            transform: `rotate(${indicatorAngle}deg)`,
+            transformOrigin: 'center center',
+            transition: 'transform 0.05s ease-out',
+          }}
+        >
+          <SafeSVG content={layers.indicator} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Glow - intensity by value (30% to 100% opacity) */}
+      {layers?.glow && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: normalizedValue * 0.7 + 0.3,
+            transition: 'opacity 0.05s ease-out',
+          }}
+        >
+          <SafeSVG content={layers.glow} style={{ width: '100%', height: '100%' }} />
+        </div>
+      )}
+
+      {/* Label */}
+      {config.showLabel && (
+        <span style={getLabelStyle(config)}>
+          {config.labelText}
+        </span>
+      )}
+
+      {/* Value Display */}
+      {config.showValue && (
+        <span style={getValueStyle(config)}>
+          {formattedValue}
+        </span>
+      )}
+    </div>
+  )
+}
+
+// ============================================================================
+// Main CenterDetentKnobRenderer (delegates to default or styled)
+// ============================================================================
+
+export function CenterDetentKnobRenderer({ config }: CenterDetentKnobRendererProps) {
+  // If no style assigned, use default CSS knob
+  if (!config.styleId) {
+    return <DefaultCenterDetentKnobRenderer config={config} />
+  }
+
+  // Use styled SVG knob
+  return <StyledCenterDetentKnobRenderer config={config} />
 }
