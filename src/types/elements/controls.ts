@@ -138,6 +138,12 @@ export interface ButtonElementConfig extends BaseElementConfig {
   borderColor: string
   borderRadius: number
   borderWidth: number
+
+  // SVG Style (optional - if undefined, render default CSS button)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface RangeSliderElementConfig extends BaseElementConfig {
@@ -784,6 +790,12 @@ export interface IconButtonElementConfig extends BaseElementConfig {
   iconColor: string
   borderColor: string
   borderRadius: number
+
+  // SVG Style (optional - if undefined, render default CSS button)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface ToggleSwitchElementConfig extends BaseElementConfig {
@@ -808,6 +820,12 @@ export interface ToggleSwitchElementConfig extends BaseElementConfig {
   labelFontFamily: string
   labelFontWeight: string
   labelColor: string
+
+  // SVG Style (optional - if undefined, render default CSS toggle)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface PowerButtonElementConfig extends BaseElementConfig {
@@ -833,6 +851,12 @@ export interface PowerButtonElementConfig extends BaseElementConfig {
   textColor: string
   borderColor: string
   borderRadius: number
+
+  // SVG Style (optional - if undefined, render default CSS button)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 // ============================================================================
