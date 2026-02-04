@@ -17,11 +17,27 @@ import type { UIElement } from '../../types/elements'
 export const LAYER_CONVENTIONS = {
   knob: ['knob-body', 'knob-track', 'knob-indicator', 'knob-arc', 'knob-glow', 'knob-shadow'],
   slider: ['slider-body', 'slider-track', 'slider-fill', 'slider-thumb'],
-  button: ['button-body', 'button-label', 'button-icon'],
+  button: [
+    'button-body', 'button-label', 'button-icon',
+    'button-normal', 'button-pressed',
+    'button-on', 'button-off',
+    'button-indicator', 'button-led',
+    'button-position-0', 'button-position-1', 'button-position-2',
+    'button-base', 'button-selector',
+    'button-highlight',
+  ],
   meter: ['meter-body', 'meter-fill', 'meter-scale', 'meter-peak'],
   display: ['display-body', 'display-text', 'display-unit'],
   led: ['led-body', 'led-glow', 'led-ring'],
-  switch: ['switch-body', 'switch-toggle', 'switch-label'],
+  switch: [
+    'switch-body', 'switch-toggle', 'switch-label',
+    'switch-normal', 'switch-pressed',
+    'switch-on', 'switch-off',
+    'switch-indicator', 'switch-led',
+    'switch-position-0', 'switch-position-1', 'switch-position-2',
+    'switch-base', 'switch-selector',
+    'switch-highlight',
+  ],
 } as const
 
 /**
