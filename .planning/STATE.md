@@ -43,6 +43,8 @@ Progress: [██████░░░░░░░░░░░░░░] 44% (v0
 |------|-------|----------|
 | 2026-02-04 | 56-05 | Segment Button uses clip-path to show highlight layer for selected segment(s) |
 | 2026-02-04 | 56-05 | Multi-select mode renders multiple clipped highlight instances |
+| 2026-02-04 | 56-03 | Toggle Switch uses body/on/off/indicator layers for state-driven display |
+| 2026-02-04 | 56-03 | Power Button uses normal/pressed/icon/led layers with LED color override |
 | 2026-02-04 | 56-01 | ButtonLayers uses optional properties for all layer roles |
 | 2026-02-04 | 56-01 | Both button-* and switch-* prefixes supported in LAYER_CONVENTIONS |
 | 2026-02-04 | 56-01 | Multi-position uses hyphenated naming (position-0 not position0) |
