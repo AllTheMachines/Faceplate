@@ -6,6 +6,7 @@
 
 import { BaseElementConfig } from './base'
 import { ScrollbarConfig } from './containers'
+import { ColorOverrides } from '../elementStyle'
 
 // ============================================================================
 // Display Element Configurations
@@ -418,7 +419,14 @@ interface BaseProfessionalMeterConfig extends BaseElementConfig {
   // Peak hold
   showPeakHold: boolean
   peakHoldStyle: 'line' | 'bar'
-  peakHoldDuration: number // ms, 1000-3000
+  peakHoldDuration: number // ms, 500-5000 (configurable per-element via PropertyPanel)
+
+  // SVG Styling (optional - when set, uses SVG renderer)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  // Allows overriding specific layer colors (e.g., peak indicator color)
+  colorOverrides?: ColorOverrides
 }
 
 // RMS Meter - 300ms averaging window, -60 to 0 dB range
