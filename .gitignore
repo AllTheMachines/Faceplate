@@ -31,7 +31,6 @@ screenshots/
 .claude/
 .env.free
 UI_SPECS_PLUGINS/
-templates/
 
 # Internal/Pro documentation (not for public repo)
 docs/GENERATE_UI_SKILL.md

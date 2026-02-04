@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "Test Template",
+  "description": "Template for testing purposes",
+  "category": "test",
+  "metadata": {
+    "canvasWidth": 400,
+    "canvasHeight": 300,
+    "backgroundColor": "#1a1a2e",
+    "created": "2025-01-01",
+    "author": "Faceplate"
+  },
+  "elements": []
+}

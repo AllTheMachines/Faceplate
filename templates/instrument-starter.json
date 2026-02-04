@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "Instrument Starter",
+  "description": "Basic template for virtual instrument plugins",
+  "category": "instrument",
+  "metadata": {
+    "canvasWidth": 600,
+    "canvasHeight": 400,
+    "backgroundColor": "#1a1a2e",
+    "created": "2025-01-01",
+    "author": "Faceplate"
+  },
+  "elements": []
+}

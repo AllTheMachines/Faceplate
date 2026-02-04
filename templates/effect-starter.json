@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "name": "Effect Starter",
+  "description": "Basic template for audio effect plugins",
+  "category": "effect",
+  "metadata": {
+    "canvasWidth": 400,
+    "canvasHeight": 300,
+    "backgroundColor": "#1a1a2e",
+    "created": "2025-01-01",
+    "author": "Faceplate"
+  },
+  "elements": []
+}
