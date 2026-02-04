@@ -1,6 +1,8 @@
 import React from 'react'
 import { useStore } from '../../../store'
 import { NumberInput, PropertySection } from '../'
+import { ColorPicker } from '../shared/ColorPicker'
+import { SELECT_CLASSNAME } from '../constants'
 import type { BaseProfessionalMeterConfig } from '../../../types/elements/displays'
 
 interface SharedMeterPropertiesProps {
@@ -25,6 +27,8 @@ export function SharedMeterProperties({
   maxDbFixed = true,
 }: SharedMeterPropertiesProps) {
   const updateElement = useStore((state) => state.updateElement)
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const meterStyles = getStylesByCategory('meter')
 
   const update = (updates: Partial<BaseProfessionalMeterConfig>) => {
     updateElement(elementId, updates)
@@ -34,6 +38,44 @@ export function SharedMeterProperties({
     <div className="space-y-6">
       {/* Meter Type Label */}
       <div className="text-xs text-gray-400 uppercase tracking-wide">{meterLabel}</div>
+
+      {/* Style */}
+      <PropertySection title="Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Meter Style</label>
+          <select
+            value={config.styleId || ''}
+            onChange={(e) => update({
+              styleId: e.target.value || undefined,
+              colorOverrides: e.target.value ? config.colorOverrides : undefined
+            })}
+            className={SELECT_CLASSNAME}
+          >
+            <option value="">Default (Segmented)</option>
+            {meterStyles.map((style) => (
+              <option key={style.id} value={style.id}>
+                {style.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </PropertySection>
+
+      {/* Color Overrides (only when using SVG style) */}
+      {config.styleId && (
+        <PropertySection title="Color Overrides">
+          <ColorPicker
+            label="Peak"
+            value={config.colorOverrides?.peak || '#ef4444'}
+            onChange={(color) => update({
+              colorOverrides: { ...config.colorOverrides, peak: color }
+            })}
+          />
+          <div className="text-xs text-gray-500 mt-2">
+            Override colors for specific SVG layers
+          </div>
+        </PropertySection>
+      )}
 
       {/* Orientation */}
       {showOrientation && (
@@ -153,7 +195,7 @@ export function SharedMeterProperties({
             <NumberInput
               label="Hold Duration (ms)"
               value={config.peakHoldDuration}
-              min={1000}
+              min={500}
               max={5000}
               step={100}
               onChange={(v) => update({ peakHoldDuration: v })}
