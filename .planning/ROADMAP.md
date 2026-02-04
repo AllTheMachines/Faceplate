@@ -52,9 +52,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 54-01-PLAN.md — Stepped Knob SVG styling (types, renderer, properties)
-- [ ] 54-02-PLAN.md — Center Detent Knob SVG styling (types, renderer, properties)
-- [ ] 54-03-PLAN.md — Dot Indicator Knob SVG styling (types, renderer, properties)
+- [x] 54-01-PLAN.md — Stepped Knob SVG styling (types, renderer, properties)
+- [x] 54-02-PLAN.md — Center Detent Knob SVG styling (types, renderer, properties)
+- [x] 54-03-PLAN.md — Dot Indicator Knob SVG styling (types, renderer, properties)
 
 #### Phase 55: Slider Styling
 **Goal**: All slider variants support SVG styling with thumb/track/fill layers
@@ -943,7 +943,7 @@ Plans:
 | 51. Feature Gating System | v2.0 | 2/2 | Complete | 2026-02-03 |
 | 52. License Validation & Export Blocking | v2.0 | 2/2 | Complete | 2026-02-03 |
 | 53. Foundation | v0.10.0 | 3/3 | Complete | 2026-02-04 |
-| 54. Knob Variants | v0.10.0 | 0/3 | Not started | - |
+| 54. Knob Variants | v0.10.0 | 3/3 | Complete | 2026-02-04 |
 | 55. Slider Styling | v0.10.0 | 0/TBD | Not started | - |
 | 56. Button & Switch Styling | v0.10.0 | 0/TBD | Not started | - |
 | 57. Meter Styling | v0.10.0 | 0/TBD | Not started | - |
@@ -952,4 +952,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-04 - Phase 54 planned*
+*Last updated: 2026-02-04 - Phase 54 complete*

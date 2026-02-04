@@ -19,9 +19,9 @@ Requirements for SVG Styling for Visual Controls milestone.
 
 ### Knob Variants
 
-- [ ] **KNB-01**: steppedknob supports styleId and SVG rendering
-- [ ] **KNB-02**: centerdetentknob supports styleId and SVG rendering
-- [ ] **KNB-03**: dotindicatorknob supports styleId and SVG rendering
+- [x] **KNB-01**: steppedknob supports styleId and SVG rendering
+- [x] **KNB-02**: centerdetentknob supports styleId and SVG rendering
+- [x] **KNB-03**: dotindicatorknob supports styleId and SVG rendering
 
 ### Slider Styling
 
@@ -85,9 +85,9 @@ Requirements for SVG Styling for Visual Controls milestone.
 | FND-05 | Phase 53 | Complete |
 | FND-06 | Phase 53 | Complete |
 | FND-07 | Phase 53 | Complete |
-| KNB-01 | Phase 54 | Pending |
-| KNB-02 | Phase 54 | Pending |
-| KNB-03 | Phase 54 | Pending |
+| KNB-01 | Phase 54 | Complete |
+| KNB-02 | Phase 54 | Complete |
+| KNB-03 | Phase 54 | Complete |
 | SLD-01 | Phase 55 | Pending |
 | SLD-02 | Phase 55 | Pending |
 | SLD-03 | Phase 55 | Pending |
@@ -120,4 +120,4 @@ Requirements for SVG Styling for Visual Controls milestone.
 
 ---
 *Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 - Phase 53 requirements completed*
+*Last updated: 2026-02-04 - Phase 54 requirements completed*
