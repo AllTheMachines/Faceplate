@@ -45,6 +45,8 @@ Progress: [██████░░░░░░░░░░░░░░] 44% (v0
 | 2026-02-04 | 56-05 | Multi-select mode renders multiple clipped highlight instances |
 | 2026-02-04 | 56-03 | Toggle Switch uses body/on/off/indicator layers for state-driven display |
 | 2026-02-04 | 56-03 | Power Button uses normal/pressed/icon/led layers with LED color override |
+| 2026-02-04 | 56-02 | Type narrowing via assignment after category check for discriminated unions |
+| 2026-02-04 | 56-02 | Button layers: normal, pressed, icon, label; IconButton: normal, pressed, icon |
 | 2026-02-04 | 56-01 | ButtonLayers uses optional properties for all layer roles |
 | 2026-02-04 | 56-01 | Both button-* and switch-* prefixes supported in LAYER_CONVENTIONS |
 | 2026-02-04 | 56-01 | Multi-position uses hyphenated naming (position-0 not position0) |
