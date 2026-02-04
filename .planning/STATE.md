@@ -42,6 +42,8 @@ Progress: [████░░░░░░░░░░░░░░░░] 30% (v0
 | Date | Phase | Decision |
 |------|-------|----------|
 | 2026-02-04 | 55-05 | Extract layers once, share across all bands for Multi-Slider |
+| 2026-02-04 | 55-03 | Fill clips from configurable centerValue to normalizedValue (not fixed 50%) |
+| 2026-02-04 | 55-03 | Fill color determined by positive/negative zone at runtime |
 | 2026-02-04 | 55-02 | Thumb layer fallback: use generic 'thumb' if thumb-low/thumb-high not present |
 | 2026-02-04 | 55-02 | High thumb renders on top (z-index 2) by default |
 | 2026-02-04 | 55-01 | Use clip-path for fill animation (not scaleX) - avoids scaling artifacts |
