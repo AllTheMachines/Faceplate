@@ -4,6 +4,12 @@ A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI
 
 > **⚠️ Work in Progress**: This project is under active development. Bugs are expected. Please report issues on [GitHub](https://github.com/AllTheMachines/Faceplate/issues).
 
+## Download
+
+Get the latest stable version from the **[Releases Page](https://github.com/AllTheMachines/Faceplate/releases)**.
+
+Download the **Source code (zip)** file from the latest release.
+
 ## Getting Started
 
 ### Prerequisites
@@ -12,6 +18,20 @@ A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI
 - npm (comes with Node.js)
 
 ### Installation
+
+**Option 1: Download Release (Recommended)**
+
+1. Download the zip from the [Releases Page](https://github.com/AllTheMachines/Faceplate/releases)
+2. Extract the zip file
+3. Open a terminal in the extracted folder
+4. Run:
+
+```bash
+npm install
+npm run dev
+```
+
+**Option 2: Clone Repository**
 
 ```bash
 # Clone the repository
@@ -79,13 +99,14 @@ In the **Project** section (right panel, top):
 
 ## Roadmap
 
-**Latest: v2.0 Pro Licensing**
+**Current: v0.9.x Beta**
 
 | Status | Version | Description |
 |--------|---------|-------------|
-| Shipped | v1.0 - v1.10 | Core designer with 60+ elements, SVG import, multi-window, JUCE export |
-| Shipped | v2.0 | Pro licensing with 51 specialized elements (LUFS meters, spectrograms, XY pads) |
-| Planned | v2.1+ | Community-requested features |
+| Shipped | v0.9.0 | Beta baseline - 100+ elements, Pro gating, SVG import, JUCE export |
+| In Progress | v0.10.0 | SVG styling for visual controls (knobs, sliders, buttons, meters) |
+| Planned | v0.11.0 | SVG styling for all non-Pro elements |
+| Planned | v1.0.0 | Stable release |
 
 View the live development board: [Faceplate Roadmap](https://github.com/users/AllTheMachines/projects/1)
 
