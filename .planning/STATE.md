@@ -43,6 +43,8 @@ Progress: [████░░░░░░░░░░░░░░░░] 35% (v0
 |------|-------|----------|
 | 2026-02-04 | 55-06 | Use getPointAtLength for arc thumb path-following (offscreen SVG pattern) |
 | 2026-02-04 | 55-05 | Extract layers once, share across all bands for Multi-Slider |
+| 2026-02-04 | 55-04 | Crossfade fill uses bipolar clip-path from center (0.5) - matches crossfade balance |
+| 2026-02-04 | 55-04 | Notched Slider tick marks are programmatic SVG overlays, not extracted from style SVG |
 | 2026-02-04 | 55-03 | Fill clips from configurable centerValue to normalizedValue (not fixed 50%) |
 | 2026-02-04 | 55-03 | Fill color determined by positive/negative zone at runtime |
 | 2026-02-04 | 55-02 | Thumb layer fallback: use generic 'thumb' if thumb-low/thumb-high not present |
