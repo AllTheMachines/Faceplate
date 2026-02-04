@@ -654,6 +654,16 @@ export interface ArcSliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS arc)
+  // Note: Arc Slider uses 'arc' category, not 'linear'
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
+
+  // Thumb rotation (optional - rotate thumb to follow arc tangent)
+  rotateThumbToTangent?: boolean
 }
 
 // ============================================================================
@@ -1955,6 +1965,7 @@ export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): Ar
     valueFontFamily: 'Inter, system-ui, sans-serif',
     valueFontWeight: '400',
     valueColor: '#a0a0a0',
+    rotateThumbToTangent: false,
     ...overrides,
   }
 }
