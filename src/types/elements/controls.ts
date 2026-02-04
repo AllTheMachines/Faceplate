@@ -297,6 +297,12 @@ export interface SteppedKnobElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface CenterDetentKnobElementConfig extends BaseElementConfig {
