@@ -26,7 +26,16 @@ export const LAYER_CONVENTIONS = {
     'button-base', 'button-selector',
     'button-highlight',
   ],
-  meter: ['meter-body', 'meter-fill', 'meter-scale', 'meter-peak'],
+  meter: [
+    'meter-body',
+    'meter-fill',
+    'meter-fill-green',
+    'meter-fill-yellow',
+    'meter-fill-red',
+    'meter-scale',
+    'meter-peak',
+    'meter-segments',
+  ],
   display: ['display-body', 'display-text', 'display-unit'],
   led: ['led-body', 'led-glow', 'led-ring'],
   switch: [
