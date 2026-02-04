@@ -48,6 +48,8 @@ When you export from Faceplate, you get these files:
 - Windows: WebView2 Runtime (usually pre-installed on Windows 10/11)
 - macOS: WKWebView (built-in)
 
+> **Note**: Faceplate exports have only been tested with JUCE WebView2 on **Windows**. macOS and Linux may work but are currently untested.
+
 ### WebBrowserComponent Setup
 
 The WebBrowserComponent hosts the web UI inside your plugin editor:
