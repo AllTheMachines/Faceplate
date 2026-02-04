@@ -9,19 +9,20 @@
  */
 
 import { generateErrorMessage } from 'zod-error'
-import { ProjectSchemaV2, type ProjectData, type ProjectDataV1, type UIWindowData } from '../schemas/project'
+import { ProjectSchemaV2, ProjectSchemaV3, type ProjectData, type ProjectDataV1, type ProjectDataV2, type UIWindowData } from '../schemas/project'
 import type { ElementConfig } from '../types/elements'
 import type { UIWindow } from '../store/windowsSlice'
 import type { Asset } from '../types/asset'
 import type { KnobStyle } from '../types/knobStyle'
+import type { ElementStyle } from '../types/elementStyle'
 import { sanitizeSVG } from '../lib/svg-sanitizer'
 import { isProElement } from './proElements'
 
 // Current application version
-export const CURRENT_VERSION = '2.0.0'
+export const CURRENT_VERSION = '3.0.0'
 
 // Supported versions for migration
-const SUPPORTED_VERSIONS = ['1.0.0', '1.0', '2.0.0']
+const SUPPORTED_VERSIONS = ['1.0.0', '1.0', '2.0.0', '3.0.0']
 
 // ============================================================================
 // Serialization
@@ -37,17 +38,18 @@ export interface SerializationInput {
   selectedIds: string[]
   assets: Asset[]
   knobStyles: KnobStyle[]
+  elementStyles: import('../types/elementStyle').ElementStyle[]
   layers: import('../types/layer').Layer[]
 }
 
 /**
- * Serialize project state to JSON string (v2.0.0 format)
+ * Serialize project state to JSON string (v3.0.0 format)
  * Excludes viewport state (scale, offsetX, offsetY) - camera position is not document state
  * Includes selectedIds - selection is meaningful state to restore
  */
 export function serializeProject(state: SerializationInput): string {
   const projectData: ProjectData = {
-    version: '2.0.0',
+    version: '3.0.0',
     windows: state.windows.map((w): UIWindowData => ({
       id: w.id,
       name: w.name,
@@ -65,6 +67,7 @@ export function serializeProject(state: SerializationInput): string {
     selectedIds: state.selectedIds,
     assets: state.assets,
     knobStyles: state.knobStyles,
+    elementStyles: state.elementStyles,
     layers: state.layers,
     snapToGrid: state.snapToGrid,
     gridSize: state.gridSize,
@@ -122,8 +125,8 @@ export function deserializeProject(json: string): DeserializeResult {
 
   const migrated = migrationResult.data
 
-  // Validate against v2 schema (migrated data should always be v2)
-  const result = ProjectSchemaV2.safeParse(migrated)
+  // Validate against v3 schema (migrated data should always be v3)
+  const result = ProjectSchemaV3.safeParse(migrated)
 
   if (!result.success) {
     // Use zod-error for user-friendly error messages
@@ -184,6 +187,21 @@ export function deserializeProject(json: string): DeserializeResult {
     })
   }
 
+  // Re-sanitize all element style SVGs (SEC-02: tampering protection)
+  if (data.elementStyles && data.elementStyles.length > 0) {
+    data.elementStyles = data.elementStyles.map(style => {
+      const resanitized = sanitizeSVG(style.svgContent)
+      // Log if content changed during re-sanitization (possible tampering)
+      if (resanitized !== style.svgContent) {
+        console.warn(`Element style "${style.name}" was modified during re-sanitization`)
+      }
+      return {
+        ...style,
+        svgContent: resanitized
+      }
+    })
+  }
+
   // Populate isPro field on all elements based on registry
   // This ensures elements loaded from project files (which may not have isPro saved)
   // get the correct isPro value based on the current PRO_ELEMENTS registry
@@ -214,10 +232,24 @@ function isV1Format(data: unknown): data is ProjectDataV1 {
 }
 
 /**
+ * Check if data is v2.x format (has windows but no elementStyles)
+ */
+function isV2Format(data: unknown): data is ProjectDataV2 {
+  if (typeof data !== 'object' || data === null) return false
+  const obj = data as Record<string, unknown>
+  // Has windows (v2+) but no elementStyles or version is 2.x
+  if ('windows' in obj) {
+    if (!('elementStyles' in obj)) return true
+    if (typeof obj.version === 'string' && obj.version.startsWith('2.')) return true
+  }
+  return false
+}
+
+/**
  * Migrate v1.x project to v2.0.0 format
  * Creates a single "Main Window" with all elements
  */
-function migrateV1ToV2(data: ProjectDataV1): ProjectData {
+function migrateV1ToV2(data: ProjectDataV1): ProjectDataV2 {
   const windowId = crypto.randomUUID()
 
   // Create single window from v1 canvas settings
@@ -249,6 +281,38 @@ function migrateV1ToV2(data: ProjectDataV1): ProjectData {
 }
 
 /**
+ * Migrate v2.x project to v3.0.0 format
+ * Auto-migrate knobStyles to elementStyles (additive - keep knobStyles)
+ */
+function migrateV2ToV3(data: ProjectDataV2): ProjectData {
+  // Auto-migrate knobStyles to elementStyles (additive)
+  const migratedElementStyles: ElementStyle[] = (data.knobStyles || []).map(ks => ({
+    category: 'rotary' as const,
+    id: ks.id,
+    name: ks.name,
+    svgContent: ks.svgContent,
+    layers: {
+      indicator: ks.layers.indicator,
+      track: ks.layers.track,
+      arc: ks.layers.arc,
+      glow: ks.layers.glow,
+      shadow: ks.layers.shadow,
+    },
+    minAngle: ks.minAngle,
+    maxAngle: ks.maxAngle,
+    createdAt: ks.createdAt,
+  }))
+
+  return {
+    ...data,
+    version: '3.0.0',
+    elementStyles: migratedElementStyles,
+    // Keep knobStyles for backward compat (don't delete)
+    knobStyles: data.knobStyles || [],
+  }
+}
+
+/**
  * Check if a version string is newer than the current version
  */
 function isVersionNewer(version: string, current: string): boolean {
@@ -271,12 +335,18 @@ type MigrationResult =
 /**
  * Migrate project data between versions
  * v1.x -> v2.0.0: Convert single canvas to multi-window format
+ * v2.x -> v3.0.0: Add elementStyles (migrate knobStyles)
  * Returns error for incompatible/future versions
  */
 function migrateProject(data: unknown): MigrationResult {
   // Check if this is v1.x format and needs migration
   if (isV1Format(data)) {
     return { success: true, data: migrateV1ToV2(data) }
+  }
+
+  // Check if this is v2.x format and needs migration
+  if (isV2Format(data)) {
+    return { success: true, data: migrateV2ToV3(data) }
   }
 
   // Check if data is an object
@@ -322,12 +392,12 @@ function migrateProject(data: unknown): MigrationResult {
       }
     }
 
-    // Check for unsupported versions (not v1.x and not v2.x)
+    // Check for unsupported versions (not v1.x, v2.x, or v3.x)
     const majorVersion = parseInt(version.split('.')[0] || '0')
-    if (majorVersion < 1 || majorVersion > 2) {
+    if (majorVersion < 1 || majorVersion > 3) {
       return {
         success: false,
-        error: `Unsupported project version (v${version}). This application supports versions 1.x and 2.x.`
+        error: `Unsupported project version (v${version}). This application supports versions 1.x, 2.x, and 3.x.`
       }
     }
   }
