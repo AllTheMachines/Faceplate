@@ -83,10 +83,13 @@ export interface ButtonLayers {
  */
 export interface MeterLayers {
   body?: string       // Meter background/container
-  fill?: string       // Level fill region
-  scale?: string      // Scale markings
-  peak?: string       // Peak hold indicator
-  segments?: string   // Segmented meter elements
+  fill?: string       // Level fill region (single fill fallback)
+  'fill-green'?: string  // Green zone fill layer (low levels)
+  'fill-yellow'?: string // Yellow zone fill layer (medium levels, -18dB threshold)
+  'fill-red'?: string    // Red zone fill layer (high levels, -6dB threshold)
+  scale?: string      // Scale markings (rendered statically if present)
+  peak?: string       // Peak hold indicator (positioned at peak value)
+  segments?: string   // Segmented meter elements (legacy)
 }
 
 /**
@@ -178,16 +181,59 @@ export const ELEMENT_TYPE_TO_CATEGORY = {
   rotaryswitch: 'button',
   segmentbutton: 'button',
 
-  // Meter controls
+  // Meter controls (basic)
   meter: 'meter',
   vumeter: 'meter',
   ppmeter: 'meter',
   levelladder: 'meter',
   goniometer: 'meter',
-  correlationmeter: 'meter',
   spectralanalyzer: 'meter',
   phasescope: 'meter',
   rgbmeter: 'meter',
+
+  // Professional meters - RMS
+  rmsmetermo: 'meter',
+  rmsmeterstereo: 'meter',
+
+  // Professional meters - VU
+  vumetermono: 'meter',
+  vumeterstereo: 'meter',
+
+  // Professional meters - PPM Type I (DIN)
+  ppmtype1mono: 'meter',
+  ppmtype1stereo: 'meter',
+
+  // Professional meters - PPM Type II (BBC/EBU)
+  ppmtype2mono: 'meter',
+  ppmtype2stereo: 'meter',
+
+  // Professional meters - True Peak
+  truepeakmetermono: 'meter',
+  truepeakmeterstereo: 'meter',
+
+  // Professional meters - LUFS Momentary
+  lufsmomomo: 'meter',
+  lufsmomostereo: 'meter',
+
+  // Professional meters - LUFS Short-term
+  lufsshortmono: 'meter',
+  lufsshortstereo: 'meter',
+
+  // Professional meters - LUFS Integrated
+  lufsintmono: 'meter',
+  lufsintstereo: 'meter',
+
+  // Professional meters - K-System
+  k12metermono: 'meter',
+  k12meterstereo: 'meter',
+  k14metermono: 'meter',
+  k14meterstereo: 'meter',
+  k20metermono: 'meter',
+  k20meterstereo: 'meter',
+
+  // Analysis meters
+  correlationmeter: 'meter',
+  stereowidthmeter: 'meter',
 } as const
 
 /**
