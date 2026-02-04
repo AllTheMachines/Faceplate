@@ -29,7 +29,6 @@ screenshots/
 
 # Development/internal files
 .claude/
-.planning/
 .env.free
 UI_SPECS_PLUGINS/
 templates/
