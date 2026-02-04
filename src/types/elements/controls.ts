@@ -351,6 +351,12 @@ export interface CenterDetentKnobElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
@@ -397,6 +403,13 @@ export interface DotIndicatorKnobElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS knob)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  // Note: 'indicator' layer contains the dot - use 'indicator' key for dot color override
+  colorOverrides?: ColorOverrides
 }
 
 export interface BipolarSliderElementConfig extends BaseElementConfig {
