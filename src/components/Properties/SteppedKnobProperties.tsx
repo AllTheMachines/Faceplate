@@ -1,5 +1,8 @@
 import { SteppedKnobElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection, TextInput } from './'
+import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { RotaryLayers } from '../../types/elementStyle'
 
 interface SteppedKnobPropertiesProps {
   element: SteppedKnobElementConfig
@@ -7,8 +10,78 @@ interface SteppedKnobPropertiesProps {
 }
 
 export function SteppedKnobProperties({ element, onUpdate }: SteppedKnobPropertiesProps) {
+  const { isPro } = useLicense()
+  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
+  const getElementStyle = useStore((state) => state.getElementStyle)
+  const rotaryStyles = getStylesByCategory('rotary')
+
   return (
     <>
+      {/* Knob Style - Pro feature */}
+      {isPro && (
+        <PropertySection title="Knob Style">
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Style</label>
+            <select
+              value={element.styleId || ''}
+              onChange={(e) => {
+                const value = e.target.value
+                onUpdate({
+                  styleId: value === '' ? undefined : value,
+                  colorOverrides: undefined, // Reset on style change
+                })
+              }}
+              className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+            >
+              <option value="">Default (CSS)</option>
+              {rotaryStyles.map((style) => (
+                <option key={style.id} value={style.id}>
+                  {style.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </PropertySection>
+      )}
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'rotary') return null
+
+        const layerNames: Array<keyof RotaryLayers> = ['indicator', 'track', 'arc', 'glow', 'shadow']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1)}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
+
       {/* Step Configuration */}
       <PropertySection title="Step Configuration">
         <div>
