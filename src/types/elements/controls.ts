@@ -105,6 +105,12 @@ export interface SliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export type ButtonAction = 'none' | 'navigate-window'
@@ -154,6 +160,12 @@ export interface RangeSliderElementConfig extends BaseElementConfig {
   thumbColor: string
   thumbWidth: number
   thumbHeight: number
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface DropdownElementConfig extends BaseElementConfig {
@@ -465,6 +477,12 @@ export interface BipolarSliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface CrossfadeSliderElementConfig extends BaseElementConfig {
@@ -491,6 +509,12 @@ export interface CrossfadeSliderElementConfig extends BaseElementConfig {
   thumbColor: string
   thumbWidth: number
   thumbHeight: number
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface MultiSliderElementConfig extends BaseElementConfig {
@@ -520,6 +544,12 @@ export interface MultiSliderElementConfig extends BaseElementConfig {
 
   // Layout
   bandGap: number // Pixel gap between bands (default 2)
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface NotchedSliderElementConfig extends BaseElementConfig {
@@ -571,6 +601,12 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   valueFontFamily: string
   valueFontWeight: string
   valueColor: string
+
+  // SVG Style (optional - if undefined, render default CSS)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface ArcSliderElementConfig extends BaseElementConfig {
