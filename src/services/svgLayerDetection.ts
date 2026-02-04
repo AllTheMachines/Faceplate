@@ -6,6 +6,8 @@
  */
 
 import { LAYER_CONVENTIONS } from './export/svgElementExport'
+import { detectElementLayers } from './elementLayers'
+import type { ElementCategory } from '../types/elementStyle'
 
 export interface LayerDetectionResult {
   /** Layers that matched expected conventions */
@@ -121,10 +123,19 @@ export function detectLayersForType(svgContent: string, elementType: string): La
 
 /**
  * Get expected layer names for an element type
+ * Now also supports direct category inputs (rotary, linear, arc, button, meter)
  */
 export function getExpectedLayersForType(elementType: string): string[] {
   const normalizedType = elementType.toLowerCase()
 
+  // Category inputs (direct from ElementCategory)
+  if (normalizedType === 'rotary') return [...LAYER_CONVENTIONS.knob]
+  if (normalizedType === 'linear') return [...LAYER_CONVENTIONS.slider]
+  if (normalizedType === 'arc') return [...LAYER_CONVENTIONS.slider]
+  if (normalizedType === 'button') return [...LAYER_CONVENTIONS.button]
+  if (normalizedType === 'meter') return [...LAYER_CONVENTIONS.meter]
+
+  // Element type inputs (original behavior)
   if (normalizedType.includes('knob')) return [...LAYER_CONVENTIONS.knob]
   if (normalizedType.includes('slider')) return [...LAYER_CONVENTIONS.slider]
   if (normalizedType.includes('button')) return [...LAYER_CONVENTIONS.button]
@@ -221,4 +232,63 @@ export function getDetectionSummary(svgContent: string, elementType: string): st
   }
 
   return lines.join('\n')
+}
+
+/**
+ * Detect layers in an SVG for a specific element category.
+ * Uses the new category-aware detection service for improved accuracy.
+ *
+ * @param svgContent - Raw SVG content as string
+ * @param category - Element category (rotary, linear, arc, button, meter)
+ * @returns LayerDetectionResult with matched/unmapped/missing layers
+ */
+export function detectLayersForCategory(svgContent: string, category: ElementCategory): LayerDetectionResult {
+  // Use the new category-aware detection
+  const detected = detectElementLayers(svgContent, category)
+
+  // Get expected layers for this category (via type system)
+  const expectedLayers = getExpectedLayersForType(category)
+
+  // Convert DetectedElementLayers to LayerDetectionResult format
+  const matched: { [layerName: string]: string } = {}
+  const unmapped: string[] = []
+  const missing: string[] = []
+  const allLayers: string[] = []
+
+  // Build full list of all detected layer identifiers
+  Object.values(detected).forEach(identifiers => {
+    identifiers.forEach(id => {
+      if (!allLayers.includes(id)) {
+        allLayers.push(id)
+      }
+    })
+  })
+
+  // Map detected layers to expected layer names
+  expectedLayers.forEach(expectedLayer => {
+    // Extract the role from expected layer (e.g., 'indicator' from 'knob-indicator')
+    const role = expectedLayer.split('-').pop() || expectedLayer
+
+    if (detected[role] && detected[role].length > 0) {
+      // Use first match for this role
+      matched[expectedLayer] = detected[role][0]
+    } else {
+      missing.push(expectedLayer)
+    }
+  })
+
+  // Find unmapped layers (identifiers that didn't match any expected layer)
+  allLayers.forEach(layerId => {
+    const isMatched = Object.values(matched).includes(layerId)
+    if (!isMatched) {
+      unmapped.push(layerId)
+    }
+  })
+
+  return {
+    matched,
+    unmapped,
+    missing,
+    allLayers
+  }
 }
