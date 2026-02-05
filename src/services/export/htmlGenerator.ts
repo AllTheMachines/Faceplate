@@ -534,6 +534,24 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
     case 'k14metermono':
     case 'k20metermono': {
       const config = element as BaseProfessionalMeterConfig
+      // Check if this professional meter uses a custom SVG style
+      if (config.styleId) {
+        const elementStyles = useStore.getState().elementStyles
+        const style = elementStyles.find((s) => s.id === config.styleId)
+        if (style) {
+          // Convert to MeterElementConfig-like structure for styled export
+          const meterConfig: MeterElementConfig = {
+            ...config,
+            type: 'meter',
+            min: config.minDb ?? -60,
+            max: config.maxDb ?? 0,
+            value: config.value ?? 0.5,
+            colorStops: [],
+          } as MeterElementConfig
+          const styledHTML = generateStyledMeterHTML(id, baseClass, positionStyle, meterConfig, style)
+          if (styledHTML) return styledHTML
+        }
+      }
       const innerHTML = generateSegmentedMeterHTML(config, false)
       return `<div id="${id}" class="${baseClass} ${element.type}-element" data-type="${element.type}" style="${positionStyle}">
   ${innerHTML}
@@ -553,6 +571,24 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
     case 'k14meterstereo':
     case 'k20meterstereo': {
       const config = element as BaseProfessionalMeterConfig
+      // Check if this professional meter uses a custom SVG style
+      if (config.styleId) {
+        const elementStyles = useStore.getState().elementStyles
+        const style = elementStyles.find((s) => s.id === config.styleId)
+        if (style) {
+          // Convert to MeterElementConfig-like structure for styled export
+          const meterConfig: MeterElementConfig = {
+            ...config,
+            type: 'meter',
+            min: config.minDb ?? -60,
+            max: config.maxDb ?? 0,
+            value: config.value ?? 0.5,
+            colorStops: [],
+          } as MeterElementConfig
+          const styledHTML = generateStyledMeterHTML(id, baseClass, positionStyle, meterConfig, style)
+          if (styledHTML) return styledHTML
+        }
+      }
       const innerHTML = generateSegmentedMeterHTML(config, true)
       return `<div id="${id}" class="${baseClass} ${element.type}-element" data-type="${element.type}" style="${positionStyle}">
   ${innerHTML}
@@ -1160,6 +1196,98 @@ function generateStyledSegmentButtonHTML(
       <div class="styled-button-container">
         ${bodySvg ? `<div class="button-layer button-body">${bodySvg}</div>` : ''}
         ${highlightHTML}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate styled meter HTML with custom SVG layers
+ * Uses zone fill layers (fill-green, fill-yellow, fill-red) with clip-path animation
+ * Matches Phase 57-02 StyledMeterRenderer pattern
+ */
+function generateStyledMeterHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: MeterElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'meter') {
+    console.warn(`Meter requires meter category style, got: ${style.category}`)
+    // Return empty - caller will fallback to default
+    return ''
+  }
+
+  // Apply color overrides to SVG (if any)
+  let svgWithOverrides = style.svgContent
+  if ('colorOverrides' in config && config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  // Re-sanitize before export (SEC-04: defense-in-depth)
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+
+  // Cast layers to MeterLayers after category validation
+  const meterLayers = style.layers as MeterLayers
+
+  // Extract meter layers (matching Phase 57-02 StyledMeterRenderer)
+  const bodySvg = meterLayers.body ? extractElementLayer(sanitizedSvg, meterLayers.body) : ''
+  const fillGreenSvg = meterLayers['fill-green'] ? extractElementLayer(sanitizedSvg, meterLayers['fill-green']) : ''
+  const fillYellowSvg = meterLayers['fill-yellow'] ? extractElementLayer(sanitizedSvg, meterLayers['fill-yellow']) : ''
+  const fillRedSvg = meterLayers['fill-red'] ? extractElementLayer(sanitizedSvg, meterLayers['fill-red']) : ''
+  const scaleSvg = meterLayers.scale ? extractElementLayer(sanitizedSvg, meterLayers.scale) : ''
+  const peakSvg = meterLayers.peak ? extractElementLayer(sanitizedSvg, meterLayers.peak) : ''
+
+  // Calculate normalized value (0-1)
+  const min = config.min ?? 0
+  const max = config.max ?? 1
+  const value = config.value ?? 0.5
+  const normalizedValue = max > min ? (value - min) / (max - min) : 0
+
+  // Determine orientation (default vertical)
+  const orientation = config.orientation ?? 'vertical'
+  const isVertical = orientation === 'vertical'
+
+  // Zone thresholds (from Phase 57-02 decisions)
+  // yellowThreshold = 0.6 (corresponds to -18dB)
+  // redThreshold = 0.85 (corresponds to -6dB)
+  const yellowThreshold = 0.6
+  const redThreshold = 0.85
+
+  // Calculate clip-paths for zone fills (bottom-up reveal for vertical)
+  const clipFromTop = (1 - normalizedValue) * 100
+  const greenClipPath = `inset(${clipFromTop}% 0 0 0)`
+  const yellowClipPath = normalizedValue > yellowThreshold ? greenClipPath : 'inset(100% 0 0 0)'
+  const redClipPath = normalizedValue > redThreshold ? greenClipPath : 'inset(100% 0 0 0)'
+
+  // Data attributes for JS animation
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+  const orientationAttr = ` data-orientation="${orientation}"`
+  const valueAttr = ` data-value="${normalizedValue}"`
+  const peakAttr = config.showPeakHold ? ` data-peak-hold="true" data-peak-duration="${config.peakHoldDuration ?? 2000}"` : ''
+
+  // Horizontal orientation: container rotated -90deg (from Phase 57-02)
+  const containerStyle = !isVertical ? ' style="transform: rotate(-90deg); transform-origin: center center;"' : ''
+
+  // Peak indicator positioning
+  const peakHTML = peakSvg && config.showPeakHold
+    ? `<div class="meter-layer meter-peak" style="bottom: ${normalizedValue * 100}%; transform: translateY(50%);">${peakSvg}</div>`
+    : ''
+
+  // Fixed layer ordering: body -> fills (green/yellow/red) -> scale -> peak
+  return `<div id="${id}" class="${baseClass} meter meter-element styled-meter" data-type="meter"${paramAttr}${orientationAttr}${valueAttr}${peakAttr} style="${positionStyle}">
+      <div class="styled-meter-container"${containerStyle}>
+        ${bodySvg ? `<div class="meter-layer meter-body">${bodySvg}</div>` : ''}
+        ${fillGreenSvg ? `<div class="meter-layer meter-fill-green" style="clip-path: ${greenClipPath};">${fillGreenSvg}</div>` : ''}
+        ${fillYellowSvg ? `<div class="meter-layer meter-fill-yellow" style="clip-path: ${yellowClipPath};">${fillYellowSvg}</div>` : ''}
+        ${fillRedSvg ? `<div class="meter-layer meter-fill-red" style="clip-path: ${redClipPath};">${fillRedSvg}</div>` : ''}
+        ${scaleSvg ? `<div class="meter-layer meter-scale">${scaleSvg}</div>` : ''}
+        ${peakHTML}
       </div>
     </div>`
 }
@@ -1929,6 +2057,18 @@ function generateRangeSliderHTML(id: string, baseClass: string, positionStyle: s
 }
 
 function generateMeterHTML(id: string, baseClass: string, positionStyle: string, config: MeterElementConfig): string {
+  // Check if this meter uses a custom SVG style
+  if (config.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledMeterHTML(id, baseClass, positionStyle, config, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const orientationClass = isVertical ? 'vertical' : 'horizontal'
