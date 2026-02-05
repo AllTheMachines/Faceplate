@@ -284,6 +284,92 @@ body {
   z-index: 4;
 }`
 
+  // Styled Button Layers CSS
+  const styledButtonStyles = `/* Styled Button Layers */
+.styled-button {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.styled-button-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.button-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* CRITICAL: No transition - instant opacity toggle per CONTEXT.md decision */
+  transition: none;
+}
+
+.button-layer svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Button state layers - fixed z-index ordering */
+.button-normal {
+  z-index: 1;
+}
+
+.button-pressed {
+  z-index: 2;
+}
+
+.button-icon {
+  z-index: 3;
+}
+
+.button-label {
+  z-index: 4;
+}
+
+/* Toggle Switch layers */
+.button-on {
+  z-index: 2;
+}
+
+.button-off {
+  z-index: 1;
+}
+
+.button-indicator {
+  z-index: 3;
+}
+
+/* Power Button LED */
+.button-led {
+  z-index: 3;
+}
+
+/* Rocker Switch position layers */
+.button-position-0,
+.button-position-1,
+.button-position-2 {
+  z-index: 1;
+}
+
+/* Rotary Switch layers */
+.button-base {
+  z-index: 1;
+}
+
+.button-selector {
+  z-index: 2;
+  transition: transform 0.1s ease-out;
+  transform-origin: center center;
+}
+
+/* Segment Button highlight */
+.button-highlight {
+  z-index: 2;
+  transition: clip-path 0.1s ease-out;
+}`
+
   // Global label/value styles
   const labelValueStyles = `/* Label and Value Display Styles */
 .knob-label, .slider-label {
@@ -365,6 +451,8 @@ ${baseElement}
 ${styledKnobStyles}
 
 ${styledSliderStyles}
+
+${styledButtonStyles}
 
 ${labelValueStyles}
 
