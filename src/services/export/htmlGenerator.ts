@@ -834,6 +834,337 @@ function generateStyledSliderHTML(
 }
 
 /**
+ * Generate styled button HTML with custom SVG layers
+ * Supports buttons, icon buttons, toggle switches, power buttons
+ * Uses opacity toggle pattern for instant state transitions (no CSS animations)
+ */
+function generateStyledButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: IconButtonElementConfig | ToggleSwitchElementConfig | PowerButtonElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'button') {
+    console.warn(`Button requires button category style, got: ${style.category}`)
+    // Return empty - caller will fallback to default
+    return ''
+  }
+
+  // Apply color overrides to SVG (if any)
+  let svgWithOverrides = style.svgContent
+  if ('colorOverrides' in config && config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  // Re-sanitize before export (SEC-04: defense-in-depth)
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+
+  // Cast layers to ButtonLayers after category validation
+  const buttonLayers = style.layers as ButtonLayers
+
+  // Extract common button layers
+  const normalSvg = buttonLayers.normal ? extractElementLayer(sanitizedSvg, buttonLayers.normal) : ''
+  const pressedSvg = buttonLayers.pressed ? extractElementLayer(sanitizedSvg, buttonLayers.pressed) : ''
+  const iconSvg = buttonLayers.icon ? extractElementLayer(sanitizedSvg, buttonLayers.icon) : ''
+  const labelSvg = buttonLayers.label ? extractElementLayer(sanitizedSvg, buttonLayers.label) : ''
+
+  // Determine initial state (pressed/on state)
+  let initialPressed = '0'
+  if ('pressed' in config && config.pressed) {
+    initialPressed = '1'
+  } else if ('isOn' in config && config.isOn) {
+    initialPressed = '1'
+  }
+
+  // Data attributes for JS animation
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+  const modeAttr = 'mode' in config ? ` data-mode="${config.mode}"` : ''
+  const stateAttr = ` data-state="${initialPressed}"`
+
+  // All state layers present in DOM, opacity toggles visibility (instant, no transition)
+  return `<div id="${id}" class="${baseClass} button button-element styled-button" data-type="button"${paramAttr}${modeAttr}${stateAttr} style="${positionStyle}">
+      <div class="styled-button-container">
+        ${normalSvg ? `<div class="button-layer button-normal" style="opacity: ${initialPressed === '0' ? '1' : '0'};">${normalSvg}</div>` : ''}
+        ${pressedSvg ? `<div class="button-layer button-pressed" style="opacity: ${initialPressed === '1' ? '1' : '0'};">${pressedSvg}</div>` : ''}
+        ${iconSvg ? `<div class="button-layer button-icon">${iconSvg}</div>` : ''}
+        ${labelSvg ? `<div class="button-layer button-label">${labelSvg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate styled toggle switch HTML with custom SVG layers
+ * Uses body/on/off/indicator layers for state-driven display
+ */
+function generateStyledToggleSwitchHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: ToggleSwitchElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'button') {
+    console.warn(`Toggle switch requires button category style, got: ${style.category}`)
+    return ''
+  }
+
+  // Apply color overrides
+  let svgWithOverrides = style.svgContent
+  if (config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+  const buttonLayers = style.layers as ButtonLayers
+
+  // Extract toggle-specific layers
+  const bodySvg = buttonLayers.body ? extractElementLayer(sanitizedSvg, buttonLayers.body) : ''
+  const onSvg = buttonLayers.on ? extractElementLayer(sanitizedSvg, buttonLayers.on) : ''
+  const offSvg = buttonLayers.off ? extractElementLayer(sanitizedSvg, buttonLayers.off) : ''
+  const indicatorSvg = buttonLayers.indicator ? extractElementLayer(sanitizedSvg, buttonLayers.indicator) : ''
+
+  const isOn = config.isOn ? '1' : '0'
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+
+  return `<div id="${id}" class="${baseClass} toggleswitch toggleswitch-element styled-button styled-toggleswitch" data-type="toggleswitch"${paramAttr} data-on="${isOn}" style="${positionStyle}">
+      <div class="styled-button-container">
+        ${bodySvg ? `<div class="button-layer button-body">${bodySvg}</div>` : ''}
+        ${offSvg ? `<div class="button-layer button-off" style="opacity: ${isOn === '0' ? '1' : '0'};">${offSvg}</div>` : ''}
+        ${onSvg ? `<div class="button-layer button-on" style="opacity: ${isOn === '1' ? '1' : '0'};">${onSvg}</div>` : ''}
+        ${indicatorSvg ? `<div class="button-layer button-indicator" style="opacity: ${isOn === '1' ? '1' : '0'};">${indicatorSvg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate styled power button HTML with custom SVG layers
+ * Uses normal/pressed/icon/led layers with LED color override
+ */
+function generateStyledPowerButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: PowerButtonElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'button') {
+    console.warn(`Power button requires button category style, got: ${style.category}`)
+    return ''
+  }
+
+  // Apply color overrides
+  let svgWithOverrides = style.svgContent
+  if (config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+  const buttonLayers = style.layers as ButtonLayers
+
+  // Extract power button layers
+  const normalSvg = buttonLayers.normal ? extractElementLayer(sanitizedSvg, buttonLayers.normal) : ''
+  const pressedSvg = buttonLayers.pressed ? extractElementLayer(sanitizedSvg, buttonLayers.pressed) : ''
+  const iconSvg = buttonLayers.icon ? extractElementLayer(sanitizedSvg, buttonLayers.icon) : ''
+  const ledSvg = buttonLayers.led ? extractElementLayer(sanitizedSvg, buttonLayers.led) : ''
+
+  const isOn = config.isOn ? '1' : '0'
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+
+  return `<div id="${id}" class="${baseClass} powerbutton powerbutton-element styled-button styled-powerbutton" data-type="powerbutton"${paramAttr} data-on="${isOn}" data-led-position="${config.ledPosition}" style="${positionStyle}">
+      <div class="styled-button-container">
+        ${normalSvg ? `<div class="button-layer button-normal" style="opacity: ${isOn === '0' ? '1' : '0'};">${normalSvg}</div>` : ''}
+        ${pressedSvg ? `<div class="button-layer button-pressed" style="opacity: ${isOn === '1' ? '1' : '0'};">${pressedSvg}</div>` : ''}
+        ${iconSvg ? `<div class="button-layer button-icon">${iconSvg}</div>` : ''}
+        ${ledSvg ? `<div class="button-layer button-led" style="opacity: ${isOn === '1' ? '1' : '0'};">${ledSvg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate styled rocker switch HTML with custom SVG layers
+ * Uses base/position-0/position-1/position-2 layers with opacity toggle
+ */
+function generateStyledRockerSwitchHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: RockerSwitchElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'button') {
+    console.warn(`Rocker switch requires button category style, got: ${style.category}`)
+    return ''
+  }
+
+  // Apply color overrides
+  let svgWithOverrides = style.svgContent
+  if ('colorOverrides' in config && config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+  const buttonLayers = style.layers as ButtonLayers
+
+  // Extract rocker switch layers
+  const baseSvg = buttonLayers.base ? extractElementLayer(sanitizedSvg, buttonLayers.base) : ''
+  const pos0Svg = buttonLayers['position-0'] ? extractElementLayer(sanitizedSvg, buttonLayers['position-0']) : ''
+  const pos1Svg = buttonLayers['position-1'] ? extractElementLayer(sanitizedSvg, buttonLayers['position-1']) : ''
+  const pos2Svg = buttonLayers['position-2'] ? extractElementLayer(sanitizedSvg, buttonLayers['position-2']) : ''
+
+  const currentPos = config.position
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+
+  return `<div id="${id}" class="${baseClass} rockerswitch rockerswitch-element styled-button styled-rockerswitch" data-type="rockerswitch"${paramAttr} data-position="${currentPos}" data-mode="${config.mode}" style="${positionStyle}">
+      <div class="styled-button-container">
+        ${baseSvg ? `<div class="button-layer button-base">${baseSvg}</div>` : ''}
+        ${pos0Svg ? `<div class="button-layer button-position-0" style="opacity: ${currentPos === 0 ? '1' : '0'};">${pos0Svg}</div>` : ''}
+        ${pos1Svg ? `<div class="button-layer button-position-1" style="opacity: ${currentPos === 1 ? '1' : '0'};">${pos1Svg}</div>` : ''}
+        ${pos2Svg ? `<div class="button-layer button-position-2" style="opacity: ${currentPos === 2 ? '1' : '0'};">${pos2Svg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate styled rotary switch HTML with custom SVG layers
+ * Uses base/selector layers with selector rotation for position
+ */
+function generateStyledRotarySwitchHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: RotarySwitchElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'button') {
+    console.warn(`Rotary switch requires button category style, got: ${style.category}`)
+    return ''
+  }
+
+  // Apply color overrides
+  let svgWithOverrides = style.svgContent
+  if ('colorOverrides' in config && config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+  const buttonLayers = style.layers as ButtonLayers
+
+  // Extract rotary switch layers
+  const baseSvg = buttonLayers.base ? extractElementLayer(sanitizedSvg, buttonLayers.base) : ''
+  const selectorSvg = buttonLayers.selector ? extractElementLayer(sanitizedSvg, buttonLayers.selector) : ''
+
+  // Calculate selector rotation angle
+  const anglePerPosition = config.positionCount > 1 ? config.rotationAngle / (config.positionCount - 1) : 0
+  const startAngle = -config.rotationAngle / 2
+  const selectorAngle = startAngle + config.currentPosition * anglePerPosition
+
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+
+  return `<div id="${id}" class="${baseClass} rotaryswitch rotaryswitch-element styled-button styled-rotaryswitch" data-type="rotaryswitch"${paramAttr} data-position="${config.currentPosition}" data-count="${config.positionCount}" style="${positionStyle}">
+      <div class="styled-button-container">
+        ${baseSvg ? `<div class="button-layer button-base">${baseSvg}</div>` : ''}
+        ${selectorSvg ? `<div class="button-layer button-selector" style="transform: rotate(${selectorAngle}deg);">${selectorSvg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
+ * Generate styled segment button HTML with custom SVG layers
+ * Uses body/highlight layers with clip-path for selected segment(s)
+ */
+function generateStyledSegmentButtonHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: SegmentButtonElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'button') {
+    console.warn(`Segment button requires button category style, got: ${style.category}`)
+    return ''
+  }
+
+  // Apply color overrides
+  let svgWithOverrides = style.svgContent
+  if ('colorOverrides' in config && config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+  const buttonLayers = style.layers as ButtonLayers
+
+  // Extract segment button layers
+  const bodySvg = buttonLayers.body ? extractElementLayer(sanitizedSvg, buttonLayers.body) : ''
+  const highlightSvg = buttonLayers.highlight ? extractElementLayer(sanitizedSvg, buttonLayers.highlight) : ''
+
+  const segmentCount = config.segments.length
+  const isVertical = config.orientation === 'vertical'
+
+  // Calculate clip-path(s) for selected segments
+  // For single selection: one clip-path
+  // For multi-select: multiple highlight instances with individual clip-paths
+  let highlightHTML = ''
+  if (highlightSvg && config.selectedIndices.length > 0) {
+    const segmentSize = 100 / segmentCount
+
+    config.selectedIndices.forEach((index) => {
+      let clipPath: string
+      if (isVertical) {
+        const clipTop = index * segmentSize
+        const clipBottom = 100 - (index + 1) * segmentSize
+        clipPath = `inset(${clipTop}% 0 ${clipBottom}% 0)`
+      } else {
+        const clipLeft = index * segmentSize
+        const clipRight = 100 - (index + 1) * segmentSize
+        clipPath = `inset(0 ${clipRight}% 0 ${clipLeft}%)`
+      }
+      highlightHTML += `<div class="button-layer button-highlight" style="clip-path: ${clipPath};">${highlightSvg}</div>\n        `
+    })
+  }
+
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+  const selectedAttr = ` data-selected-indices="${config.selectedIndices.join(',')}"`
+
+  return `<div id="${id}" class="${baseClass} segmentbutton segmentbutton-element styled-button styled-segmentbutton" data-type="segmentbutton"${paramAttr}${selectedAttr} data-mode="${config.selectionMode}" data-orientation="${config.orientation}" style="${positionStyle}">
+      <div class="styled-button-container">
+        ${bodySvg ? `<div class="button-layer button-body">${bodySvg}</div>` : ''}
+        ${highlightHTML}
+      </div>
+    </div>`
+}
+
+/**
  * Generate knob HTML with SVG arc structure (default CSS knob)
  */
 function generateKnobHTML(id: string, baseClass: string, positionStyle: string, config: KnobElementConfig): string {
@@ -1883,6 +2214,18 @@ function generateIconButtonHTML(
   positionStyle: string,
   element: IconButtonElementConfig
 ): string {
+  // Check if this button uses a custom SVG style
+  if (element.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === element.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledButtonHTML(id, baseClass, positionStyle, element, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   let iconSvg = ''
 
   if (element.iconSource === 'builtin' && element.builtInIcon) {
@@ -1912,6 +2255,18 @@ function generateToggleSwitchHTML(
   positionStyle: string,
   element: ToggleSwitchElementConfig
 ): string {
+  // Check if this toggle uses a custom SVG style
+  if (element.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === element.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledToggleSwitchHTML(id, baseClass, positionStyle, element, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const labelsHTML = element.showLabels
     ? `<span class="label-off">${escapeHTML(element.offLabel)}</span><span class="label-on">${escapeHTML(element.onLabel)}</span>`
     : ''
@@ -1935,6 +2290,18 @@ function generatePowerButtonHTML(
   positionStyle: string,
   element: PowerButtonElementConfig
 ): string {
+  // Check if this power button uses a custom SVG style
+  if (element.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === element.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledPowerButtonHTML(id, baseClass, positionStyle, element, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${element.parameterId || toKebabCase(element.name)}"`
 
@@ -1953,6 +2320,18 @@ function generateRockerSwitchHTML(
   positionStyle: string,
   element: RockerSwitchElementConfig
 ): string {
+  // Check if this rocker switch uses a custom SVG style
+  if ('styleId' in element && element.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === element.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledRockerSwitchHTML(id, baseClass, positionStyle, element, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   // Position indicator symbols matching RockerSwitchRenderer.tsx
   const positionSymbols: Record<0 | 1 | 2, string> = {
     2: '\u2191', // up arrow
@@ -1988,6 +2367,18 @@ function generateRotarySwitchHTML(
   positionStyle: string,
   element: RotarySwitchElementConfig
 ): string {
+  // Check if this rotary switch uses a custom SVG style
+  if ('styleId' in element && element.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === element.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledRotarySwitchHTML(id, baseClass, positionStyle, element, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   // Calculate dimensions matching renderer
   const size = Math.min(element.width, element.height)
   const centerX = size / 2
@@ -2078,6 +2469,18 @@ function generateSegmentButtonHTML(
   positionStyle: string,
   element: SegmentButtonElementConfig
 ): string {
+  // Check if this segment button uses a custom SVG style
+  if ('styleId' in element && element.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === element.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledSegmentButtonHTML(id, baseClass, positionStyle, element, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const segmentsHTML = element.segments
     .map((seg, i) => {
       const isSelected = element.selectedIndices.includes(i)
