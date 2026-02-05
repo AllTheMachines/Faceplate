@@ -15,8 +15,108 @@
 - **v1.10 Element Bug Fixes** — Phases 44-49 (shipped 2026-02-02)
 - **v2.0 Pro Licensing** — Phases 50-52 (shipped 2026-02-03)
 - **v0.10.0 SVG Styling for Visual Controls** — Phases 53-59 (in progress)
+- **v0.11.0 Complete Feature Documentation Manual** — Phases 60-65 (planned)
 
 ## Phases
+
+### v0.11.0 Complete Feature Documentation Manual (Phases 60-65)
+
+Comprehensive user manual covering all Faceplate features with screenshot placeholders. Six documentation phases organized by topic grouping, progressing from manual scaffolding through core interaction docs to advanced systems and existing doc updates.
+
+#### Phase 60: Manual Structure & Getting Started
+**Goal**: User manual exists with clear index and a complete getting-started walkthrough
+**Depends on**: None (first phase of milestone)
+**Requirements**: MAN-01, MAN-02, MAN-03, START-01, START-02, START-03
+**Success Criteria** (what must be TRUE):
+  1. `docs/manual/README.md` exists with table of contents linking every topic file in the manual
+  2. Every topic file follows the consistent format: title, overview paragraph, step-by-step sections, screenshot placeholders using `![description](../images/filename.png)` with descriptive filenames
+  3. Getting started guide walks a new user from installation through placing their first knob, configuring it, and previewing the result
+  4. Interface overview section explains the three-panel layout with a labeled screenshot placeholder
+**Plans**: 2 plans
+
+Plans:
+- [ ] 60-01-PLAN.md — Manual index and topic file scaffolding (README.md, consistent template, screenshot conventions)
+- [ ] 60-02-PLAN.md — Getting started guide (installation, interface overview, quick start tutorial)
+
+#### Phase 61: Canvas & Element Palette
+**Goal**: All canvas interaction and element palette features are documented with step-by-step instructions
+**Depends on**: Phase 60
+**Requirements**: CANV-01, CANV-02, CANV-03, CANV-04, CANV-05, CANV-06, CANV-07, CANV-08, CANV-09, PAL-01, PAL-02, PAL-03, PAL-04
+**Success Criteria** (what must be TRUE):
+  1. Canvas topic file documents all manipulation workflows: drag-drop, selection (click, multi-select, drag rectangle), move, resize, constrained drag, arrow nudge, copy/paste, undo/redo, snap grid, locking, background config, pan/zoom
+  2. Element palette topic file lists all categories with element types, describes search/filter, and explains Pro element badges
+  3. Each documented workflow includes keyboard shortcuts where applicable (Ctrl+G, Ctrl+C/V, Ctrl+Z/Y, arrow keys, Shift, Space)
+  4. Screenshot placeholders exist for: palette overview, drag-to-canvas, selection modes, snap grid, canvas background options, zoom controls
+**Plans**: 2 plans
+
+Plans:
+- [ ] 61-01-PLAN.md — Canvas documentation (drag-drop, selection, manipulation, copy/paste, undo/redo, snap, locking, background, pan/zoom)
+- [ ] 61-02-PLAN.md — Element palette documentation (categories, element types, search/filter, Pro badges)
+
+#### Phase 62: Properties Panel & Layers
+**Goal**: Properties panel usage and layers system are fully documented
+**Depends on**: Phase 60
+**Requirements**: PROP-01, PROP-02, PROP-03, PROP-04, PROP-05, LAY-01, LAY-02, LAY-03, LAY-04, LAY-05, LAY-06
+**Success Criteria** (what must be TRUE):
+  1. Properties panel topic file documents common properties (position, size, name, parameterId), element-specific sections with representative examples (knob, slider, button, meter), and parameter binding to JUCE
+  2. Help buttons section explains (?) buttons on panel sections and F1 contextual help shortcut
+  3. Layers topic file documents creating/renaming/deleting layers, visibility toggle, lock toggle, z-order reordering, and moving elements between layers
+  4. Screenshot placeholders exist for: properties panel overview, parameter binding field, layers panel with multiple layers, layer visibility/lock icons
+**Plans**: 2 plans
+
+Plans:
+- [ ] 62-01-PLAN.md — Properties panel documentation (common props, element-specific, parameter binding, help buttons)
+- [ ] 62-02-PLAN.md — Layers system documentation (create/rename/delete, visibility, lock, z-order, move between layers)
+
+#### Phase 63: Windows, Assets & Fonts
+**Goal**: Multi-window system, asset library, and font management are fully documented
+**Depends on**: Phase 60
+**Requirements**: WIN-01, WIN-02, WIN-03, WIN-04, WIN-05, WIN-06, ASSET-01, ASSET-02, ASSET-03, ASSET-04, ASSET-05, FONT-01, FONT-02, FONT-03, FONT-04
+**Success Criteria** (what must be TRUE):
+  1. Multi-window topic file documents creating/duplicating/deleting windows, release vs developer types with export implications, window properties, cross-window copy/paste, and button navigation actions
+  2. Asset library topic file documents importing SVGs (upload dialog, validation, categories), organizing assets, drag-to-canvas workflow, and SVG security sanitization
+  3. Font management topic file documents built-in vs custom fonts, selecting a fonts folder, custom font preview dropdown, and how fonts are bundled in export (base64 for custom, file refs for built-in)
+  4. Screenshot placeholders exist for: window tabs, window properties panel, asset library sidebar, SVG import dialog, font folder selection, font dropdown preview
+**Plans**: 2 plans
+
+Plans:
+- [ ] 63-01-PLAN.md — Multi-window system documentation (windows, types, properties, copy/paste, navigation)
+- [ ] 63-02-PLAN.md — Asset library and font management documentation (SVG import, categories, drag-to-canvas, font system)
+
+#### Phase 64: Styles & Export
+**Goal**: Element styles system and export workflows are fully documented
+**Depends on**: Phase 60
+**Requirements**: STYLE-01, STYLE-02, STYLE-03, STYLE-04, STYLE-05, STYLE-06, EXP-01, EXP-02, EXP-03, EXP-04, EXP-05, EXP-06
+**Success Criteria** (what must be TRUE):
+  1. Element styles topic file documents what styles are, supported categories, creating a style (import SVG, layer detection, mapping dialog), applying via properties panel, color overrides, and the ManageElementStylesDialog
+  2. Styles topic includes reference to STYLE_CREATION_MANUAL.md for detailed SVG design workflow
+  3. Export topic file documents both modes (JUCE WebView2 bundle and browser preview), what gets generated, folder vs ZIP export, multi-window export structure, and Pro element blocking behavior
+  4. Screenshot placeholders exist for: layer mapping dialog, style dropdown in properties, color override controls, export modal, browser preview, Pro blocking modal
+**Plans**: 2 plans
+
+Plans:
+- [ ] 64-01-PLAN.md — Element styles documentation (overview, creating, applying, overrides, managing, STYLE_CREATION_MANUAL reference)
+- [ ] 64-02-PLAN.md — Export system documentation (JUCE bundle, browser preview, folder/ZIP, multi-window, Pro blocking)
+
+#### Phase 65: Project Management & Docs Update
+**Goal**: Project management features are documented and existing documentation files are updated to current version
+**Depends on**: Phases 61, 62, 63, 64 (needs all topic files written before updating existing docs)
+**Requirements**: PROJ-01, PROJ-02, PROJ-03, PROJ-04, UPD-01, UPD-02, UPD-03
+**Success Criteria** (what must be TRUE):
+  1. Project management topic file documents save/load JSON workflow, unsaved changes protection (browser warning, asterisk, "last saved" display), container editing (Edit Contents, breadcrumb, nesting), and template import
+  2. FACEPLATE_DOCUMENTATION.md is updated to reflect all features through v0.11.0 including element styles, layers, multi-window, and any changes since v0.9.4
+  3. ELEMENT_REFERENCE.md is updated with current element count (109), styleId properties for supported categories, and any new elements
+  4. STYLE_CREATION_MANUAL.md is verified and updated for the unified ElementStyle system (expanded from knob-only to all supported categories)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 65-01-PLAN.md — Project management documentation (save/load, unsaved changes, container editing, template import)
+- [ ] 65-02-PLAN.md — Existing docs update (FACEPLATE_DOCUMENTATION.md, ELEMENT_REFERENCE.md, STYLE_CREATION_MANUAL.md)
+
+---
+
+<details>
+<summary>v0.10.0 SVG Styling for Visual Controls (Phases 53-59) - IN PROGRESS</summary>
 
 ### v0.10.0 SVG Styling for Visual Controls (Phases 53-59)
 
@@ -149,7 +249,7 @@ Plans:
 - [ ] 59-03-PLAN.md — PropertyPanel integration (manage button, thumbnail preview)
 - [ ] 59-04-PLAN.md — Verification checkpoint
 
----
+</details>
 
 <details>
 <summary>v2.0 Pro Licensing (Phases 50-52) - SHIPPED 2026-02-03</summary>
@@ -223,11 +323,6 @@ Bug fix milestone addressing 20 GitHub issues across navigation elements, slider
 **Goal**: Navigation elements work correctly with full interactivity and visibility
 **Depends on**: None (first phase of milestone)
 **Requirements**: NAV-01, NAV-02, NAV-03, NAV-04
-**Success Criteria** (what must be TRUE):
-  1. Tree View children are visible in the tree and their properties can be edited in the property panel
-  2. Tag Selector shows tag input/suggestions when user starts typing
-  3. Combo Box dropdown remains open and shows all options after user makes a selection
-  4. Breadcrumb navigation allows expanding back to deeper levels after navigating to root
 **Plans**: 2 plans
 
 Plans:
@@ -238,11 +333,6 @@ Plans:
 **Goal**: All slider variants feel natural and display their visual elements correctly
 **Depends on**: Phase 44
 **Requirements**: SLD-01, SLD-02, SLD-03, SLD-04
-**Success Criteria** (what must be TRUE):
-  1. ASCII Slider responds to drag with smooth, predictable value changes
-  2. Arc Slider has configurable distance options for positioning labels and values
-  3. Notched Slider displays visible labels and tick lines at notch positions
-  4. Bipolar Slider renders and operates correctly in horizontal orientation
 **Plans**: 3 plans
 
 Plans:
@@ -254,12 +344,6 @@ Plans:
 **Goal**: All curve/visualization elements render visibly and respond to interaction
 **Depends on**: Phase 45
 **Requirements**: CRV-01, CRV-02, CRV-03, CRV-04, CRV-05
-**Success Criteria** (what must be TRUE):
-  1. EQ Curve displays visible frequency response line and responds to handle dragging
-  2. Compressor Curve displays visible transfer function and responds to threshold/ratio adjustments
-  3. Envelope Display shows visible ADSR curve with draggable control points
-  4. LFO Display shows visible waveform shape that updates when parameters change
-  5. Filter Response shows visible cutoff/resonance curve
 **Plans**: 3 plans
 
 Plans:
@@ -271,10 +355,6 @@ Plans:
 **Goal**: Segment buttons display icons correctly, Kick Button removed (redundant), stepped knobs snap properly
 **Depends on**: Phase 46
 **Requirements**: BTN-01, BTN-02, KNB-01
-**Success Criteria** (what must be TRUE):
-  1. Segment Button displays actual SVG icons in segments (not placeholder unicode symbols)
-  2. Kick Button element type removed from codebase (redundant with Button momentary mode)
-  3. Stepped Knob can display optional tick marks outside the knob edge
 **Plans**: 3 plans
 
 Plans:
@@ -286,10 +366,6 @@ Plans:
 **Goal**: Note Display font sizing consistent with other displays, all LED element types removed (no longer needed)
 **Depends on**: Phase 47
 **Requirements**: DSP-01, LED-01
-**Success Criteria** (what must be TRUE):
-  1. Note Display font sizes are consistent with other displays (14px default) and can be adjusted via properties
-  2. Note Display has showOctave property to toggle octave number display (C4 vs C)
-  3. All 6 LED element types removed from codebase (breaking change - no longer supported)
 **Plans**: 2 plans
 
 Plans:
@@ -300,9 +376,6 @@ Plans:
 **Goal**: Color picker and help system work without frustrating interaction issues
 **Depends on**: Phase 48
 **Requirements**: UI-01, UI-02
-**Success Criteria** (what must be TRUE):
-  1. Color picker popup stays open when user drags to select colors (no premature closing)
-  2. Related Topics links in help system navigate to the correct help section when clicked
 **Plans**: 2 plans
 
 Plans:
@@ -338,582 +411,93 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 - [x] 40-07: Alt/Ctrl+click deselection
 - [x] 40-08: Font weight display
 
-**Deferred to v1.9:** GitHub #2 (folder subfolder), #3 (multi-drag)
-
 </details>
 
 <details>
 <summary>v1.0 MVP (Phases 1-13) - SHIPPED 2026-01-25</summary>
 
-### Phase 1: Project Setup
-**Goal**: Vite + React + TypeScript development environment running
-**Plans**: 3 plans
-
-Plans:
-- [x] 01-01: Initialize Vite project with React + TypeScript
-- [x] 01-02: Install core dependencies (@dnd-kit, Zustand, Tailwind)
-- [x] 01-03: Set up development tooling (ESLint, Prettier, Vitest)
-
-### Phase 2: State Management
-**Goal**: Zustand store with element and canvas slices
-**Plans**: 2 plans
-
-Plans:
-- [x] 02-01: Create store architecture with slices
-- [x] 02-02: Implement undo/redo system
-
-### Phase 3: Three-Panel Layout
-**Goal**: Basic UI shell with palette, canvas, and property panel
-**Plans**: 2 plans
-
-Plans:
-- [x] 03-01: Build responsive three-panel layout
-- [x] 03-02: Implement dark theme with Tailwind
-
-### Phase 4: Element Palette
-**Goal**: Left sidebar with draggable element types
-**Plans**: 2 plans
-
-Plans:
-- [x] 04-01: Build palette UI with categorized elements
-- [x] 04-02: Implement drag-from-palette with @dnd-kit
-
-### Phase 5: Canvas - Core Rendering
-**Goal**: Elements render on canvas with position and size
-**Plans**: 4 plans
-
-Plans:
-- [x] 05-01: Canvas component with configurable dimensions
-- [x] 05-02: Render Knob, Slider, Button elements
-- [x] 05-03: Render Label and Image elements
-- [x] 05-04: Render Meter element
-
-### Phase 6: Canvas - Manipulation
-**Goal**: Drag to move, resize handles, selection
-**Plans**: 5 plans
-
-Plans:
-- [x] 06-01: Selection system (click, multi-select)
-- [x] 06-02: Drag elements on canvas
-- [x] 06-03: Resize handles with constrained drag
-- [x] 06-04: Arrow key nudging
-- [x] 06-05: Copy/paste with offset
-
-### Phase 7: Property Panel
-**Goal**: Right sidebar shows editable properties for selected element
-**Plans**: 3 plans
-
-Plans:
-- [x] 07-01: Property panel UI framework
-- [x] 07-02: Common properties (position, size, colors)
-- [x] 07-03: Element-specific properties
-
-### Phase 8: Canvas Features
-**Goal**: Background, pan/zoom, snap-to-grid, element locking
-**Plans**: 4 plans
-
-Plans:
-- [x] 08-01: Canvas background (color, gradient, image)
-- [x] 08-02: Pan and zoom viewport
-- [x] 08-03: Snap-to-grid system
-- [x] 08-04: Element locking (individual and lock-all)
-
-### Phase 9: Container Elements
-**Goal**: Panel, Frame, GroupBox, Collapsible containers
-**Plans**: 2 plans
-
-Plans:
-- [x] 09-01: Container element types and rendering
-- [x] 09-02: Visual hierarchy and z-index
-
-### Phase 10: Form Controls
-**Goal**: Dropdown, Checkbox, RadioGroup, TextField elements
-**Plans**: 2 plans
-
-Plans:
-- [x] 10-01: Form control element types
-- [x] 10-02: Form control property panels
-
-### Phase 11: Audio Displays
-**Goal**: dB Display, Frequency Display, GR Meter, placeholders
-**Plans**: 3 plans
-
-Plans:
-- [x] 11-01: Audio display elements
-- [x] 11-02: Waveform, Oscilloscope, Modulation Matrix, Preset Browser placeholders
-- [x] 11-03: Decorative elements (Rectangle, Line)
-
-### Phase 12: Export System
-**Goal**: JUCE WebView2 bundle and HTML preview
-**Plans**: 5 plans
-
-Plans:
-- [x] 12-01: Export architecture and file generation
-- [x] 12-02: HTML/CSS export with embedded fonts
-- [x] 12-03: JavaScript export with dynamic JUCE bridge
-- [x] 12-04: C++ snippets for WebSliderRelay
-- [x] 12-05: Preview mode with mock JUCE
-
-### Phase 13: Project Persistence & Polish
-**Goal**: Save/load JSON, template import, final refinements
-**Plans**: 16 plans
-
-Plans:
-- [x] 13-01: JSON save/load with Zod validation
-- [x] 13-02: Template import from existing projects
-- [x] 13-03: Font selection (Inter, Roboto, Roboto Mono)
-- [x] 13-04: RangeSlider (dual-thumb slider)
-- [x] 13-05: SVG Design Mode for layer assignment
-- [x] 13-06: Wire ModulationMatrix property panel
-- [x] 13-07: Wire PresetBrowser property panel
-- [x] 13-08: Wire Waveform property panel
-- [x] 13-09: Wire Oscilloscope property panel
-- [x] 13-10: Wire RangeSlider property panel
-- [x] 13-11: Make slider/meter elements rectangular (remove rounded corners)
-- [x] 13-12: Change default element color from blue to grey
-- [x] 13-13: Wire ModulationMatrix element on canvas
-- [x] 13-14: Fix RangeSlider rendering
-- [x] 13-15: Update templates with new defaults
-- [x] 13-16: Final verification and cleanup
+- [x] Phase 1: Project Setup (3/3 plans)
+- [x] Phase 2: State Management (2/2 plans)
+- [x] Phase 3: Three-Panel Layout (2/2 plans)
+- [x] Phase 4: Element Palette (2/2 plans)
+- [x] Phase 5: Canvas - Core Rendering (4/4 plans)
+- [x] Phase 6: Canvas - Manipulation (5/5 plans)
+- [x] Phase 7: Property Panel (3/3 plans)
+- [x] Phase 8: Canvas Features (4/4 plans)
+- [x] Phase 9: Container Elements (2/2 plans)
+- [x] Phase 10: Form Controls (2/2 plans)
+- [x] Phase 11: Audio Displays (3/3 plans)
+- [x] Phase 12: Export System (5/5 plans)
+- [x] Phase 13: Project Persistence & Polish (16/16 plans)
 
 </details>
 
 <details>
 <summary>v1.1 SVG Import System (Phases 14-18) - SHIPPED 2026-01-26</summary>
 
-### Phase 14: Security Foundation & Upload Pipeline
-**Goal**: All SVG rendering is sanitized and protected against XSS attacks
-**Plans**: 4 plans
-
-Plans:
-- [x] 14-01: SVG Validator with TDD (size, element count, DOCTYPE, dangerous elements)
-- [x] 14-02: SVG Sanitizer with DOMPurify and TDD
-- [x] 14-03: SafeSVG component and toast infrastructure
-- [x] 14-04: Integration (serialization re-sanitization, export CSP)
-
-### Phase 15: Asset Library Storage & UI
-**Goal**: Users can import, organize, and browse SVG assets in a central library
-**Plans**: 5 plans
-
-Plans:
-- [x] 15-01: AssetsSlice foundation (types, state, store integration)
-- [x] 15-02: Import dialog with preview and validation
-- [x] 15-03: Asset Library panel with categories, search, and tab switching
-- [x] 15-04: Asset interactions (rename, delete, drag-to-canvas)
-- [x] 15-05: Gap closure: Wire ImageRenderer to render asset SVG content
-
-### Phase 16: Static SVG Graphics
-**Goal**: Users can place scalable SVG graphics on canvas as decorative elements
-**Plans**: 5 plans
-
-Plans:
-- [x] 16-01: Element type & renderer (SvgGraphicElementConfig, SvgGraphicRenderer)
-- [x] 16-02: Property panel (SvgGraphicProperties, getSVGNaturalSize utility)
-- [x] 16-03: Integration (palette, Element.tsx, PropertyPanel, drag-drop)
-- [x] 16-04: Export support (HTML/CSS generators)
-- [x] 16-05: Aspect ratio locking (resize hook modification)
-
-### Phase 17: Interactive SVG Knobs
-**Goal**: Users can import custom knob designs with rotation animation mapped to parameter values
-**Plans**: 6 plans
-
-Plans:
-- [x] 17-01: KnobStyle type and KnobStylesSlice store
-- [x] 17-02: Layer detection utilities (detectKnobLayers, extractLayer, applyColorOverride)
-- [x] 17-03: StyledKnobRenderer (layer-based SVG knob rendering)
-- [x] 17-04: LayerMappingDialog and ManageKnobStylesDialog
-- [x] 17-05: KnobProperties extensions (style dropdown, color overrides)
-- [x] 17-06: Project serialization and HTML/CSS export
-
-### Phase 18: Export & Polish
-**Goal**: Exported JUCE bundles include sanitized, optimized SVG with responsive scaling
-**Plans**: 6 plans
-
-Plans:
-- [x] 18-01: SVGO wrapper with safe optimization settings
-- [x] 18-02: Responsive scaling CSS/JS for exported HTML
-- [x] 18-03: Export integration (SVGO + responsive scaling)
-- [x] 18-04: Browser preview for export verification
-- [x] 18-05: JUCE integration README in exported bundle
-- [x] 18-06: Export workflow polish and error messages
+- [x] Phase 14: Security Foundation & Upload Pipeline (4/4 plans)
+- [x] Phase 15: Asset Library Storage & UI (5/5 plans)
+- [x] Phase 16: Static SVG Graphics (5/5 plans)
+- [x] Phase 17: Interactive SVG Knobs (6/6 plans)
+- [x] Phase 18: Export & Polish (6/6 plans)
 
 </details>
 
 <details>
 <summary>v1.2 Complete Element Taxonomy (Phases 19-30) - SHIPPED 2026-01-27</summary>
 
-### Phase 19: Architecture Refactoring
-**Goal**: Codebase scales gracefully from 25 to 103 element types without technical debt
-**Dependencies**: None (prerequisite for all other v1.2 phases)
-**Requirements**: ARCH-01, ARCH-02, ARCH-03, ARCH-04, ARCH-05, UX-01, UX-02
-**Plans**: 6 plans
-
-Plans:
-- [x] 19-01-PLAN.md — Split TypeScript unions by category
-- [x] 19-02-PLAN.md — Element renderer registry pattern
-- [x] 19-03-PLAN.md — Property panel registry pattern
-- [x] 19-04-PLAN.md — Undo/redo buttons and QWERTZ support
-- [x] 19-05-PLAN.md — File organization by category
-- [x] 19-06-PLAN.md — Code splitting infrastructure
-
-**Success Criteria:**
-1. PropertyPanel.tsx uses Map-based component registry instead of switch statements (<100 LOC vs 200+)
-2. Element renderers registered via Map lookup pattern
-3. Code splitting infrastructure established with lazy loading for element categories
-4. TypeScript unions split by category with compilation time <10 seconds
-5. Palette supports 2-level category hierarchy with search/filter
-6. Undo/redo buttons visible in toolbar near logo
-7. Keyboard shortcuts detect QWERTZ and non-US layouts correctly
-
-### Phase 20: Simple Controls
-**Goal**: Users can design UIs with all rotary and linear control variants
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: ROT-01, ROT-02, ROT-03, LIN-01, LIN-02, LIN-03, LIN-04, LIN-05
-**Plans**: 4 plans
-
-Plans:
-- [x] 20-01-PLAN.md — Rotary control variants (Stepped, Center-Detent, Dot Indicator)
-- [x] 20-02-PLAN.md — Bipolar and Crossfade sliders
-- [x] 20-03-PLAN.md — Notched and Arc sliders
-- [x] 20-04-PLAN.md — Multi-Slider for EQ/multi-band
-
-**Success Criteria:**
-1. User can add Stepped Knob with configurable detent positions (12, 24, 36, 48, 64 steps)
-2. User can add Center-Detented Knob that snaps to center position when dragging near 50%
-3. User can add Dot Indicator Knob with minimal dot-style visual indicator
-4. User can add Bipolar Slider with center-zero default and color zones
-5. User can add Crossfade Slider for A/B balance (DJ-style)
-6. User can add Notched Slider with visible detent indicators
-7. User can add Arc Slider following curved path (90-270 degree range)
-8. User can add Multi-Slider with parallel sliders for EQ/multi-band controls
-
-### Phase 21: Buttons & Switches
-**Goal**: Users can design UIs with all button and switch variants
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: BTN-01, BTN-02, BTN-03, BTN-04, BTN-05, BTN-06, BTN-07
-**Plans**: 4 plans
-
-Plans:
-- [x] 21-01-PLAN.md — Built-in icon system + Icon Button, Kick Button, Toggle Switch, Power Button
-- [x] 21-02-PLAN.md — Rocker Switch, Rotary Switch, Segment Button
-- [x] 21-03-PLAN.md — Property panels for all 7 types + palette entries
-- [x] 21-04-PLAN.md — Export support (HTML/CSS generators)
-
-**Success Criteria:**
-1. User can add Icon Button (toolbar style, icon-only, no text label)
-2. User can add Toggle Switch (iOS-style slide with on/off states)
-3. User can add Rocker Switch (3-position up/center/down with visual states)
-4. User can add Rotary Switch (vintage rotating selector with position labels)
-5. User can add Kick Button (momentary with press animation)
-6. User can add Segment Button (multi-segment mode selection like iOS UISegmentedControl)
-7. User can add Power Button (on/off with LED indicator)
-
-### Phase 22: Value Displays & LEDs
-**Goal**: Users can display formatted parameter values and status indicators
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: DISP-01, DISP-02, DISP-03, DISP-04, DISP-05, DISP-06, DISP-07, DISP-08, LED-01, LED-02, LED-03, LED-04, LED-05, LED-06
-**Plans**: 4 plans
-
-Plans:
-- [x] 22-01-PLAN.md — Value display types + renderers (Numeric, Time, %, Ratio, Note, BPM, Editable, Multi-Value)
-- [x] 22-02-PLAN.md — LED types + renderers (Single, Bi-Color, Tri-Color, Array, Ring, Matrix)
-- [x] 22-03-PLAN.md — Property panels for all 14 types + palette entries
-- [x] 22-04-PLAN.md — Export support (HTML/CSS generators)
-
-**Success Criteria:**
-1. User can add Numeric Display with decimal precision control
-2. User can add Time Display with format options (ms, seconds, bars:beats:ticks)
-3. User can add Percentage Display (0-100% with % symbol)
-4. User can add Ratio Display (compression ratio, e.g., 4:1, infinity:1)
-5. User can add Note Display (MIDI note to musical note, e.g., 60 → C4)
-6. User can add BPM Display (tempo value with BPM label)
-7. User can add Editable Display (double-click to edit, validates input)
-8. User can add Multi-Value Display (stacked values for multi-band displays)
-9. User can add Single LED (on/off with color property)
-10. User can add Bi-Color LED (green/red states for signal/clip)
-11. User can add Tri-Color LED (off/yellow/red for status)
-12. User can add LED Array (8-24 LEDs in row for level indication)
-13. User can add LED Ring (circular around knob for value indication)
-14. User can add LED Matrix (grid pattern for multi-dimensional display)
-
-### Phase 23: Professional Meters
-**Goal**: Users can add standards-compliant audio meters with correct ballistics
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: MTR-01, MTR-02, MTR-03, MTR-04, MTR-05, MTR-06, MTR-07, MTR-08, MTR-09, MTR-10, MTR-11, MTR-12, MTR-13
-**Plans**: 6 plans
-
-Plans:
-- [x] 23-01-PLAN.md — Shared meter infrastructure (utilities, SegmentedMeter, MeterScale, PeakHoldIndicator)
-- [x] 23-02-PLAN.md — RMS, VU, PPM Type I/II meter types + renderers (8 element types)
-- [x] 23-03-PLAN.md — True Peak, LUFS meter types + renderers (8 element types)
-- [x] 23-04-PLAN.md — K-System, Correlation, Stereo Width meter types + renderers (8 element types)
-- [x] 23-05-PLAN.md — Property panels + palette entries (24 meter types)
-- [x] 23-06-PLAN.md — Export support (CSS/HTML generators)
-
-**Success Criteria:**
-1. User can add RMS Meter with 300ms averaging window
-2. User can add VU Meter with ANSI C16.5-1942 ballistics (300ms integration)
-3. User can add PPM Type I with IEC 60268-10 ballistics (10ms attack, 1.5s release)
-4. User can add PPM Type II with BBC standard ballistics (10ms attack, 2.8s release)
-5. User can add True Peak Meter with ITU-R BS.1770-5 4x oversampling
-6. User can add LUFS Momentary with EBU R128 K-weighting (400ms window)
-7. User can add LUFS Short-term with EBU R128 K-weighting (3s window)
-8. User can add LUFS Integrated with EBU R128 K-weighting (full program)
-9. User can add K-12, K-14, K-20 Meters with Bob Katz ballistics (600ms integration)
-10. User can add Correlation Meter (phase, -1 to +1 range)
-11. User can add Stereo Width Meter (M/S ratio, 0-200%)
-12. All meters support configurable color zones (green <-18, yellow <-6, red >=0)
-13. All meters support peak hold indicator with configurable hold time (1-3s)
-
-### Phase 24: Navigation & Selection
-**Goal**: Users can add navigation and selection components for complex UIs
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: NAV-01, NAV-02, NAV-03, NAV-04, NAV-05, NAV-06, NAV-07, NAV-08
-**Plans**: 6 plans
-
-Plans:
-- [x] 24-01-PLAN.md — Stepper and Breadcrumb types + renderers
-- [x] 24-02-PLAN.md — Multi-Select Dropdown, Combo Box, Menu Button types + renderers
-- [x] 24-03-PLAN.md — Tab Bar and Tag Selector types + renderers
-- [x] 24-04-PLAN.md — Tree View with react-arborist
-- [x] 24-05-PLAN.md — Property panels + palette entries (8 element types)
-- [x] 24-06-PLAN.md — Export support (CSS/HTML generators)
-
-**Success Criteria:**
-1. User can add Multi-Select Dropdown with checkboxes for multiple selections
-2. User can add Combo Box (dropdown + text entry for filtering)
-3. User can add Tab Bar for section switching with configurable tab count
-4. User can add Menu Button that opens context menu on click
-5. User can add Breadcrumb for hierarchy navigation
-6. User can add Stepper (+/- buttons for integer/discrete values)
-7. User can add Tag Selector for tag-based filtering
-8. User can add Tree View using react-arborist for hierarchical lists
-
-### Phase 25: Real-Time Visualizations
-**Goal**: Users can add real-time audio visualizations with Canvas rendering
-**Dependencies**: Phase 19 (requires code splitting infrastructure)
-**Requirements**: VIZ-01, VIZ-02, VIZ-03, VIZ-04, VIZ-05
-**Plans**: 5 plans
-
-Plans:
-- [x] 25-01-PLAN.md — Types, mock data utilities, Canvas setup hook
-- [x] 25-02-PLAN.md — Scrolling Waveform and Spectrum Analyzer renderers
-- [x] 25-03-PLAN.md — Spectrogram, Goniometer, Vectorscope renderers
-- [x] 25-04-PLAN.md — Property panels and palette entries
-- [x] 25-05-PLAN.md — Export support (CSS/HTML/JS generation)
-
-**Success Criteria:**
-1. User can add Scrolling Waveform (time-domain with moving display)
-2. User can add Spectrum Analyzer with FFT size options (512-8192), frequency scale (linear/log/MEL), and color gradients
-3. User can add Spectrogram (waterfall display with time-frequency color map)
-4. User can add Goniometer (L/R phase display, circular)
-5. User can add Vectorscope (Lissajous mode for stereo correlation)
-6. All visualizations render at 30 FPS with mock data in designer
-7. Canvas elements export correctly to JUCE WebView2 with JavaScript draw functions
-
-### Phase 26: Interactive Curves
-**Goal**: Users can add interactive curve editors for EQ, dynamics, and modulation
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: VIZ-06, VIZ-07, VIZ-08, VIZ-09, VIZ-10
-**Plans**: 5 plans
-
-Plans:
-- [x] 26-01-PLAN.md — Types, audio math utilities, curve rendering utilities
-- [x] 26-02-PLAN.md — EQ Curve and Filter Response renderers
-- [x] 26-03-PLAN.md — Compressor Curve and Envelope Display renderers
-- [x] 26-04-PLAN.md — LFO Display renderer, property panels, palette entries
-- [x] 26-05-PLAN.md — Export support (CSS/HTML/JS generation)
-
-**Success Criteria:**
-1. User can add EQ Curve with draggable frequency/gain/Q handles
-2. User can add Compressor Curve with draggable threshold, ratio, knee parameters
-3. User can add Envelope Display with ADSR visualization and curve types
-4. User can add LFO Display with waveform shape (sine, triangle, saw, square)
-5. User can add Filter Response showing cutoff/resonance curve
-
-### Phase 27: Containers & Polish
-**Goal**: Users can add remaining container elements and UX refinements
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: CONT-01, CONT-02, CONT-03
-**Plans**: 4 plans
-
-Plans:
-- [x] 27-01-PLAN.md — Tooltip element with DOM overlay and hover detection
-- [x] 27-02-PLAN.md — Horizontal and Vertical Spacer elements with fixed/flexible modes
-- [x] 27-03-PLAN.md — Window Chrome element with macOS/Windows/neutral button styles
-- [x] 27-04-PLAN.md — Export support (HTML/CSS generators for all 4 new types)
-
-**Success Criteria:**
-1. User can add Tooltip (hover information with configurable position)
-2. User can add Spacer (invisible layout element with fixed/flexible sizing)
-3. User can add Window Chrome (title bar with close/minimize buttons, resize handles)
-
-### Phase 27.1: Post-Phase Bug Fixes
-**Goal**: Fix all rendering, drag-drop, and UI bugs discovered during v1.2 testing
-**Dependencies**: Phase 27 (issues found during verification)
-**Plans**: 5 plans
-
-Plans:
-- [x] 27.1-01-PLAN.md — Fix Canvas visualizations and curves not rendering (BUG-08, BUG-09)
-- [x] 27.1-02-PLAN.md — Fix Navigation category blank page and logo timestamp (BUG-10, BUG-12)
-- [x] 27.1-03-PLAN.md — Fix Crossfade Slider, LED Ring, and meters in preview (BUG-01, BUG-05, BUG-06)
-- [x] 27.1-04-PLAN.md — Fix switch styling and button fonts in preview (BUG-02, BUG-03, BUG-04)
-- [x] 27.1-05-PLAN.md — Verify spacer behavior and element interactivity (BUG-07, BUG-11)
-
-**Bug List:**
-- BUG-01: Crossfade Slider not showing track in preview
-- BUG-02: Rocker Switch looks different in preview vs canvas
-- BUG-03: Rotary Switch looks different in preview vs canvas
-- BUG-04: Some buttons have different fonts in preview
-- BUG-05: LED Ring not centered + messed up in HTML preview
-- BUG-06: All new professional meters not rendered correctly in preview
-- BUG-07: Spacers not shown in HTML preview (verify if intentional)
-- BUG-08: All visualizations cannot be dragged to canvas
-- BUG-09: All curves invisible on canvas (elements exist but lines not visible)
-- BUG-10: Navigation & Selection category causes blank page
-- BUG-11: Many/all elements have no interactivity (needs investigation)
-- BUG-12: Logo shows current time on reload instead of last project update time
-
-**Success Criteria:**
-1. All 5 visualization types can be dragged to canvas and render visibly
-2. All 5 curve types can be dragged to canvas with visible lines
-3. Navigation & Selection category opens normally
-4. All professional meters render correctly in HTML preview
-5. Crossfade slider shows track gradient in preview
-6. LED Ring is centered and renders correctly
-7. Switch elements match between canvas and preview
-8. Logo shows project last-modified time
-
-### Phase 28: Specialized Audio (Part 1)
-**Goal**: Users can add MIDI input and trigger controls
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: SPEC-01, SPEC-02, SPEC-03
-
-**Success Criteria:**
-1. User can add Piano Keyboard using react-piano with configurable range (C0-C8), velocity sensitivity, and note labels
-2. User can add Drum Pad (velocity-sensitive trigger with visual feedback)
-3. User can add Pad Grid (4x4 or 4x8 layout for drum machines)
-
-### Phase 29: Specialized Audio (Part 2)
-**Goal**: Users can add sequencing and modulation controls
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: SPEC-04, SPEC-05, SPEC-06
-
-**Success Criteria:**
-1. User can add Step Sequencer (pattern grid with 8-32 steps, note/velocity per step)
-2. User can add XY Pad (2D control surface with crosshair, snap-to-grid, parameter labels)
-3. User can add Wavetable Display (3D waveform visualization)
-
-### Phase 30: Specialized Audio (Part 3)
-**Goal**: Users can add synthesis editors and routing visualizations
-**Dependencies**: Phase 19 (requires registry pattern)
-**Requirements**: SPEC-07, SPEC-08, SPEC-09, SPEC-10, SPEC-11, SPEC-12
-
-**Success Criteria:**
-1. User can add Harmonic Editor (additive synthesis bar chart for partials)
-2. User can add Envelope Editor (draggable ADSR points with curve types)
-3. User can add Sample Display (audio file waveform with zoom/pan)
-4. User can add Loop Points (start/end markers with draggable handles)
-5. User can add Patch Bay (cable routing visualization for modular synthesis)
-6. User can add Signal Flow (block diagram for audio routing)
+- [x] Phase 19: Architecture Refactoring (6/6 plans)
+- [x] Phase 20: Simple Controls (4/4 plans)
+- [x] Phase 21: Buttons & Switches (4/4 plans)
+- [x] Phase 22: Value Displays & LEDs (4/4 plans)
+- [x] Phase 23: Professional Meters (6/6 plans)
+- [x] Phase 24: Navigation & Selection (6/6 plans)
+- [x] Phase 25: Real-Time Visualizations (5/5 plans)
+- [x] Phase 26: Interactive Curves (5/5 plans)
+- [x] Phase 27: Containers & Polish (4/4 plans)
+- [x] Phase 27.1: Post-Phase Bug Fixes (5/5 plans)
+- [x] Phase 28: Specialized Audio Part 1 (3/3 plans)
+- [x] Phase 29: Specialized Audio Part 2 (3/3 plans)
+- [x] Phase 30: Specialized Audio Part 3 (6/6 plans)
 
 </details>
 
 <details>
 <summary>v1.3 Workflow & Protection (Phases 31-33) - SHIPPED 2026-01-27</summary>
 
-### Phase 31: Undo/Redo History Panel
-**Goal**: Visible debug panel showing every state change for debugging and transparency
-**Plans**: 2 plans - completed 2026-01-27
-
-### Phase 32: Unsaved Changes Protection
-**Goal**: Users never accidentally lose work due to navigation or browser close
-**Plans**: 2 plans - completed 2026-01-27
-
-### Phase 33: Adjustable Snap Grid
-**Goal**: Visible background grid for precise element alignment
-**Plans**: 1 plan - completed 2026-01-27
+- [x] Phase 31: Undo/Redo History Panel (2/2 plans)
+- [x] Phase 32: Unsaved Changes Protection (2/2 plans)
+- [x] Phase 33: Adjustable Snap Grid (1/1 plans)
 
 </details>
 
 <details>
 <summary>v1.4 Container Editing System (Phases 34-35) - SHIPPED 2026-01-27</summary>
 
-### Phase 34: Container Element Editor
-**Goal**: Users can add child elements to containers via dedicated editing interface
-**Plans**: 1 plan - completed 2026-01-27
-
-### Phase 35: Container Overflow & Scrollbars
-**Goal**: Containers handle child elements that exceed their bounds gracefully
-**Plans**: 1 plan - completed 2026-01-27
+- [x] Phase 34: Container Element Editor (1/1 plans)
+- [x] Phase 35: Container Overflow & Scrollbars (1/1 plans)
 
 </details>
 
 <details>
 <summary>v1.5 Export & Asset Management (Phases 36-37) - SHIPPED 2026-01-27</summary>
 
-### Phase 36: SVG Export with Named Layers
-**Goal**: Export individual elements as SVG with meaningful layer names for re-import workflow
-**Plans**: 1 plan - completed 2026-01-27
-
-### Phase 37: Font Management System
-**Goal**: Centralized font management with user directory selection and export bundling
-**Plans**: 5 plans - completed 2026-01-27
+- [x] Phase 36: SVG Export with Named Layers (1/1 plans)
+- [x] Phase 37: Font Management System (5/5 plans)
 
 </details>
 
 <details>
 <summary>v1.6 Multi-Window System (Phase 38) - SHIPPED 2026-01-28</summary>
 
-### Phase 38: Multi-Window System
-**Goal**: Projects support multiple windows with independent settings and navigation
-**Plans**: 1 plan (direct implementation) - completed 2026-01-28
-
-**Requirements delivered:**
-- WIN-01: Multiple windows per project with independent dimensions and backgrounds
-- WIN-02: Window types: 'release' and 'developer' with export filtering
-- WIN-03: Window tabs UI with rename, delete, duplicate, type toggle
-- WIN-04: Window properties panel (name, type, width, height, background)
-- WIN-05: Copy/paste elements between windows
-- WIN-06: Button navigation action to switch windows
-- WIN-07: Multi-window browser preview with tab navigation
-- WIN-08: Multi-window export bundle with folder per window
-- WIN-09: Project serialization v2.0.0 with automatic migration
-- WIN-10: Per-window viewport state preservation
-
-**Success Criteria:**
-1. User can create multiple windows in a project
-2. Each window has independent dimensions and background
-3. User can mark windows as 'developer' to exclude from default export
-4. User can switch between windows via tabs
-5. User can copy elements from one window and paste in another
-6. User can configure button to navigate to another window
-7. Browser preview shows all windows with tab navigation
-8. Export creates separate folders for each window
-9. Old v1.x projects migrate automatically to v2.0.0 format
+- [x] Phase 38: Multi-Window System (1/1 plans)
 
 </details>
 
 <details>
 <summary>v1.7 Parameter Sync (Phase 39) - SHIPPED 2026-01-28</summary>
 
-### Phase 39: Parameter Sync
-**Goal**: Exported bundles sync UI state with C++ parameter values when editor opens
-**Plans**: 1 plan - completed 2026-01-28
-
-**Requirements delivered:**
-- SYNC-01 through SYNC-08: Parameter synchronization infrastructure
-- DOC-01 through DOC-04: JUCE integration documentation
-
-**Success Criteria:**
-1. Export generates `setupParameterSyncListener()` in bindings.js
-2. Listener handles `__juce__paramSync` event from C++ backend
-3. All parameter-bound elements update visual state (knobs, sliders, buttons, meters, displays)
-4. Internal state updated to prevent drag jumping
-5. Graceful fallback when JUCE backend unavailable
-6. Element ID to parameter ID mapping works correctly
-7. JUCE_INTEGRATION.md includes C++ implementation examples
-8. Generated code includes inline comments explaining sync purpose
+- [x] Phase 39: Parameter Sync (1/1 plans)
 
 </details>
 
@@ -981,7 +565,13 @@ Plans:
 | 57. Meter Styling | v0.10.0 | 3/3 | Complete | 2026-02-05 |
 | 58. Export | v0.10.0 | 4/4 | Complete | 2026-02-05 |
 | 59. UI Dialogs | v0.10.0 | 0/4 | Not started | - |
+| 60. Manual Structure & Getting Started | v0.11.0 | 0/2 | Not started | - |
+| 61. Canvas & Element Palette | v0.11.0 | 0/2 | Not started | - |
+| 62. Properties Panel & Layers | v0.11.0 | 0/2 | Not started | - |
+| 63. Windows, Assets & Fonts | v0.11.0 | 0/2 | Not started | - |
+| 64. Styles & Export | v0.11.0 | 0/2 | Not started | - |
+| 65. Project Management & Docs Update | v0.11.0 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-05 - Phase 59 planned*
+*Last updated: 2026-02-06 - v0.11.0 Documentation milestone roadmapped (Phases 60-65)*

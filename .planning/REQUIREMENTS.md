@@ -190,10 +190,10 @@ Requirements for Complete Feature Documentation Manual milestone.
 | UPD-03 | Phase 65 | Pending |
 
 **Coverage:**
-- v0.11.0 requirements: 61 total
-- Mapped to phases: 61
+- v0.11.0 requirements: 64 total
+- Mapped to phases: 64
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-05 - Initial definition*
+*Last updated: 2026-02-06 - Roadmap created, traceability verified (64 requirements across 6 phases)*
