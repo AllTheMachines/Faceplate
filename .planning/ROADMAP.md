@@ -35,8 +35,8 @@ Comprehensive user manual covering all Faceplate features with screenshot placeh
 **Plans**: 2 plans
 
 Plans:
-- [ ] 60-01-PLAN.md — Manual index and topic file scaffolding (README.md, consistent template, screenshot conventions)
-- [ ] 60-02-PLAN.md — Getting started guide (installation, interface overview, quick start tutorial)
+- [x] 60-01-PLAN.md — Manual index and topic file scaffolding (README.md, consistent template, screenshot conventions)
+- [x] 60-02-PLAN.md — Getting started guide (installation, interface overview, quick start tutorial)
 
 #### Phase 61: Canvas & Element Palette
 **Goal**: All canvas interaction and element palette features are documented with step-by-step instructions
@@ -565,7 +565,7 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 | 57. Meter Styling | v0.10.0 | 3/3 | Complete | 2026-02-05 |
 | 58. Export | v0.10.0 | 4/4 | Complete | 2026-02-05 |
 | 59. UI Dialogs | v0.10.0 | 0/4 | Not started | - |
-| 60. Manual Structure & Getting Started | v0.11.0 | 0/2 | Not started | - |
+| 60. Manual Structure & Getting Started | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 61. Canvas & Element Palette | v0.11.0 | 0/2 | Not started | - |
 | 62. Properties Panel & Layers | v0.11.0 | 0/2 | Not started | - |
 | 63. Windows, Assets & Fonts | v0.11.0 | 0/2 | Not started | - |
@@ -574,4 +574,4 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-06 - v0.11.0 Documentation milestone roadmapped (Phases 60-65)*
+*Last updated: 2026-02-06 - Phase 60 complete (Manual Structure & Getting Started)*
