@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import { useStore } from '../../store'
 import { SafeSVG } from '../SafeSVG'
 import { ElementCategory } from '../../types/elementStyle'
+import { ElementLayerMappingDialog } from './ElementLayerMappingDialog'
 
 interface ManageElementStylesDialogProps {
   isOpen: boolean
@@ -32,6 +33,8 @@ export function ManageElementStylesDialog({
 
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
+  const [showImport, setShowImport] = useState(false)
+  const [remapStyleId, setRemapStyleId] = useState<string | null>(null)
 
   // Filter styles by category
   const categoryStyles = getStylesByCategory(category)
@@ -77,14 +80,14 @@ export function ManageElementStylesDialog({
     setEditName('')
   }
 
-  // Placeholder for plan 02 - Import new style
+  // Open import dialog
   const handleImportNew = () => {
-    toast('ElementLayerMappingDialog integration coming in plan 02')
+    setShowImport(true)
   }
 
-  // Placeholder for plan 02 - Re-map layers
+  // Open re-map dialog with existing style
   const handleRemap = (styleId: string) => {
-    toast('Layer re-mapping integration coming in plan 02')
+    setRemapStyleId(styleId)
   }
 
   if (!isOpen) return null
@@ -189,6 +192,21 @@ export function ManageElementStylesDialog({
           Close
         </button>
       </div>
+
+      {/* Import/Re-map Dialog */}
+      <ElementLayerMappingDialog
+        isOpen={showImport || remapStyleId !== null}
+        onClose={() => {
+          setShowImport(false)
+          setRemapStyleId(null)
+        }}
+        category={category}
+        existingStyle={
+          remapStyleId
+            ? elementStyles.find((s) => s.id === remapStyleId)
+            : undefined
+        }
+      />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { CategorySection } from './CategorySection'
 import { AssetThumbnail } from './AssetThumbnail'
 import { ImportAssetDialog } from './ImportAssetDialog'
 import { DeleteAssetDialog } from './DeleteAssetDialog'
+import { ElementLayerMappingDialog } from '../dialogs'
 
 export function AssetLibraryPanel() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -15,6 +16,7 @@ export function AssetLibraryPanel() {
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null)
   const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [deleteDialogAsset, setDeleteDialogAsset] = useState<Asset | null>(null)
+  const [showStyleImport, setShowStyleImport] = useState(false)
 
   const assets = useStore((state) => state.assets)
   const customCategories = useStore((state) => state.customCategories)
@@ -115,8 +117,8 @@ export function AssetLibraryPanel() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Import SVG button at top */}
-      <div className="p-3 border-b border-gray-700">
+      {/* Import buttons at top */}
+      <div className="p-3 border-b border-gray-700 space-y-2">
         <button
           onClick={() => setImportDialogOpen(true)}
           className="w-full py-2 px-3 bg-blue-600 text-white rounded text-sm hover:bg-blue-500 flex items-center justify-center gap-2 font-medium"
@@ -130,6 +132,20 @@ export function AssetLibraryPanel() {
             />
           </svg>
           <span>Import SVG</span>
+        </button>
+        <button
+          onClick={() => setShowStyleImport(true)}
+          className="w-full py-2 px-3 bg-purple-600 text-white rounded text-sm hover:bg-purple-500 flex items-center justify-center gap-2 font-medium"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+            />
+          </svg>
+          <span>Import Element Style</span>
         </button>
       </div>
 
@@ -249,6 +265,13 @@ export function AssetLibraryPanel() {
         isOpen={deleteDialogAsset !== null}
         onClose={() => setDeleteDialogAsset(null)}
         onConfirm={handleDeleteConfirm}
+      />
+
+      {/* Import Element Style Dialog */}
+      <ElementLayerMappingDialog
+        isOpen={showStyleImport}
+        onClose={() => setShowStyleImport(false)}
+        category={null}
       />
     </div>
   )
