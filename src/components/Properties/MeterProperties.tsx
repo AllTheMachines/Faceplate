@@ -2,7 +2,6 @@ import { MeterElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { MeterLayers } from '../../types/elementStyle'
 
 interface MeterPropertiesProps {
@@ -11,7 +10,6 @@ interface MeterPropertiesProps {
 }
 
 export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
-  const { isPro } = useLicense()
   const getElementStyle = useStore((state) => state.getElementStyle)
 
   const handleOrientationChange = (newOrientation: MeterElementConfig['orientation']) => {
@@ -36,12 +34,12 @@ export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
+          isPro={true}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'meter') return null
 
