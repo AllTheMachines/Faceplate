@@ -124,7 +124,13 @@ Plans:
   3. HTML export generates correct DOM structure for styled meters (background, fill, peak)
   4. CSS export includes layer positioning and transform origins for animations
   5. JS export includes category-specific animation logic (translate for linear, opacity swap for buttons, clip for meters)
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [x] 58-01-PLAN.md — HTML generators (styled slider, button, meter)
+- [x] 58-02-PLAN.md — CSS rules for styled layers and animations
+- [x] 58-03-PLAN.md — JS animation helpers (updateSlider, updateMeter, updateButton)
+- [x] 58-04-PLAN.md — Integration verification checkpoint
 
 #### Phase 59: UI Dialogs
 **Goal**: Users can manage, assign, and override element styles through unified UI
@@ -967,9 +973,9 @@ Plans:
 | 55. Slider Styling | v0.10.0 | 6/6 | Complete | 2026-02-04 |
 | 56. Button & Switch Styling | v0.10.0 | 5/5 | Complete | 2026-02-04 |
 | 57. Meter Styling | v0.10.0 | 3/3 | Complete | 2026-02-05 |
-| 58. Export | v0.10.0 | 0/TBD | Not started | - |
+| 58. Export | v0.10.0 | 4/4 | Complete | 2026-02-05 |
 | 59. UI Dialogs | v0.10.0 | 0/TBD | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-05 - Phase 57 Meter Styling complete (3 plans)*
+*Last updated: 2026-02-05 - Phase 58 Export complete*
