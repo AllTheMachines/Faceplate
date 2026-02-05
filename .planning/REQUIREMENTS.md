@@ -1,123 +1,199 @@
-# Requirements: Faceplate v0.10.0
+# Requirements: Faceplate v0.11.0
 
-**Defined:** 2026-02-04
-**Core Value:** Visually design a plugin UI and export code that works in JUCE WebView2 without manual fixups.
+**Defined:** 2026-02-05
+**Core Value:** Complete user-facing manual covering all Faceplate features with screenshot placeholders
 
-## v0.10.0 Requirements
+## v0.11.0 Requirements
 
-Requirements for SVG Styling for Visual Controls milestone.
+Requirements for Complete Feature Documentation Manual milestone.
 
-### Foundation
+### Manual Structure
 
-- [x] **FND-01**: ElementStyle type with category discriminant (rotary, linear, arc, button, meter)
-- [x] **FND-02**: Layer schemas per category (SliderLayers, ButtonLayers, MeterLayers)
-- [x] **FND-03**: elementStylesSlice in Zustand store with CRUD operations
-- [x] **FND-04**: getStylesByCategory() selector for filtering
-- [x] **FND-05**: Generalized layer detection service for all categories
-- [x] **FND-06**: Project schema v3.0.0 with elementStyles array
-- [x] **FND-07**: Additive migration from knobStyles (backward compatible)
+- [ ] **MAN-01**: Manual index file (`docs/manual/README.md`) with table of contents linking all topic files
+- [ ] **MAN-02**: Each topic file follows consistent format: title, overview paragraph, step-by-step sections, screenshot placeholders in `![description](../images/filename.png)` format
+- [ ] **MAN-03**: Screenshot placeholders use descriptive filenames indicating what to capture (e.g., `canvas-drag-element.png`, `layers-panel-overview.png`)
 
-### Knob Variants
+### Getting Started
 
-- [x] **KNB-01**: steppedknob supports styleId and SVG rendering
-- [x] **KNB-02**: centerdetentknob supports styleId and SVG rendering
-- [x] **KNB-03**: dotindicatorknob supports styleId and SVG rendering
+- [ ] **START-01**: Getting started guide covers installation, launching, and creating first project
+- [ ] **START-02**: Interface overview explains three-panel layout (palette, canvas, properties) with labeled screenshot
+- [ ] **START-03**: Quick start tutorial walks through placing a knob, configuring it, and previewing
 
-### Slider Styling
+### Canvas & Manipulation
 
-- [ ] **SLD-01**: slider supports styleId with thumb/track/fill layers
-- [ ] **SLD-02**: rangeslider supports styleId (dual thumbs)
-- [ ] **SLD-03**: multislider supports styleId (multiple parallel sliders)
-- [ ] **SLD-04**: bipolarslider supports styleId with center-zero styling
-- [ ] **SLD-05**: crossfadeslider supports styleId with A/B balance
-- [ ] **SLD-06**: notchedslider supports styleId with tick marks
-- [ ] **SLD-07**: arcslider supports styleId with curved path
+- [ ] **CANV-01**: Canvas guide covers drag-drop from palette to canvas with screenshot
+- [ ] **CANV-02**: Selection documentation: click select, multi-select (Ctrl/Shift+click, drag rectangle)
+- [ ] **CANV-03**: Element manipulation: move (drag), resize (handles), shift-constrained drag, arrow key nudge
+- [ ] **CANV-04**: Copy/paste and duplicate with 20px offset behavior documented
+- [ ] **CANV-05**: Undo/redo system: keyboard shortcuts, toolbar buttons, history panel
+- [ ] **CANV-06**: Snap grid: toggle (Ctrl+G), adjustable size, visual grid display
+- [ ] **CANV-07**: Element locking: individual lock, lock-all mode
+- [ ] **CANV-08**: Canvas background configuration: color, gradient, image
+- [ ] **CANV-09**: Pan and zoom: scroll to zoom, middle-click/space drag to pan, zoom controls
 
-### Button & Switch Styling
+### Element Palette
 
-- [ ] **BTN-01**: button supports styleId with normal/pressed layers
-- [ ] **BTN-02**: iconbutton supports styleId with icon layer
-- [ ] **BTN-03**: toggleswitch supports styleId with on/off states
-- [ ] **BTN-04**: powerbutton supports styleId with LED indicator layer
-- [ ] **BTN-05**: rockerswitch supports styleId with 3-position states
-- [ ] **BTN-06**: rotaryswitch supports styleId with position labels
-- [ ] **BTN-07**: segmentbutton supports styleId with segment layers
+- [ ] **PAL-01**: Palette overview with all categories listed and screenshot
+- [ ] **PAL-02**: Each element category described with available element types
+- [ ] **PAL-03**: Search/filter functionality documented
+- [ ] **PAL-04**: Pro element badges and gating behavior explained
 
-### Meter Styling
+### Properties Panel
 
-- [ ] **MTR-01**: meter supports styleId with segments/background/peak layers
+- [ ] **PROP-01**: Properties panel overview: common properties section, element-specific sections
+- [ ] **PROP-02**: Common properties documented: position (x, y), size (width, height), name, rotation, parameterId
+- [ ] **PROP-03**: Element-specific property sections with representative examples (knob, slider, button, meter)
+- [ ] **PROP-04**: Parameter binding: parameterId field, how it maps to JUCE parameters
+- [ ] **PROP-05**: Help buttons: (?) buttons on sections, F1 contextual help
 
-### Export
+### Layers System
 
-- [ ] **EXP-01**: HTML export generates correct structure for styled sliders
-- [ ] **EXP-02**: HTML export generates correct structure for styled buttons/switches
-- [ ] **EXP-03**: HTML export generates correct structure for styled meters
-- [ ] **EXP-04**: CSS export includes layer positioning and animations
-- [ ] **EXP-05**: JS export includes category-specific animation logic
+- [ ] **LAY-01**: Layers panel overview with screenshot showing layer list
+- [ ] **LAY-02**: Creating, renaming, and deleting layers
+- [ ] **LAY-03**: Layer visibility toggle (eye icon) with effect on canvas
+- [ ] **LAY-04**: Layer lock toggle with effect on element interaction
+- [ ] **LAY-05**: Z-order control: drag-to-reorder layers changes rendering order
+- [ ] **LAY-06**: Moving elements between layers via context menu
 
-### UI
+### Multi-Window System
 
-- [ ] **UI-01**: ManageElementStylesDialog with category tabs/filter
-- [ ] **UI-02**: ElementLayerMappingDialog for layer assignment
-- [ ] **UI-03**: Style dropdown in PropertyPanel for all supported elements
-- [ ] **UI-04**: Color override controls in PropertyPanel
+- [ ] **WIN-01**: Multi-window overview: purpose, use cases (main, settings, developer windows)
+- [ ] **WIN-02**: Creating, duplicating, and deleting windows
+- [ ] **WIN-03**: Window types: release vs developer, export implications
+- [ ] **WIN-04**: Window properties: name, dimensions, background
+- [ ] **WIN-05**: Copy/paste elements between windows
+- [ ] **WIN-06**: Button navigation action for switching between windows
+
+### Asset Library & SVG Import
+
+- [ ] **ASSET-01**: Asset library overview with sidebar screenshot
+- [ ] **ASSET-02**: Importing SVG files: upload dialog, validation, categories
+- [ ] **ASSET-03**: Organizing assets: categories, renaming, deleting
+- [ ] **ASSET-04**: Drag-to-canvas workflow for placing SVG graphics
+- [ ] **ASSET-05**: SVG security: what gets sanitized and why
+
+### Font Management
+
+- [ ] **FONT-01**: Font system overview: built-in vs custom fonts
+- [ ] **FONT-02**: Selecting a fonts folder via File System Access API
+- [ ] **FONT-03**: Custom font dropdown with preview (fonts shown in their typeface)
+- [ ] **FONT-04**: How fonts are bundled in export (base64 for custom, file refs for built-in)
+
+### Element Styles (SVG Styling)
+
+- [ ] **STYLE-01**: Element styles overview: what they are, supported element categories
+- [ ] **STYLE-02**: Creating a style: import SVG, layer detection, layer mapping dialog
+- [ ] **STYLE-03**: Applying styles to elements via properties panel dropdown
+- [ ] **STYLE-04**: Color overrides: per-instance layer color customization
+- [ ] **STYLE-05**: Managing styles: ManageElementStylesDialog with category filtering
+- [ ] **STYLE-06**: Reference to STYLE_CREATION_MANUAL.md for detailed design workflow
+
+### Export System
+
+- [ ] **EXP-01**: Export overview: two modes (JUCE WebView2 bundle, browser preview)
+- [ ] **EXP-02**: JUCE WebView2 export: what gets generated (HTML, CSS, JS, C++ snippets)
+- [ ] **EXP-03**: Browser preview: how to use, what it shows, limitations
+- [ ] **EXP-04**: Folder export vs ZIP download
+- [ ] **EXP-05**: Multi-window export: separate folders per window
+- [ ] **EXP-06**: Pro element export blocking: what happens, how to resolve
+
+### Project Management
+
+- [ ] **PROJ-01**: Save/load projects as JSON files
+- [ ] **PROJ-02**: Unsaved changes protection: browser warning, asterisk indicator, "last saved" display
+- [ ] **PROJ-03**: Container editing: "Edit Contents" button, breadcrumb navigation, nested containers
+- [ ] **PROJ-04**: Template import from existing JUCE projects
+
+### Existing Docs Update
+
+- [ ] **UPD-01**: FACEPLATE_DOCUMENTATION.md updated to current version (v0.11.0+) with all features since v0.9.4
+- [ ] **UPD-02**: ELEMENT_REFERENCE.md updated with current element count (109), styleId properties, and any new elements
+- [ ] **UPD-03**: STYLE_CREATION_MANUAL.md verified and updated for unified ElementStyle system (was knob-only)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Raster-based styling | SVG-only for scalability and export quality |
-| Complex animation timelines | Beyond JUCE WebView2 capabilities |
-| Per-segment meter styling | Over-engineering, single style per meter sufficient |
-| CSS-in-SVG styling | Security risk with user-supplied SVG |
-| 3D/WebGL effects | Not needed for audio plugin UIs |
-| Live SVG editing | Design in Figma/Illustrator, import to Faceplate |
-| Multi-resolution variants | SVG scales natively |
+| Actual screenshots | Manual contains placeholder notes only — user captures screenshots separately |
+| Video tutorials | Text + screenshot format only for this milestone |
+| API/developer documentation | This is end-user documentation, not internal dev docs |
+| Internationalization | English only |
+| Pro licensing documentation | User excluded from scope |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 | Phase 53 | Complete |
-| FND-02 | Phase 53 | Complete |
-| FND-03 | Phase 53 | Complete |
-| FND-04 | Phase 53 | Complete |
-| FND-05 | Phase 53 | Complete |
-| FND-06 | Phase 53 | Complete |
-| FND-07 | Phase 53 | Complete |
-| KNB-01 | Phase 54 | Complete |
-| KNB-02 | Phase 54 | Complete |
-| KNB-03 | Phase 54 | Complete |
-| SLD-01 | Phase 55 | Pending |
-| SLD-02 | Phase 55 | Pending |
-| SLD-03 | Phase 55 | Pending |
-| SLD-04 | Phase 55 | Pending |
-| SLD-05 | Phase 55 | Pending |
-| SLD-06 | Phase 55 | Pending |
-| SLD-07 | Phase 55 | Pending |
-| BTN-01 | Phase 56 | Pending |
-| BTN-02 | Phase 56 | Pending |
-| BTN-03 | Phase 56 | Pending |
-| BTN-04 | Phase 56 | Pending |
-| BTN-05 | Phase 56 | Pending |
-| BTN-06 | Phase 56 | Pending |
-| BTN-07 | Phase 56 | Pending |
-| MTR-01 | Phase 57 | Pending |
-| EXP-01 | Phase 58 | Pending |
-| EXP-02 | Phase 58 | Pending |
-| EXP-03 | Phase 58 | Pending |
-| EXP-04 | Phase 58 | Pending |
-| EXP-05 | Phase 58 | Pending |
-| UI-01 | Phase 59 | Pending |
-| UI-02 | Phase 59 | Pending |
-| UI-03 | Phase 59 | Pending |
-| UI-04 | Phase 59 | Pending |
+| MAN-01 | Phase 60 | Pending |
+| MAN-02 | Phase 60 | Pending |
+| MAN-03 | Phase 60 | Pending |
+| START-01 | Phase 60 | Pending |
+| START-02 | Phase 60 | Pending |
+| START-03 | Phase 60 | Pending |
+| CANV-01 | Phase 61 | Pending |
+| CANV-02 | Phase 61 | Pending |
+| CANV-03 | Phase 61 | Pending |
+| CANV-04 | Phase 61 | Pending |
+| CANV-05 | Phase 61 | Pending |
+| CANV-06 | Phase 61 | Pending |
+| CANV-07 | Phase 61 | Pending |
+| CANV-08 | Phase 61 | Pending |
+| CANV-09 | Phase 61 | Pending |
+| PAL-01 | Phase 61 | Pending |
+| PAL-02 | Phase 61 | Pending |
+| PAL-03 | Phase 61 | Pending |
+| PAL-04 | Phase 61 | Pending |
+| PROP-01 | Phase 62 | Pending |
+| PROP-02 | Phase 62 | Pending |
+| PROP-03 | Phase 62 | Pending |
+| PROP-04 | Phase 62 | Pending |
+| PROP-05 | Phase 62 | Pending |
+| LAY-01 | Phase 62 | Pending |
+| LAY-02 | Phase 62 | Pending |
+| LAY-03 | Phase 62 | Pending |
+| LAY-04 | Phase 62 | Pending |
+| LAY-05 | Phase 62 | Pending |
+| LAY-06 | Phase 62 | Pending |
+| WIN-01 | Phase 63 | Pending |
+| WIN-02 | Phase 63 | Pending |
+| WIN-03 | Phase 63 | Pending |
+| WIN-04 | Phase 63 | Pending |
+| WIN-05 | Phase 63 | Pending |
+| WIN-06 | Phase 63 | Pending |
+| ASSET-01 | Phase 63 | Pending |
+| ASSET-02 | Phase 63 | Pending |
+| ASSET-03 | Phase 63 | Pending |
+| ASSET-04 | Phase 63 | Pending |
+| ASSET-05 | Phase 63 | Pending |
+| FONT-01 | Phase 63 | Pending |
+| FONT-02 | Phase 63 | Pending |
+| FONT-03 | Phase 63 | Pending |
+| FONT-04 | Phase 63 | Pending |
+| STYLE-01 | Phase 64 | Pending |
+| STYLE-02 | Phase 64 | Pending |
+| STYLE-03 | Phase 64 | Pending |
+| STYLE-04 | Phase 64 | Pending |
+| STYLE-05 | Phase 64 | Pending |
+| STYLE-06 | Phase 64 | Pending |
+| EXP-01 | Phase 64 | Pending |
+| EXP-02 | Phase 64 | Pending |
+| EXP-03 | Phase 64 | Pending |
+| EXP-04 | Phase 64 | Pending |
+| EXP-05 | Phase 64 | Pending |
+| EXP-06 | Phase 64 | Pending |
+| PROJ-01 | Phase 65 | Pending |
+| PROJ-02 | Phase 65 | Pending |
+| PROJ-03 | Phase 65 | Pending |
+| PROJ-04 | Phase 65 | Pending |
+| UPD-01 | Phase 65 | Pending |
+| UPD-02 | Phase 65 | Pending |
+| UPD-03 | Phase 65 | Pending |
 
 **Coverage:**
-- v0.10.0 requirements: 34 total
-- Mapped to phases: 34
+- v0.11.0 requirements: 61 total
+- Mapped to phases: 61
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-02-04*
-*Last updated: 2026-02-04 - Phase 54 requirements completed*
+*Requirements defined: 2026-02-05*
+*Last updated: 2026-02-05 - Initial definition*
