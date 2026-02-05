@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-04)
 ## Current Position
 
 Phase: 59 of 59 (UI Dialogs)
-Plan: 1 of 4 in current phase - COMPLETE
+Plan: 2 of 4 in current phase - COMPLETE
 Status: In progress
-Last activity: 2026-02-05 — Completed 59-01-PLAN.md (ManageElementStylesDialog)
+Last activity: 2026-02-05 — Completed 59-02-PLAN.md (ElementLayerMappingDialog)
 
-Progress: [████████████████████] 99% (209 of 212 plans)
+Progress: [████████████████████] 99% (210 of 212 plans)
 
 ## Milestones Shipped
 
@@ -41,6 +41,10 @@ Progress: [████████████████████] 99% (20
 
 | Date | Phase | Decision |
 |------|-------|----------|
+| 2026-02-05 | 59-02 | Use z-60 for nested dialogs (ElementLayerMappingDialog inside ManageElementStylesDialog) |
+| 2026-02-05 | 59-02 | Dim other layers approach for hover highlighting (highest visual contrast) |
+| 2026-02-05 | 59-02 | Category null pattern for Asset sidebar (user selects category in step 1) |
+| 2026-02-05 | 59-02 | Purple button for Element Style import vs blue for SVG asset import |
 | 2026-02-05 | 59-01 | Use getStylesByCategory for filtering instead of manual filter |
 | 2026-02-05 | 59-01 | Show usage count for all styles (not just used ones) |
 | 2026-02-05 | 59-01 | Import and Re-map buttons as placeholders for plan 02 integration |
@@ -85,11 +89,11 @@ None
 ## Session Continuity
 
 Last session: 2026-02-05
-Stopped at: Completed 59-01-PLAN.md (ManageElementStylesDialog)
+Stopped at: Completed 59-02-PLAN.md (ElementLayerMappingDialog)
 Resume file: None
 
-**Next step:** 59-02 - ElementLayerMappingDialog for SVG layer to role assignment
+**Next step:** 59-03 - PropertyPanel integration for style selection and color overrides
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-02-05 - Completed 59-01 ManageElementStylesDialog*
+*Last updated: 2026-02-05 - Completed 59-02 ElementLayerMappingDialog*
