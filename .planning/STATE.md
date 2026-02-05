@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-05)
 
 ## Current Position
 
-Phase: 60 of 65 (Manual Structure & Getting Started) — ready to plan
-Plan: --
-Status: Ready to plan Phase 60
-Last activity: 2026-02-06 -- Roadmap created for v0.11.0 (6 phases, 12 plans, 64 requirements)
+Phase: 60 of 65 (Manual Structure & Getting Started) — in progress
+Plan: 01 of 02
+Status: Plan 60-01 complete
+Last activity: 2026-02-06 -- Completed 60-01-PLAN.md (master index created)
 
-Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/12 plans)
+Progress: [█░░░░░░░░░░░░░░░░░░░] 8% (1/12 plans)
 
 ## Milestones Shipped
 
@@ -43,6 +43,8 @@ Progress: [░░░░░░░░░░░░░░░░░░░░] 0% (0/1
 - This is a DOCUMENTATION milestone -- no code changes, only markdown files
 - Manual uses screenshot placeholder format: `![description](../images/filename.png)`
 - Phase 65 depends on 61-64 to ensure all topic files exist before updating existing docs
+- TOC organized into 4 sections: Getting Started, Core Features, Advanced Features, Workflows, Reference
+- Each TOC entry includes brief one-line description after link for clarity
 
 ### Pending Todos
 
@@ -56,11 +58,11 @@ None
 ## Session Continuity
 
 Last session: 2026-02-06
-Stopped at: Roadmap created for v0.11.0 milestone
+Stopped at: Completed 60-01-PLAN.md (master index created)
 Resume file: None
 
-**Next step:** `/gsd:plan-phase 60`
+**Next step:** `/gsd:execute-phase 60-02` (create getting-started.md topic file)
 
 ---
 *State initialized: 2026-01-25*
-*Last updated: 2026-02-06 - v0.11.0 roadmap created*
+*Last updated: 2026-02-06 - 60-01 complete: master index created*
