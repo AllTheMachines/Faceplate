@@ -4,7 +4,7 @@
  */
 
 import type { ElementConfig, IconButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, StepperElementConfig, BreadcrumbElementConfig, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, TabBarElementConfig, TagSelectorElementConfig, TreeViewElementConfig, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, PanelElementConfig, FrameElementConfig, GroupBoxElementConfig, CollapsibleContainerElementConfig } from '../../types/elements'
-import { ScrollbarConfig, DEFAULT_SCROLLBAR_CONFIG } from '../../types/elements/containers'
+import { ScrollbarConfig } from '../../types/elements/containers'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -15,7 +15,7 @@ import type {
   FilterResponseElementConfig,
 } from '../../types/elements/curves'
 import { toKebabCase } from './utils'
-import { type FontDefinition, getFontByFamily } from '../fonts/fontRegistry'
+import { type FontDefinition } from '../fonts/fontRegistry'
 import { collectUsedFonts, isCustomFont, getBuiltInFont, generateCustomFontFaces } from './fontExporter'
 
 export interface CSSGeneratorOptions {
@@ -2535,10 +2535,10 @@ function generateSegmentedMeterCSS(
   isStereo: boolean = false
 ): string {
   const isVertical = element.orientation === 'vertical'
-  const { segmentCount, segmentGap, colorZones, minDb, maxDb } = element
+  const { segmentCount, segmentGap, colorZones } = element
 
   // Generate color zone CSS variables
-  const zoneColors = colorZones.map((zone, i) =>
+  const zoneColors = colorZones.map((zone: { startDb: number; endDb: number; color: string }, i: number) =>
     `--meter-zone-${i}: ${zone.color};`
   ).join('\n  ')
 

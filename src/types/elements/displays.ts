@@ -44,6 +44,13 @@ export interface MeterElementConfig extends BaseElementConfig {
 
   // Peak Hold
   showPeakHold: boolean
+  peakHoldDuration?: number // ms, 500-5000 (configurable per-element)
+
+  // SVG Styling (optional - when set, uses SVG renderer)
+  styleId?: string
+
+  // Per-instance color overrides (only used when styleId is set)
+  colorOverrides?: ColorOverrides
 }
 
 export interface DbDisplayElementConfig extends BaseElementConfig {
@@ -390,7 +397,7 @@ export interface MultiValueDisplayElementConfig extends BaseElementConfig {
 // ============================================================================
 
 // Base meter properties shared by all professional meters
-interface BaseProfessionalMeterConfig extends BaseElementConfig {
+export interface BaseProfessionalMeterConfig extends BaseElementConfig {
   // Value (normalized 0-1, maps to dB range)
   value: number
 

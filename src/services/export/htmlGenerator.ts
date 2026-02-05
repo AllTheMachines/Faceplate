@@ -34,7 +34,7 @@ import { sanitizeSVG } from '../../lib/svg-sanitizer'
 import { extractLayer, applyAllColorOverrides, applyColorOverride } from '../knobLayers'
 import { extractElementLayer } from '../elementLayers'
 import type { KnobStyle } from '../../types/knobStyle'
-import type { ElementStyle, LinearLayers, ArcLayers, ButtonLayers, MeterLayers, ColorOverrides } from '../../types/elementStyle'
+import type { ElementStyle, LinearLayers, ArcLayers, ButtonLayers, MeterLayers } from '../../types/elementStyle'
 import { builtInIconSVG, BuiltInIcon } from '../../utils/builtInIcons'
 import { formatDisplayValue } from '../../utils/valueFormatters'
 
@@ -75,11 +75,12 @@ function formatValue(
  * Apply color overrides to SVG content for any element category.
  * Works with LinearLayers, ArcLayers, ButtonLayers, MeterLayers.
  * Uses applyColorOverride from knobLayers for actual color application.
+ * Accepts any object with string keys and optional string values (compatible with both knobStyle and elementStyle ColorOverrides).
  */
 function applyElementColorOverrides(
   svgContent: string,
   layers: Record<string, string | undefined>,
-  overrides: ColorOverrides | undefined
+  overrides: Record<string, string | undefined> | undefined
 ): string {
   if (!overrides) return svgContent
 
@@ -540,14 +541,14 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
         const style = elementStyles.find((s) => s.id === config.styleId)
         if (style) {
           // Convert to MeterElementConfig-like structure for styled export
-          const meterConfig: MeterElementConfig = {
+          const meterConfig = {
             ...config,
-            type: 'meter',
+            type: 'meter' as const,
             min: config.minDb ?? -60,
             max: config.maxDb ?? 0,
             value: config.value ?? 0.5,
-            colorStops: [],
-          } as MeterElementConfig
+            colorStops: [] as Array<{ position: number; color: string }>,
+          } as unknown as MeterElementConfig
           const styledHTML = generateStyledMeterHTML(id, baseClass, positionStyle, meterConfig, style)
           if (styledHTML) return styledHTML
         }
@@ -577,14 +578,14 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
         const style = elementStyles.find((s) => s.id === config.styleId)
         if (style) {
           // Convert to MeterElementConfig-like structure for styled export
-          const meterConfig: MeterElementConfig = {
+          const meterConfig = {
             ...config,
-            type: 'meter',
+            type: 'meter' as const,
             min: config.minDb ?? -60,
             max: config.maxDb ?? 0,
             value: config.value ?? 0.5,
-            colorStops: [],
-          } as MeterElementConfig
+            colorStops: [] as Array<{ position: number; color: string }>,
+          } as unknown as MeterElementConfig
           const styledHTML = generateStyledMeterHTML(id, baseClass, positionStyle, meterConfig, style)
           if (styledHTML) return styledHTML
         }
@@ -737,7 +738,7 @@ function generateStyledKnobHTML(
     svgWithOverrides = applyAllColorOverrides(
       style.svgContent,
       style.layers,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -804,7 +805,7 @@ function generateStyledSliderHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -849,13 +850,27 @@ function generateStyledSliderHTML(
   const orientationAttr = ` data-orientation="${orientation}"`
   const valueAttr = ` data-value="${normalizedValue}"`
 
-  // Label and value display
-  const formattedValue = formatValue(normalizedValue, min, max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
-  const labelHTML = config.showLabel
-    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+  // Label and value display (use optional chaining for properties not on all slider types)
+  const valueFormat = 'valueFormat' in config ? config.valueFormat : 'numeric'
+  const valueSuffix = 'valueSuffix' in config ? config.valueSuffix : ''
+  const valueDecimalPlaces = 'valueDecimalPlaces' in config ? config.valueDecimalPlaces : 2
+  const formattedValue = formatValue(normalizedValue, min, max, valueFormat, valueSuffix, valueDecimalPlaces)
+
+  const showLabel = 'showLabel' in config && config.showLabel
+  const labelPosition = 'labelPosition' in config ? config.labelPosition : 'top'
+  const labelFontSize = 'labelFontSize' in config ? config.labelFontSize : 12
+  const labelColor = 'labelColor' in config ? config.labelColor : '#ffffff'
+  const labelText = 'labelText' in config ? config.labelText : config.name
+  const labelHTML = showLabel
+    ? `<span class="slider-label slider-label-${labelPosition}" style="font-size: ${labelFontSize}px; color: ${labelColor};">${escapeHTML(labelText)}</span>`
     : ''
-  const valueHTML = config.showValue
-    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+
+  const showValue = 'showValue' in config && config.showValue
+  const valuePosition = 'valuePosition' in config ? config.valuePosition : 'bottom'
+  const valueFontSize = 'valueFontSize' in config ? config.valueFontSize : 12
+  const valueColor = 'valueColor' in config ? config.valueColor : '#ffffff'
+  const valueHTML = showValue
+    ? `<span class="slider-value slider-value-${valuePosition}" style="font-size: ${valueFontSize}px; color: ${valueColor};">${escapeHTML(formattedValue)}</span>`
     : ''
 
   return `<div id="${id}" class="${baseClass} slider slider-element styled-slider" data-type="slider"${paramAttr}${orientationAttr}${valueAttr} style="${positionStyle}">
@@ -894,7 +909,7 @@ function generateStyledButtonHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -957,7 +972,7 @@ function generateStyledToggleSwitchHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -1006,7 +1021,7 @@ function generateStyledPowerButtonHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -1055,7 +1070,7 @@ function generateStyledRockerSwitchHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -1104,7 +1119,7 @@ function generateStyledRotarySwitchHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -1153,7 +1168,7 @@ function generateStyledSegmentButtonHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -1225,7 +1240,7 @@ function generateStyledMeterHTML(
     svgWithOverrides = applyElementColorOverrides(
       style.svgContent,
       style.layers as Record<string, string | undefined>,
-      config.colorOverrides
+      config.colorOverrides as Record<string, string | undefined>
     )
   }
 
@@ -1420,10 +1435,6 @@ function generateSteppedKnobHTML(id: string, baseClass: string, positionStyle: s
     }
   }
 
-  const valueFillSVG = steppedValue > 0.001
-    ? `<path d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
-    : ''
-
   const formattedValue = formatValue(steppedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
   const labelHTML = config.showLabel
     ? `<span class="knob-label knob-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
@@ -1522,10 +1533,10 @@ function generateDotIndicatorKnobHTML(id: string, baseClass: string, positionSty
   const trackPath = describeArc(centerX, centerY, radius, config.startAngle, config.endAngle)
   const valuePath = describeArc(centerX, centerY, radius, config.startAngle, valueAngle)
 
-  // Include class for JS interaction
+  // Include class for JS interaction - use indicatorColor as fill color (dot indicator knob shows the dot position on an arc)
   const valueFillSVG = normalizedValue > 0.001
-    ? `<path class="knob-arc-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
-    : `<path class="knob-arc-fill" d="" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    ? `<path class="knob-arc-fill" d="${valuePath}" fill="none" stroke="${config.indicatorColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
+    : `<path class="knob-arc-fill" d="" fill="none" stroke="${config.indicatorColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
 
   // Dot indicator instead of line - include class for JS interaction
   const indicatorPos = polarToCartesian(centerX, centerY, radius * 0.7, valueAngle)
@@ -1689,13 +1700,9 @@ function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyl
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const thumbStyle = `left: ${normalizedValue * 100}%`
 
-  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
-  const labelHTML = config.showLabel
-    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
-    : ''
-  const valueHTML = config.showValue
-    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
-    : ''
+  // Crossfade slider doesn't have valueFormat/showLabel/showValue properties - just show the A/B labels
+  const labelHTML = ''
+  const valueHTML = ''
 
   // Add data-parameter-id attribute for C++ parameter sync
   const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
@@ -1768,7 +1775,7 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
 
     // Generate notch marks SVG
     let notchesSVG = ''
-    notchPositions.forEach((pos, i) => {
+    notchPositions.forEach((pos) => {
       const notchY = config.height - pos * config.height
       notchesSVG += `
         <line x1="${centerX - trackWidth / 2 - 2}" y1="${notchY}" x2="${centerX - trackWidth / 2 - 2 - notchLength}" y2="${notchY}" stroke="${config.notchColor}" stroke-width="1.5" />
@@ -1797,7 +1804,7 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
 
     // Generate notch marks SVG
     let notchesSVG = ''
-    notchPositions.forEach((pos, i) => {
+    notchPositions.forEach((pos) => {
       const notchX = pos * config.width
       notchesSVG += `
         <line x1="${notchX}" y1="${centerY - trackWidth / 2 - 2}" x2="${notchX}" y2="${centerY - trackWidth / 2 - 2 - notchLength}" stroke="${config.notchColor}" stroke-width="1.5" />
@@ -2304,7 +2311,7 @@ function generateMultiSliderHTML(
     const normalizedValue = (value - element.min) / (element.max - element.min)
     const fillHeight = normalizedValue * 100
 
-    const labelHTML = element.labelStyle !== 'none'
+    const labelHTML = element.labelStyle !== 'hidden'
       ? `<span class="multislider-label" style="font-size: ${element.labelFontSize ?? 12}px; color: ${element.labelColor};">${i + 1}</span>`
       : ''
 
@@ -2873,7 +2880,7 @@ function generateSegmentedMeterHTML(
   // Helper to get segment color based on dB value
   const getSegmentColor = (segmentIndex: number): string => {
     const segmentDb = minDb + (segmentIndex / segmentCount) * (maxDb - minDb)
-    const zone = colorZones.find(z => segmentDb >= z.startDb && segmentDb < z.endDb)
+    const zone = colorZones.find((z: { startDb: number; endDb: number; color: string }) => segmentDb >= z.startDb && segmentDb < z.endDb)
     return zone?.color || '#333333'
   }
 
@@ -3010,8 +3017,8 @@ function generateBreadcrumbHTML(
   const isTruncated = element.maxVisibleItems > 0 && element.items.length > element.maxVisibleItems
 
   // Handle truncation if maxVisibleItems is set
-  if (isTruncated) {
-    const firstItem = element.items[0]
+  if (isTruncated && element.items.length > 0) {
+    const firstItem = element.items[0]!
     const lastItems = element.items.slice(-(element.maxVisibleItems - 1))
     itemsToRender = [firstItem, ...lastItems]
   }
