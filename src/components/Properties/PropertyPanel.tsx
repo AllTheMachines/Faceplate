@@ -10,6 +10,7 @@ export function PropertyPanel() {
   const elements = useStore((state) => state.elements)
   const updateElement = useStore((state) => state.updateElement)
   const liveDragValues = useStore((state) => state.liveDragValues)
+  const { isPro: userIsPro } = useLicense()
 
   // Get the selected element by finding it in the elements array
   // This ensures the component re-renders when the element changes
@@ -47,7 +48,6 @@ export function PropertyPanel() {
   }
 
   // Check if Pro element and user is unlicensed
-  const { isPro: userIsPro } = useLicense()
   const isReadOnly = element.isPro && !userIsPro
 
   // Update helper
