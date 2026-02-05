@@ -329,7 +329,7 @@ export function ElementLayerMappingDialog({
   const categoryName = category ? CATEGORY_NAMES[category] : ''
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
       <div className="bg-gray-800 rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
           {step === 'upload' && `Import ${categoryName || 'Element'} Design`}

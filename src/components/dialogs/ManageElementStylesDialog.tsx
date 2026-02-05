@@ -93,7 +93,7 @@ export function ManageElementStylesDialog({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[90]">
       <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Manage {categoryName} Styles</h2>
 
