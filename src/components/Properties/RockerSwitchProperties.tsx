@@ -13,9 +13,7 @@ interface RockerSwitchPropertiesProps {
 
 export function RockerSwitchProperties({ element, onUpdate }: RockerSwitchPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
 
   return (
     <>
@@ -24,7 +22,7 @@ export function RockerSwitchProperties({ element, onUpdate }: RockerSwitchProper
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

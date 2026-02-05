@@ -77,9 +77,7 @@ export function SegmentButtonProperties({
 }: SegmentButtonPropertiesProps) {
   const { isPro } = useLicense()
   const assets = useStore((state) => state.assets)
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
   const svgAssets = assets.filter(
     (asset) => asset.categories.includes('icon') || asset.categories.includes('decoration')
   )
@@ -155,7 +153,7 @@ export function SegmentButtonProperties({
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

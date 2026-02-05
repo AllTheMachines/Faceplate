@@ -13,12 +13,7 @@ interface SliderPropertiesProps {
 
 export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const linearStyles = getStylesByCategory('linear')
-  const currentStyle = element.styleId
-    ? linearStyles.find(s => s.id === element.styleId)
-    : undefined
 
   return (
     <>
@@ -27,7 +22,6 @@ export function SliderProperties({ element, onUpdate }: SliderPropertiesProps) {
         <ElementStyleSection
           category="linear"
           currentStyleId={element.styleId}
-          styles={linearStyles}
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

@@ -13,9 +13,7 @@ interface NotchedSliderPropertiesProps {
 
 export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const linearStyles = getStylesByCategory('linear')
 
   return (
     <>
@@ -24,7 +22,7 @@ export function NotchedSliderProperties({ element, onUpdate }: NotchedSliderProp
         <ElementStyleSection
           category="linear"
           currentStyleId={element.styleId}
-          styles={linearStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

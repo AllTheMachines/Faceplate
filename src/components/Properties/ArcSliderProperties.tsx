@@ -11,9 +11,7 @@ interface ArcSliderPropertiesProps {
 
 export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   // Note: Arc Slider uses 'arc' category, not 'linear'
-  const arcStyles = getStylesByCategory('arc')
   const currentStyle = element.styleId
     ? arcStyles.find(s => s.id === element.styleId)
     : undefined
@@ -25,7 +23,7 @@ export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesPr
         <ElementStyleSection
           category="arc"
           currentStyleId={element.styleId}
-          styles={arcStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

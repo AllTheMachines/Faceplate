@@ -13,9 +13,7 @@ interface RangeSliderPropertiesProps {
 
 export function RangeSliderProperties({ element, onUpdate }: RangeSliderPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const linearStyles = getStylesByCategory('linear')
 
   // Ensure min/max value constraints
   const handleMinValueChange = (newMinValue: number) => {
@@ -37,7 +35,7 @@ export function RangeSliderProperties({ element, onUpdate }: RangeSliderProperti
         <ElementStyleSection
           category="linear"
           currentStyleId={element.styleId}
-          styles={linearStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

@@ -70,9 +70,7 @@ function formatIconName(icon: BuiltInIcon): string {
 export function IconButtonProperties({ element, onUpdate }: IconButtonPropertiesProps) {
   const { isPro } = useLicense()
   const assets = useStore((state) => state.assets)
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
 
   // All assets in store are SVGs; filter for icon or decoration categories
   const svgAssets = assets.filter(
@@ -86,7 +84,7 @@ export function IconButtonProperties({ element, onUpdate }: IconButtonProperties
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

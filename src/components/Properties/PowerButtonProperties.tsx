@@ -14,9 +14,7 @@ interface PowerButtonPropertiesProps {
 
 export function PowerButtonProperties({ element, onUpdate }: PowerButtonPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
 
   return (
     <>
@@ -25,7 +23,7 @@ export function PowerButtonProperties({ element, onUpdate }: PowerButtonProperti
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

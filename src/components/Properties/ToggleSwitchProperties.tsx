@@ -14,9 +14,7 @@ interface ToggleSwitchPropertiesProps {
 
 export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
 
   return (
     <>
@@ -25,7 +23,7 @@ export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchProper
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

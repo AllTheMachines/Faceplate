@@ -13,9 +13,7 @@ interface BipolarSliderPropertiesProps {
 
 export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const linearStyles = getStylesByCategory('linear')
 
   return (
     <>
@@ -24,7 +22,7 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
         <ElementStyleSection
           category="linear"
           currentStyleId={element.styleId}
-          styles={linearStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

@@ -14,9 +14,7 @@ interface RotarySwitchPropertiesProps {
 
 export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
 
   // Local state for textarea to allow typing commas
   const [labelsText, setLabelsText] = useState(element.positionLabels?.join(', ') ?? '')
@@ -68,7 +66,7 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

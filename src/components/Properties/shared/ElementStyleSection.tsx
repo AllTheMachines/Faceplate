@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ElementCategory, ElementStyle } from '../../../types/elementStyle'
+import { ElementCategory } from '../../../types/elementStyle'
 import { ManageElementStylesDialog } from '../../dialogs'
 import { SafeSVG } from '../../SafeSVG'
 import { useStore } from '../../../store'
@@ -7,7 +7,6 @@ import { useStore } from '../../../store'
 interface ElementStyleSectionProps {
   category: ElementCategory
   currentStyleId: string | undefined
-  styles?: ElementStyle[] // Optional - will fetch from store if not provided
   onStyleChange: (styleId: string | undefined) => void
   isPro: boolean
 }
@@ -26,20 +25,15 @@ interface ElementStyleSectionProps {
 export function ElementStyleSection({
   category,
   currentStyleId,
-  styles: propStyles,
   onStyleChange,
   isPro
 }: ElementStyleSectionProps) {
   const [showManageDialog, setShowManageDialog] = useState(false)
 
-  // Fetch styles reactively from store - this ensures updates when styles change
-  const storeStyles = useStore((state) =>
-    state.elementStyles.filter(s => s.category === category)
-  )
-
-  // Use provided styles or fetch from store
-  const styles = propStyles ?? storeStyles
-  const currentStyle = styles.find(s => s.id === currentStyleId)
+  // Fetch styles reactively from store - filter in selector for proper reactivity
+  const elementStyles = useStore((state) => state.elementStyles)
+  const styles = (elementStyles || []).filter(s => s.category === category)
+  const currentStyle = currentStyleId ? styles.find(s => s.id === currentStyleId) : undefined
 
   return (
     <>

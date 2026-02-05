@@ -23,9 +23,7 @@ const BAND_PRESETS = [
 
 export function MultiSliderProperties({ element, onUpdate }: MultiSliderPropertiesProps) {
   const { isPro } = useLicense()
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const linearStyles = getStylesByCategory('linear')
 
   const isPresetBandCount = BAND_PRESETS.some(p => p.value === element.bandCount)
 
@@ -58,7 +56,7 @@ export function MultiSliderProperties({ element, onUpdate }: MultiSliderProperti
           <ElementStyleSection
             category="linear"
             currentStyleId={element.styleId}
-            styles={linearStyles}
+            
             onStyleChange={(styleId) => onUpdate({
               styleId,
               colorOverrides: styleId ? element.colorOverrides : undefined

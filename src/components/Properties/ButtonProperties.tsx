@@ -16,9 +16,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
   const { isPro } = useLicense()
   const windows = useStore((state) => state.windows)
   const activeWindowId = useStore((state) => state.activeWindowId)
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
-  const buttonStyles = getStylesByCategory('button')
 
   // Filter out current window from target options
   const targetWindows = windows.filter((w) => w.id !== activeWindowId)
@@ -30,7 +28,7 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          styles={buttonStyles}
+          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined

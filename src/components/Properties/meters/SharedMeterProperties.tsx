@@ -29,8 +29,6 @@ export function SharedMeterProperties({
   maxDbFixed = true,
 }: SharedMeterPropertiesProps) {
   const updateElement = useStore((state) => state.updateElement)
-  const getStylesByCategory = useStore((state) => state.getStylesByCategory)
-  const meterStyles = getStylesByCategory('meter')
   const { isPro } = useLicense()
 
   const update = (updates: Partial<BaseProfessionalMeterConfig>) => {
@@ -47,7 +45,7 @@ export function SharedMeterProperties({
         <ElementStyleSection
           category="meter"
           currentStyleId={config.styleId}
-          styles={meterStyles}
+          
           onStyleChange={(styleId) => update({
             styleId,
             colorOverrides: styleId ? config.colorOverrides : undefined
