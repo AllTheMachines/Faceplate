@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { useStore } from '../../store'
 import { validateSVGContent } from '../../lib/svg-validator'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
 import { detectKnobLayers, getSuggestedLayers, DetectedLayers } from '../../services/knobLayers'
-import { KnobStyleLayers } from '../../types/knobStyle'
+import { KnobStyleLayers, KnobStyle } from '../../types/knobStyle'
 import { SafeSVG } from '../SafeSVG'
 
 // Validation summary for user feedback
@@ -18,12 +18,14 @@ interface ValidationSummary {
 interface LayerMappingDialogProps {
   isOpen: boolean
   onClose: () => void
+  existingStyle?: KnobStyle  // For re-mapping
 }
 
 type LayerRole = 'indicator' | 'track' | 'arc' | 'glow' | 'shadow' | 'exclude'
 
-export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps) {
+export function LayerMappingDialog({ isOpen, onClose, existingStyle }: LayerMappingDialogProps) {
   const addKnobStyle = useStore((state) => state.addKnobStyle)
+  const updateKnobStyle = useStore((state) => state.updateKnobStyle)
 
   // Dialog state
   const [step, setStep] = useState<'upload' | 'mapping' | 'config'>('upload')
@@ -33,8 +35,10 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
   const [mappings, setMappings] = useState<Record<string, LayerRole>>({})
   const [minAngle, setMinAngle] = useState(-135)
   const [maxAngle, setMaxAngle] = useState(135)
+  const [hoveredLayer, setHoveredLayer] = useState<string | null>(null)
+  const svgContainerRef = useRef<HTMLDivElement>(null)
 
-  // Reset state when dialog opens/closes
+  // Reset state when dialog opens/closes, or pre-populate for re-mapping
   useEffect(() => {
     if (!isOpen) {
       setStep('upload')
@@ -44,8 +48,90 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
       setMappings({})
       setMinAngle(-135)
       setMaxAngle(135)
+      setHoveredLayer(null)
+    } else if (existingStyle) {
+      // Pre-populate for re-mapping
+      setSvgContent(existingStyle.svgContent)
+      setStyleName(existingStyle.name)
+      setMinAngle(existingStyle.minAngle)
+      setMaxAngle(existingStyle.maxAngle)
+
+      // Detect layers from existing SVG
+      const detectedLayers = detectKnobLayers(existingStyle.svgContent)
+      setDetected(detectedLayers)
+
+      // Build mappings from existing layers
+      const initialMappings: Record<string, LayerRole> = {}
+      const allIdentifiers = [
+        ...detectedLayers.indicator,
+        ...detectedLayers.track,
+        ...detectedLayers.arc,
+        ...detectedLayers.glow,
+        ...detectedLayers.shadow,
+        ...detectedLayers.unmapped,
+      ]
+
+      // First set all to exclude
+      allIdentifiers.forEach((id) => {
+        initialMappings[id] = 'exclude'
+      })
+
+      // Then map from existing style layers
+      if (existingStyle.layers) {
+        Object.entries(existingStyle.layers).forEach(([role, identifier]) => {
+          if (identifier && allIdentifiers.includes(identifier)) {
+            initialMappings[identifier] = role as LayerRole
+          }
+        })
+      }
+
+      setMappings(initialMappings)
+      setStep('mapping')
     }
-  }, [isOpen])
+  }, [isOpen, existingStyle])
+
+  // SVG layer hover highlighting
+  useEffect(() => {
+    if (!svgContainerRef.current || !hoveredLayer) return
+
+    const svg = svgContainerRef.current.querySelector('svg')
+    if (!svg) return
+
+    // Find the hovered element by id or class
+    let hoveredEl = svg.querySelector(`#${CSS.escape(hoveredLayer)}`)
+    if (!hoveredEl) {
+      hoveredEl = svg.querySelector(`.${CSS.escape(hoveredLayer)}`)
+    }
+
+    if (!hoveredEl) return
+
+    // Add highlight effect - bright outline + glow
+    const svgEl = hoveredEl as SVGElement
+    const originalStroke = svgEl.style.stroke
+    const originalStrokeWidth = svgEl.style.strokeWidth
+    const originalFilter = svgEl.style.filter
+
+    svgEl.style.stroke = '#00ff00'
+    svgEl.style.strokeWidth = '3'
+    svgEl.style.filter = 'drop-shadow(0 0 6px #00ff00)'
+
+    // Dim other layers
+    const allLayers = Array.from(svg.querySelectorAll('[id], [class]'))
+    allLayers.forEach((el) => {
+      if (el !== hoveredEl) {
+        ;(el as HTMLElement).style.opacity = '0.3'
+      }
+    })
+
+    return () => {
+      svgEl.style.stroke = originalStroke
+      svgEl.style.strokeWidth = originalStrokeWidth
+      svgEl.style.filter = originalFilter
+      allLayers.forEach((el) => {
+        ;(el as HTMLElement).style.opacity = '1'
+      })
+    }
+  }, [hoveredLayer])
 
   // File upload handling
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -147,7 +233,7 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
 
   const validationSummary = detected ? getValidationSummary() : null
 
-  // Handle create style
+  // Handle create or update style
   const handleCreate = () => {
     if (!styleName.trim()) {
       toast.error('Please enter a style name')
@@ -160,15 +246,29 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
     }
 
     const layers = buildLayers()
-    addKnobStyle({
-      name: styleName.trim(),
-      svgContent,
-      layers,
-      minAngle,
-      maxAngle,
-    })
 
-    toast.success(`Knob style "${styleName}" created`)
+    if (existingStyle) {
+      // Update existing style
+      updateKnobStyle(existingStyle.id, {
+        name: styleName.trim(),
+        svgContent,
+        layers,
+        minAngle,
+        maxAngle,
+      })
+      toast.success(`Knob style "${styleName}" updated`)
+    } else {
+      // Create new style
+      addKnobStyle({
+        name: styleName.trim(),
+        svgContent,
+        layers,
+        minAngle,
+        maxAngle,
+      })
+      toast.success(`Knob style "${styleName}" created`)
+    }
+
     onClose()
   }
 
@@ -179,8 +279,8 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
       <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
           {step === 'upload' && 'Import Knob Design'}
-          {step === 'mapping' && 'Map Layers'}
-          {step === 'config' && 'Configure Style'}
+          {step === 'mapping' && (existingStyle ? 'Re-map Layers' : 'Map Layers')}
+          {step === 'config' && (existingStyle ? 'Update Style' : 'Configure Style')}
         </h2>
 
         {/* Step 1: Upload */}
@@ -208,9 +308,12 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
               {/* Preview */}
               <div className="bg-gray-900 rounded-lg p-4">
                 <p className="text-sm text-gray-400 mb-2">Preview</p>
-                <div className="w-32 h-32 mx-auto">
+                <div className="w-32 h-32 mx-auto" ref={svgContainerRef}>
                   <SafeSVG content={svgContent} style={{ width: '100%', height: '100%' }} />
                 </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Hover a layer to highlight
+                </p>
               </div>
 
               {/* Layer List */}
@@ -220,8 +323,16 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
                   {Object.keys(mappings).map((id) => {
                     const isAutoDetected = !detected.unmapped.includes(id)
                     const currentMapping = mappings[id]
+                    const isHovered = hoveredLayer === id
                     return (
-                    <div key={id} className="flex items-center gap-2">
+                    <div
+                      key={id}
+                      className={`flex items-center gap-2 px-2 py-1 rounded cursor-pointer transition-colors ${
+                        isHovered ? 'bg-green-900/50' : 'hover:bg-gray-700/50'
+                      }`}
+                      onMouseEnter={() => setHoveredLayer(id)}
+                      onMouseLeave={() => setHoveredLayer(null)}
+                    >
                       <span
                         className={`w-2 h-2 rounded-full flex-shrink-0 ${
                           currentMapping === 'exclude'
@@ -291,12 +402,14 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
             )}
 
             <div className="flex gap-2">
-              <button
-                onClick={() => setStep('upload')}
-                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2"
-              >
-                Back
-              </button>
+              {!existingStyle && (
+                <button
+                  onClick={() => setStep('upload')}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white rounded px-4 py-2"
+                >
+                  Back
+                </button>
+              )}
               <button
                 onClick={() => setStep('config')}
                 disabled={!hasIndicator}
@@ -360,7 +473,7 @@ export function LayerMappingDialog({ isOpen, onClose }: LayerMappingDialogProps)
                 onClick={handleCreate}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2"
               >
-                Create Style
+                {existingStyle ? 'Update Style' : 'Create Style'}
               </button>
             </div>
           </>

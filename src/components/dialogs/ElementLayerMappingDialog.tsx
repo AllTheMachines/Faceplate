@@ -298,24 +298,44 @@ export function ElementLayerMappingDialog({
     onClose()
   }
 
-  // SVG layer hover highlighting (dim others approach)
+  // SVG layer hover highlighting
   useEffect(() => {
     if (!svgContainerRef.current || !hoveredLayer) return
 
     const svg = svgContainerRef.current.querySelector('svg')
     if (!svg) return
 
-    // Get all elements with id or class
-    const allLayers = Array.from(svg.querySelectorAll('[id], [class]'))
+    // Find the hovered element by id or class
+    let hoveredEl = svg.querySelector(`#${CSS.escape(hoveredLayer)}`)
+    if (!hoveredEl) {
+      hoveredEl = svg.querySelector(`.${CSS.escape(hoveredLayer)}`)
+    }
 
-    // Dim all except hovered
+    if (!hoveredEl) return
+
+    // Add highlight effect - bright outline + slight glow
+    const svgEl = hoveredEl as SVGElement
+    const originalStroke = svgEl.style.stroke
+    const originalStrokeWidth = svgEl.style.strokeWidth
+    const originalFilter = svgEl.style.filter
+
+    svgEl.style.stroke = '#00ff00'
+    svgEl.style.strokeWidth = '3'
+    svgEl.style.filter = 'drop-shadow(0 0 4px #00ff00)'
+
+    // Also dim other layers
+    const allLayers = Array.from(svg.querySelectorAll('[id], [class]'))
     allLayers.forEach((el) => {
-      const isHovered = el.id === hoveredLayer || el.classList.contains(hoveredLayer)
-      ;(el as HTMLElement).style.opacity = isHovered ? '1' : '0.3'
+      if (el !== hoveredEl) {
+        ;(el as HTMLElement).style.opacity = '0.3'
+      }
     })
 
     return () => {
-      // Cleanup: reset all to full opacity
+      // Cleanup
+      svgEl.style.stroke = originalStroke
+      svgEl.style.strokeWidth = originalStrokeWidth
+      svgEl.style.filter = originalFilter
       allLayers.forEach((el) => {
         ;(el as HTMLElement).style.opacity = '1'
       })
@@ -418,12 +438,18 @@ export function ElementLayerMappingDialog({
                         const isRequired = requiredRoles.includes(role)
                         const assignedLayer =
                           Object.entries(mappings).find(([_, r]) => r === role)?.[0] || ''
+                        const hasLayer = !!assignedLayer
+                        const isHovered = hoveredLayer === assignedLayer && hasLayer
 
                         return (
                           <tr
                             key={role}
-                            className="border-b border-gray-700 hover:bg-gray-700/50 transition-colors cursor-pointer"
-                            onMouseEnter={() => assignedLayer && setHoveredLayer(assignedLayer)}
+                            className={`border-b border-gray-700 transition-colors ${
+                              hasLayer
+                                ? 'cursor-pointer hover:bg-green-900/30'
+                                : 'cursor-default opacity-60'
+                            } ${isHovered ? 'bg-green-900/50' : ''}`}
+                            onMouseEnter={() => hasLayer && setHoveredLayer(assignedLayer)}
                             onMouseLeave={() => setHoveredLayer(null)}
                           >
                             <td className="py-2">
@@ -431,6 +457,11 @@ export function ElementLayerMappingDialog({
                               {isRequired && (
                                 <span className="text-red-400 ml-1" title="Required">
                                   *
+                                </span>
+                              )}
+                              {hasLayer && (
+                                <span className="text-green-400 ml-1" title="Hover to highlight">
+                                  ◉
                                 </span>
                               )}
                             </td>

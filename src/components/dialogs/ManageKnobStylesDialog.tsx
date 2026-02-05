@@ -16,6 +16,7 @@ export function ManageKnobStylesDialog({ isOpen, onClose }: ManageKnobStylesDial
   const updateKnobStyle = useStore((state) => state.updateKnobStyle)
 
   const [showImport, setShowImport] = useState(false)
+  const [remapStyleId, setRemapStyleId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
 
@@ -131,6 +132,12 @@ export function ManageKnobStylesDialog({ isOpen, onClose }: ManageKnobStylesDial
                           Rename
                         </button>
                         <button
+                          onClick={() => setRemapStyleId(style.id)}
+                          className="text-green-400 hover:text-green-300 text-sm px-2 py-1"
+                        >
+                          Re-map
+                        </button>
+                        <button
                           onClick={() => handleDelete(style.id, style.name)}
                           className="text-red-400 hover:text-red-300 text-sm px-2 py-1"
                         >
@@ -154,10 +161,14 @@ export function ManageKnobStylesDialog({ isOpen, onClose }: ManageKnobStylesDial
         </div>
       </div>
 
-      {/* Import dialog (nested) */}
+      {/* Import/Re-map dialog (nested) */}
       <LayerMappingDialog
-        isOpen={showImport}
-        onClose={() => setShowImport(false)}
+        isOpen={showImport || remapStyleId !== null}
+        onClose={() => {
+          setShowImport(false)
+          setRemapStyleId(null)
+        }}
+        existingStyle={remapStyleId ? knobStyles.find(s => s.id === remapStyleId) : undefined}
       />
     </>
   )
