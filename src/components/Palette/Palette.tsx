@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { PaletteCategory } from './PaletteCategory'
 import { CustomSVGUpload } from './CustomSVGUpload'
 import { isProElement } from '../../services/proElements'
+import { useLicense } from '../../hooks/useLicense'
 
 interface PaletteCategoryItem {
   id: string
@@ -206,6 +207,8 @@ const paletteCategories: PaletteCategoryData[] = [
 ]
 
 export function Palette() {
+  const { isPro } = useLicense()
+
   // Track expanded categories (first 3 expanded by default)
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
     new Set([0, 1, 2])
@@ -218,6 +221,9 @@ export function Palette() {
     const stored = localStorage.getItem('palette-hide-pro')
     return stored === null ? true : stored === 'true'
   })
+
+  // Free users always have Pro elements hidden
+  const shouldHideProElements = !isPro || hideProElements
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -287,8 +293,8 @@ export function Palette() {
         .filter((category) => category.items.length > 0)
     }
 
-    // Filter out Pro elements if toggle is on
-    if (hideProElements) {
+    // Filter out Pro elements if toggle is on (or if user is not Pro)
+    if (shouldHideProElements) {
       categories = categories
         .map((category) => ({
           ...category,
@@ -298,7 +304,7 @@ export function Palette() {
     }
 
     return categories
-  }, [searchTerm, hideProElements])
+  }, [searchTerm, shouldHideProElements])
 
   // When searching, determine which categories to show expanded
   const getIsExpanded = (index: number, categoryName: string) => {
@@ -379,24 +385,26 @@ export function Palette() {
         )}
       </div>
 
-      {/* Hide Pro elements toggle */}
-      <div className="px-2 py-1.5 border-b border-gray-700 flex items-center justify-between">
-        <span className="text-xs text-gray-400">Hide Pro elements</span>
-        <button
-          onClick={handleToggleHidePro}
-          className={`
-            relative w-8 h-4 rounded-full transition-colors
-            ${hideProElements ? 'bg-violet-500' : 'bg-gray-600'}
-          `}
-        >
-          <div
+      {/* Hide Pro elements toggle - only show for Pro users */}
+      {isPro && (
+        <div className="px-2 py-1.5 border-b border-gray-700 flex items-center justify-between">
+          <span className="text-xs text-gray-400">Hide Pro elements</span>
+          <button
+            onClick={handleToggleHidePro}
             className={`
-              absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform
-              ${hideProElements ? 'left-4' : 'left-0.5'}
+              relative w-8 h-4 rounded-full transition-colors
+              ${hideProElements ? 'bg-violet-500' : 'bg-gray-600'}
             `}
-          />
-        </button>
-      </div>
+          >
+            <div
+              className={`
+                absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform
+                ${hideProElements ? 'left-4' : 'left-0.5'}
+              `}
+            />
+          </button>
+        </div>
+      )}
 
       {/* Categories */}
       {filteredCategories.map((category) => {
