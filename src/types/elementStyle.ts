@@ -169,9 +169,6 @@ export const ELEMENT_TYPE_TO_CATEGORY = {
   crossfadeslider: 'linear',
   notchedslider: 'linear',
 
-  // Arc controls
-  arcslider: 'arc',
-
   // Button controls
   button: 'button',
   iconbutton: 'button',

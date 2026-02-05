@@ -35,7 +35,6 @@ import {
   createBipolarSlider,
   createCrossfadeSlider,
   createNotchedSlider,
-  createArcSlider,
   createAsciiSlider,
   createAsciiButton,
   createAsciiArt,
@@ -145,7 +144,6 @@ import {
   BipolarSliderRenderer,
   CrossfadeSliderRenderer,
   NotchedSliderRenderer,
-  ArcSliderRenderer,
   AsciiSliderRenderer,
   AsciiButtonRenderer,
   AsciiArtRenderer,
@@ -359,13 +357,6 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           thumbWidth: 12,
           thumbHeight: 12,
           notchCount: 5,
-          ...variant,
-        })
-      case 'arcslider':
-        return createArcSlider({
-          ...baseOverrides,
-          width: 50,
-          height: 50,
           ...variant,
         })
       case 'asciislider':
@@ -1230,12 +1221,6 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
         return (
           <div style={containerStyle}>
             <NotchedSliderRenderer config={previewElement} />
-          </div>
-        )
-      case 'arcslider':
-        return (
-          <div style={containerStyle}>
-            <ArcSliderRenderer config={previewElement} />
           </div>
         )
       case 'asciislider':

@@ -1456,52 +1456,6 @@ ${selector} .slider-value-right {
 }`
     }
 
-    case 'arcslider':
-      return `${selector} {
-  position: relative;
-  cursor: pointer;
-  user-select: none;
-}
-
-${selector} .arcslider-label,
-${selector} .arcslider-value {
-  position: absolute;
-  white-space: nowrap;
-  user-select: none;
-}
-
-${selector} .arcslider-label-top,
-${selector} .arcslider-value-top {
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 4px;
-}
-
-${selector} .arcslider-label-bottom,
-${selector} .arcslider-value-bottom {
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 4px;
-}
-
-${selector} .arcslider-label-left,
-${selector} .arcslider-value-left {
-  right: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-right: 4px;
-}
-
-${selector} .arcslider-label-right,
-${selector} .arcslider-value-right {
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 4px;
-}`
-
     case 'asciislider':
       return `${selector} {
   cursor: ew-resize;

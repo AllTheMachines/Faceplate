@@ -615,63 +615,6 @@ export interface NotchedSliderElementConfig extends BaseElementConfig {
   colorOverrides?: ColorOverrides
 }
 
-export interface ArcSliderElementConfig extends BaseElementConfig {
-  type: 'arcslider'
-
-  // Dimensions
-  diameter: number
-
-  // Value
-  value: number
-  min: number
-  max: number
-
-  // Arc Geometry
-  startAngle: number // Default 135 (bottom-left)
-  endAngle: number // Default 45 (bottom-right, 270 degree sweep)
-  trackWidth: number
-
-  // Track Colors
-  trackColor: string
-  fillColor: string
-
-  // Thumb
-  thumbRadius: number // Circular thumb that moves along arc
-  thumbColor: string
-
-  // Label Display
-  showLabel: boolean
-  labelText: string
-  labelPosition: 'top' | 'bottom' | 'left' | 'right'
-  labelDistance: number  // Distance in pixels from element to label
-  labelFontSize: number
-  labelFontFamily: string
-  labelFontWeight: string
-  labelColor: string
-
-  // Value Display
-  showValue: boolean
-  valuePosition: 'top' | 'bottom' | 'left' | 'right'
-  valueDistance: number  // Distance in pixels from element to value
-  valueFormat: 'numeric' | 'percentage' | 'db' | 'hz' | 'custom'
-  valueSuffix: string
-  valueDecimalPlaces: number
-  valueFontSize: number
-  valueFontFamily: string
-  valueFontWeight: string
-  valueColor: string
-
-  // SVG Style (optional - if undefined, render default CSS arc)
-  // Note: Arc Slider uses 'arc' category, not 'linear'
-  styleId?: string
-
-  // Per-instance color overrides (only used when styleId is set)
-  colorOverrides?: ColorOverrides
-
-  // Thumb rotation (optional - rotate thumb to follow arc tangent)
-  rotateThumbToTangent?: boolean
-}
-
 // ============================================================================
 // Switch Element Configurations
 // ============================================================================
@@ -1220,7 +1163,6 @@ export type ControlElement =
   | CrossfadeSliderElementConfig
   | MultiSliderElementConfig
   | NotchedSliderElementConfig
-  | ArcSliderElementConfig
   | AsciiSliderElementConfig
   | AsciiButtonElementConfig
   | RockerSwitchElementConfig
@@ -1300,10 +1242,6 @@ export function isCrossfadeSlider(element: { type: string }): element is Crossfa
 
 export function isNotchedSlider(element: { type: string }): element is NotchedSliderElementConfig {
   return element.type === 'notchedslider'
-}
-
-export function isArcSlider(element: { type: string }): element is ArcSliderElementConfig {
-  return element.type === 'arcslider'
 }
 
 export function isAsciiSlider(element: { type: string }): element is AsciiSliderElementConfig {
@@ -1943,53 +1881,6 @@ export function createNotchedSlider(overrides?: Partial<NotchedSliderElementConf
     valueFontFamily: 'Inter, system-ui, sans-serif',
     valueFontWeight: '400',
     valueColor: '#a0a0a0',
-    ...overrides,
-  }
-}
-
-export function createArcSlider(overrides?: Partial<ArcSliderElementConfig>): ArcSliderElementConfig {
-  return {
-    id: crypto.randomUUID(),
-    type: 'arcslider',
-    name: 'Arc Slider',
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 100,
-    rotation: 0,
-    zIndex: 0,
-    locked: false,
-    visible: true,
-    diameter: 100,
-    value: 0.5,
-    min: 0,
-    max: 1,
-    startAngle: 135,
-    endAngle: 45,
-    trackWidth: 6,
-    trackColor: '#374151',
-    fillColor: '#949494',
-    thumbRadius: 8,
-    thumbColor: '#ffffff',
-    showLabel: false,
-    labelText: 'Arc',
-    labelPosition: 'bottom',
-    labelDistance: 8,
-    labelFontSize: 12,
-    labelFontFamily: 'Inter, system-ui, sans-serif',
-    labelFontWeight: '400',
-    labelColor: '#ffffff',
-    showValue: false,
-    valuePosition: 'top',
-    valueDistance: 8,
-    valueFormat: 'numeric',
-    valueSuffix: '',
-    valueDecimalPlaces: 2,
-    valueFontSize: 12,
-    valueFontFamily: 'Inter, system-ui, sans-serif',
-    valueFontWeight: '400',
-    valueColor: '#a0a0a0',
-    rotateThumbToTangent: false,
     ...overrides,
   }
 }

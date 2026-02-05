@@ -446,30 +446,6 @@ const sliderVariantsHelp: Record<string, HelpContent> = {
     ]
   },
 
-  arcslider: {
-    title: 'Arc Slider Element',
-    description: 'A curved slider following an arc path. Provides a different interaction feel than linear sliders. Useful for specialized interfaces.',
-    examples: [
-      {
-        label: 'Circular Interface',
-        explanation: 'Place around a central display or control. The arc shape integrates well with radial UI layouts. Good for synths with circular design language.'
-      },
-      {
-        label: 'Semi-Circular Meter',
-        explanation: 'Use as a semi-circular control with integrated level display. The arc visually shows the range from min to max along the curve.'
-      },
-      {
-        label: 'Vintage Style',
-        explanation: 'Emulate vintage hardware with arc-shaped controls. Common in classic synthesizer and mixing console designs.'
-      }
-    ],
-    relatedTopics: [
-      'Use for visual variety in design',
-      'Arc angle configurable in properties',
-      'Knob offers similar rotary feel'
-    ]
-  },
-
   multislider: {
     title: 'Multi Slider Element',
     description: 'Multiple parallel sliders in a single element. Ideal for multi-band controls, graphic EQ, or any array of related parameters.',

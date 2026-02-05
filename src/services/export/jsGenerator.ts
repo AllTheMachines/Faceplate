@@ -48,11 +48,9 @@ export function generateBindingsJS(
   // Include all knob variants (knob, steppedknob, centerdetentknob, dotindicatorknob)
   const knobTypes = ['knob', 'steppedknob', 'centerdetentknob', 'dotindicatorknob']
   const knobs = elements.filter((el) => knobTypes.includes(el.type))
-  // Include all slider variants (slider, bipolarslider, notchedslider, arcslider, crossfadeslider)
+  // Include all slider variants (slider, bipolarslider, notchedslider, crossfadeslider)
   const sliderTypes = ['slider', 'bipolarslider', 'notchedslider', 'crossfadeslider']
   const sliders = elements.filter((el) => sliderTypes.includes(el.type))
-  // Arc sliders need special SVG-based handling
-  const arcsliders = elements.filter((el) => el.type === 'arcslider')
   const asciisliders = elements.filter((el) => el.type === 'asciislider')
   const asciibuttons = elements.filter((el) => el.type === 'asciibutton')
   const rangesliders = elements.filter((el) => el.type === 'rangeslider')
@@ -114,18 +112,6 @@ export function generateBindingsJS(
       const defaultValue = max !== min ? (value - min) / (max - min) : 0.5
       const paramId = slider.parameterId || toKebabCase(slider.name)
       return `    setupSliderInteraction('${toKebabCase(slider.name)}', '${paramId}', ${defaultValue});`
-    })
-    .join('\n')
-
-  const arcSliderSetups = arcsliders
-    .map((slider) => {
-      const sliderWithValue = slider as { value?: number; min?: number; max?: number; startAngle?: number; endAngle?: number }
-      const value = sliderWithValue.value ?? 0.5
-      const min = sliderWithValue.min ?? 0
-      const max = sliderWithValue.max ?? 1
-      const defaultValue = max !== min ? (value - min) / (max - min) : 0.5
-      const paramId = slider.parameterId || toKebabCase(slider.name)
-      return `    setupArcSliderInteraction('${toKebabCase(slider.name)}', '${paramId}', ${defaultValue});`
     })
     .join('\n')
 
@@ -428,11 +414,6 @@ function setupParameterSyncListener() {
         if (element._sliderValue !== undefined) element._sliderValue = value;
         syncedCount++;
       }
-      else if (elementType === 'arcslider') {
-        updateArcSliderVisual(elementId, value);
-        if (element._arcValue !== undefined) element._arcValue = value;
-        syncedCount++;
-      }
       else if (elementType === 'asciislider') {
         updateAsciiSliderVisual(elementId, value);
         if (element._asciiValue !== undefined) element._asciiValue = value;
@@ -510,7 +491,6 @@ async function initializeJUCEBridge() {
         // NOW initialize all UI elements
 ${knobSetups || '        // No knobs with parameter bindings'}
 ${sliderSetups || '        // No sliders with parameter bindings'}
-${arcSliderSetups || '        // No arc sliders with parameter bindings'}
 ${asciiSliderSetups || '        // No ASCII sliders with parameter bindings'}
 ${asciiButtonSetups || '        // No ASCII buttons with parameter bindings'}
 ${rangeSliderSetups || '        // No range sliders with parameter bindings'}
@@ -570,7 +550,6 @@ ${asciiNoiseSetups || '        // No ASCII art noise elements'}
   // Initialize UI elements in standalone mode too
 ${knobSetups || '  // No knobs with parameter bindings'}
 ${sliderSetups || '  // No sliders with parameter bindings'}
-${arcSliderSetups || '  // No arc sliders with parameter bindings'}
 ${asciiSliderSetups || '  // No ASCII sliders with parameter bindings'}
 ${asciiButtonSetups || '  // No ASCII buttons with parameter bindings'}
 ${rangeSliderSetups || '  // No range sliders with parameter bindings'}
@@ -1035,67 +1014,6 @@ function updatePowerButtonVisual(button, isOn) {
     led.classList.toggle('lit', isOn);
   }
   button.classList.toggle('on', isOn);
-}
-
-/**
- * Setup arc slider interaction (SVG-based circular slider)
- * @param {string} sliderId - HTML element ID
- * @param {string} paramId - Parameter ID for JUCE binding
- * @param {number} defaultValue - Default normalized value (0-1)
- */
-function setupArcSliderInteraction(sliderId, paramId, defaultValue = 0.5) {
-  const slider = document.getElementById(sliderId);
-  if (!slider) {
-    console.error(\`Arc slider element not found: \${sliderId}\`);
-    return;
-  }
-
-  let isDragging = false;
-  let startY = 0;
-  let startValue = defaultValue;
-  let currentValue = defaultValue;
-
-  // Initialize visual
-  updateArcSliderVisual(sliderId, defaultValue);
-
-  slider.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startY = e.clientY;
-    startValue = currentValue;
-
-    bridge.getParameter(paramId).then(v => {
-      if (v !== undefined) startValue = v;
-    }).catch(() => {});
-
-    bridge.beginGesture(paramId).catch(() => {});
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-
-    const deltaY = startY - e.clientY;  // Inverted (up = increase)
-    const sensitivity = 0.005;
-    let newValue = startValue + deltaY * sensitivity;
-    newValue = Math.max(0, Math.min(1, newValue));
-    currentValue = newValue;
-
-    bridge.setParameter(paramId, newValue).catch(() => {});
-    updateArcSliderVisual(sliderId, newValue);
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (isDragging) {
-      isDragging = false;
-      bridge.endGesture(paramId).catch(() => {});
-    }
-  });
-
-  slider.addEventListener('dblclick', () => {
-    currentValue = defaultValue;
-    bridge.setParameter(paramId, defaultValue).catch(() => {});
-    updateArcSliderVisual(sliderId, defaultValue);
-  });
 }
 
 /**
@@ -2929,97 +2847,6 @@ function updateSliderVisual(sliderId, value) {
 
   // Update data attribute
   element.setAttribute('data-value', value);
-}
-
-/**
- * Update arc slider visual representation (SVG-based)
- * @param {string} sliderId - HTML element ID
- * @param {number} value - Normalized value (0-1)
- */
-function updateArcSliderVisual(sliderId, value) {
-  const element = document.getElementById(sliderId);
-  if (!element) return;
-
-  // Read angles from data attributes
-  const startAngle = parseFloat(element.dataset.startAngle) || 135;
-  const endAngle = parseFloat(element.dataset.endAngle) || 45;
-
-  // Get SVG dimensions from viewBox
-  const svg = element.querySelector('svg');
-  if (!svg) return;
-  const viewBox = svg.getAttribute('viewBox');
-  const [, , vbWidth] = viewBox ? viewBox.split(' ').map(Number) : [0, 0, 100];
-  const diameter = vbWidth || 100;
-
-  // Get track info
-  const trackPath = element.querySelector('.arcslider-track');
-  const trackWidth = trackPath ? parseFloat(trackPath.getAttribute('stroke-width')) || 4 : 4;
-
-  // Get thumb radius from existing thumb
-  const thumbCircle = element.querySelector('.arcslider-thumb');
-  const thumbRadius = thumbCircle ? parseFloat(thumbCircle.getAttribute('r')) || 8 : 8;
-
-  // Calculate dimensions
-  const cx = diameter / 2;
-  const cy = diameter / 2;
-  const radius = (diameter - trackWidth) / 2 - thumbRadius;
-
-  // Calculate sweep angle (handling wrap-around for arc that goes through bottom)
-  let sweepAngle = endAngle - startAngle;
-  if (sweepAngle < 0) {
-    sweepAngle += 360;
-  }
-
-  // Value angle interpolates from startAngle toward endAngle
-  const valueAngle = startAngle + value * sweepAngle;
-
-  // Update arc fill path
-  const arcFill = element.querySelector('.arcslider-fill');
-  if (arcFill) {
-    if (value > 0.001) {
-      const path = describeArcSliderPath(cx, cy, radius, startAngle, valueAngle);
-      arcFill.setAttribute('d', path);
-    } else {
-      arcFill.setAttribute('d', '');
-    }
-  }
-
-  // Update thumb position
-  if (thumbCircle) {
-    const pos = polarToCartesianArc(cx, cy, radius, valueAngle);
-    thumbCircle.setAttribute('cx', pos.x);
-    thumbCircle.setAttribute('cy', pos.y);
-  }
-
-  // Update data attribute
-  element.setAttribute('data-value', value);
-}
-
-/**
- * Calculate arc path for arc slider (clockwise from startAngle)
- */
-function describeArcSliderPath(cx, cy, radius, startAngle, endAngle) {
-  let sweepAngle = endAngle - startAngle;
-  if (sweepAngle < 0) {
-    sweepAngle += 360;
-  }
-
-  const start = polarToCartesianArc(cx, cy, radius, startAngle);
-  const end = polarToCartesianArc(cx, cy, radius, endAngle);
-  const largeArcFlag = sweepAngle > 180 ? '1' : '0';
-
-  return \`M \${start.x} \${start.y} A \${radius} \${radius} 0 \${largeArcFlag} 1 \${end.x} \${end.y}\`;
-}
-
-/**
- * Convert polar coordinates to cartesian for arc slider
- */
-function polarToCartesianArc(cx, cy, radius, angleInDegrees) {
-  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
-  return {
-    x: cx + radius * Math.cos(angleInRadians),
-    y: cy + radius * Math.sin(angleInRadians)
-  };
 }
 
 /**

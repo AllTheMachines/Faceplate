@@ -1,5 +1,9 @@
 import { MeterElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { ElementStyleSection } from './shared'
+import { useStore } from '../../store'
+import { useLicense } from '../../hooks/useLicense'
+import { MeterLayers } from '../../types/elementStyle'
 
 interface MeterPropertiesProps {
   element: MeterElementConfig
@@ -7,6 +11,9 @@ interface MeterPropertiesProps {
 }
 
 export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
+  const { isPro } = useLicense()
+  const getElementStyle = useStore((state) => state.getElementStyle)
+
   const handleOrientationChange = (newOrientation: MeterElementConfig['orientation']) => {
     // When changing orientation, swap width and height for better UX
     if (newOrientation !== element.orientation) {
@@ -20,6 +27,56 @@ export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
 
   return (
     <>
+      {/* Style Section */}
+      <PropertySection title="Style">
+        <ElementStyleSection
+          category="meter"
+          currentStyleId={element.styleId}
+          onStyleChange={(styleId) => onUpdate({
+            styleId,
+            colorOverrides: styleId ? element.colorOverrides : undefined
+          })}
+          isPro={isPro}
+        />
+      </PropertySection>
+
+      {/* Color Overrides - only when SVG style selected */}
+      {isPro && element.styleId && (() => {
+        const style = getElementStyle(element.styleId)
+        if (!style || style.category !== 'meter') return null
+
+        const layerNames: Array<keyof MeterLayers> = ['body', 'fill', 'fill-green', 'fill-yellow', 'fill-red', 'scale', 'peak', 'segments']
+        const existingLayers = layerNames.filter((layerName) => style.layers[layerName])
+
+        if (existingLayers.length === 0) return null
+
+        return (
+          <PropertySection title="Color Overrides">
+            {existingLayers.map((layerName) => (
+              <ColorInput
+                key={layerName}
+                label={layerName.charAt(0).toUpperCase() + layerName.slice(1).replace(/-/g, ' ')}
+                value={element.colorOverrides?.[layerName] || ''}
+                onChange={(color) => {
+                  const newOverrides = { ...element.colorOverrides }
+                  if (color) {
+                    newOverrides[layerName] = color
+                  } else {
+                    delete newOverrides[layerName]
+                  }
+                  onUpdate({ colorOverrides: newOverrides })
+                }}
+              />
+            ))}
+            <button
+              onClick={() => onUpdate({ colorOverrides: undefined })}
+              className="w-full text-left text-sm text-red-400 hover:text-red-300 mt-1"
+            >
+              Reset to Original Colors
+            </button>
+          </PropertySection>
+        )
+      })()}
       {/* Orientation */}
       <PropertySection title="Orientation">
         <div>

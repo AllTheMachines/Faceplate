@@ -66,7 +66,6 @@ import {
   createBipolarSlider,
   createCrossfadeSlider,
   createNotchedSlider,
-  createArcSlider,
   createAsciiSlider,
   createAsciiButton,
   createIconButton,
@@ -573,9 +572,6 @@ function App() {
         break
       case 'notchedslider':
         newElement = createNotchedSlider({ x: canvasX, y: canvasY, ...variant })
-        break
-      case 'arcslider':
-        newElement = createArcSlider({ x: canvasX, y: canvasY, ...variant })
         break
       case 'asciislider':
         newElement = createAsciiSlider({ x: canvasX, y: canvasY, ...variant })

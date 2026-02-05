@@ -21,7 +21,6 @@ const paletteCategories: PaletteCategoryData[] = [
     name: 'Rotary Controls',
     items: [
       { id: 'knob-standard', type: 'knob', name: 'Knob' },
-      { id: 'knob-arc', type: 'knob', name: 'Arc Knob', variant: { style: 'arc' } },
       { id: 'steppedknob', type: 'steppedknob', name: 'Stepped Knob' },
       { id: 'centerdetentknob', type: 'centerdetentknob', name: 'Center Detent' },
       { id: 'dotindicatorknob', type: 'dotindicatorknob', name: 'Dot Indicator' },
@@ -36,7 +35,6 @@ const paletteCategories: PaletteCategoryData[] = [
       { id: 'bipolarslider', type: 'bipolarslider', name: 'Bipolar Slider' },
       { id: 'crossfadeslider', type: 'crossfadeslider', name: 'Crossfade' },
       { id: 'notchedslider', type: 'notchedslider', name: 'Notched Slider' },
-      { id: 'arcslider', type: 'arcslider', name: 'Arc Slider' },
       { id: 'asciislider', type: 'asciislider', name: 'ASCII Slider' },
     ],
   },

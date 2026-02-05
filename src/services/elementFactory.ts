@@ -47,7 +47,6 @@ import {
   createBipolarSlider,
   createCrossfadeSlider,
   createNotchedSlider,
-  createArcSlider,
   createAsciiSlider,
   createAsciiButton,
   createIconButton,
@@ -170,8 +169,6 @@ export function createElementFromType(
       return createCrossfadeSlider({ ...base, width: overrides?.width ?? 200, height: overrides?.height ?? 30 })
     case 'notchedslider':
       return createNotchedSlider({ ...base, width: overrides?.width ?? 200, height: overrides?.height ?? 30 })
-    case 'arcslider':
-      return createArcSlider({ ...base, width: overrides?.width ?? 100, height: overrides?.height ?? 100 })
     case 'asciislider':
       return createAsciiSlider({ ...base, width: overrides?.width ?? 280, height: overrides?.height ?? 24 })
     case 'asciibutton':

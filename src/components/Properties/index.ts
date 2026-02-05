@@ -44,7 +44,6 @@ import { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
 import { BipolarSliderProperties } from './BipolarSliderProperties'
 import { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 import { NotchedSliderProperties } from './NotchedSliderProperties'
-import { ArcSliderProperties } from './ArcSliderProperties'
 import { AsciiSliderProperties } from './AsciiSliderProperties'
 import { AsciiButtonProperties } from './AsciiButtonProperties'
 import { IconButtonProperties } from './IconButtonProperties'
@@ -148,7 +147,6 @@ export { DotIndicatorKnobProperties } from './DotIndicatorKnobProperties'
 export { BipolarSliderProperties } from './BipolarSliderProperties'
 export { CrossfadeSliderProperties } from './CrossfadeSliderProperties'
 export { NotchedSliderProperties } from './NotchedSliderProperties'
-export { ArcSliderProperties } from './ArcSliderProperties'
 export { AsciiSliderProperties } from './AsciiSliderProperties'
 export { AsciiButtonProperties } from './AsciiButtonProperties'
 export { IconButtonProperties } from './IconButtonProperties'
@@ -242,7 +240,6 @@ export const propertyRegistry = new Map<string, PropertyComponent>([
   ['bipolarslider', BipolarSliderProperties],
   ['crossfadeslider', CrossfadeSliderProperties],
   ['notchedslider', NotchedSliderProperties],
-  ['arcslider', ArcSliderProperties],
   ['asciislider', AsciiSliderProperties],
   ['asciibutton', AsciiButtonProperties],
   ['iconbutton', IconButtonProperties],

@@ -3,7 +3,7 @@
  * Generates index.html with properly positioned and styled elements
  */
 
-import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, ArcSliderElementConfig, AsciiSliderElementConfig, AsciiButtonElementConfig, AsciiArtElementConfig } from '../../types/elements'
+import type { ElementConfig, KnobElementConfig, SliderElementConfig, MeterElementConfig, RangeSliderElementConfig, DropdownElementConfig, CheckboxElementConfig, RadioGroupElementConfig, TextFieldElementConfig, ModulationMatrixElementConfig, DbDisplayElementConfig, FrequencyDisplayElementConfig, GainReductionMeterElementConfig, SvgGraphicElementConfig, MultiSliderElementConfig, IconButtonElementConfig, ToggleSwitchElementConfig, PowerButtonElementConfig, RockerSwitchElementConfig, RotarySwitchElementConfig, SegmentButtonElementConfig, SegmentConfig, StepperElementConfig, BreadcrumbElementConfig, BreadcrumbItem, MultiSelectDropdownElementConfig, ComboBoxElementConfig, MenuButtonElementConfig, MenuItem, TabBarElementConfig, TabConfig, TagSelectorElementConfig, Tag, TreeViewElementConfig, TreeNode, TooltipElementConfig, HorizontalSpacerElementConfig, VerticalSpacerElementConfig, WindowChromeElementConfig, SteppedKnobElementConfig, CenterDetentKnobElementConfig, DotIndicatorKnobElementConfig, BipolarSliderElementConfig, CrossfadeSliderElementConfig, NotchedSliderElementConfig, AsciiSliderElementConfig, AsciiButtonElementConfig, AsciiArtElementConfig } from '../../types/elements'
 import type { BaseProfessionalMeterConfig, CorrelationMeterElementConfig, StereoWidthMeterElementConfig } from '../../types/elements/displays'
 import type { ScrollingWaveformElementConfig, SpectrumAnalyzerElementConfig, SpectrogramElementConfig, GoniometerElementConfig, VectorscopeElementConfig } from '../../types/elements/visualizations'
 import type {
@@ -471,9 +471,6 @@ export function generateElementHTML(element: ElementConfig, allElements?: Elemen
     case 'notchedslider':
       return generateNotchedSliderHTML(id, baseClass, positionStyle, element)
 
-    case 'arcslider':
-      return generateArcSliderHTML(id, baseClass, positionStyle, element)
-
     case 'asciislider':
       return generateAsciiSliderHTML(id, baseClass, positionStyle, element)
 
@@ -789,7 +786,7 @@ function generateStyledSliderHTML(
   id: string,
   baseClass: string,
   positionStyle: string,
-  config: SliderElementConfig | BipolarSliderElementConfig | CrossfadeSliderElementConfig | NotchedSliderElementConfig | ArcSliderElementConfig,
+  config: SliderElementConfig | BipolarSliderElementConfig | CrossfadeSliderElementConfig | NotchedSliderElementConfig,
   style: ElementStyle
 ): string {
   // Validate category
@@ -1826,121 +1823,6 @@ function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle:
       </svg>
     </div>`
   }
-}
-
-/**
- * Arc Slider SVG arc utilities (for arc that goes through bottom of circle)
- */
-function describeArcSlider(
-  x: number,
-  y: number,
-  radius: number,
-  startAngle: number,
-  endAngle: number
-): string {
-  // Handle arc direction (clockwise from startAngle to endAngle)
-  // For arc slider: 135 to 45 means going through 180, 270, 0 (clockwise)
-  let sweepAngle = endAngle - startAngle
-  if (sweepAngle < 0) {
-    sweepAngle += 360
-  }
-
-  const start = polarToCartesian(x, y, radius, startAngle)
-  const end = polarToCartesian(x, y, radius, endAngle)
-  const largeArcFlag = sweepAngle > 180 ? '1' : '0'
-
-  return ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 1, end.x, end.y].join(' ')
-}
-
-/**
- * Generate Arc Slider HTML with SVG arc structure
- */
-function generateArcSliderHTML(id: string, baseClass: string, positionStyle: string, config: ArcSliderElementConfig): string {
-  // Check if this slider uses a custom SVG style
-  if (config.styleId) {
-    const elementStyles = useStore.getState().elementStyles
-    const style = elementStyles.find((s) => s.id === config.styleId)
-
-    if (style) {
-      const styledHTML = generateStyledSliderHTML(id, baseClass, positionStyle, config, style)
-      if (styledHTML) return styledHTML
-    }
-    // If style not found or wrong category, fall through to default rendering
-  }
-
-  const centerX = config.diameter / 2
-  const centerY = config.diameter / 2
-  const radius = (config.diameter - config.trackWidth) / 2 - config.thumbRadius
-
-  // Calculate value angle
-  const range = config.max - config.min
-  const normalizedValue = (config.value - config.min) / range
-
-  // Calculate sweep angle (handling wrap-around for arc that goes through bottom)
-  let sweepAngle = config.endAngle - config.startAngle
-  if (sweepAngle < 0) {
-    sweepAngle += 360
-  }
-
-  // Value angle interpolates from startAngle toward endAngle
-  const valueAngle = config.startAngle + normalizedValue * sweepAngle
-
-  // Generate arc paths
-  const trackPath = describeArcSlider(centerX, centerY, radius, config.startAngle, config.endAngle)
-  const valuePath = normalizedValue > 0.001
-    ? describeArcSlider(centerX, centerY, radius, config.startAngle, valueAngle)
-    : ''
-
-  // Thumb position on arc
-  const thumbPos = polarToCartesian(centerX, centerY, radius, valueAngle)
-
-  // Value fill SVG
-  const valueFillSVG = valuePath
-    ? `<path class="arcslider-fill" d="${valuePath}" fill="none" stroke="${config.fillColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />`
-    : ''
-
-  // Format value display
-  const formattedValue = formatValue(normalizedValue, config.min, config.max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
-
-  // Calculate label/value margin based on distance and position
-  const labelDistance = config.labelDistance ?? 8
-  const valueDistance = config.valueDistance ?? 8
-  const getLabelMargin = () => {
-    switch (config.labelPosition) {
-      case 'top': return `margin-bottom: ${labelDistance}px;`
-      case 'bottom': return `margin-top: ${labelDistance}px;`
-      case 'left': return `margin-right: ${labelDistance}px;`
-      case 'right': return `margin-left: ${labelDistance}px;`
-    }
-  }
-  const getValueMargin = () => {
-    switch (config.valuePosition) {
-      case 'top': return `margin-bottom: ${valueDistance}px;`
-      case 'bottom': return `margin-top: ${valueDistance}px;`
-      case 'left': return `margin-right: ${valueDistance}px;`
-      case 'right': return `margin-left: ${valueDistance}px;`
-    }
-  }
-
-  const labelHTML = config.showLabel
-    ? `<span class="arcslider-label arcslider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor}; ${getLabelMargin()}">${escapeHTML(config.labelText)}</span>`
-    : ''
-  const valueHTML = config.showValue
-    ? `<span class="arcslider-value arcslider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor}; ${getValueMargin()}">${escapeHTML(formattedValue)}</span>`
-    : ''
-
-  // Add data-parameter-id attribute for C++ parameter sync
-  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
-
-  return `<div id="${id}" class="${baseClass} slider slider-element arcslider-element" data-type="arcslider"${paramAttr} data-min="${config.min}" data-max="${config.max}" data-value="${config.value}" data-start-angle="${config.startAngle}" data-end-angle="${config.endAngle}" style="${positionStyle}">
-      ${labelHTML}
-      ${valueHTML}
-      <svg width="100%" height="100%" viewBox="0 0 ${config.diameter} ${config.diameter}" style="overflow: visible;">
-        <path class="arcslider-track" d="${trackPath}" fill="none" stroke="${config.trackColor}" stroke-width="${config.trackWidth}" stroke-linecap="round" />
-        ${valueFillSVG}
-        <circle class="arcslider-thumb" cx="${thumbPos.x}" cy="${thumbPos.y}" r="${config.thumbRadius}" fill="${config.thumbColor}" />
-      </svg>
-    </div>`
 }
 
 /**
