@@ -1,7 +1,7 @@
 import { useStore } from '../../store'
 import { ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, PropertySection, getPropertyComponent } from './'
-import { downloadElementSVG } from '../../services/export/svgElementExport'
+import { downloadElementSVG, canExportElementAsSVG } from '../../services/export/svgElementExport'
 import { sectionHelp } from '../../content/help/sections'
 import { useLicense } from '../../hooks/useLicense'
 
@@ -186,8 +186,8 @@ export function PropertyPanel() {
         </p>
       </PropertySection>
 
-      {/* Export SVG - Pro feature */}
-      {userIsPro && (
+      {/* Export SVG - only show for elements that support SVG export */}
+      {canExportElementAsSVG(element.type) && (
         <PropertySection title="SVG" helpContent={sectionHelp['svg']} elementType={element.type}>
           <button
             onClick={() => downloadElementSVG(element)}

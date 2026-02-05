@@ -11,12 +11,13 @@
  * Display: display-body, display-text, display-unit
  */
 
-import type { UIElement } from '../../types/elements'
+import type { ElementConfig } from '../../types/elements'
 
 // Layer naming conventions per element category
 export const LAYER_CONVENTIONS = {
   knob: ['knob-body', 'knob-track', 'knob-indicator', 'knob-arc', 'knob-glow', 'knob-shadow'],
   slider: ['slider-body', 'slider-track', 'slider-fill', 'slider-thumb'],
+  rangeslider: ['slider-body', 'slider-track', 'slider-fill', 'thumb-low', 'thumb-high'],
   button: [
     'button-body', 'button-label', 'button-icon',
     'button-normal', 'button-pressed',
@@ -85,9 +86,9 @@ function polarToCartesian(
 /**
  * Export a knob element as SVG
  */
-function exportKnobAsSVG(element: UIElement): string {
+function exportKnobAsSVG(element: ElementConfig): string {
   const { width, height } = element
-  const config = element as UIElement & {
+  const config = element as ElementConfig & {
     trackColor?: string
     fillColor?: string
     indicatorColor?: string
@@ -147,9 +148,9 @@ function exportKnobAsSVG(element: UIElement): string {
 /**
  * Export a slider element as SVG
  */
-function exportSliderAsSVG(element: UIElement): string {
+function exportSliderAsSVG(element: ElementConfig): string {
   const { width, height } = element
-  const config = element as UIElement & {
+  const config = element as ElementConfig & {
     trackColor?: string
     fillColor?: string
     thumbColor?: string
@@ -222,11 +223,114 @@ function exportSliderAsSVG(element: UIElement): string {
 }
 
 /**
+ * Export a range slider element as SVG
+ */
+function exportRangeSliderAsSVG(element: ElementConfig): string {
+  const { width, height } = element
+  const config = element as ElementConfig & {
+    trackColor?: string
+    fillColor?: string
+    thumbColor?: string
+    minValue?: number
+    maxValue?: number
+    min?: number
+    max?: number
+    orientation?: 'horizontal' | 'vertical'
+  }
+
+  const trackColor = config.trackColor || '#374151'
+  const fillColor = config.fillColor || '#3b82f6'
+  const thumbColor = config.thumbColor || '#ffffff'
+  const min = config.min ?? 0
+  const max = config.max ?? 1
+  const minValue = config.minValue ?? 0.3
+  const maxValue = config.maxValue ?? 0.7
+  const isVertical = config.orientation === 'vertical'
+
+  const trackThickness = 6
+  const thumbSize = 16
+
+  // Normalize values to 0-1 range
+  const normalizedMin = (minValue - min) / (max - min)
+  const normalizedMax = (maxValue - min) / (max - min)
+
+  if (isVertical) {
+    const trackX = width / 2 - trackThickness / 2
+    const fillStart = height * (1 - normalizedMax)
+    const fillEnd = height * (1 - normalizedMin)
+    const fillHeight = fillEnd - fillStart
+    const thumbLowY = fillEnd - thumbSize / 2
+    const thumbHighY = fillStart - thumbSize / 2
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <!-- Slider Body -->
+  <g id="slider-body">
+    <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"/>
+  </g>
+
+  <!-- Slider Track -->
+  <g id="slider-track">
+    <rect x="${trackX}" y="0" width="${trackThickness}" height="${height}" rx="3" fill="${trackColor}"/>
+  </g>
+
+  <!-- Slider Fill -->
+  <g id="slider-fill">
+    <rect x="${trackX}" y="${fillStart}" width="${trackThickness}" height="${fillHeight}" rx="3" fill="${fillColor}"/>
+  </g>
+
+  <!-- Thumb Low (bottom/min) -->
+  <g id="thumb-low">
+    <rect x="${width / 2 - thumbSize / 2}" y="${thumbLowY}" width="${thumbSize}" height="${thumbSize}" rx="2" fill="${thumbColor}" stroke="#9ca3af" stroke-width="1"/>
+  </g>
+
+  <!-- Thumb High (top/max) -->
+  <g id="thumb-high">
+    <rect x="${width / 2 - thumbSize / 2}" y="${thumbHighY}" width="${thumbSize}" height="${thumbSize}" rx="2" fill="${thumbColor}" stroke="#9ca3af" stroke-width="1"/>
+  </g>
+</svg>`
+  } else {
+    const trackY = height / 2 - trackThickness / 2
+    const fillStart = width * normalizedMin
+    const fillEnd = width * normalizedMax
+    const fillWidth = fillEnd - fillStart
+    const thumbLowX = fillStart - thumbSize / 2
+    const thumbHighX = fillEnd - thumbSize / 2
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+  <!-- Slider Body -->
+  <g id="slider-body">
+    <rect x="0" y="0" width="${width}" height="${height}" fill="transparent"/>
+  </g>
+
+  <!-- Slider Track -->
+  <g id="slider-track">
+    <rect x="0" y="${trackY}" width="${width}" height="${trackThickness}" rx="3" fill="${trackColor}"/>
+  </g>
+
+  <!-- Slider Fill -->
+  <g id="slider-fill">
+    <rect x="${fillStart}" y="${trackY}" width="${fillWidth}" height="${trackThickness}" rx="3" fill="${fillColor}"/>
+  </g>
+
+  <!-- Thumb Low (left/min) -->
+  <g id="thumb-low">
+    <rect x="${thumbLowX}" y="${height / 2 - thumbSize / 2}" width="${thumbSize}" height="${thumbSize}" rx="2" fill="${thumbColor}" stroke="#9ca3af" stroke-width="1"/>
+  </g>
+
+  <!-- Thumb High (right/max) -->
+  <g id="thumb-high">
+    <rect x="${thumbHighX}" y="${height / 2 - thumbSize / 2}" width="${thumbSize}" height="${thumbSize}" rx="2" fill="${thumbColor}" stroke="#9ca3af" stroke-width="1"/>
+  </g>
+</svg>`
+  }
+}
+
+/**
  * Export a button element as SVG
  */
-function exportButtonAsSVG(element: UIElement): string {
+function exportButtonAsSVG(element: ElementConfig): string {
   const { width, height } = element
-  const config = element as UIElement & {
+  const config = element as ElementConfig & {
     backgroundColor?: string
     textColor?: string
     label?: string
@@ -259,9 +363,9 @@ function exportButtonAsSVG(element: UIElement): string {
 /**
  * Export a meter element as SVG
  */
-function exportMeterAsSVG(element: UIElement): string {
+function exportMeterAsSVG(element: ElementConfig): string {
   const { width, height } = element
-  const config = element as UIElement & {
+  const config = element as ElementConfig & {
     backgroundColor?: string
     fillColor?: string
     value?: number
@@ -323,7 +427,7 @@ function exportMeterAsSVG(element: UIElement): string {
 /**
  * Export a generic element as SVG (fallback for unsupported types)
  */
-function exportGenericAsSVG(element: UIElement): string {
+function exportGenericAsSVG(element: ElementConfig): string {
   const { width, height, type } = element
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
@@ -355,14 +459,17 @@ function escapeXml(str: string): string {
 /**
  * Export any UI element as SVG with named layers
  */
-export function exportElementAsSVG(element: UIElement): string {
+export function exportElementAsSVG(element: ElementConfig): string {
   const type = element.type.toLowerCase()
 
   // Route to specific exporters based on element type
   if (type.includes('knob')) {
     return exportKnobAsSVG(element)
   }
-  if (type.includes('slider') && !type.includes('range')) {
+  if (type === 'rangeslider') {
+    return exportRangeSliderAsSVG(element)
+  }
+  if (type.includes('slider')) {
     return exportSliderAsSVG(element)
   }
   if (type === 'button' || type === 'iconbutton') {
@@ -379,14 +486,14 @@ export function exportElementAsSVG(element: UIElement): string {
 /**
  * Download SVG as file
  */
-export function downloadElementSVG(element: UIElement): void {
+export function downloadElementSVG(element: ElementConfig): void {
   const svg = exportElementAsSVG(element)
   const blob = new Blob([svg], { type: 'image/svg+xml' })
   const url = URL.createObjectURL(blob)
 
   // Format: Type-Library-ID.svg (e.g., "knob-Faceplate-6430bfb6.svg")
   // Library is "Faceplate" for built-in designs, future: "Vintage", "Minimal", etc.
-  const library = (element as UIElement & { library?: string }).library || 'Faceplate'
+  const library = (element as ElementConfig & { library?: string }).library || 'Faceplate'
   const shortId = element.id.slice(0, 8)
 
   const link = document.createElement('a')
@@ -400,18 +507,43 @@ export function downloadElementSVG(element: UIElement): void {
 }
 
 /**
+ * Check if an element type supports SVG export with named layers
+ */
+export function canExportElementAsSVG(type: string): boolean {
+  const normalizedType = type.toLowerCase()
+
+  // Knobs support SVG export
+  if (normalizedType.includes('knob')) return true
+
+  // All sliders support SVG export (including rangeslider)
+  if (normalizedType.includes('slider')) return true
+
+  // Buttons support SVG export
+  if (normalizedType.includes('button')) return true
+
+  // Switches support SVG export
+  if (normalizedType.includes('switch')) return true
+
+  // Meters support SVG export
+  if (normalizedType.includes('meter')) return true
+
+  return false
+}
+
+/**
  * Get layer names for a given element type
  */
 export function getLayerNamesForType(type: string): string[] {
   const normalizedType = type.toLowerCase()
 
-  if (normalizedType.includes('knob')) return LAYER_CONVENTIONS.knob
-  if (normalizedType.includes('slider')) return LAYER_CONVENTIONS.slider
-  if (normalizedType.includes('button')) return LAYER_CONVENTIONS.button
-  if (normalizedType.includes('meter')) return LAYER_CONVENTIONS.meter
-  if (normalizedType.includes('display')) return LAYER_CONVENTIONS.display
-  if (normalizedType.includes('led')) return LAYER_CONVENTIONS.led
-  if (normalizedType.includes('switch')) return LAYER_CONVENTIONS.switch
+  if (normalizedType.includes('knob')) return [...LAYER_CONVENTIONS.knob]
+  if (normalizedType === 'rangeslider') return [...LAYER_CONVENTIONS.rangeslider]
+  if (normalizedType.includes('slider')) return [...LAYER_CONVENTIONS.slider]
+  if (normalizedType.includes('button')) return [...LAYER_CONVENTIONS.button]
+  if (normalizedType.includes('meter')) return [...LAYER_CONVENTIONS.meter]
+  if (normalizedType.includes('display')) return [...LAYER_CONVENTIONS.display]
+  if (normalizedType.includes('led')) return [...LAYER_CONVENTIONS.led]
+  if (normalizedType.includes('switch')) return [...LAYER_CONVENTIONS.switch]
 
   return [`${normalizedType}-body`, `${normalizedType}-label`]
 }
