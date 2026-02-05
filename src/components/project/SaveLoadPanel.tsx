@@ -79,6 +79,7 @@ export function SaveLoadPanel() {
   const selectedIds = useStore((state) => state.selectedIds)
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
+  const elementStyles = useStore((state) => state.elementStyles)
   const layers = useStore((state) => state.layers)
 
   // Get dirty state via hook (properly subscribes to all dependencies)
@@ -96,6 +97,7 @@ export function SaveLoadPanel() {
   const selectMultiple = useStore((state) => state.selectMultiple)
   const setAssets = useStore((state) => state.setAssets)
   const setKnobStyles = useStore((state) => state.setKnobStyles)
+  const setElementStyles = useStore((state) => state.setElementStyles)
   const setLayers = useStore((state) => state.setLayers)
   const setLastModified = useStore((state) => state.setLastModified)
   const addWindow = useStore((state) => state.addWindow)
@@ -116,6 +118,7 @@ export function SaveLoadPanel() {
         gridColor,
         assets,
         knobStyles,
+        elementStyles,
         layers,
       })
 
@@ -130,6 +133,7 @@ export function SaveLoadPanel() {
         selectedIds,
         assets,
         knobStyles,
+        elementStyles,
         layers,
       })
 
@@ -222,6 +226,11 @@ export function SaveLoadPanel() {
         setKnobStyles(data.knobStyles)
       }
 
+      // Restore element styles if present
+      if (data.elementStyles) {
+        setElementStyles(data.elementStyles)
+      }
+
       // Restore layers if present
       if (data.layers) {
         setLayers(data.layers)
@@ -240,6 +249,7 @@ export function SaveLoadPanel() {
         gridColor: data.gridColor,
         assets: data.assets,
         knobStyles: data.knobStyles,
+        elementStyles: data.elementStyles,
         layers: data.layers,
       })
       setSavedState(loadedSnapshot, data.lastModified || Date.now())
