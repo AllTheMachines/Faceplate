@@ -124,16 +124,13 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 
 ### Active
 
-**v0.10.0 SVG Styling for Visual Controls:**
-- Unified ElementStyle system replacing knobStyles with category-specific layers
-- SVG styling for 4 knob variants (steppedknob, centerdetentknob, dotindicatorknob + existing knob)
-- SVG styling for 7 slider types (slider, rangeslider, multislider, bipolarslider, crossfadeslider, notchedslider, arcslider)
-- SVG styling for 7 button/switch types (button, iconbutton, toggleswitch, powerbutton, rockerswitch, rotaryswitch, segmentbutton)
-- SVG styling for meter element
-- Layer detection service with category-aware layer names
-- Updated HTML/JS export with SVG styling support
-- ManageElementStylesDialog and ElementLayerMappingDialog UI
-- Project schema migration from knobStyles to elementStyles
+**v0.11.0 Complete Feature Documentation Manual:**
+- Comprehensive user manual covering all Faceplate features with screenshot placeholders
+- Full feature walkthrough: getting started, canvas, palette, properties panel, drag-drop, selection, copy/paste, undo/redo
+- Major systems documentation: layers, multi-window, fonts, asset library, export (JUCE + preview), project save/load, grid/snap, containers
+- Update FACEPLATE_DOCUMENTATION.md to current version with all v0.10.0+ features
+- Update ELEMENT_REFERENCE.md with current element count and new style properties
+- Screenshot notes in STYLE_CREATION_MANUAL.md format: `![description](images/filename.png)`
 
 ### Out of Scope
 
@@ -147,6 +144,7 @@ Visually design a plugin UI and export code that works in JUCE WebView2 without 
 ## Context
 
 **Current State:**
+- v0.11.0 Complete Feature Documentation Manual in progress (started 2026-02-05)
 - v0.10.0 SVG Styling for Visual Controls in progress (started 2026-02-04)
 - v2.0 Pro Licensing shipped (2026-02-03)
 - v1.10 Element Bug Fixes shipped (2026-02-02)
@@ -245,4 +243,4 @@ The designer exports a **dynamic function wrapper system** for JUCE WebView2 com
 | F1 contextual help | Element-specific help when one selected, general otherwise | Good - context-aware UX |
 
 ---
-*Last updated: 2026-02-04 after v0.10.0 SVG Styling milestone started*
+*Last updated: 2026-02-05 after v0.11.0 Documentation milestone started*
