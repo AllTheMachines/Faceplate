@@ -3150,6 +3150,236 @@ function updateRangeSliderVisual(rangeSliderId, minValue, maxValue) {
 }
 
 // ============================================================================
+// Styled Element Animation Helpers
+// ============================================================================
+
+/**
+ * State tracking for peak hold per meter
+ */
+var peakValues = {};
+var peakTimers = {};
+
+/**
+ * Update styled slider position (thumb translate, fill clip-path)
+ * For SVG-styled sliders from Phase 53-54
+ * @param {string} elementId - Slider element ID
+ * @param {number} normalizedValue - Value 0-1
+ */
+function updateStyledSlider(elementId, normalizedValue) {
+  var element = document.getElementById(elementId);
+  if (!element || !element.classList.contains('styled-slider')) return;
+
+  var orientation = element.dataset.orientation || 'horizontal';
+  var thumbLayer = element.querySelector('.slider-thumb');
+  var fillLayer = element.querySelector('.slider-fill');
+
+  if (thumbLayer) {
+    // GPU-accelerated transform translate
+    if (orientation === 'vertical') {
+      // Inverted: 0 at bottom, 1 at top
+      var thumbY = (1 - normalizedValue) * 100;
+      thumbLayer.style.transform = 'translate(0, ' + thumbY + '%)';
+    } else {
+      var thumbX = normalizedValue * 100;
+      thumbLayer.style.transform = 'translate(' + thumbX + '%, 0)';
+    }
+  }
+
+  if (fillLayer) {
+    // Clip-path inset for fill reveal
+    if (orientation === 'vertical') {
+      // Bottom-up fill: inset from top
+      var clipFromTop = (1 - normalizedValue) * 100;
+      fillLayer.style.clipPath = 'inset(' + clipFromTop + '% 0 0 0)';
+    } else {
+      // Left-to-right fill: inset from right
+      var clipFromRight = (1 - normalizedValue) * 100;
+      fillLayer.style.clipPath = 'inset(0 ' + clipFromRight + '% 0 0)';
+    }
+  }
+
+  // Update data attribute for state tracking
+  element.dataset.value = normalizedValue;
+}
+
+/**
+ * Update styled meter level (zone fills with clip-path, peak indicator)
+ * For SVG-styled meters from Phase 57
+ * @param {string} elementId - Meter element ID
+ * @param {number} normalizedValue - Value 0-1
+ */
+function updateStyledMeter(elementId, normalizedValue) {
+  var element = document.getElementById(elementId);
+  if (!element || !element.classList.contains('styled-meter')) return;
+
+  // Zone thresholds (matches Phase 57-02 decisions)
+  var yellowThreshold = 0.6;  // -18dB normalized
+  var redThreshold = 0.85;    // -6dB normalized
+
+  // Calculate clip-path for bottom-up reveal
+  var clipFromTop = (1 - normalizedValue) * 100;
+  var clipPath = 'inset(' + clipFromTop + '% 0 0 0)';
+
+  // Get zone fill elements
+  var fillGreen = element.querySelector('.meter-fill-green');
+  var fillYellow = element.querySelector('.meter-fill-yellow');
+  var fillRed = element.querySelector('.meter-fill-red');
+  var fillSingle = element.querySelector('.meter-fill'); // Fallback for single fill
+
+  // Green zone: always visible up to value
+  if (fillGreen) {
+    fillGreen.style.clipPath = clipPath;
+  }
+
+  // Yellow zone: reveals above yellowThreshold
+  if (fillYellow) {
+    fillYellow.style.clipPath = normalizedValue > yellowThreshold
+      ? clipPath
+      : 'inset(100% 0 0 0)';
+  }
+
+  // Red zone: reveals above redThreshold
+  if (fillRed) {
+    fillRed.style.clipPath = normalizedValue > redThreshold
+      ? clipPath
+      : 'inset(100% 0 0 0)';
+  }
+
+  // Single fill fallback (if no zone layers)
+  if (fillSingle && !fillGreen && !fillYellow && !fillRed) {
+    fillSingle.style.clipPath = clipPath;
+  }
+
+  // Peak hold indicator (if enabled)
+  if (element.dataset.peakHold === 'true') {
+    updateStyledMeterPeak(elementId, normalizedValue);
+  }
+
+  // Update data attribute
+  element.dataset.value = normalizedValue;
+}
+
+/**
+ * Update meter peak hold indicator with decay
+ * @param {string} elementId - Meter element ID
+ * @param {number} normalizedValue - Current value 0-1
+ */
+function updateStyledMeterPeak(elementId, normalizedValue) {
+  var element = document.getElementById(elementId);
+  if (!element) return;
+
+  var peakLayer = element.querySelector('.meter-peak');
+  if (!peakLayer) return;
+
+  var currentPeak = peakValues[elementId] || 0;
+
+  // Update peak if value exceeds current peak
+  if (normalizedValue > currentPeak) {
+    peakValues[elementId] = normalizedValue;
+    peakLayer.style.bottom = (normalizedValue * 100) + '%';
+
+    // Clear existing decay timer
+    if (peakTimers[elementId]) {
+      clearTimeout(peakTimers[elementId]);
+    }
+
+    // Start decay timer (holdDuration from data attribute)
+    var holdDuration = parseInt(element.dataset.peakDuration) || 2000;
+    peakTimers[elementId] = setTimeout(function() {
+      // After hold duration, let peak track current value again
+      peakValues[elementId] = 0;
+    }, holdDuration);
+  }
+}
+
+/**
+ * Update styled button state (opacity toggle - instant, no transition)
+ * For SVG-styled buttons from Phase 56
+ * @param {string} elementId - Button element ID
+ * @param {boolean} pressed - Button pressed state
+ */
+function updateStyledButton(elementId, pressed) {
+  var element = document.getElementById(elementId);
+  if (!element || !element.classList.contains('styled-button')) return;
+
+  var normalLayer = element.querySelector('.button-normal');
+  var pressedLayer = element.querySelector('.button-pressed');
+
+  // INSTANT opacity toggle (no transition - per CONTEXT.md decision)
+  if (normalLayer) {
+    normalLayer.style.opacity = pressed ? '0' : '1';
+  }
+  if (pressedLayer) {
+    pressedLayer.style.opacity = pressed ? '1' : '0';
+  }
+
+  // Toggle switch specific: on/off layers
+  var onLayer = element.querySelector('.button-on');
+  var offLayer = element.querySelector('.button-off');
+  if (onLayer) onLayer.style.opacity = pressed ? '1' : '0';
+  if (offLayer) offLayer.style.opacity = pressed ? '0' : '1';
+
+  // LED/indicator (Power Button, Toggle Switch)
+  var ledLayer = element.querySelector('.button-led');
+  var indicatorLayer = element.querySelector('.button-indicator');
+  if (ledLayer) ledLayer.style.opacity = pressed ? '1' : '0.3';
+  if (indicatorLayer) indicatorLayer.style.opacity = pressed ? '1' : '0';
+
+  // Update state data attribute
+  element.dataset.state = pressed ? '1' : '0';
+}
+
+/**
+ * Update rotary switch selector position
+ * For SVG-styled rotary switches from Phase 56
+ * @param {string} elementId - Switch element ID
+ * @param {number} position - Selected position (0-indexed)
+ * @param {number} positionCount - Total number of positions
+ */
+function updateStyledRotarySwitch(elementId, position, positionCount) {
+  var element = document.getElementById(elementId);
+  if (!element || !element.classList.contains('styled-button')) return;
+
+  var selectorLayer = element.querySelector('.button-selector');
+  if (!selectorLayer) return;
+
+  // Calculate rotation angle
+  // Assuming 270 degree range (like knob) with positions evenly distributed
+  var minAngle = -135;
+  var maxAngle = 135;
+  var angleRange = maxAngle - minAngle;
+  var anglePerPosition = positionCount > 1 ? angleRange / (positionCount - 1) : 0;
+  var angle = minAngle + (position * anglePerPosition);
+
+  selectorLayer.style.transform = 'rotate(' + angle + 'deg)';
+  element.dataset.position = position;
+}
+
+/**
+ * Update segment button selection (clip-path on highlight)
+ * For SVG-styled segment buttons from Phase 56
+ * @param {string} elementId - Button element ID
+ * @param {number} selectedIndex - Selected segment index
+ * @param {number} segmentCount - Total segment count
+ */
+function updateStyledSegmentButton(elementId, selectedIndex, segmentCount) {
+  var element = document.getElementById(elementId);
+  if (!element || !element.classList.contains('styled-button')) return;
+
+  var highlightLayer = element.querySelector('.button-highlight');
+  if (!highlightLayer) return;
+
+  // Calculate clip-path for selected segment
+  var segmentWidth = 100 / segmentCount;
+  var clipLeft = selectedIndex * segmentWidth;
+  var clipRight = 100 - ((selectedIndex + 1) * segmentWidth);
+  var clipPath = 'inset(0 ' + clipRight + '% 0 ' + clipLeft + '%)';
+
+  highlightLayer.style.clipPath = clipPath;
+  element.dataset.selectedIndex = selectedIndex;
+}
+
+// ============================================================================
 // Start Initialization
 // ============================================================================
 
