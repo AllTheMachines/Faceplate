@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { RotarySwitchElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { ElementStyleSection } from './shared'
 import { SELECT_CLASSNAME } from './constants'
 import { useStore } from '../../store'
 import { useLicense } from '../../hooks/useLicense'
@@ -64,26 +65,16 @@ export function RotarySwitchProperties({ element, onUpdate }: RotarySwitchProper
     <>
       {/* Style Section */}
       <PropertySection title="Style">
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
-          <select
-            value={element.styleId || ''}
-            onChange={(e) => onUpdate({
-              styleId: e.target.value || undefined,
-              colorOverrides: e.target.value ? element.colorOverrides : undefined
-            })}
-            className={SELECT_CLASSNAME}
-            disabled={!isPro && buttonStyles.length > 0}
-          >
-            <option value="">Default (CSS)</option>
-            {buttonStyles.map(style => (
-              <option key={style.id} value={style.id}>{style.name}</option>
-            ))}
-          </select>
-          {!isPro && buttonStyles.length > 0 && (
-            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
-          )}
-        </div>
+        <ElementStyleSection
+          category="button"
+          currentStyleId={element.styleId}
+          styles={buttonStyles}
+          onStyleChange={(styleId) => onUpdate({
+            styleId,
+            colorOverrides: styleId ? element.colorOverrides : undefined
+          })}
+          isPro={isPro}
+        />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}

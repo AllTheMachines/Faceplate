@@ -2,8 +2,10 @@ import React from 'react'
 import { useStore } from '../../../store'
 import { NumberInput, PropertySection } from '../'
 import { ColorPicker } from '../shared/ColorPicker'
+import { ElementStyleSection } from '../shared'
 import { SELECT_CLASSNAME } from '../constants'
 import type { BaseProfessionalMeterConfig } from '../../../types/elements/displays'
+import { useLicense } from '../../../hooks/useLicense'
 
 interface SharedMeterPropertiesProps {
   elementId: string
@@ -29,6 +31,7 @@ export function SharedMeterProperties({
   const updateElement = useStore((state) => state.updateElement)
   const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const meterStyles = getStylesByCategory('meter')
+  const { isPro } = useLicense()
 
   const update = (updates: Partial<BaseProfessionalMeterConfig>) => {
     updateElement(elementId, updates)
@@ -41,24 +44,16 @@ export function SharedMeterProperties({
 
       {/* Style */}
       <PropertySection title="Style">
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Meter Style</label>
-          <select
-            value={config.styleId || ''}
-            onChange={(e) => update({
-              styleId: e.target.value || undefined,
-              colorOverrides: e.target.value ? config.colorOverrides : undefined
-            })}
-            className={SELECT_CLASSNAME}
-          >
-            <option value="">Default (Segmented)</option>
-            {meterStyles.map((style) => (
-              <option key={style.id} value={style.id}>
-                {style.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <ElementStyleSection
+          category="meter"
+          currentStyleId={config.styleId}
+          styles={meterStyles}
+          onStyleChange={(styleId) => update({
+            styleId,
+            colorOverrides: styleId ? config.colorOverrides : undefined
+          })}
+          isPro={isPro}
+        />
       </PropertySection>
 
       {/* Color Overrides (only when using SVG style) */}

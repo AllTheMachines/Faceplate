@@ -1,6 +1,6 @@
 import { ArcSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
-import { LabelDisplaySection, ValueDisplaySection, ColorPicker } from './shared'
+import { LabelDisplaySection, ValueDisplaySection, ColorPicker, ElementStyleSection } from './shared'
 import { useStore } from '../../store'
 import { useLicense } from '../../hooks/useLicense'
 
@@ -22,27 +22,16 @@ export function ArcSliderProperties({ element, onUpdate }: ArcSliderPropertiesPr
     <>
       {/* Style Section */}
       <PropertySection title="Style">
-        {/* Style Dropdown */}
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">SVG Style</label>
-          <select
-            value={element.styleId || ''}
-            onChange={(e) => onUpdate({
-              styleId: e.target.value || undefined,
-              colorOverrides: e.target.value ? element.colorOverrides : undefined
-            })}
-            className="w-full bg-gray-700 text-white text-sm rounded px-2 py-1.5 border border-gray-600"
-            disabled={!isPro && arcStyles.length > 0}
-          >
-            <option value="">Default (CSS)</option>
-            {arcStyles.map(style => (
-              <option key={style.id} value={style.id}>{style.name}</option>
-            ))}
-          </select>
-          {!isPro && arcStyles.length > 0 && (
-            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
-          )}
-        </div>
+        <ElementStyleSection
+          category="arc"
+          currentStyleId={element.styleId}
+          styles={arcStyles}
+          onStyleChange={(styleId) => onUpdate({
+            styleId,
+            colorOverrides: styleId ? element.colorOverrides : undefined
+          })}
+          isPro={isPro}
+        />
 
         {/* Thumb Rotation (only when style is selected) */}
         {currentStyle && isPro && (

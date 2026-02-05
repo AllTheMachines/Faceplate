@@ -1,5 +1,6 @@
 import { MultiSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
+import { ElementStyleSection } from './shared'
 import { SELECT_CLASSNAME } from './constants'
 import { useStore } from '../../store'
 import { useLicense } from '../../hooks/useLicense'
@@ -54,23 +55,16 @@ export function MultiSliderProperties({ element, onUpdate }: MultiSliderProperti
       <PropertySection title="Style">
         <div>
           <label className="block text-xs text-gray-400 mb-1">SVG Style (shared by all bands)</label>
-          <select
-            value={element.styleId || ''}
-            onChange={(e) => onUpdate({
-              styleId: e.target.value || undefined,
-              colorOverrides: e.target.value ? element.colorOverrides : undefined
+          <ElementStyleSection
+            category="linear"
+            currentStyleId={element.styleId}
+            styles={linearStyles}
+            onStyleChange={(styleId) => onUpdate({
+              styleId,
+              colorOverrides: styleId ? element.colorOverrides : undefined
             })}
-            className={SELECT_CLASSNAME}
-            disabled={!isPro && linearStyles.length > 0}
-          >
-            <option value="">Default (CSS)</option>
-            {linearStyles.map(style => (
-              <option key={style.id} value={style.id}>{style.name}</option>
-            ))}
-          </select>
-          {!isPro && linearStyles.length > 0 && (
-            <p className="text-xs text-amber-500 mt-1">Pro license required for SVG styles</p>
-          )}
+            isPro={isPro}
+          />
         </div>
       </PropertySection>
 
