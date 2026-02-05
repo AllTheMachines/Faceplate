@@ -141,7 +141,13 @@ Plans:
   2. ElementLayerMappingDialog allows assigning SVG layers to style roles
   3. Style dropdown appears in PropertyPanel for all supported element types
   4. Color override controls in PropertyPanel allow per-instance customization
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 59-01-PLAN.md — ManageElementStylesDialog with category filtering
+- [ ] 59-02-PLAN.md — ElementLayerMappingDialog with layer hover highlighting
+- [ ] 59-03-PLAN.md — PropertyPanel integration (manage button, thumbnail preview)
+- [ ] 59-04-PLAN.md — Verification checkpoint
 
 ---
 
@@ -974,8 +980,8 @@ Plans:
 | 56. Button & Switch Styling | v0.10.0 | 5/5 | Complete | 2026-02-04 |
 | 57. Meter Styling | v0.10.0 | 3/3 | Complete | 2026-02-05 |
 | 58. Export | v0.10.0 | 4/4 | Complete | 2026-02-05 |
-| 59. UI Dialogs | v0.10.0 | 0/TBD | Not started | - |
+| 59. UI Dialogs | v0.10.0 | 0/4 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-05 - Phase 58 Export complete*
+*Last updated: 2026-02-05 - Phase 59 planned*
