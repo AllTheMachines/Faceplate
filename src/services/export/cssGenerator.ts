@@ -225,6 +225,65 @@ body {
   transition: opacity 0.05s ease-out;
 }`
 
+  // Styled Slider Layers CSS
+  const styledSliderStyles = `/* Styled Slider Layers */
+.styled-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.styled-slider-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slider-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.slider-layer svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Track - static background */
+.slider-track {
+  z-index: 1;
+}
+
+/* Fill - animated via clip-path (JS updates) */
+.slider-fill {
+  z-index: 2;
+  transition: clip-path 0.05s ease-out;
+}
+
+/* Thumb - animated via transform translate (JS updates) */
+.slider-thumb {
+  z-index: 3;
+  transition: transform 0.05s ease-out;
+}
+
+/* Range Slider - dual thumbs */
+.styled-rangeslider .slider-thumb-low {
+  z-index: 3;
+}
+
+.styled-rangeslider .slider-thumb-high {
+  z-index: 3;
+}
+
+.styled-rangeslider .slider-thumb-low.active {
+  z-index: 4;
+}
+
+.styled-rangeslider .slider-thumb-high.active {
+  z-index: 4;
+}`
+
   // Global label/value styles
   const labelValueStyles = `/* Label and Value Display Styles */
 .knob-label, .slider-label {
@@ -304,6 +363,8 @@ ${container}
 ${baseElement}
 
 ${styledKnobStyles}
+
+${styledSliderStyles}
 
 ${labelValueStyles}
 
