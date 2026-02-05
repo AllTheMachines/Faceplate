@@ -31,8 +31,10 @@ import { toKebabCase, escapeHTML } from './utils'
 import { useStore } from '../../store'
 import { DEFAULT_SCROLLBAR_CONFIG, type ScrollbarConfig } from '../../types/elements/containers'
 import { sanitizeSVG } from '../../lib/svg-sanitizer'
-import { extractLayer, applyAllColorOverrides } from '../knobLayers'
+import { extractLayer, applyAllColorOverrides, applyColorOverride } from '../knobLayers'
+import { extractElementLayer } from '../elementLayers'
 import type { KnobStyle } from '../../types/knobStyle'
+import type { ElementStyle, LinearLayers, ArcLayers, ButtonLayers, MeterLayers, ColorOverrides } from '../../types/elementStyle'
 import { builtInIconSVG, BuiltInIcon } from '../../utils/builtInIcons'
 import { formatDisplayValue } from '../../utils/valueFormatters'
 
@@ -63,6 +65,35 @@ function formatValue(
     default:
       return actual.toFixed(decimals)
   }
+}
+
+// ============================================================================
+// Generic Color Override Helper for ElementStyles
+// ============================================================================
+
+/**
+ * Apply color overrides to SVG content for any element category.
+ * Works with LinearLayers, ArcLayers, ButtonLayers, MeterLayers.
+ * Uses applyColorOverride from knobLayers for actual color application.
+ */
+function applyElementColorOverrides(
+  svgContent: string,
+  layers: Record<string, string | undefined>,
+  overrides: ColorOverrides | undefined
+): string {
+  if (!overrides) return svgContent
+
+  let result = svgContent
+
+  // Apply override for each layer role that has both a layer identifier and an override color
+  for (const [layerRole, overrideColor] of Object.entries(overrides)) {
+    const layerIdentifier = layers[layerRole]
+    if (layerIdentifier && overrideColor) {
+      result = applyColorOverride(result, layerIdentifier, overrideColor)
+    }
+  }
+
+  return result
 }
 
 // ============================================================================
@@ -714,6 +745,95 @@ function generateStyledKnobHTML(
 }
 
 /**
+ * Generate styled slider HTML with custom SVG layers
+ * Supports linear (horizontal/vertical) and arc slider styles
+ */
+function generateStyledSliderHTML(
+  id: string,
+  baseClass: string,
+  positionStyle: string,
+  config: SliderElementConfig | BipolarSliderElementConfig | CrossfadeSliderElementConfig | NotchedSliderElementConfig | ArcSliderElementConfig,
+  style: ElementStyle
+): string {
+  // Validate category
+  if (style.category !== 'linear' && style.category !== 'arc') {
+    console.warn(`Slider requires linear or arc category style, got: ${style.category}`)
+    // Return empty - caller will fallback to default
+    return ''
+  }
+
+  // Apply color overrides to SVG (if any)
+  let svgWithOverrides = style.svgContent
+  if ('colorOverrides' in config && config.colorOverrides) {
+    svgWithOverrides = applyElementColorOverrides(
+      style.svgContent,
+      style.layers as Record<string, string | undefined>,
+      config.colorOverrides
+    )
+  }
+
+  // Re-sanitize before export (SEC-04: defense-in-depth)
+  const sanitizedSvg = sanitizeSVG(svgWithOverrides)
+
+  // Extract layers based on category
+  const layers = style.layers as LinearLayers | ArcLayers
+  const trackSvg = layers.track ? extractElementLayer(sanitizedSvg, layers.track) : ''
+  const fillSvg = layers.fill ? extractElementLayer(sanitizedSvg, layers.fill) : ''
+  const thumbSvg = layers.thumb ? extractElementLayer(sanitizedSvg, layers.thumb) : ''
+
+  // Calculate normalized value
+  const min = 'min' in config ? config.min : 0
+  const max = 'max' in config ? config.max : 1
+  const value = 'value' in config ? config.value : 0.5
+  const range = max - min
+  const normalizedValue = range > 0 ? (value - min) / range : 0
+
+  // Determine orientation (default vertical for most sliders)
+  const orientation = 'orientation' in config ? config.orientation : 'vertical'
+  const isVertical = orientation === 'vertical'
+
+  // Calculate initial positions for fill clip-path and thumb transform
+  let fillClipPath: string
+  let thumbTransform: string
+
+  if (isVertical) {
+    // Vertical: clip from top (reveals bottom-up), thumb moves from bottom to top
+    const clipFromTop = (1 - normalizedValue) * 100
+    fillClipPath = `inset(${clipFromTop}% 0 0 0)`
+    thumbTransform = `translate(0, ${(1 - normalizedValue) * 100}%)`
+  } else {
+    // Horizontal: clip from right (reveals left-to-right), thumb moves left to right
+    const clipFromRight = (1 - normalizedValue) * 100
+    fillClipPath = `inset(0 ${clipFromRight}% 0 0)`
+    thumbTransform = `translate(${normalizedValue * 100}%, 0)`
+  }
+
+  // Data attributes for JS animation
+  const paramAttr = ` data-parameter-id="${config.parameterId || toKebabCase(config.name)}"`
+  const orientationAttr = ` data-orientation="${orientation}"`
+  const valueAttr = ` data-value="${normalizedValue}"`
+
+  // Label and value display
+  const formattedValue = formatValue(normalizedValue, min, max, config.valueFormat, config.valueSuffix, config.valueDecimalPlaces)
+  const labelHTML = config.showLabel
+    ? `<span class="slider-label slider-label-${config.labelPosition}" style="font-size: ${config.labelFontSize ?? 12}px; color: ${config.labelColor};">${escapeHTML(config.labelText)}</span>`
+    : ''
+  const valueHTML = config.showValue
+    ? `<span class="slider-value slider-value-${config.valuePosition}" style="font-size: ${config.valueFontSize ?? 12}px; color: ${config.valueColor};">${escapeHTML(formattedValue)}</span>`
+    : ''
+
+  return `<div id="${id}" class="${baseClass} slider slider-element styled-slider" data-type="slider"${paramAttr}${orientationAttr}${valueAttr} style="${positionStyle}">
+      ${labelHTML}
+      ${valueHTML}
+      <div class="styled-slider-container">
+        ${trackSvg ? `<div class="slider-layer slider-track">${trackSvg}</div>` : ''}
+        ${fillSvg ? `<div class="slider-layer slider-fill" style="clip-path: ${fillClipPath};">${fillSvg}</div>` : ''}
+        ${thumbSvg ? `<div class="slider-layer slider-thumb" style="transform: ${thumbTransform};">${thumbSvg}</div>` : ''}
+      </div>
+    </div>`
+}
+
+/**
  * Generate knob HTML with SVG arc structure (default CSS knob)
  */
 function generateKnobHTML(id: string, baseClass: string, positionStyle: string, config: KnobElementConfig): string {
@@ -978,6 +1098,18 @@ function generateDotIndicatorKnobHTML(id: string, baseClass: string, positionSty
  * Generate slider HTML with track, fill, and thumb
  */
 function generateSliderHTML(id: string, baseClass: string, positionStyle: string, config: SliderElementConfig): string {
+  // Check if this slider uses a custom SVG style
+  if (config.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledSliderHTML(id, baseClass, positionStyle, config, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const orientationClass = isVertical ? 'vertical' : 'horizontal'
@@ -1015,6 +1147,18 @@ function generateSliderHTML(id: string, baseClass: string, positionStyle: string
  * Generate Bipolar Slider HTML with SVG rendering (matches designer)
  */
 function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle: string, config: BipolarSliderElementConfig): string {
+  // Check if this slider uses a custom SVG style
+  if (config.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledSliderHTML(id, baseClass, positionStyle, config, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const centerValue = config.centerValue
@@ -1071,6 +1215,18 @@ function generateBipolarSliderHTML(id: string, baseClass: string, positionStyle:
  * Generate Crossfade Slider HTML
  */
 function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyle: string, config: CrossfadeSliderElementConfig): string {
+  // Check if this slider uses a custom SVG style
+  if (config.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledSliderHTML(id, baseClass, positionStyle, config, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const thumbStyle = `left: ${normalizedValue * 100}%`
 
@@ -1103,6 +1259,18 @@ function generateCrossfadeSliderHTML(id: string, baseClass: string, positionStyl
  * Generate Notched Slider HTML
  */
 function generateNotchedSliderHTML(id: string, baseClass: string, positionStyle: string, config: NotchedSliderElementConfig): string {
+  // Check if this slider uses a custom SVG style
+  if (config.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledSliderHTML(id, baseClass, positionStyle, config, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const isVertical = config.orientation === 'vertical'
   const normalizedValue = (config.value - config.min) / (config.max - config.min)
   const orientationClass = isVertical ? 'vertical' : 'horizontal'
@@ -1222,6 +1390,18 @@ function describeArcSlider(
  * Generate Arc Slider HTML with SVG arc structure
  */
 function generateArcSliderHTML(id: string, baseClass: string, positionStyle: string, config: ArcSliderElementConfig): string {
+  // Check if this slider uses a custom SVG style
+  if (config.styleId) {
+    const elementStyles = useStore.getState().elementStyles
+    const style = elementStyles.find((s) => s.id === config.styleId)
+
+    if (style) {
+      const styledHTML = generateStyledSliderHTML(id, baseClass, positionStyle, config, style)
+      if (styledHTML) return styledHTML
+    }
+    // If style not found or wrong category, fall through to default rendering
+  }
+
   const centerX = config.diameter / 2
   const centerY = config.diameter / 2
   const radius = (config.diameter - config.trackWidth) / 2 - config.thumbRadius
