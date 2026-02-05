@@ -370,6 +370,78 @@ body {
   transition: clip-path 0.1s ease-out;
 }`
 
+  // Styled Meter Layers CSS
+  const styledMeterStyles = `/* Styled Meter Layers */
+.styled-meter {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.styled-meter-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.meter-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.meter-layer svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Meter body - static background */
+.meter-body {
+  z-index: 1;
+}
+
+/* Zone fill layers - animated via clip-path (JS updates) */
+.meter-fill-green {
+  z-index: 2;
+  transition: clip-path 0.05s ease-out;
+}
+
+.meter-fill-yellow {
+  z-index: 3;
+  transition: clip-path 0.05s ease-out;
+}
+
+.meter-fill-red {
+  z-index: 4;
+  transition: clip-path 0.05s ease-out;
+}
+
+/* Single fill fallback (if no zone layers) */
+.meter-fill {
+  z-index: 2;
+  transition: clip-path 0.05s ease-out;
+}
+
+/* Scale markings - on top of fills */
+.meter-scale {
+  z-index: 5;
+}
+
+/* Peak hold indicator - animated via bottom positioning */
+.meter-peak {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  transition: bottom 0.05s ease-out;
+}
+
+/* Horizontal meter - container rotated -90deg */
+.styled-meter[data-orientation="horizontal"] .styled-meter-container {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+}`
+
   // Global label/value styles
   const labelValueStyles = `/* Label and Value Display Styles */
 .knob-label, .slider-label {
@@ -453,6 +525,8 @@ ${styledKnobStyles}
 ${styledSliderStyles}
 
 ${styledButtonStyles}
+
+${styledMeterStyles}
 
 ${labelValueStyles}
 
