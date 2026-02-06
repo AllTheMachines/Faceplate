@@ -40,20 +40,20 @@ Requirements for Complete Feature Documentation Manual milestone.
 
 ### Properties Panel
 
-- [ ] **PROP-01**: Properties panel overview: common properties section, element-specific sections
-- [ ] **PROP-02**: Common properties documented: position (x, y), size (width, height), name, rotation, parameterId
-- [ ] **PROP-03**: Element-specific property sections with representative examples (knob, slider, button, meter)
-- [ ] **PROP-04**: Parameter binding: parameterId field, how it maps to JUCE parameters
-- [ ] **PROP-05**: Help buttons: (?) buttons on sections, F1 contextual help
+- [x] **PROP-01**: Properties panel overview: common properties section, element-specific sections
+- [x] **PROP-02**: Common properties documented: position (x, y), size (width, height), name, rotation, parameterId
+- [x] **PROP-03**: Element-specific property sections with representative examples (knob, slider, button, meter)
+- [x] **PROP-04**: Parameter binding: parameterId field, how it maps to JUCE parameters
+- [x] **PROP-05**: Help buttons: (?) buttons on sections, F1 contextual help
 
 ### Layers System
 
-- [ ] **LAY-01**: Layers panel overview with screenshot showing layer list
-- [ ] **LAY-02**: Creating, renaming, and deleting layers
-- [ ] **LAY-03**: Layer visibility toggle (eye icon) with effect on canvas
-- [ ] **LAY-04**: Layer lock toggle with effect on element interaction
-- [ ] **LAY-05**: Z-order control: drag-to-reorder layers changes rendering order
-- [ ] **LAY-06**: Moving elements between layers via context menu
+- [x] **LAY-01**: Layers panel overview with screenshot showing layer list
+- [x] **LAY-02**: Creating, renaming, and deleting layers
+- [x] **LAY-03**: Layer visibility toggle (eye icon) with effect on canvas
+- [x] **LAY-04**: Layer lock toggle with effect on element interaction
+- [x] **LAY-05**: Z-order control: drag-to-reorder layers changes rendering order
+- [x] **LAY-06**: Moving elements between layers via context menu
 
 ### Multi-Window System
 
@@ -143,17 +143,17 @@ Requirements for Complete Feature Documentation Manual milestone.
 | PAL-02 | Phase 61 | Complete |
 | PAL-03 | Phase 61 | Complete |
 | PAL-04 | Phase 61 | Complete |
-| PROP-01 | Phase 62 | Pending |
-| PROP-02 | Phase 62 | Pending |
-| PROP-03 | Phase 62 | Pending |
-| PROP-04 | Phase 62 | Pending |
-| PROP-05 | Phase 62 | Pending |
-| LAY-01 | Phase 62 | Pending |
-| LAY-02 | Phase 62 | Pending |
-| LAY-03 | Phase 62 | Pending |
-| LAY-04 | Phase 62 | Pending |
-| LAY-05 | Phase 62 | Pending |
-| LAY-06 | Phase 62 | Pending |
+| PROP-01 | Phase 62 | Complete |
+| PROP-02 | Phase 62 | Complete |
+| PROP-03 | Phase 62 | Complete |
+| PROP-04 | Phase 62 | Complete |
+| PROP-05 | Phase 62 | Complete |
+| LAY-01 | Phase 62 | Complete |
+| LAY-02 | Phase 62 | Complete |
+| LAY-03 | Phase 62 | Complete |
+| LAY-04 | Phase 62 | Complete |
+| LAY-05 | Phase 62 | Complete |
+| LAY-06 | Phase 62 | Complete |
 | WIN-01 | Phase 63 | Pending |
 | WIN-02 | Phase 63 | Pending |
 | WIN-03 | Phase 63 | Pending |

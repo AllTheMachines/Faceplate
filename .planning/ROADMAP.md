@@ -65,8 +65,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 62-01-PLAN.md — Properties panel documentation (common props, element-specific, parameter binding, help buttons)
-- [ ] 62-02-PLAN.md — Layers system documentation (create/rename/delete, visibility, lock, z-order, move between layers)
+- [x] 62-01-PLAN.md — Properties panel documentation (common props, element-specific, parameter binding, help buttons)
+- [x] 62-02-PLAN.md — Layers system documentation (create/rename/delete, visibility, lock, z-order, move between layers)
 
 #### Phase 63: Windows, Assets & Fonts
 **Goal**: Multi-window system, asset library, and font management are fully documented
@@ -567,11 +567,11 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 | 59. UI Dialogs | v0.10.0 | 0/4 | Not started | - |
 | 60. Manual Structure & Getting Started | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 61. Canvas & Element Palette | v0.11.0 | 2/2 | Complete | 2026-02-06 |
-| 62. Properties Panel & Layers | v0.11.0 | 0/2 | Not started | - |
+| 62. Properties Panel & Layers | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 63. Windows, Assets & Fonts | v0.11.0 | 0/2 | Not started | - |
 | 64. Styles & Export | v0.11.0 | 0/2 | Not started | - |
 | 65. Project Management & Docs Update | v0.11.0 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-06 - Phase 61 complete (Canvas & Element Palette)*
+*Last updated: 2026-02-06 - Phase 62 complete (Properties Panel & Layers)*
