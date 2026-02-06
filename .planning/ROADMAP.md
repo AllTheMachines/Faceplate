@@ -50,8 +50,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 61-01-PLAN.md — Canvas documentation (drag-drop, selection, manipulation, copy/paste, undo/redo, snap, locking, background, pan/zoom)
-- [ ] 61-02-PLAN.md — Element palette documentation (categories, element types, search/filter, Pro badges)
+- [x] 61-01-PLAN.md — Canvas documentation (drag-drop, selection, manipulation, copy/paste, undo/redo, snap, locking, background, pan/zoom)
+- [x] 61-02-PLAN.md — Element palette documentation (categories, element types, search/filter, Pro badges)
 
 #### Phase 62: Properties Panel & Layers
 **Goal**: Properties panel usage and layers system are fully documented
@@ -566,7 +566,7 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 | 58. Export | v0.10.0 | 4/4 | Complete | 2026-02-05 |
 | 59. UI Dialogs | v0.10.0 | 0/4 | Not started | - |
 | 60. Manual Structure & Getting Started | v0.11.0 | 2/2 | Complete | 2026-02-06 |
-| 61. Canvas & Element Palette | v0.11.0 | 0/2 | Not started | - |
+| 61. Canvas & Element Palette | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 62. Properties Panel & Layers | v0.11.0 | 0/2 | Not started | - |
 | 63. Windows, Assets & Fonts | v0.11.0 | 0/2 | Not started | - |
 | 64. Styles & Export | v0.11.0 | 0/2 | Not started | - |
@@ -574,4 +574,4 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-06 - Phase 60 complete (Manual Structure & Getting Started)*
+*Last updated: 2026-02-06 - Phase 61 complete (Canvas & Element Palette)*

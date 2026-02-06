@@ -21,22 +21,22 @@ Requirements for Complete Feature Documentation Manual milestone.
 
 ### Canvas & Manipulation
 
-- [ ] **CANV-01**: Canvas guide covers drag-drop from palette to canvas with screenshot
-- [ ] **CANV-02**: Selection documentation: click select, multi-select (Ctrl/Shift+click, drag rectangle)
-- [ ] **CANV-03**: Element manipulation: move (drag), resize (handles), shift-constrained drag, arrow key nudge
-- [ ] **CANV-04**: Copy/paste and duplicate with 20px offset behavior documented
-- [ ] **CANV-05**: Undo/redo system: keyboard shortcuts, toolbar buttons, history panel
-- [ ] **CANV-06**: Snap grid: toggle (Ctrl+G), adjustable size, visual grid display
-- [ ] **CANV-07**: Element locking: individual lock, lock-all mode
-- [ ] **CANV-08**: Canvas background configuration: color, gradient, image
-- [ ] **CANV-09**: Pan and zoom: scroll to zoom, middle-click/space drag to pan, zoom controls
+- [x] **CANV-01**: Canvas guide covers drag-drop from palette to canvas with screenshot
+- [x] **CANV-02**: Selection documentation: click select, multi-select (Ctrl/Shift+click, drag rectangle)
+- [x] **CANV-03**: Element manipulation: move (drag), resize (handles), shift-constrained drag, arrow key nudge
+- [x] **CANV-04**: Copy/paste and duplicate with 20px offset behavior documented
+- [x] **CANV-05**: Undo/redo system: keyboard shortcuts, toolbar buttons, history panel
+- [x] **CANV-06**: Snap grid: toggle (Ctrl+G), adjustable size, visual grid display
+- [x] **CANV-07**: Element locking: individual lock, lock-all mode
+- [x] **CANV-08**: Canvas background configuration: color, gradient, image
+- [x] **CANV-09**: Pan and zoom: scroll to zoom, middle-click/space drag to pan, zoom controls
 
 ### Element Palette
 
-- [ ] **PAL-01**: Palette overview with all categories listed and screenshot
-- [ ] **PAL-02**: Each element category described with available element types
-- [ ] **PAL-03**: Search/filter functionality documented
-- [ ] **PAL-04**: Pro element badges and gating behavior explained
+- [x] **PAL-01**: Palette overview with all categories listed and screenshot
+- [x] **PAL-02**: Each element category described with available element types
+- [x] **PAL-03**: Search/filter functionality documented
+- [x] **PAL-04**: Pro element badges and gating behavior explained
 
 ### Properties Panel
 
@@ -130,19 +130,19 @@ Requirements for Complete Feature Documentation Manual milestone.
 | START-01 | Phase 60 | Complete |
 | START-02 | Phase 60 | Complete |
 | START-03 | Phase 60 | Complete |
-| CANV-01 | Phase 61 | Pending |
-| CANV-02 | Phase 61 | Pending |
-| CANV-03 | Phase 61 | Pending |
-| CANV-04 | Phase 61 | Pending |
-| CANV-05 | Phase 61 | Pending |
-| CANV-06 | Phase 61 | Pending |
-| CANV-07 | Phase 61 | Pending |
-| CANV-08 | Phase 61 | Pending |
-| CANV-09 | Phase 61 | Pending |
-| PAL-01 | Phase 61 | Pending |
-| PAL-02 | Phase 61 | Pending |
-| PAL-03 | Phase 61 | Pending |
-| PAL-04 | Phase 61 | Pending |
+| CANV-01 | Phase 61 | Complete |
+| CANV-02 | Phase 61 | Complete |
+| CANV-03 | Phase 61 | Complete |
+| CANV-04 | Phase 61 | Complete |
+| CANV-05 | Phase 61 | Complete |
+| CANV-06 | Phase 61 | Complete |
+| CANV-07 | Phase 61 | Complete |
+| CANV-08 | Phase 61 | Complete |
+| CANV-09 | Phase 61 | Complete |
+| PAL-01 | Phase 61 | Complete |
+| PAL-02 | Phase 61 | Complete |
+| PAL-03 | Phase 61 | Complete |
+| PAL-04 | Phase 61 | Complete |
 | PROP-01 | Phase 62 | Pending |
 | PROP-02 | Phase 62 | Pending |
 | PROP-03 | Phase 62 | Pending |
@@ -196,4 +196,4 @@ Requirements for Complete Feature Documentation Manual milestone.
 
 ---
 *Requirements defined: 2026-02-05*
-*Last updated: 2026-02-06 - Phase 60 complete (6 requirements marked Complete)*
+*Last updated: 2026-02-06 - Phase 61 complete (13 requirements marked Complete)*
