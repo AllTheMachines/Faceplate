@@ -2,7 +2,7 @@
 
 **Complete Documentation - Description, Technical Specification, and User Manual**
 
-Version 1.9 | January 2026
+Version 0.11.0 | February 2026
 
 ---
 
@@ -26,8 +26,9 @@ FACEPLATE is a browser-based visual design tool for creating professional audio 
 
 ### Key Features
 
-- **100+ UI Elements**: Knobs, sliders, buttons, meters, visualizations, curves, and specialized audio controls
+- **107 UI Elements**: Knobs, sliders, buttons, meters, visualizations, curves, and specialized audio controls
 - **Visual Design**: Drag-and-drop interface with real-time preview
+- **Element Styles**: Import custom SVG designs for knobs, sliders, buttons, and meters with automatic layer detection
 - **Layer System**: Organize elements into named, color-coded layers with visibility and lock controls
 - **Contextual Help**: F1 shortcut and inline (?) buttons provide instant documentation
 - **Multi-Window Support**: Create complex UIs with main, settings, and developer windows
@@ -35,6 +36,8 @@ FACEPLATE is a browser-based visual design tool for creating professional audio 
 - **Export System**: Generate complete JUCE WebView2 bundles with HTML/CSS/JS/C++ integration code
 - **Browser Preview**: Test UI behavior before integration
 - **Project Persistence**: Save/load projects as JSON files
+- **Pro Licensing**: Free tier with optional Pro license for advanced elements
+- **Template Import**: Load existing JUCE WebView projects as starting points
 
 ### Target Users
 
@@ -225,7 +228,7 @@ Design once, export once, render consistently across Windows (WebView2) and macO
 
 ```typescript
 interface Project {
-  version: number;              // Schema version (current: 2)
+  version: number;              // Schema version (current: 3)
   canvas: {
     width: number;              // Canvas width in pixels
     height: number;             // Canvas height in pixels
@@ -235,7 +238,7 @@ interface Project {
   layers: Layer[];              // Layer definitions
   windows: Window[];            // Multi-window configurations
   assets: Asset[];              // SVG/image assets
-  knobStyles: KnobStyle[];      // Custom knob designs
+  elementStyles: ElementStyle[]; // Custom SVG styles for knobs, sliders, buttons, meters
   fonts: Font[];                // Custom font metadata
 }
 ```
@@ -287,18 +290,17 @@ interface Layer {
 }
 ```
 
-### Element Types (109 Total)
+### Element Types (107 Total)
 
-**Controls (27):**
+**Controls (26):**
 - Knobs: `knob`, `steppedknob`, `centerdetentknob`, `dotindicatorknob`
-- Sliders: `slider`, `arcslider`, `bipolarslider`, `crossfadeslider`, `notchedslider`, `multislider`
-- Buttons: `button`, `iconbutton`, `toggleswitch`, `powerbutton`, `kickbutton`, `rockerswitch`, `rotaryswitch`, `segmentbutton`
+- Sliders: `slider`, `rangeslider`, `arcslider`, `bipolarslider`, `crossfadeslider`, `notchedslider`, `multislider`
+- Buttons: `button`, `iconbutton`, `toggleswitch`, `powerbutton`, `rockerswitch`, `rotaryswitch`, `segmentbutton`
 - Selection: `dropdown`, `multiselectdropdown`, `combobox`, `checkbox`, `radiogroup`, `textfield`
 
-**Displays (49):**
+**Displays (43):**
 - Basic: `label`, `dbdisplay`, `frequencydisplay`, `numericdisplay`, `timedisplay`, `percentagedisplay`, etc.
 - Meters: `meter`, `gainreductionmeter`, `rmsmetermo`, `rmsmeterstereo`, `vumetermono`, `vumeterstereo`, professional broadcast meters (PPM Type I/II, True Peak, LUFS, K-System)
-- LEDs: `singleled`, `bicolorled`, `tricolorled`, `ledarray`, `ledring`, `ledmatrix`
 
 **Visualizations (5):**
 - `scrollingwaveform`, `spectrumanalyzer`, `spectrogram`, `goniometer`, `vectorscope`
@@ -539,7 +541,7 @@ window.__JUCE__.backend.addEventListener('__juce__paramSync', (event) => {
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "canvas": {
     "width": 800,
     "height": 600,
@@ -581,7 +583,7 @@ window.__JUCE__.backend.addEventListener('__juce__paramSync', (event) => {
   ],
   "windows": [],
   "assets": [],
-  "knobStyles": [],
+  "elementStyles": [],
   "fonts": []
 }
 ```
@@ -610,14 +612,14 @@ const BaseElementSchema = z.object({
   defaultValue: z.number().min(0).max(1).optional(),
 });
 
-const ProjectSchemaV2 = z.object({
-  version: z.literal(2),
+const ProjectSchemaV3 = z.object({
+  version: z.literal(3),
   canvas: CanvasSchema,
   elements: z.array(BaseElementSchema),
   layers: z.array(LayerSchema),
   windows: z.array(WindowSchema),
   assets: z.array(AssetSchema),
-  knobStyles: z.array(KnobStyleSchema),
+  elementStyles: z.array(ElementStyleSchema),
   fonts: z.array(FontSchema),
 });
 ```
@@ -718,7 +720,7 @@ Navigate to `http://localhost:5173` in your browser.
 #### Left Panel (3 Tabs)
 
 **Elements Tab:**
-- Categorized palette of 109 element types
+- Categorized palette of 107 element types
 - Drag elements onto canvas to add them
 - Collapsible categories: Controls, Displays, Visualizations, Curves, Containers, etc.
 
@@ -892,7 +894,6 @@ See [Integration Guide](#integration-guide) section below.
 - `iconbutton`: With icon (built-in or custom SVG)
 - `toggleswitch`: On/off switch with labels
 - `powerbutton`: Power button with LED
-- `kickbutton`: Drum trigger style
 - `rockerswitch`: 3-position rocker
 - `rotaryswitch`: N-position rotary selector
 - `segmentbutton`: Multi-segment (tab-style)
@@ -918,14 +919,6 @@ See [Integration Guide](#integration-guide) section below.
 - `k12/k14/k20metermono`/`stereo`: K-System metering
 - `correlationmeter`: Phase correlation (-1 to +1)
 - `stereowidthmeter`: Stereo width (0 to 200%)
-
-**LED Indicators:**
-- `singleled`: Single color LED (on/off)
-- `bicolorled`: 2-state LED (e.g., green/red)
-- `tricolorled`: 3-state LED
-- `ledarray`: Horizontal/vertical LED strip
-- `ledring`: Circular LED ring
-- `ledmatrix`: 2D LED grid (8×8, etc.)
 
 ### Visualizations
 
@@ -1091,17 +1084,17 @@ Children use coordinates relative to container's content area (inside padding). 
 - JUCE export embeds fonts as base64 in CSS
 - Preview export uses Google Fonts CDN
 
-#### Custom Knob Styles
+#### Element Styles
 
-1. Create SVG with specific layer structure:
-   - `track`: Background arc
-   - `fill`: Value arc
-   - `indicator`: Pointer line/dot
+Create custom SVG styles for knobs, sliders, buttons, and meters:
+
+1. Create SVG with category-specific layer structure (e.g., rotary: `track`, `fill`, `indicator`; linear: `track`, `fill`, `thumb`; button: `normal`, `hover`, `active`)
 2. Import SVG as asset
-3. Click **Knob Styles** tab
-4. Click **"+ New Knob Style"**
-5. Map SVG layers to knob parts
-6. Apply style to knob elements
+3. Open **Element Styles** panel (in properties panel for supported elements)
+4. Import and map SVG layers to element roles
+5. Apply style to elements of matching type
+
+For detailed layer naming and workflow, see [Style Creation Manual](STYLE_CREATION_MANUAL.md).
 
 ### Keyboard Shortcuts
 
@@ -2029,6 +2022,10 @@ webview-ui-juce.zip
 
 | Version | Date | Features |
 |---------|------|----------|
+| **v0.11.0** | Feb 2026 | Complete feature documentation manual (user guide topic files) |
+| **v0.10.0** | Feb 2026 | Element Styles system (SVG styling for sliders, buttons, meters, export support) |
+| **v2.0** | Feb 2026 | Pro licensing with Polar.sh, rebrand to Faceplate |
+| **v1.10** | Feb 2026 | Element bug fixes (navigation, sliders, curves, buttons, knobs, displays, LED removal) |
 | **v1.9** | Jan 2026 | Layers system, help system (F1 + ? buttons), drag-drop layer reordering, bug fixes (layer persistence, export z-order, parameter sync) |
 | **v1.8** | Dec 2025 | Bug fixes & UI improvements |
 | **v1.7** | Nov 2025 | Parameter sync for C++ integration |
@@ -2113,11 +2110,30 @@ webview-ui-juce.zip
 
 ---
 
-**Last Updated:** January 30, 2026
-**Version:** 1.9
+## See Also
+
+For detailed user guidance, see the complete feature documentation manual:
+
+- [User Manual Overview](manual/README.md) -- Complete user guide with tutorials
+- [Getting Started](manual/getting-started.md) -- Installation and first steps
+- [Canvas & Workspace](manual/canvas.md) -- Working with the design canvas
+- [Element Palette](manual/palette.md) -- Available UI elements
+- [Properties Panel](manual/properties.md) -- Configuring element properties
+- [Layers System](manual/layers.md) -- Organizing elements with layers
+- [Multi-Window UI](manual/windows.md) -- Creating multi-window interfaces
+- [Asset Management](manual/assets.md) -- Importing SVG graphics and fonts
+- [Element Styles](manual/styles.md) -- Custom SVG styling
+- [Export & Integration](manual/export.md) -- Generating JUCE code bundles
+- [Element Reference](ELEMENT_REFERENCE.md) -- Complete element property reference
+- [Style Creation Manual](STYLE_CREATION_MANUAL.md) -- SVG layer naming and import workflow
+
+---
+
+**Last Updated:** February 6, 2026
+**Version:** 0.11.0
 **Author:** AllTheMachines
 **License:** [Check repository for license information]
 
 ---
 
-*This documentation covers FACEPLATE v1.9. For the latest version, visit the GitHub repository.*
+*This documentation covers FACEPLATE v0.11.0. For the latest version, visit the GitHub repository.*
