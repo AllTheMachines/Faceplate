@@ -95,8 +95,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 64-01-PLAN.md — Element styles documentation (overview, creating, applying, overrides, managing, STYLE_CREATION_MANUAL reference)
-- [ ] 64-02-PLAN.md — Export system documentation (JUCE bundle, browser preview, folder/ZIP, multi-window, Pro blocking)
+- [x] 64-01-PLAN.md — Element styles documentation (overview, creating, applying, overrides, managing, STYLE_CREATION_MANUAL reference)
+- [x] 64-02-PLAN.md — Export system documentation (JUCE bundle, browser preview, folder/ZIP, multi-window, Pro blocking)
 
 #### Phase 65: Project Management & Docs Update
 **Goal**: Project management features are documented and existing documentation files are updated to current version
@@ -569,9 +569,9 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 | 61. Canvas & Element Palette | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 62. Properties Panel & Layers | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 63. Windows, Assets & Fonts | v0.11.0 | 2/2 | Complete | 2026-02-06 |
-| 64. Styles & Export | v0.11.0 | 0/2 | Not started | - |
+| 64. Styles & Export | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 65. Project Management & Docs Update | v0.11.0 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-06 - Phase 63 complete (Windows, Assets & Fonts)*
+*Last updated: 2026-02-06 - Phase 64 complete (Styles & Export)*

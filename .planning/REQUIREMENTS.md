@@ -81,21 +81,21 @@ Requirements for Complete Feature Documentation Manual milestone.
 
 ### Element Styles (SVG Styling)
 
-- [ ] **STYLE-01**: Element styles overview: what they are, supported element categories
-- [ ] **STYLE-02**: Creating a style: import SVG, layer detection, layer mapping dialog
-- [ ] **STYLE-03**: Applying styles to elements via properties panel dropdown
-- [ ] **STYLE-04**: Color overrides: per-instance layer color customization
-- [ ] **STYLE-05**: Managing styles: ManageElementStylesDialog with category filtering
-- [ ] **STYLE-06**: Reference to STYLE_CREATION_MANUAL.md for detailed design workflow
+- [x] **STYLE-01**: Element styles overview: what they are, supported element categories
+- [x] **STYLE-02**: Creating a style: import SVG, layer detection, layer mapping dialog
+- [x] **STYLE-03**: Applying styles to elements via properties panel dropdown
+- [x] **STYLE-04**: Color overrides: per-instance layer color customization
+- [x] **STYLE-05**: Managing styles: ManageElementStylesDialog with category filtering
+- [x] **STYLE-06**: Reference to STYLE_CREATION_MANUAL.md for detailed design workflow
 
 ### Export System
 
-- [ ] **EXP-01**: Export overview: two modes (JUCE WebView2 bundle, browser preview)
-- [ ] **EXP-02**: JUCE WebView2 export: what gets generated (HTML, CSS, JS, C++ snippets)
-- [ ] **EXP-03**: Browser preview: how to use, what it shows, limitations
-- [ ] **EXP-04**: Folder export vs ZIP download
-- [ ] **EXP-05**: Multi-window export: separate folders per window
-- [ ] **EXP-06**: Pro element export blocking: what happens, how to resolve
+- [x] **EXP-01**: Export overview: two modes (JUCE WebView2 bundle, browser preview)
+- [x] **EXP-02**: JUCE WebView2 export: what gets generated (HTML, CSS, JS, C++ snippets)
+- [x] **EXP-03**: Browser preview: how to use, what it shows, limitations
+- [x] **EXP-04**: Folder export vs ZIP download
+- [x] **EXP-05**: Multi-window export: separate folders per window
+- [x] **EXP-06**: Pro element export blocking: what happens, how to resolve
 
 ### Project Management
 
@@ -169,18 +169,18 @@ Requirements for Complete Feature Documentation Manual milestone.
 | FONT-02 | Phase 63 | Complete |
 | FONT-03 | Phase 63 | Complete |
 | FONT-04 | Phase 63 | Complete |
-| STYLE-01 | Phase 64 | Pending |
-| STYLE-02 | Phase 64 | Pending |
-| STYLE-03 | Phase 64 | Pending |
-| STYLE-04 | Phase 64 | Pending |
-| STYLE-05 | Phase 64 | Pending |
-| STYLE-06 | Phase 64 | Pending |
-| EXP-01 | Phase 64 | Pending |
-| EXP-02 | Phase 64 | Pending |
-| EXP-03 | Phase 64 | Pending |
-| EXP-04 | Phase 64 | Pending |
-| EXP-05 | Phase 64 | Pending |
-| EXP-06 | Phase 64 | Pending |
+| STYLE-01 | Phase 64 | Complete |
+| STYLE-02 | Phase 64 | Complete |
+| STYLE-03 | Phase 64 | Complete |
+| STYLE-04 | Phase 64 | Complete |
+| STYLE-05 | Phase 64 | Complete |
+| STYLE-06 | Phase 64 | Complete |
+| EXP-01 | Phase 64 | Complete |
+| EXP-02 | Phase 64 | Complete |
+| EXP-03 | Phase 64 | Complete |
+| EXP-04 | Phase 64 | Complete |
+| EXP-05 | Phase 64 | Complete |
+| EXP-06 | Phase 64 | Complete |
 | PROJ-01 | Phase 65 | Pending |
 | PROJ-02 | Phase 65 | Pending |
 | PROJ-03 | Phase 65 | Pending |
