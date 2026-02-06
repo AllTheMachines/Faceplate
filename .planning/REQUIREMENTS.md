@@ -57,27 +57,27 @@ Requirements for Complete Feature Documentation Manual milestone.
 
 ### Multi-Window System
 
-- [ ] **WIN-01**: Multi-window overview: purpose, use cases (main, settings, developer windows)
-- [ ] **WIN-02**: Creating, duplicating, and deleting windows
-- [ ] **WIN-03**: Window types: release vs developer, export implications
-- [ ] **WIN-04**: Window properties: name, dimensions, background
-- [ ] **WIN-05**: Copy/paste elements between windows
-- [ ] **WIN-06**: Button navigation action for switching between windows
+- [x] **WIN-01**: Multi-window overview: purpose, use cases (main, settings, developer windows)
+- [x] **WIN-02**: Creating, duplicating, and deleting windows
+- [x] **WIN-03**: Window types: release vs developer, export implications
+- [x] **WIN-04**: Window properties: name, dimensions, background
+- [x] **WIN-05**: Copy/paste elements between windows
+- [x] **WIN-06**: Button navigation action for switching between windows
 
 ### Asset Library & SVG Import
 
-- [ ] **ASSET-01**: Asset library overview with sidebar screenshot
-- [ ] **ASSET-02**: Importing SVG files: upload dialog, validation, categories
-- [ ] **ASSET-03**: Organizing assets: categories, renaming, deleting
-- [ ] **ASSET-04**: Drag-to-canvas workflow for placing SVG graphics
-- [ ] **ASSET-05**: SVG security: what gets sanitized and why
+- [x] **ASSET-01**: Asset library overview with sidebar screenshot
+- [x] **ASSET-02**: Importing SVG files: upload dialog, validation, categories
+- [x] **ASSET-03**: Organizing assets: categories, renaming, deleting
+- [x] **ASSET-04**: Drag-to-canvas workflow for placing SVG graphics
+- [x] **ASSET-05**: SVG security: what gets sanitized and why
 
 ### Font Management
 
-- [ ] **FONT-01**: Font system overview: built-in vs custom fonts
-- [ ] **FONT-02**: Selecting a fonts folder via File System Access API
-- [ ] **FONT-03**: Custom font dropdown with preview (fonts shown in their typeface)
-- [ ] **FONT-04**: How fonts are bundled in export (base64 for custom, file refs for built-in)
+- [x] **FONT-01**: Font system overview: built-in vs custom fonts
+- [x] **FONT-02**: Selecting a fonts folder via File System Access API
+- [x] **FONT-03**: Custom font dropdown with preview (fonts shown in their typeface)
+- [x] **FONT-04**: How fonts are bundled in export (base64 for custom, file refs for built-in)
 
 ### Element Styles (SVG Styling)
 
@@ -154,21 +154,21 @@ Requirements for Complete Feature Documentation Manual milestone.
 | LAY-04 | Phase 62 | Complete |
 | LAY-05 | Phase 62 | Complete |
 | LAY-06 | Phase 62 | Complete |
-| WIN-01 | Phase 63 | Pending |
-| WIN-02 | Phase 63 | Pending |
-| WIN-03 | Phase 63 | Pending |
-| WIN-04 | Phase 63 | Pending |
-| WIN-05 | Phase 63 | Pending |
-| WIN-06 | Phase 63 | Pending |
-| ASSET-01 | Phase 63 | Pending |
-| ASSET-02 | Phase 63 | Pending |
-| ASSET-03 | Phase 63 | Pending |
-| ASSET-04 | Phase 63 | Pending |
-| ASSET-05 | Phase 63 | Pending |
-| FONT-01 | Phase 63 | Pending |
-| FONT-02 | Phase 63 | Pending |
-| FONT-03 | Phase 63 | Pending |
-| FONT-04 | Phase 63 | Pending |
+| WIN-01 | Phase 63 | Complete |
+| WIN-02 | Phase 63 | Complete |
+| WIN-03 | Phase 63 | Complete |
+| WIN-04 | Phase 63 | Complete |
+| WIN-05 | Phase 63 | Complete |
+| WIN-06 | Phase 63 | Complete |
+| ASSET-01 | Phase 63 | Complete |
+| ASSET-02 | Phase 63 | Complete |
+| ASSET-03 | Phase 63 | Complete |
+| ASSET-04 | Phase 63 | Complete |
+| ASSET-05 | Phase 63 | Complete |
+| FONT-01 | Phase 63 | Complete |
+| FONT-02 | Phase 63 | Complete |
+| FONT-03 | Phase 63 | Complete |
+| FONT-04 | Phase 63 | Complete |
 | STYLE-01 | Phase 64 | Pending |
 | STYLE-02 | Phase 64 | Pending |
 | STYLE-03 | Phase 64 | Pending |

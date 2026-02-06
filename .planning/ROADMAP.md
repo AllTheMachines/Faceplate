@@ -80,8 +80,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 63-01-PLAN.md — Multi-window system documentation (windows, types, properties, copy/paste, navigation)
-- [ ] 63-02-PLAN.md — Asset library and font management documentation (SVG import, categories, drag-to-canvas, font system)
+- [x] 63-01-PLAN.md — Multi-window system documentation (windows, types, properties, copy/paste, navigation)
+- [x] 63-02-PLAN.md — Asset library and font management documentation (SVG import, categories, drag-to-canvas, font system)
 
 #### Phase 64: Styles & Export
 **Goal**: Element styles system and export workflows are fully documented
@@ -568,10 +568,10 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 | 60. Manual Structure & Getting Started | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 61. Canvas & Element Palette | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 62. Properties Panel & Layers | v0.11.0 | 2/2 | Complete | 2026-02-06 |
-| 63. Windows, Assets & Fonts | v0.11.0 | 0/2 | Not started | - |
+| 63. Windows, Assets & Fonts | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 64. Styles & Export | v0.11.0 | 0/2 | Not started | - |
 | 65. Project Management & Docs Update | v0.11.0 | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-06 - Phase 62 complete (Properties Panel & Layers)*
+*Last updated: 2026-02-06 - Phase 63 complete (Windows, Assets & Fonts)*
