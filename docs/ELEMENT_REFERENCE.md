@@ -6,14 +6,14 @@ Complete reference for all UI elements available in Faceplate.
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| [Controls](#controls) | 27 | Interactive input elements (knobs, sliders, buttons) |
-| [Displays](#displays) | 49 | Value displays, meters, LEDs |
+| [Controls](#controls) | 26 | Interactive input elements (knobs, sliders, buttons) |
+| [Displays](#displays) | 43 | Value displays, meters |
 | [Visualizations](#visualizations) | 5 | Real-time audio analysis displays |
 | [Curves](#curves) | 5 | Interactive DSP curve editors |
 | [Containers](#containers) | 8 | Structural grouping elements |
 | [Decorative](#decorative) | 4 | Static visual elements |
-| [Specialized Audio](#specialized-audio) | 11 | Domain-specific audio tools |
-| **Total** | **109** | |
+| [Specialized Audio](#specialized-audio) | 16 | Domain-specific audio tools |
+| **Total** | **107** | |
 
 ---
 
@@ -47,10 +47,11 @@ Interactive elements that users can manipulate.
 ### Knobs
 
 #### knob
-Standard rotary knob with arc display.
+Standard rotary knob with arc display. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `diameter` | number | 80 | Knob size in pixels |
 | `min` | number | 0 | Minimum value |
 | `max` | number | 1 | Maximum value |
@@ -123,10 +124,11 @@ Knob with minimal dot indicator aesthetic.
 ### Sliders
 
 #### slider
-Linear vertical/horizontal slider.
+Linear vertical/horizontal slider. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `orientation` | string | "vertical" | Direction: vertical, horizontal |
 | `min` | number | 0 | Minimum value |
 | `max` | number | 1 | Maximum value |
@@ -143,6 +145,31 @@ Linear vertical/horizontal slider.
 **JavaScript binding:**
 ```javascript
 setupSliderInteraction('slider-id', 'parameterId', 0.5);
+```
+
+---
+
+#### rangeslider
+Dual-thumb slider for selecting a range (min/max values). Supports custom SVG styles via Element Styles.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
+| `orientation` | string | "vertical" | Direction: vertical, horizontal |
+| `min` | number | 0 | Minimum range value |
+| `max` | number | 1 | Maximum range value |
+| `valueLow` | number | 0.3 | Lower thumb position (0-1) |
+| `valueHigh` | number | 0.7 | Upper thumb position (0-1) |
+| `trackColor` | string | "#333" | Track background color |
+| `trackFillColor` | string | "#00ff88" | Fill color between thumbs |
+| `trackWidth` | number | 8 | Track thickness |
+| `thumbColor` | string | "#fff" | Thumb color |
+| `thumbWidth` | number | 20 | Thumb width |
+| `thumbHeight` | number | 20 | Thumb height |
+
+**JavaScript binding:**
+```javascript
+setupRangeSliderInteraction('range-slider-id', 'paramIdLow', 'paramIdHigh', 0.3, 0.7);
 ```
 
 ---
@@ -214,10 +241,11 @@ Multiple parallel sliders (equalizer-style).
 ### Buttons
 
 #### button
-Simple momentary or toggle button.
+Simple momentary or toggle button. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `mode` | string | "momentary" | Button mode: momentary, toggle |
 | `label` | string | "Button" | Button text |
 | `pressed` | boolean | false | Current pressed state |
@@ -239,10 +267,11 @@ setupButtonInteraction('button-id', 'parameterId');
 ---
 
 #### iconbutton
-Button with icon (built-in or custom asset).
+Button with icon (built-in or custom asset). Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `iconSource` | string | "builtin" | Icon source: builtin, asset |
 | `builtInIcon` | string | "play" | Built-in icon name |
 | `assetId` | string | "" | Custom SVG asset ID |
@@ -256,10 +285,11 @@ Button with icon (built-in or custom asset).
 ---
 
 #### toggleswitch
-On/off toggle switch.
+On/off toggle switch. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `isOn` | boolean | false | Current state |
 | `onColor` | string | "#00ff88" | On state color |
 | `offColor` | string | "#333" | Off state color |
@@ -271,10 +301,11 @@ On/off toggle switch.
 ---
 
 #### powerbutton
-Power button with LED indicator.
+Power button with LED indicator. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `isOn` | boolean | false | Power state |
 | `ledPosition` | string | "top" | LED position: top, bottom, left, right |
 | `ledSize` | number | 8 | LED diameter |
@@ -284,21 +315,12 @@ Power button with LED indicator.
 
 ---
 
-#### kickbutton
-Momentary button for drum triggers.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `pressed` | boolean | false | Pressed state |
-| `label` | string | "KICK" | Button label |
-
----
-
 #### rockerswitch
-Three-position rocker switch.
+Three-position rocker switch. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `position` | number | 1 | Current position: 0=down, 1=center, 2=up |
 | `mode` | string | "latch-all" | spring-to-center, latch-all-positions |
 | `showLabels` | boolean | true | Show position labels |
@@ -308,10 +330,11 @@ Three-position rocker switch.
 ---
 
 #### rotaryswitch
-Rotary selector with N positions.
+Rotary selector with N positions. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `positionCount` | number | 4 | Number of positions (2-12) |
 | `currentPosition` | number | 0 | Selected position index |
 | `positionLabels` | string[] | [] | Label per position |
@@ -321,10 +344,11 @@ Rotary selector with N positions.
 ---
 
 #### segmentbutton
-Multi-segment button (like tabs).
+Multi-segment button (like tabs). Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `segmentCount` | number | 3 | Number of segments (2-8) |
 | `segments` | object[] | [] | Segment configs (displayMode, text/icon) |
 | `selectionMode` | string | "single" | Selection: single, multi |
@@ -461,10 +485,11 @@ Specialized value displays with configurable formats, 7-segment or modern font s
 ### Meters
 
 #### meter
-Simple meter/gauge display.
+Simple meter/gauge display. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `orientation` | string | "vertical" | Orientation |
 | `value` | number | 0.5 | Normalized value (0-1) |
 | `min` | number | 0 | Minimum value |
@@ -520,66 +545,6 @@ All professional meters share common properties:
 | `k20metermono`, `k20meterstereo` | -40 to +20 dB | K-20 system |
 | `correlationmeter` | -1 to +1 | Phase correlation |
 | `stereowidthmeter` | 0 to 200% | Stereo width |
-
----
-
-### LED Indicators
-
-#### singleled
-Single color LED indicator.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `state` | string | "off" | LED state: on, off |
-| `onColor` | string | "#00ff88" | On state color |
-| `offColor` | string | "#333" | Off state color |
-| `shape` | string | "round" | Shape: round, square |
-| `cornerRadius` | number | 0 | Corner radius (square) |
-| `glowEnabled` | boolean | true | Enable glow effect |
-| `glowRadius` | number | 8 | Glow blur radius |
-| `glowIntensity` | number | 0.5 | Glow opacity |
-| `colorPalette` | string | "classic" | Preset: classic, modern, neon, custom |
-
----
-
-#### bicolorled, tricolorled
-Multi-state LEDs with 2 or 3 color states.
-
-#### ledarray
-Horizontal/vertical LED array (meter-style).
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | number | 0.5 | Normalized value (0-1) |
-| `segmentCount` | number | 8 | Number of LEDs |
-| `orientation` | string | "horizontal" | Layout direction |
-| `spacing` | number | 2 | Gap between LEDs |
-
----
-
-#### ledring
-Circular LED ring.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `value` | number | 0.5 | Normalized value (0-1) |
-| `segmentCount` | number | 24 | Number of LEDs |
-| `diameter` | number | 60 | Ring diameter |
-| `thickness` | number | 8 | Ring thickness |
-| `startAngle` | number | -135 | Arc start |
-| `endAngle` | number | 135 | Arc end |
-
----
-
-#### ledmatrix
-2D LED matrix display.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `rows` | number | 8 | Number of rows |
-| `columns` | number | 8 | Number of columns |
-| `states` | boolean[][] | [] | LED state matrix |
-| `spacing` | number | 2 | Gap between LEDs |
 
 ---
 
@@ -953,6 +918,14 @@ Signal flow diagram for routing visualization.
 
 ---
 
+## See Also
+
+- [User Manual](manual/README.md) -- Complete user guide with tutorials
+- [Properties Panel Guide](manual/properties.md) -- How to use the Properties panel
+- [Element Styles Guide](manual/styles.md) -- Custom SVG styles for elements
+- [Style Creation Manual](STYLE_CREATION_MANUAL.md) -- SVG layer naming and import workflow
+- [Faceplate Documentation](FACEPLATE_DOCUMENTATION.md) -- Complete technical specification
+
 ## Related Documentation
 
 - [INTEGRATION_GUIDE.md](./INTEGRATION_GUIDE.md) - JUCE integration walkthrough
@@ -962,4 +935,4 @@ Signal flow diagram for routing visualization.
 
 ---
 
-*Last updated: 29 January 2026*
+*Last updated: 6 February 2026*
