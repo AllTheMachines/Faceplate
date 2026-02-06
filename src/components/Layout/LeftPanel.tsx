@@ -44,9 +44,8 @@ export function LeftPanel() {
   return (
     <div className="bg-gray-800 border-r border-gray-700 overflow-y-auto flex flex-col">
       <div className="p-4 border-b border-gray-700">
-        <h1 className="text-xl font-bold text-white tracking-tight">Faceplate</h1>
+        <img src="/FACEPLATE_LOGO_UI.png" alt="Faceplate" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-xs text-gray-500">VST3 UI Designer</span>
           <span className="text-xs text-gray-500">{lastSavedText}</span>
         </div>
       </div>

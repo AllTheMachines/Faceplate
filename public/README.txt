@@ -28,9 +28,13 @@ REQUIREMENTS
 DOCUMENTATION
 -------------
 
-  Main Docs (start here):
-  https://github.com/AllTheMachines/Faceplate/blob/main/docs/FACEPLATE_DOCUMENTATION.md
-    → Complete guide covering all features, UI overview, and usage
+  All Documentation:
+  https://github.com/AllTheMachines/Faceplate/tree/main/docs
+    → Browse all guides, references, and manuals
+
+  User Manual (start here):
+  https://github.com/AllTheMachines/Faceplate/blob/main/docs/manual/README.md
+    → Step-by-step guide from installation to export
 
   Element Reference:
   https://github.com/AllTheMachines/Faceplate/blob/main/docs/ELEMENT_REFERENCE.md
@@ -47,14 +51,6 @@ DOCUMENTATION
   Custom Styles:
   https://github.com/AllTheMachines/Faceplate/blob/main/docs/STYLE_CREATION_MANUAL.md
     → Create your own SVG knob and control styles
-
-  Best Practices:
-  https://github.com/AllTheMachines/Faceplate/blob/main/docs/BEST_PRACTICES.md
-    → Tips for efficient workflow and professional results
-
-  Workflow Guide:
-  https://github.com/AllTheMachines/Faceplate/blob/main/docs/WORKFLOW.md
-    → Recommended design-to-export workflow
 
 
 COMMUNITY
