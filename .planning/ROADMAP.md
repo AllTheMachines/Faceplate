@@ -15,7 +15,7 @@
 - **v1.10 Element Bug Fixes** — Phases 44-49 (shipped 2026-02-02)
 - **v2.0 Pro Licensing** — Phases 50-52 (shipped 2026-02-03)
 - **v0.10.0 SVG Styling for Visual Controls** — Phases 53-59 (in progress)
-- **v0.11.0 Complete Feature Documentation Manual** — Phases 60-65 (planned)
+- **v0.11.0 Complete Feature Documentation Manual** — Phases 60-65 (shipped 2026-02-06)
 
 ## Phases
 
@@ -105,13 +105,13 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Project management topic file documents save/load JSON workflow, unsaved changes protection (browser warning, asterisk, "last saved" display), container editing (Edit Contents, breadcrumb, nesting), and template import
   2. FACEPLATE_DOCUMENTATION.md is updated to reflect all features through v0.11.0 including element styles, layers, multi-window, and any changes since v0.9.4
-  3. ELEMENT_REFERENCE.md is updated with current element count (109), styleId properties for supported categories, and any new elements
+  3. ELEMENT_REFERENCE.md is updated with current element count (107), styleId properties for supported categories, and any new elements
   4. STYLE_CREATION_MANUAL.md is verified and updated for the unified ElementStyle system (expanded from knob-only to all supported categories)
 **Plans**: 2 plans
 
 Plans:
-- [ ] 65-01-PLAN.md — Project management documentation (save/load, unsaved changes, container editing, template import)
-- [ ] 65-02-PLAN.md — Existing docs update (FACEPLATE_DOCUMENTATION.md, ELEMENT_REFERENCE.md, STYLE_CREATION_MANUAL.md)
+- [x] 65-01-PLAN.md — Project management documentation (save/load, unsaved changes, container editing, template import)
+- [x] 65-02-PLAN.md — Existing docs update (FACEPLATE_DOCUMENTATION.md, ELEMENT_REFERENCE.md, STYLE_CREATION_MANUAL.md)
 
 ---
 
@@ -570,8 +570,8 @@ See: `.planning/milestones/v1.9-ROADMAP.md` for full details.
 | 62. Properties Panel & Layers | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 63. Windows, Assets & Fonts | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 | 64. Styles & Export | v0.11.0 | 2/2 | Complete | 2026-02-06 |
-| 65. Project Management & Docs Update | v0.11.0 | 0/2 | Not started | - |
+| 65. Project Management & Docs Update | v0.11.0 | 2/2 | Complete | 2026-02-06 |
 
 ---
 *Roadmap created: 2026-01-25*
-*Last updated: 2026-02-06 - Phase 64 complete (Styles & Export)*
+*Last updated: 2026-02-06 - Phase 65 complete (Project Management & Docs Update)*
