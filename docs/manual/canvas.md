@@ -166,6 +166,46 @@ Background settings apply to the current window. In multi-window projects, each 
 
 ![Background configuration options in the properties panel](../images/canvas-background-options.png)
 
+## Container Editing
+
+Containers (Panel, Frame, Group Box, Collapsible) can hold child elements inside them. When you need to add or arrange elements within a container, use the container editing mode.
+
+### Entering Container Edit Mode
+
+1. Select a container element on the canvas
+2. In the **Properties** panel, click the **Edit Contents** button (shows child count)
+3. The canvas switches to an isolated view showing only the container's children
+4. The breadcrumb bar appears at the top showing your navigation path
+
+![Container edit mode with breadcrumb navigation](../images/canvas-container-editing.png)
+
+### Breadcrumb Navigation
+
+The breadcrumb bar shows the path from the root canvas to the current container:
+
+- Click any breadcrumb segment to jump back to that level
+- The rightmost segment is the container you're currently editing
+- Click the root/first segment to return to the main canvas
+
+### Nested Containers
+
+Containers can hold other containers, creating nested hierarchies:
+
+1. While editing a container's contents, select a child container
+2. Click **Edit Contents** again to go one level deeper
+3. The breadcrumb extends to show the full nesting path
+4. Navigate back using the breadcrumb at any level
+
+### Overflow and Scrollbars
+
+Containers support overflow scrollbars when content exceeds the container bounds. Child elements that extend beyond the container's visible area will be accessible via scrolling in the exported UI.
+
+### Exiting Container Edit Mode
+
+- Press **Escape** to exit container edit mode and return to the main canvas
+- Click the root segment in the breadcrumb bar to return to the main canvas
+- Or click any parent level in the breadcrumb to jump to that container
+
 ### Pan & Zoom
 
 Navigate around the canvas, especially useful for large or complex layouts.
@@ -190,6 +230,7 @@ Quick reference table for all canvas keyboard shortcuts.
 | Duplicate | Ctrl+D | Cmd+D |
 | Delete | Delete or Backspace | Delete or Backspace |
 | Clear selection | Escape | Escape |
+| Exit container edit mode | Escape | Escape |
 | Toggle snap grid | Ctrl+G | Cmd+G |
 | Nudge 1px | Arrow keys | Arrow keys |
 | Nudge 10px | Shift+Arrow keys | Shift+Arrow keys |
