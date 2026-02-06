@@ -28,8 +28,9 @@ export interface ValidationResult {
 
 /**
  * Escape CSS selector for safe querying
+ * Exported for use in layer extraction utilities
  */
-function escapeCSSSelector(str: string): string {
+export function escapeCSSSelector(str: string): string {
   if (typeof CSS !== 'undefined' && CSS.escape) {
     return CSS.escape(str)
   }
@@ -268,10 +269,11 @@ export function detectLayersForCategory(svgContent: string, category: ElementCat
   expectedLayers.forEach(expectedLayer => {
     // Extract the role from expected layer (e.g., 'indicator' from 'knob-indicator')
     const role = expectedLayer.split('-').pop() || expectedLayer
+    const roleMatches = detected[role]
 
-    if (detected[role] && detected[role].length > 0) {
+    if (roleMatches && roleMatches.length > 0 && roleMatches[0]) {
       // Use first match for this role
-      matched[expectedLayer] = detected[role][0]
+      matched[expectedLayer] = roleMatches[0]
     } else {
       missing.push(expectedLayer)
     }

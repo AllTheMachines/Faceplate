@@ -5,7 +5,7 @@
  * Per CONTEXT.md: shows frozen snapshot, not animated.
  */
 
-import React, { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import type { SpectrumAnalyzerElementConfig } from '../../../../../types/elements/visualizations'
 import { generatePinkNoiseSpectrum, magnitudeToColor } from '../../../../../utils/mockAudioData'
 import { useCanvasSetup } from '../../../../../hooks/useCanvasSetup'
@@ -18,7 +18,7 @@ export function SpectrumAnalyzerRenderer({ config }: SpectrumAnalyzerRendererPro
   const {
     width,
     height,
-    fftSize,
+    fftSize: _fftSize, // FFT size used by audio processing, not directly used in rendering
     colorGradient,
     barGap,
     backgroundColor,
@@ -74,7 +74,7 @@ export function SpectrumAnalyzerRenderer({ config }: SpectrumAnalyzerRendererPro
     const barWidth = (width - barGap * (barCount - 1)) / barCount
 
     for (let i = 0; i < barCount; i++) {
-      const magnitude = spectrumData[i]
+      const magnitude = spectrumData[i] ?? 0
       const barHeight = magnitude * height
       const x = i * (barWidth + barGap)
       const y = height - barHeight

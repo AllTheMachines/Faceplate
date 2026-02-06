@@ -1,4 +1,3 @@
-import React from 'react'
 import { SharedMeterProperties } from './SharedMeterProperties'
 import type { PPMType1MonoElementConfig, PPMType1StereoElementConfig } from '../../../types/elements/displays'
 

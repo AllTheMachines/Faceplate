@@ -5,7 +5,7 @@
  * Static mock data per CONTEXT.md - frozen snapshot, not animated.
  */
 
-import React, { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import { SpectrogramElementConfig } from '../../../../../types/elements/visualizations'
 import { generateSpectrogramFrame, magnitudeToColor } from '../../../../../utils/mockAudioData'
 import { useCanvasSetup } from '../../../../../hooks/useCanvasSetup'

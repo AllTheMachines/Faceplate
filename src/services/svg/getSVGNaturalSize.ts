@@ -25,8 +25,10 @@ export function getSVGNaturalSize(svgContent: string): { width: number; height: 
     if (viewBox) {
       const parts = viewBox.trim().split(/\s+/)
       if (parts.length === 4) {
-        const [, , width, height] = parts.map(Number)
-        if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+        const numbers = parts.map(Number)
+        const width = numbers[2]
+        const height = numbers[3]
+        if (width !== undefined && height !== undefined && !isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
           return { width, height }
         }
       }

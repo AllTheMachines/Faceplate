@@ -1,0 +1,11 @@
+# Build artifacts
+build/
+cmake-build-*/
+
+# JUCE framework (large, no need to index)
+JUCE/
+
+# IDE files
+.vs/
+*.vcxproj*
+*.sln

@@ -3,7 +3,6 @@ import { TextInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
 import { SELECT_CLASSNAME } from './constants'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { ButtonLayers } from '../../types/elementStyle'
 
 interface RockerSwitchPropertiesProps {
@@ -12,7 +11,6 @@ interface RockerSwitchPropertiesProps {
 }
 
 export function RockerSwitchProperties({ element, onUpdate }: RockerSwitchPropertiesProps) {
-  const { isPro } = useLicense()
   const getElementStyle = useStore((state) => state.getElementStyle)
 
   return (
@@ -22,17 +20,15 @@ export function RockerSwitchProperties({ element, onUpdate }: RockerSwitchProper
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'button') return null
 

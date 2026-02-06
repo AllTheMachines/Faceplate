@@ -10,7 +10,7 @@
  * - Goniometer: Rotated 45° (M/S mode with diagonal L/R)
  */
 
-import React, { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import { VectorscopeElementConfig } from '../../../../../types/elements/visualizations'
 import { generateMonoSignal } from '../../../../../utils/mockAudioData'
 import { useCanvasSetup } from '../../../../../hooks/useCanvasSetup'

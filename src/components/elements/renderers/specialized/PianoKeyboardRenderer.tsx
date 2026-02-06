@@ -27,7 +27,7 @@ export function PianoKeyboardRenderer({ config }: PianoKeyboardRendererProps) {
     blackKeyColor,
     activeKeyColor,
     labelColor,
-    whiteKeyWidth,
+    whiteKeyWidth: _whiteKeyWidth, // Used via blackKeyWidthRatio calculation
     blackKeyWidthRatio,
     fontSize,
     fontFamily,

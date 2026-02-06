@@ -6,7 +6,7 @@
  * Static mock data per CONTEXT.md - frozen snapshot, not animated.
  */
 
-import React, { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import { GoniometerElementConfig } from '../../../../../types/elements/visualizations'
 import { generateMonoSignal } from '../../../../../utils/mockAudioData'
 import { useCanvasSetup } from '../../../../../hooks/useCanvasSetup'

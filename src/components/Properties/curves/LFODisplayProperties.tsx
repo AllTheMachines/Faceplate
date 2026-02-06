@@ -1,4 +1,3 @@
-import React from 'react'
 import { ColorInput, NumberInput, PropertySection } from '../'
 import type { LFODisplayElementConfig } from '../../../types/elements/curves'
 import type { PropertyComponentProps } from '../'

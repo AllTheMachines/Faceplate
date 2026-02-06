@@ -8,7 +8,6 @@ import { NumberInput, TextInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
 import { BuiltInIcon } from '../../utils/builtInIcons'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { ButtonLayers } from '../../types/elementStyle'
 
 interface SegmentButtonPropertiesProps {
@@ -75,7 +74,6 @@ export function SegmentButtonProperties({
   element,
   onUpdate,
 }: SegmentButtonPropertiesProps) {
-  const { isPro } = useLicense()
   const assets = useStore((state) => state.assets)
   const getElementStyle = useStore((state) => state.getElementStyle)
   const svgAssets = assets.filter(
@@ -153,17 +151,15 @@ export function SegmentButtonProperties({
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'button') return null
 

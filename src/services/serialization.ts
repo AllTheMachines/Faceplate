@@ -9,7 +9,7 @@
  */
 
 import { generateErrorMessage } from 'zod-error'
-import { ProjectSchemaV2, ProjectSchemaV3, type ProjectData, type ProjectDataV1, type ProjectDataV2, type UIWindowData } from '../schemas/project'
+import { ProjectSchemaV3, type ProjectData, type ProjectDataV1, type ProjectDataV2, type UIWindowData } from '../schemas/project'
 import type { ElementConfig } from '../types/elements'
 import type { UIWindow } from '../store/windowsSlice'
 import type { Asset } from '../types/asset'
@@ -21,8 +21,8 @@ import { isProElement } from './proElements'
 // Current application version
 export const CURRENT_VERSION = '3.0.0'
 
-// Supported versions for migration
-const SUPPORTED_VERSIONS = ['1.0.0', '1.0', '2.0.0', '3.0.0']
+/** Supported versions for migration */
+export const SUPPORTED_VERSIONS = ['1.0.0', '1.0', '2.0.0', '3.0.0'] as const
 
 // ============================================================================
 // Serialization
@@ -276,6 +276,8 @@ function migrateV1ToV2(data: ProjectDataV1): ProjectDataV2 {
     selectedIds: data.selectedIds,
     snapToGrid: data.canvas.snapToGrid,
     gridSize: data.canvas.gridSize,
+    showGrid: (data.canvas as { showGrid?: boolean }).showGrid ?? true,
+    gridColor: (data.canvas as { gridColor?: string }).gridColor ?? 'rgba(255, 255, 255, 0.1)',
     lastModified: data.lastModified,
   }
 }

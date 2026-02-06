@@ -163,10 +163,9 @@ interface StyledBandProps {
     thumb: string | null
   }
   value: number
-  bandHeight: number
 }
 
-function StyledBand({ layers, value, bandHeight }: StyledBandProps) {
+function StyledBand({ layers, value }: StyledBandProps) {
   // Fill clip-path (vertical only - multi-slider bands are always vertical)
   // Value 0 = bottom, value 1 = top
   const fillClipPath = `inset(${(1 - value) * 100}% 0 0 0)`
@@ -292,7 +291,6 @@ function StyledMultiSliderRenderer({ config }: MultiSliderRendererProps) {
               <StyledBand
                 layers={layers}
                 value={normalizedValue}
-                bandHeight={sliderAreaHeight}
               />
             )}
           </div>

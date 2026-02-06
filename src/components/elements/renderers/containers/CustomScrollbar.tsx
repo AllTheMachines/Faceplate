@@ -31,7 +31,6 @@ function ScrollArrow({
   onMouseEnter: () => void
   onMouseLeave: () => void
 }) {
-  const isVertical = direction === 'up' || direction === 'down'
   const size = config.width
 
   // Arrow paths for each direction
@@ -169,10 +168,11 @@ export function CustomScrollbar({ contentRef, config, orientation = 'vertical' }
     }
   }
 
-  const startContinuousScroll = (amount: number) => {
-    scrollByAmount(amount)
-    scrollIntervalRef.current = window.setInterval(() => scrollByAmount(amount), 50)
-  }
+  // startContinuousScroll available for future arrow hold-to-scroll feature
+  // const startContinuousScroll = (amount: number) => {
+  //   scrollByAmount(amount)
+  //   scrollIntervalRef.current = window.setInterval(() => scrollByAmount(amount), 50)
+  // }
 
   const stopContinuousScroll = () => {
     if (scrollIntervalRef.current) {

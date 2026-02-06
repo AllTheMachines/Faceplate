@@ -1,4 +1,3 @@
-import React from 'react'
 import type { StereoWidthMeterElementConfig } from '../../../../../types/elements/displays'
 
 interface Props {

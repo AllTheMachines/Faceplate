@@ -5,7 +5,7 @@
  * Per CONTEXT.md: shows frozen snapshot, not animated.
  */
 
-import React, { useLayoutEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import type { ScrollingWaveformElementConfig } from '../../../../../types/elements/visualizations'
 import { generateWaveformData } from '../../../../../utils/mockAudioData'
 import { useCanvasSetup } from '../../../../../hooks/useCanvasSetup'
@@ -75,7 +75,8 @@ export function ScrollingWaveformRenderer({ config }: ScrollingWaveformRendererP
 
       for (let i = 0; i < sampleCount; i++) {
         const x = i * xStep
-        const y = height / 2 - (waveformData[i] * height) / 2
+        const sample = waveformData[i] ?? 0
+        const y = height / 2 - (sample * height) / 2
 
         if (i === 0) {
           ctx.moveTo(x, y)
@@ -96,14 +97,16 @@ export function ScrollingWaveformRenderer({ config }: ScrollingWaveformRendererP
       // Draw top edge
       for (let i = 0; i < sampleCount; i++) {
         const x = i * xStep
-        const y = height / 2 - (waveformData[i] * height) / 2
+        const sample = waveformData[i] ?? 0
+        const y = height / 2 - (sample * height) / 2
         ctx.lineTo(x, y)
       }
 
       // Draw bottom edge (mirrored)
       for (let i = sampleCount - 1; i >= 0; i--) {
         const x = i * xStep
-        const y = height / 2 + (waveformData[i] * height) / 2
+        const sample = waveformData[i] ?? 0
+        const y = height / 2 + (sample * height) / 2
         ctx.lineTo(x, y)
       }
 

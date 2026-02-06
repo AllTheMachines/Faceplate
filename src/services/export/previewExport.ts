@@ -259,7 +259,6 @@ function buildMultiWindowPreviewHTML(options: {
 
   // Generate mock JUCE and common scripts
   const mockJUCE = generateMockJUCE();
-  const componentsJS = generateComponentsJS(windows.flatMap(w => [])); // Empty - we'll generate per window
   const responsiveJS = enableResponsiveScaling ? generateResponsiveScaleJS(maxWidth, maxHeight) : '';
   const scrollbarJS = generateCustomScrollbarJS();
 

@@ -4,7 +4,6 @@ import { NumberInput, ColorInput, PropertySection, TextInput } from './'
 import { useStore } from '../../store'
 import { ManageKnobStylesDialog } from '../dialogs'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
-import { useLicense } from '../../hooks/useLicense'
 
 interface KnobPropertiesProps {
   element: KnobElementConfig
@@ -14,14 +13,12 @@ interface KnobPropertiesProps {
 export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
   const [showManageDialog, setShowManageDialog] = useState(false)
   const knobStyles = useStore((state) => state.knobStyles)
-  const { isPro } = useLicense()
   const getKnobStyle = useStore((state) => state.getKnobStyle)
 
   return (
     <>
-      {/* Knob Style - Pro feature */}
-      {isPro && (
-        <PropertySection title="Knob Style">
+      {/* Knob Style */}
+      <PropertySection title="Knob Style">
           <div>
             <label className="block text-xs text-gray-400 mb-1">Style</label>
             <select
@@ -50,10 +47,9 @@ export function KnobProperties({ element, onUpdate }: KnobPropertiesProps) {
             Manage styles...
           </button>
         </PropertySection>
-      )}
 
-      {/* Color Overrides (only when SVG style is selected) - Pro feature */}
-      {isPro && element.styleId && (() => {
+      {/* Color Overrides (only when SVG style is selected) */}
+      {element.styleId && (() => {
         const style = getKnobStyle(element.styleId)
         if (!style) return null
 

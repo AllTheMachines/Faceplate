@@ -3,6 +3,16 @@
  * Coordinates all generators and produces ZIP bundles
  */
 
+// Extend window type for File System Access API
+declare global {
+  interface Window {
+    showDirectoryPicker?: (options?: {
+      mode?: 'read' | 'readwrite'
+      startIn?: FileSystemHandle | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos'
+    }) => Promise<FileSystemDirectoryHandle>
+  }
+}
+
 import JSZip from 'jszip'
 import { fileSave } from 'browser-fs-access'
 import type { ElementConfig, KnobElementConfig } from '../../types/elements'
@@ -357,7 +367,7 @@ export async function exportJUCEBundle(options: ExportOptions): Promise<ExportRe
         fileName: filename,
         extensions: ['.zip'],
         startIn: lastExportDir || 'downloads',
-      })
+      } as any)
 
       return { success: true, sizeSavings }
     } finally {
@@ -492,7 +502,7 @@ export async function exportHTMLPreview(options: ExportOptions): Promise<ExportR
         fileName: filename,
         extensions: ['.zip'],
         startIn: lastExportDir || 'downloads',
-      })
+      } as any)
 
       return { success: true, sizeSavings }
     } finally {
@@ -667,7 +677,7 @@ export async function exportMultiWindowBundle(
         fileName: filename,
         extensions: ['.zip'],
         startIn: lastExportDir || 'downloads',
-      })
+      } as any)
 
       return { success: true, sizeSavings }
     } finally {
@@ -859,9 +869,12 @@ export async function exportMultiWindowToFolder(
       // Try to get last used export directory
       const lastExportDir = await getDirectoryHandle(DIR_KEYS.EXPORT)
 
-      dirHandle = await window.showDirectoryPicker({
+      if (!globalThis.window?.showDirectoryPicker) {
+        throw new Error('File System Access API not supported')
+      }
+      dirHandle = await globalThis.window.showDirectoryPicker({
         mode: 'readwrite',
-        startIn: lastExportDir || 'documents',
+        startIn: (lastExportDir || 'documents') as FileSystemHandle | 'documents',
       })
 
       // Remember this directory for next time
@@ -888,26 +901,29 @@ export async function exportMultiWindowToFolder(
       const isSingleWindow = windowsToExport.length === 1
 
       if (isSingleWindow) {
-        const window = windowsToExport[0]
+        const exportWindow = windowsToExport[0]
+        if (!exportWindow) {
+          return { success: false, error: 'No window to export' }
+        }
 
         // Generate files for single window
-        const htmlContent = generateHTML(window.elements, {
-          canvasWidth: window.width,
-          canvasHeight: window.height,
-          backgroundColor: window.backgroundColor,
+        const htmlContent = generateHTML(exportWindow.elements, {
+          canvasWidth: exportWindow.width,
+          canvasHeight: exportWindow.height,
+          backgroundColor: exportWindow.backgroundColor,
           isPreviewMode: false,
         })
 
-        const cssContent = await generateCSS(window.elements, {
-          canvasWidth: window.width,
-          canvasHeight: window.height,
-          backgroundColor: window.backgroundColor,
+        const cssContent = await generateCSS(exportWindow.elements, {
+          canvasWidth: exportWindow.width,
+          canvasHeight: exportWindow.height,
+          backgroundColor: exportWindow.backgroundColor,
         })
 
-        const componentsJS = generateComponentsJS(window.elements)
+        const componentsJS = generateComponentsJS(exportWindow.elements)
 
         // NO window mapping for single window (no navigation needed - nowhere to navigate to)
-        const bindingsJS = generateBindingsJS(window.elements, {
+        const bindingsJS = generateBindingsJS(exportWindow.elements, {
           isPreviewMode: false,
           // No windowMapping - single window has no other windows to navigate to
         })
@@ -915,7 +931,7 @@ export async function exportMultiWindowToFolder(
         // Add responsive scaling script if enabled
         const shouldIncludeResponsiveScaling = options.enableResponsiveScaling !== false
         const responsiveScaleJS = shouldIncludeResponsiveScaling
-          ? generateResponsiveScaleJS(window.width, window.height)
+          ? generateResponsiveScaleJS(exportWindow.width, exportWindow.height)
           : ''
 
         const customScrollbarJS = generateCustomScrollbarJS()
@@ -933,11 +949,11 @@ export async function exportMultiWindowToFolder(
         await writeFileToDirectory(dirHandle, 'bindings.js', bindingsWithScaling)
 
         // Write simple README for single window
-        const readme = generateSingleWindowREADME(window)
+        const readme = generateSingleWindowREADME(exportWindow)
         await writeFileToDirectory(dirHandle, 'README.md', readme)
 
         // Copy image assets directly to selected folder
-        const imageAssets = collectImageAssets(window.elements)
+        const imageAssets = collectImageAssets(exportWindow.elements)
         for (const asset of imageAssets) {
           try {
             const response = await fetch(asset.srcUrl)
@@ -950,12 +966,17 @@ export async function exportMultiWindowToFolder(
 
               // Navigate/create parent directories
               for (let i = 0; i < pathParts.length - 1; i++) {
-                currentDir = await currentDir.getDirectoryHandle(pathParts[i], { create: true })
+                const dirName = pathParts[i]
+                if (dirName) {
+                  currentDir = await currentDir.getDirectoryHandle(dirName, { create: true })
+                }
               }
 
               // Write the file in the final directory
               const fileName = pathParts[pathParts.length - 1]
-              await writeFileToDirectory(currentDir, fileName, blob)
+              if (fileName) {
+                await writeFileToDirectory(currentDir, fileName, blob)
+              }
             }
           } catch (error) {
             console.error(`Failed to copy image asset: ${asset.path}`, error)
@@ -1047,12 +1068,17 @@ export async function exportMultiWindowToFolder(
 
               // Navigate/create parent directories
               for (let i = 0; i < pathParts.length - 1; i++) {
-                currentDir = await currentDir.getDirectoryHandle(pathParts[i], { create: true })
+                const dirName = pathParts[i]
+                if (dirName) {
+                  currentDir = await currentDir.getDirectoryHandle(dirName, { create: true })
+                }
               }
 
               // Write the file in the final directory
               const fileName = pathParts[pathParts.length - 1]
-              await writeFileToDirectory(currentDir, fileName, blob)
+              if (fileName) {
+                await writeFileToDirectory(currentDir, fileName, blob)
+              }
             }
           } catch (error) {
             console.error(`Failed to copy image asset: ${asset.path}`, error)

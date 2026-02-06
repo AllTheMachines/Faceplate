@@ -100,8 +100,6 @@ export function SaveLoadPanel() {
   const setElementStyles = useStore((state) => state.setElementStyles)
   const setLayers = useStore((state) => state.setLayers)
   const setLastModified = useStore((state) => state.setLastModified)
-  const addWindow = useStore((state) => state.addWindow)
-  const addElementToWindow = useStore((state) => state.addElementToWindow)
 
   const handleSave = async () => {
     setLoading(true)

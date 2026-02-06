@@ -42,7 +42,7 @@ export const createElementStylesSlice: StateCreator<ElementStylesSlice, [], [], 
   updateElementStyle: (id, updates) =>
     set((state) => ({
       elementStyles: state.elementStyles.map((style) =>
-        style.id === id ? { ...style, ...updates } : style
+        style.id === id ? ({ ...style, ...updates } as ElementStyle) : style
       ),
     })),
 

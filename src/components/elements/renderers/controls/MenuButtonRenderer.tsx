@@ -40,7 +40,7 @@ export function MenuButtonRenderer({ config }: MenuButtonRendererProps) {
           setHighlightedIndex((prev) => {
             const currentPos = enabledIndices.indexOf(prev)
             const nextPos = (currentPos + 1) % enabledIndices.length
-            return enabledIndices[nextPos]
+            return enabledIndices[nextPos] ?? prev
           })
           break
         case 'ArrowUp':
@@ -48,7 +48,7 @@ export function MenuButtonRenderer({ config }: MenuButtonRendererProps) {
           setHighlightedIndex((prev) => {
             const currentPos = enabledIndices.indexOf(prev)
             const prevPos = (currentPos - 1 + enabledIndices.length) % enabledIndices.length
-            return enabledIndices[prevPos]
+            return enabledIndices[prevPos] ?? prev
           })
           break
         case 'Enter':
@@ -72,7 +72,7 @@ export function MenuButtonRenderer({ config }: MenuButtonRendererProps) {
 
   function handleItemClick(index: number) {
     const item = config.menuItems[index]
-    if (!item.disabled && !item.divider) {
+    if (item && !item.disabled && !item.divider) {
       // In real implementation, would trigger callback here
       setIsOpen(false)
     }

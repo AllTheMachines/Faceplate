@@ -1,4 +1,3 @@
-import React from 'react'
 import { HorizontalSpacerElementConfig, VerticalSpacerElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
 

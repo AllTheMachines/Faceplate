@@ -3,7 +3,6 @@ import { NumberInput, TextInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { ButtonLayers } from '../../types/elementStyle'
 import { SELECT_CLASSNAME } from './constants'
 
@@ -13,7 +12,6 @@ interface ButtonPropertiesProps {
 }
 
 export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
-  const { isPro } = useLicense()
   const windows = useStore((state) => state.windows)
   const activeWindowId = useStore((state) => state.activeWindowId)
   const getElementStyle = useStore((state) => state.getElementStyle)
@@ -28,17 +26,15 @@ export function ButtonProperties({ element, onUpdate }: ButtonPropertiesProps) {
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'button') return null
 

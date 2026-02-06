@@ -35,11 +35,17 @@ export function TreeViewProperties({ element, onUpdate }: TreeViewPropertiesProp
       const newData = [...element.data]
       let current: TreeNode[] = newData
       for (let i = 0; i < parentPath.length - 1; i++) {
-        const node = current[parentPath[i]]
+        const pathIndex = parentPath[i]
+        if (pathIndex === undefined) continue
+        const node = current[pathIndex]
+        if (!node) continue
         if (!node.children) node.children = []
         current = node.children
       }
-      const parentNode = current[parentPath[parentPath.length - 1]]
+      const lastPathIndex = parentPath[parentPath.length - 1]
+      if (lastPathIndex === undefined) return
+      const parentNode = current[lastPathIndex]
+      if (!parentNode) return
       if (!parentNode.children) parentNode.children = []
       parentNode.children.push(newNode)
 
@@ -57,16 +63,25 @@ export function TreeViewProperties({ element, onUpdate }: TreeViewPropertiesProp
   const removeNode = useCallback(
     (path: number[]) => {
       const newData = [...element.data]
+      const firstIndex = path[0]
+      if (firstIndex === undefined) return
       if (path.length === 1) {
         // Remove root node
-        newData.splice(path[0], 1)
+        newData.splice(firstIndex, 1)
       } else {
         // Remove child node
         let current: TreeNode[] = newData
         for (let i = 0; i < path.length - 1; i++) {
-          current = current[path[i]].children || []
+          const pathIndex = path[i]
+          if (pathIndex === undefined) continue
+          const node = current[pathIndex]
+          if (!node) continue
+          current = node.children || []
         }
-        current.splice(path[path.length - 1], 1)
+        const lastIndex = path[path.length - 1]
+        if (lastIndex !== undefined) {
+          current.splice(lastIndex, 1)
+        }
       }
       onUpdate({ data: newData })
     },
@@ -79,9 +94,16 @@ export function TreeViewProperties({ element, onUpdate }: TreeViewPropertiesProp
       const newData = [...element.data]
       let current: TreeNode[] = newData
       for (let i = 0; i < path.length - 1; i++) {
-        current = current[path[i]].children || []
+        const pathIndex = path[i]
+        if (pathIndex === undefined) continue
+        const node = current[pathIndex]
+        if (!node) continue
+        current = node.children || []
       }
-      current[path[path.length - 1]].name = name
+      const lastIndex = path[path.length - 1]
+      if (lastIndex !== undefined && current[lastIndex]) {
+        current[lastIndex].name = name
+      }
       onUpdate({ data: newData })
     },
     [element.data, onUpdate]
@@ -113,7 +135,7 @@ export function TreeViewProperties({ element, onUpdate }: TreeViewPropertiesProp
             )}
             {!hasChildren && <div className="w-4" />}
             <span className="text-xs text-gray-400">
-              {depth === 0 ? 'Root' : 'Child'} {path[path.length - 1] + 1}
+              {depth === 0 ? 'Root' : 'Child'} {(path[path.length - 1] ?? 0) + 1}
             </span>
             <button
               onClick={() => removeNode(path)}

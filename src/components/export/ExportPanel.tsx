@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useStore } from '../../store'
+import type { ElementConfig } from '../../types/elements'
 import {
   exportJUCEBundle,
   exportHTMLPreview,
@@ -218,7 +219,7 @@ export function ExportPanel() {
         sizeSavings: result.sizeSavings,
       })
     } else {
-      setError(result.error)
+      setError(result.error ?? null)
     }
   }
 
@@ -279,7 +280,7 @@ export function ExportPanel() {
             height: w.height,
             backgroundColor: w.backgroundColor,
           })),
-          activeWindowId: activeWindow?.id || windows[0].id,
+          activeWindowId: activeWindow?.id || windows[0]?.id || '',
           enableResponsiveScaling: true,
         })
       : await previewHTMLExport({

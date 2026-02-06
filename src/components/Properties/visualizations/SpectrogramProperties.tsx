@@ -1,5 +1,3 @@
-import React from 'react'
-import { useStore } from '../../../store'
 import { ColorInput, NumberInput, PropertySection } from '../'
 import type { SpectrogramElementConfig } from '../../../types/elements'
 import type { PropertyComponentProps } from '../'

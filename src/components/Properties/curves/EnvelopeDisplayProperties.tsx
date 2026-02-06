@@ -1,4 +1,3 @@
-import React from 'react'
 import { ColorInput, NumberInput, PropertySection } from '../'
 import type { EnvelopeDisplayElementConfig } from '../../../types/elements/curves'
 import type { PropertyComponentProps } from '../'

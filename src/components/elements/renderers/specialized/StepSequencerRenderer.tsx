@@ -13,11 +13,14 @@ export function StepSequencerRenderer({ config }: StepSequencerRendererProps) {
     e.stopPropagation()
     const index = row * config.stepCount + step
     const newSteps = [...config.steps]
-    newSteps[index] = {
-      ...newSteps[index],
-      active: !newSteps[index].active,
+    const currentStep = newSteps[index]
+    if (currentStep) {
+      newSteps[index] = {
+        ...currentStep,
+        active: !currentStep.active,
+      }
+      updateElement(config.id, { steps: newSteps })
     }
-    updateElement(config.id, { steps: newSteps })
   }
 
   const {

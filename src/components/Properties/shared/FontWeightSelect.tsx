@@ -28,7 +28,7 @@ export function FontWeightSelect({
 
   // Build display weights with actual names when available
   const displayWeights = baseWeights.map(w => {
-    const weightValue = typeof w.value === 'number' ? w.value : Number(w.value)
+    const weightValue = Number(w.value)
     const actualWeightInfo = fontInfo?.weights?.find(fw => fw.value === weightValue)
 
     if (actualWeightInfo) {

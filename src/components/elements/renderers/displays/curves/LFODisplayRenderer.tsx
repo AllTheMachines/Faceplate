@@ -5,7 +5,7 @@
  * Displays frozen snapshot per CONTEXT.md (no animation).
  */
 
-import React, { useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import type { LFODisplayElementConfig } from '../../../../../types/elements/curves'
 import { useCanvasSetup } from '../../../../../hooks/useCanvasSetup'
 import { drawLinearGrid } from '../../../../../utils/curveRendering'
@@ -121,22 +121,28 @@ export function LFODisplayRenderer({ config }: LFODisplayRendererProps) {
     ctx.strokeStyle = waveformColor
     ctx.lineWidth = lineWidth
 
+    if (points.length === 0) return
+
+    const firstPoint = points[0]!
     if (shape === 'square' || shape === 'pulse' || shape === 'sample-hold') {
       // Hard edges for square waves
       ctx.beginPath()
-      ctx.moveTo(points[0].x, points[0].y)
+      ctx.moveTo(firstPoint.x, firstPoint.y)
       for (let i = 1; i < points.length; i++) {
+        const curr = points[i]!
+        const prev = points[i - 1]!
         // Draw horizontal then vertical for square wave appearance
-        ctx.lineTo(points[i].x, points[i - 1].y)
-        ctx.lineTo(points[i].x, points[i].y)
+        ctx.lineTo(curr.x, prev.y)
+        ctx.lineTo(curr.x, curr.y)
       }
       ctx.stroke()
     } else {
       // Smooth curves for sine, triangle, saw, smooth-random
       ctx.beginPath()
-      ctx.moveTo(points[0].x, points[0].y)
+      ctx.moveTo(firstPoint.x, firstPoint.y)
       for (let i = 1; i < points.length; i++) {
-        ctx.lineTo(points[i].x, points[i].y)
+        const pt = points[i]!
+        ctx.lineTo(pt.x, pt.y)
       }
       ctx.stroke()
     }

@@ -1,4 +1,3 @@
-import React from 'react'
 import type { CorrelationMeterElementConfig } from '../../../../../types/elements/displays'
 
 interface Props {
@@ -19,7 +18,7 @@ export function CorrelationMeterRenderer({ config }: Props) {
 
   const scaleHeight = showScale ? 16 : 0
   const readoutHeight = showNumericReadout ? 18 : 0
-  const meterAreaHeight = height - scaleHeight - readoutHeight
+  // meterAreaHeight available: height - scaleHeight - readoutHeight
 
   return (
     <div style={{ width, height, display: 'flex', flexDirection: 'column' }}>

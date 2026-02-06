@@ -8,7 +8,7 @@
 
 import { useMemo } from 'react'
 import { isProElement } from '../../services/proElements'
-import type { ElementConfig } from '../../types'
+import type { ElementConfig } from '../../types/elements'
 
 // Human-readable names for element types
 const ELEMENT_DISPLAY_NAMES: Record<string, string> = {

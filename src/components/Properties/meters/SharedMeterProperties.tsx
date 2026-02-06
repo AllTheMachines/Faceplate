@@ -1,11 +1,8 @@
-import React from 'react'
 import { useStore } from '../../../store'
 import { NumberInput, PropertySection } from '../'
 import { ColorPicker } from '../shared/ColorPicker'
 import { ElementStyleSection } from '../shared'
-import { SELECT_CLASSNAME } from '../constants'
 import type { BaseProfessionalMeterConfig } from '../../../types/elements/displays'
-import { useLicense } from '../../../hooks/useLicense'
 
 interface SharedMeterPropertiesProps {
   elementId: string
@@ -25,11 +22,10 @@ export function SharedMeterProperties({
   showChannelLabels = false,
   stereoChannelLabels = false,
   meterLabel,
-  minDbFixed = true,
-  maxDbFixed = true,
+  minDbFixed: _minDbFixed = true,
+  maxDbFixed: _maxDbFixed = true,
 }: SharedMeterPropertiesProps) {
   const updateElement = useStore((state) => state.updateElement)
-  const { isPro } = useLicense()
 
   const update = (updates: Partial<BaseProfessionalMeterConfig>) => {
     updateElement(elementId, updates)
@@ -45,12 +41,10 @@ export function SharedMeterProperties({
         <ElementStyleSection
           category="meter"
           currentStyleId={config.styleId}
-          
           onStyleChange={(styleId) => update({
             styleId,
             colorOverrides: styleId ? config.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 

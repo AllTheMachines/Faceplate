@@ -34,7 +34,6 @@ export function MeterProperties({ element, onUpdate }: MeterPropertiesProps) {
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={true}
         />
       </PropertySection>
 

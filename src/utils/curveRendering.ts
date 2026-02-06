@@ -24,20 +24,27 @@ export function drawSmoothCurve(
 ): void {
   if (points.length < 2) return
 
+  const firstPoint = points[0]
+  if (!firstPoint) return
+
   ctx.strokeStyle = strokeStyle
   ctx.lineWidth = lineWidth
 
   ctx.beginPath()
-  ctx.moveTo(points[0].x, points[0].y)
+  ctx.moveTo(firstPoint.x, firstPoint.y)
 
   if (points.length === 2) {
     // Simple line for 2 points
-    ctx.lineTo(points[1].x, points[1].y)
+    const secondPoint = points[1]
+    if (secondPoint) {
+      ctx.lineTo(secondPoint.x, secondPoint.y)
+    }
   } else {
     // Smooth curve through multiple points using quadratic Bezier
     for (let i = 0; i < points.length - 1; i++) {
       const current = points[i]
       const next = points[i + 1]
+      if (!current || !next) continue
 
       // Control point at midpoint for smooth transition
       const controlX = (current.x + next.x) / 2
@@ -48,17 +55,22 @@ export function drawSmoothCurve(
 
     // Final segment to last point
     const last = points[points.length - 1]
-    ctx.lineTo(last.x, last.y)
+    if (last) {
+      ctx.lineTo(last.x, last.y)
+    }
   }
 
   // Fill under curve if requested
   if (fill && fillStyle && height !== undefined) {
     // Close path to bottom
-    ctx.lineTo(points[points.length - 1].x, height)
-    ctx.lineTo(points[0].x, height)
-    ctx.closePath()
-    ctx.fillStyle = fillStyle
-    ctx.fill()
+    const lastPoint = points[points.length - 1]
+    if (lastPoint && firstPoint) {
+      ctx.lineTo(lastPoint.x, height)
+      ctx.lineTo(firstPoint.x, height)
+      ctx.closePath()
+      ctx.fillStyle = fillStyle
+      ctx.fill()
+    }
   }
 
   ctx.stroke()

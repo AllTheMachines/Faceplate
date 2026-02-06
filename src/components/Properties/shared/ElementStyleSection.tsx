@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ElementCategory } from '../../../types/elementStyle'
 import { ManageElementStylesDialog } from '../../dialogs'
 import { SafeSVG } from '../../SafeSVG'
@@ -8,7 +8,6 @@ interface ElementStyleSectionProps {
   category: ElementCategory
   currentStyleId: string | undefined
   onStyleChange: (styleId: string | undefined) => void
-  isPro: boolean
 }
 
 /**
@@ -16,17 +15,17 @@ interface ElementStyleSectionProps {
  *
  * Features:
  * - Style dropdown with "No style" option
- * - "Manage styles..." button (Pro only)
+ * - "Manage styles..." button to open style manager
  * - Thumbnail preview when style selected
  * - Opens ManageElementStylesDialog for style management
  *
  * Used by all property panels for elements that support SVG styling.
+ * SVG styling is available to all users (free feature).
  */
 export function ElementStyleSection({
   category,
   currentStyleId,
-  onStyleChange,
-  isPro
+  onStyleChange
 }: ElementStyleSectionProps) {
   const [showManageDialog, setShowManageDialog] = useState(false)
 
@@ -49,15 +48,13 @@ export function ElementStyleSection({
         ))}
       </select>
 
-      {/* Manage styles button - only for Pro */}
-      {isPro && (
-        <button
-          onClick={() => setShowManageDialog(true)}
-          className="w-full text-left text-sm text-blue-400 hover:text-blue-300 mt-1"
-        >
-          Manage styles...
-        </button>
-      )}
+      {/* Manage styles button */}
+      <button
+        onClick={() => setShowManageDialog(true)}
+        className="w-full text-left text-sm text-blue-400 hover:text-blue-300 mt-1"
+      >
+        Manage styles...
+      </button>
 
       {/* Thumbnail preview when style selected */}
       {currentStyle && (

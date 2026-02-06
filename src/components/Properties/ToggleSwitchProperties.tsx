@@ -2,7 +2,6 @@ import { ToggleSwitchElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, TextInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
 import { AVAILABLE_FONTS } from '../../services/fonts/fontRegistry'
-import { useLicense } from '../../hooks/useLicense'
 import { useStore } from '../../store'
 import { ButtonLayers } from '../../types/elementStyle'
 import { SELECT_CLASSNAME } from './constants'
@@ -13,7 +12,6 @@ interface ToggleSwitchPropertiesProps {
 }
 
 export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchPropertiesProps) {
-  const { isPro } = useLicense()
   const getElementStyle = useStore((state) => state.getElementStyle)
 
   return (
@@ -23,17 +21,15 @@ export function ToggleSwitchProperties({ element, onUpdate }: ToggleSwitchProper
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'button') return null
 

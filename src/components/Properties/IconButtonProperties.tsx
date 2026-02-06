@@ -3,7 +3,6 @@ import { NumberInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
 import { BuiltInIcon } from '../../utils/builtInIcons'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { ButtonLayers } from '../../types/elementStyle'
 import { SELECT_CLASSNAME } from './constants'
 
@@ -68,7 +67,6 @@ function formatIconName(icon: BuiltInIcon): string {
 }
 
 export function IconButtonProperties({ element, onUpdate }: IconButtonPropertiesProps) {
-  const { isPro } = useLicense()
   const assets = useStore((state) => state.assets)
   const getElementStyle = useStore((state) => state.getElementStyle)
 
@@ -84,17 +82,15 @@ export function IconButtonProperties({ element, onUpdate }: IconButtonProperties
         <ElementStyleSection
           category="button"
           currentStyleId={element.styleId}
-          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'button') return null
 

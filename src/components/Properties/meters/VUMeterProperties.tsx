@@ -1,4 +1,3 @@
-import React from 'react'
 import { SharedMeterProperties } from './SharedMeterProperties'
 import type { VUMeterMonoElementConfig, VUMeterStereoElementConfig } from '../../../types/elements/displays'
 

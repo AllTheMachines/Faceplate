@@ -29,7 +29,7 @@ export async function saveProjectFile(
     description: 'VST3 WebView UI Project',
     mimeTypes: ['application/json'],
     startIn: lastProjectFile || 'documents',
-  })
+  } as any)
 
   // Store the file handle for next time (dialog will open in same folder)
   if (fileHandle) {
@@ -65,7 +65,7 @@ export async function loadProjectFile(): Promise<LoadResult> {
       description: 'VST3 WebView UI Project',
       mimeTypes: ['application/json'],
       startIn: lastProjectFile || 'documents',
-    })
+    } as any)
 
     // Read blob content as text
     const content = await blob.text()

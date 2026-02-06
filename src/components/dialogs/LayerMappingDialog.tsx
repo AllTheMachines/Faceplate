@@ -153,7 +153,8 @@ export function LayerMappingDialog({ isOpen, onClose, existingStyle }: LayerMapp
 
       // Detect layers
       const detectedLayers = detectKnobLayers(sanitized)
-      const suggested = getSuggestedLayers(detectedLayers)
+      // getSuggestedLayers auto-assigns based on detection
+      getSuggestedLayers(detectedLayers)
 
       // Initialize mappings from suggestions
       const initialMappings: Record<string, LayerRole> = {}

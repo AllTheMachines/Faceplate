@@ -284,13 +284,13 @@ export function ElementLayerMappingDialog({
       updateElementStyle(existingStyle.id, baseStyle)
       toast.success(`Style "${styleName}" updated`)
     } else {
-      // Create new style
+      // Create new style - use type assertions to satisfy discriminated union
       if (category === 'rotary') {
-        addElementStyle({ ...baseStyle, category, minAngle, maxAngle })
+        addElementStyle({ ...baseStyle, category, minAngle, maxAngle } as Omit<ElementStyle, 'id' | 'createdAt'>)
       } else if (category === 'arc') {
-        addElementStyle({ ...baseStyle, category, minAngle, maxAngle, arcRadius })
+        addElementStyle({ ...baseStyle, category, minAngle, maxAngle, arcRadius } as Omit<ElementStyle, 'id' | 'createdAt'>)
       } else {
-        addElementStyle({ ...baseStyle, category })
+        addElementStyle({ ...baseStyle, category } as Omit<ElementStyle, 'id' | 'createdAt'>)
       }
       toast.success(`${CATEGORY_NAMES[category]} style "${styleName}" created`)
     }

@@ -1,9 +1,7 @@
 import { MultiSliderElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection } from './'
 import { ElementStyleSection } from './shared'
-import { SELECT_CLASSNAME } from './constants'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { LinearLayers } from '../../types/elementStyle'
 
 interface MultiSliderPropertiesProps {
@@ -22,7 +20,6 @@ const BAND_PRESETS = [
 ]
 
 export function MultiSliderProperties({ element, onUpdate }: MultiSliderPropertiesProps) {
-  const { isPro } = useLicense()
   const getElementStyle = useStore((state) => state.getElementStyle)
 
   const isPresetBandCount = BAND_PRESETS.some(p => p.value === element.bandCount)
@@ -61,13 +58,12 @@ export function MultiSliderProperties({ element, onUpdate }: MultiSliderProperti
               styleId,
               colorOverrides: styleId ? element.colorOverrides : undefined
             })}
-            isPro={isPro}
           />
         </div>
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'linear') return null
 

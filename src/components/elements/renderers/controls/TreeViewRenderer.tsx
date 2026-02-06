@@ -33,7 +33,7 @@ function CustomNode({ node, style, tree }: NodeRendererProps<TreeNode>) {
   const handleRowClick = () => {
     // Row click selects (does NOT toggle expand/collapse)
     if (!isSelected) {
-      tree.selectOnly(node.id)
+      tree.select(node.id)
     }
   }
 
@@ -68,7 +68,7 @@ function CustomNode({ node, style, tree }: NodeRendererProps<TreeNode>) {
   )
 }
 
-export function TreeViewRenderer({ config, onUpdate, designMode = false }: TreeViewRendererProps) {
+export function TreeViewRenderer({ config, onUpdate, designMode: _designMode = false }: TreeViewRendererProps) {
   const treeRef = useRef<any>(null)
 
   // Convert TreeNode[] to format expected by react-arborist
@@ -129,7 +129,7 @@ export function TreeViewRenderer({ config, onUpdate, designMode = false }: TreeV
           rowHeight={config.rowHeight}
           indent={config.indent}
           onSelect={(nodes) => handleSelectionChange(nodes.map(n => n.id as string))}
-          onToggle={(nodeId) => {
+          onToggle={() => {
             // Track open state
             const tree = treeRef.current
             if (tree) {
@@ -137,8 +137,6 @@ export function TreeViewRenderer({ config, onUpdate, designMode = false }: TreeV
               handleOpenChange(openIds)
             }
           }}
-          // Custom renderer
-          children={CustomNode}
         >
           {CustomNode}
         </Tree>

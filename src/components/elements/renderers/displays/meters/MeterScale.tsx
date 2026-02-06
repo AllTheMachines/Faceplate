@@ -1,4 +1,3 @@
-import React from 'react'
 import { generateTickPositions, dbToNormalized } from '../../../../../utils/meterUtils'
 
 interface MeterScaleProps {

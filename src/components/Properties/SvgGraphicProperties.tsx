@@ -100,13 +100,12 @@ export function SvgGraphicProperties({ element, onUpdate }: SvgGraphicProperties
         </div>
 
         <NumberInput
-          label="Opacity"
+          label="Opacity %"
           value={Math.round(element.opacity * 100)}
           onChange={(val) => onUpdate({ opacity: val / 100 })}
           min={0}
           max={100}
           step={5}
-          suffix="%"
         />
       </PropertySection>
     </>

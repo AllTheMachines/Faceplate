@@ -139,7 +139,7 @@ function DefaultRotarySwitchRenderer({ config }: RotarySwitchRendererProps) {
               fill={config.labelColor}
               fontWeight={isActive ? 'bold' : 'normal'}
               opacity={isActive ? 1 : 0.6}
-              fontFamily={config.fontFamily}
+              fontFamily={config.labelFontFamily}
             >
               {label}
             </text>
@@ -300,7 +300,7 @@ function StyledRotarySwitchRenderer({ config }: RotarySwitchRendererProps) {
                 fill={config.labelColor}
                 fontWeight={isActive ? 'bold' : 'normal'}
                 opacity={isActive ? 1 : 0.6}
-                fontFamily={config.fontFamily}
+                fontFamily={config.labelFontFamily}
               >
                 {label}
               </text>

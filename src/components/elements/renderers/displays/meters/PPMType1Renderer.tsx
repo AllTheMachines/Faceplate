@@ -1,4 +1,3 @@
-import React from 'react'
 import type { PPMType1MonoElementConfig, PPMType1StereoElementConfig } from '../../../../../types/elements/displays'
 import { SegmentedMeter } from './SegmentedMeter'
 import { MeterScale } from './MeterScale'

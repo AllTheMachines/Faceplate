@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
 import { useStore } from '../../store'
@@ -15,7 +15,7 @@ interface ImportAssetDialogProps {
 
 export function ImportAssetDialog({ isOpen, onClose }: ImportAssetDialogProps) {
   const [file, setFile] = useState<File | null>(null)
-  const [svgContent, setSvgContent] = useState<string>('')
+  const [, setSvgContent] = useState<string>('')
   const [sanitizedContent, setSanitizedContent] = useState<string>('')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [name, setName] = useState<string>('')

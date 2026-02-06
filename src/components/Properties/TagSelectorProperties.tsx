@@ -24,6 +24,7 @@ export function TagSelectorProperties({ element, onUpdate }: TagSelectorProperti
     (index: number) => {
       if (element.availableTags.length <= 1) return
       const tagToRemove = element.availableTags[index]
+      if (!tagToRemove) return
       const newAvailableTags = element.availableTags.filter((_, i) => i !== index)
       // Remove from selected tags if it was selected
       const newSelectedTags = element.selectedTags.filter((tag) => tag.id !== tagToRemove.id)
@@ -35,11 +36,13 @@ export function TagSelectorProperties({ element, onUpdate }: TagSelectorProperti
   // Update available tag
   const updateAvailableTag = useCallback(
     (index: number, updates: Partial<Tag>) => {
+      const tagToUpdate = element.availableTags[index]
+      if (!tagToUpdate) return
       const newAvailableTags = element.availableTags.map((tag, i) =>
         i === index ? { ...tag, ...updates } : tag
       )
       // Also update in selected tags if it was selected
-      const tagId = element.availableTags[index].id
+      const tagId = tagToUpdate.id
       const newSelectedTags = element.selectedTags.map((tag) =>
         tag.id === tagId ? { ...tag, ...updates } : tag
       )

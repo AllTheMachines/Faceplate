@@ -1,4 +1,3 @@
-import React from 'react'
 import type { TruePeakMeterMonoElementConfig, TruePeakMeterStereoElementConfig } from '../../../../../types/elements/displays'
 import { SegmentedMeter } from './SegmentedMeter'
 import { MeterScale } from './MeterScale'

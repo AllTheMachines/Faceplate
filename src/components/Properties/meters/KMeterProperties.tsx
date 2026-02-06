@@ -1,4 +1,3 @@
-import React from 'react'
 import { SharedMeterProperties } from './SharedMeterProperties'
 import type {
   K12MeterMonoElementConfig, K12MeterStereoElementConfig,

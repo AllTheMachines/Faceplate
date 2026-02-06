@@ -1,4 +1,3 @@
-import React from 'react'
 import { useStore } from '../../../store'
 import { NumberInput, PropertySection } from '../'
 import type { StereoWidthMeterElementConfig } from '../../../types/elements/displays'

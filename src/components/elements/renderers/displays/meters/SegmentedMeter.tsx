@@ -1,36 +1,92 @@
-import React from 'react'
-import { getSegmentColor, calculateLitSegments, ColorZone } from '../../../../../utils/meterUtils'
+import { getSegmentColor, calculateLitSegments, ColorZone, defaultColorZones } from '../../../../../utils/meterUtils'
 import { PeakHoldIndicator } from './PeakHoldIndicator'
 
-interface SegmentedMeterProps {
-  value: number          // 0-1 normalized
-  segmentCount: number   // Number of segments
+// Config-based interface (from meter element configs)
+interface MeterConfig {
+  value: number
+  segmentCount?: number
   orientation: 'vertical' | 'horizontal'
-  segmentGap: number     // Gap between segments in px (default 1)
+  segmentGap?: number
+  minDb: number
+  maxDb: number
+  colorZones?: ColorZone[]
+  showPeakHold?: boolean
+  peakHoldStyle?: 'line' | 'bar'
+}
+
+// Props-based interface
+interface PropsBasedSegmentedMeterProps {
+  value: number
+  segmentCount: number
+  orientation: 'vertical' | 'horizontal'
+  segmentGap?: number
   minDb: number
   maxDb: number
   colorZones: ColorZone[]
   showPeakHold?: boolean
-  peakHoldPosition?: number // 0-1 normalized
+  peakHoldPosition?: number
   peakHoldStyle?: 'line' | 'bar'
   width: number
   height: number
 }
 
-export function SegmentedMeter({
-  value,
-  segmentCount,
-  orientation,
-  segmentGap = 1,
-  minDb,
-  maxDb,
-  colorZones,
-  showPeakHold = false,
-  peakHoldPosition,
-  peakHoldStyle = 'line',
-  width,
-  height,
-}: SegmentedMeterProps) {
+// Config-based interface (accepts config object from KMeterRenderer etc.)
+interface ConfigBasedSegmentedMeterProps {
+  config: MeterConfig
+  width: number
+  height: number
+}
+
+export type SegmentedMeterProps = PropsBasedSegmentedMeterProps | ConfigBasedSegmentedMeterProps
+
+function isConfigBased(props: SegmentedMeterProps): props is ConfigBasedSegmentedMeterProps {
+  return 'config' in props
+}
+
+export function SegmentedMeter(props: SegmentedMeterProps) {
+  // Normalize props - support both config-based and individual props
+  const {
+    value,
+    segmentCount,
+    orientation,
+    segmentGap,
+    minDb,
+    maxDb,
+    colorZones,
+    showPeakHold,
+    peakHoldPosition,
+    peakHoldStyle,
+    width,
+    height,
+  } = isConfigBased(props)
+    ? {
+        value: props.config.value,
+        segmentCount: props.config.segmentCount ?? 24,
+        orientation: props.config.orientation,
+        segmentGap: props.config.segmentGap ?? 1,
+        minDb: props.config.minDb,
+        maxDb: props.config.maxDb,
+        colorZones: props.config.colorZones ?? defaultColorZones,
+        showPeakHold: props.config.showPeakHold ?? false,
+        peakHoldPosition: props.config.value, // Use value as peak position for config mode
+        peakHoldStyle: props.config.peakHoldStyle ?? 'line',
+        width: props.width,
+        height: props.height,
+      }
+    : {
+        value: props.value,
+        segmentCount: props.segmentCount,
+        orientation: props.orientation,
+        segmentGap: props.segmentGap ?? 1,
+        minDb: props.minDb,
+        maxDb: props.maxDb,
+        colorZones: props.colorZones,
+        showPeakHold: props.showPeakHold ?? false,
+        peakHoldPosition: props.peakHoldPosition,
+        peakHoldStyle: props.peakHoldStyle ?? 'line',
+        width: props.width,
+        height: props.height,
+      }
   const litSegments = calculateLitSegments(value, segmentCount)
   const isVertical = orientation === 'vertical'
 

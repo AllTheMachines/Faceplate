@@ -641,6 +641,10 @@ export interface RockerSwitchElementConfig extends BaseElementConfig {
   switchColor: string
   borderColor: string
   labelColor: string
+
+  // SVG styling (optional)
+  styleId?: string
+  colorOverrides?: Record<string, string>
 }
 
 export interface RotarySwitchElementConfig extends BaseElementConfig {
@@ -667,6 +671,10 @@ export interface RotarySwitchElementConfig extends BaseElementConfig {
   labelFontFamily: string
   labelFontWeight: string
   borderColor: string
+
+  // SVG styling (optional)
+  styleId?: string
+  colorOverrides?: Record<string, string>
 }
 
 /**
@@ -710,6 +718,10 @@ export interface SegmentButtonElementConfig extends BaseElementConfig {
   iconSize: number // Size of icons in pixels (default 16)
   iconColor: string // Icon color for unselected segments (default '#888888')
   selectedIconColor: string // Icon color for selected segments (default '#ffffff')
+
+  // SVG styling (optional)
+  styleId?: string
+  colorOverrides?: Record<string, string>
 }
 
 // ============================================================================

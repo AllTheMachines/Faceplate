@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plugin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="plugin-container">
+        <header class="plugin-header">
+            <h1 class="plugin-title">MY PLUGIN</h1>
+        </header>
+
+        <main class="plugin-content">
+            <!-- VOLUME Section -->
+            <section class="param-section">
+                <div class="param-group">
+                    <div class="knob-wrapper">
+                        <div id="volume-knob"
+                             class="knob"
+                             data-param="volume"
+                             data-type="knob"
+                             data-default="0.75"
+                             data-diameter="70"
+                             data-color="#00d4ff">
+                        </div>
+                        <span class="param-label">VOLUME</span>
+                        <span class="param-value" data-label-for="volume-knob" data-format="db">-2.5 dB</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="plugin-footer">
+            <span id="status" class="status">Initializing...</span>
+        </footer>
+    </div>
+
+    <script src="components.js"></script>
+    <script src="bindings.js"></script>
+</body>
+</html>

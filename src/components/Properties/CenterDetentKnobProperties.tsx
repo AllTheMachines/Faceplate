@@ -1,7 +1,6 @@
 import { CenterDetentKnobElementConfig, ElementConfig } from '../../types/elements'
 import { NumberInput, ColorInput, PropertySection, TextInput } from './'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { RotaryLayers } from '../../types/elementStyle'
 
 interface CenterDetentKnobPropertiesProps {
@@ -10,42 +9,39 @@ interface CenterDetentKnobPropertiesProps {
 }
 
 export function CenterDetentKnobProperties({ element, onUpdate }: CenterDetentKnobPropertiesProps) {
-  const { isPro } = useLicense()
   const getStylesByCategory = useStore((state) => state.getStylesByCategory)
   const getElementStyle = useStore((state) => state.getElementStyle)
   const rotaryStyles = getStylesByCategory('rotary')
 
   return (
     <>
-      {/* Knob Style - Pro feature */}
-      {isPro && (
-        <PropertySection title="Knob Style">
-          <div>
-            <label className="block text-xs text-gray-400 mb-1">Style</label>
-            <select
-              value={element.styleId || ''}
-              onChange={(e) => {
-                const value = e.target.value
-                onUpdate({
-                  styleId: value === '' ? undefined : value,
-                  colorOverrides: undefined, // Reset on style change
-                })
-              }}
-              className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
-            >
-              <option value="">Default (CSS)</option>
-              {rotaryStyles.map((style) => (
-                <option key={style.id} value={style.id}>
-                  {style.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </PropertySection>
-      )}
+      {/* Knob Style */}
+      <PropertySection title="Knob Style">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Style</label>
+          <select
+            value={element.styleId || ''}
+            onChange={(e) => {
+              const value = e.target.value
+              onUpdate({
+                styleId: value === '' ? undefined : value,
+                colorOverrides: undefined, // Reset on style change
+              })
+            }}
+            className="w-full bg-gray-700 border border-gray-600 text-white rounded px-2 py-1.5 text-sm"
+          >
+            <option value="">Default (CSS)</option>
+            {rotaryStyles.map((style) => (
+              <option key={style.id} value={style.id}>
+                {style.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'rotary') return null
 

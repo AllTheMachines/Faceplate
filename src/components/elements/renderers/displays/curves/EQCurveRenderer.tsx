@@ -158,6 +158,7 @@ export function EQCurveRenderer({ config }: EQCurveRendererProps) {
     // Draw handles at each band position
     for (let i = 0; i < bands.length; i++) {
       const band = bands[i]
+      if (!band) continue
       const handleX = frequencyToX(band.frequency, width, minFreq, maxFreq)
       const handleY = dbToY(band.gain, height, minDb, maxDb)
 
@@ -205,6 +206,7 @@ export function EQCurveRenderer({ config }: EQCurveRendererProps) {
     let foundHover: number | null = null
     for (let i = 0; i < bands.length; i++) {
       const band = bands[i]
+      if (!band) continue
       const handleX = frequencyToX(band.frequency, width, minFreq, maxFreq)
       const handleY = dbToY(band.gain, height, minDb, maxDb)
 

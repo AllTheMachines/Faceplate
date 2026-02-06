@@ -88,7 +88,7 @@ export function EnvelopeDisplayRenderer({ config }: EnvelopeDisplayRendererProps
     let foundHover: number | null = null
     for (let i = 0; i < handles.length; i++) {
       const handle = handles[i]
-      if (isPointInHandle(mouseX, mouseY, handle.x, handle.y, hoveredHandle === i)) {
+      if (handle && isPointInHandle(mouseX, mouseY, handle.x, handle.y, hoveredHandle === i)) {
         foundHover = i
         break
       }

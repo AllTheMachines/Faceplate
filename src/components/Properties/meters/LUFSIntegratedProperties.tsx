@@ -1,4 +1,3 @@
-import React from 'react'
 import { SharedMeterProperties } from './SharedMeterProperties'
 import type { LUFSIntegratedMonoElementConfig, LUFSIntegratedStereoElementConfig } from '../../../types/elements/displays'
 

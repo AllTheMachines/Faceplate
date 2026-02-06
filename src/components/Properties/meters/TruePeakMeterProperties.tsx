@@ -1,4 +1,3 @@
-import React from 'react'
 import { SharedMeterProperties } from './SharedMeterProperties'
 import type { TruePeakMeterMonoElementConfig, TruePeakMeterStereoElementConfig } from '../../../types/elements/displays'
 

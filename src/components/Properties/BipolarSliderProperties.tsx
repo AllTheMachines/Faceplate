@@ -3,7 +3,6 @@ import { NumberInput, ColorInput, PropertySection } from './'
 import { LabelDisplaySection, ValueDisplaySection, ElementStyleSection } from './shared'
 import { SELECT_CLASSNAME } from './constants'
 import { useStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 import { LinearLayers } from '../../types/elementStyle'
 
 interface BipolarSliderPropertiesProps {
@@ -12,7 +11,6 @@ interface BipolarSliderPropertiesProps {
 }
 
 export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderPropertiesProps) {
-  const { isPro } = useLicense()
   const getElementStyle = useStore((state) => state.getElementStyle)
 
   return (
@@ -22,17 +20,15 @@ export function BipolarSliderProperties({ element, onUpdate }: BipolarSliderProp
         <ElementStyleSection
           category="linear"
           currentStyleId={element.styleId}
-          
           onStyleChange={(styleId) => onUpdate({
             styleId,
             colorOverrides: styleId ? element.colorOverrides : undefined
           })}
-          isPro={isPro}
         />
       </PropertySection>
 
       {/* Color Overrides - only when SVG style selected */}
-      {isPro && element.styleId && (() => {
+      {element.styleId && (() => {
         const style = getElementStyle(element.styleId)
         if (!style || style.category !== 'linear') return null
 

@@ -82,7 +82,7 @@ export function PatchBayRenderer({ config }: PatchBayRendererProps) {
             id: crypto.randomUUID(),
             fromPointId: from.id,
             toPointId: to.id,
-            color: cableColors[cables.length % cableColors.length],
+            color: cableColors[cables.length % cableColors.length] ?? '#FF0000',
           }
           updateElement(config.id, { cables: [...cables, newCable] })
         }

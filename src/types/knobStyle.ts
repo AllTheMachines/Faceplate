@@ -12,12 +12,9 @@ export interface KnobStyleLayers {
 }
 
 // Per-instance color overrides (sparse - only store explicit overrides)
+// Using index signature to support any layer role from any category
 export interface ColorOverrides {
-  indicator?: string
-  track?: string
-  arc?: string
-  glow?: string
-  shadow?: string
+  [layerRole: string]: string | undefined
 }
 
 // Main KnobStyle interface

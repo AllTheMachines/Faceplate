@@ -18,8 +18,8 @@ export function DrumPadRenderer({ config }: DrumPadRendererProps) {
     fontFamily,
     fontWeight,
     showVelocity,
-    width,
-    height,
+    width: _width, // Available for future layout calculations
+    height: _height, // Available for future layout calculations
   } = config
 
   // Calculate color based on pressed state and velocity

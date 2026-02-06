@@ -5,14 +5,10 @@ import { Palette } from '../Palette'
 import { AssetLibraryPanel } from '../AssetLibrary'
 import { LayersPanel } from '../Layers'
 import { FontSettings } from '../Settings/FontSettings'
-import { LicenseSettings } from '../Settings/LicenseSettings'
 import { useStore as useAppStore } from '../../store'
-import { useLicense } from '../../hooks/useLicense'
 
 export function LeftPanel() {
-  const { isPro } = useLicense()
   const [fontSettingsOpen, setFontSettingsOpen] = useState(false)
-  const [licenseSettingsOpen, setLicenseSettingsOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'elements' | 'assets' | 'layers'>('elements')
   const [, forceUpdate] = useState(0)
 
@@ -101,18 +97,16 @@ export function LeftPanel() {
         >
           Elements
         </button>
-        {isPro && (
-          <button
-            onClick={() => setActiveTab('assets')}
-            className={`flex-1 px-4 py-2 text-sm ${
-              activeTab === 'assets'
-                ? 'text-blue-400 border-b-2 border-blue-400'
-                : 'text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            Assets
-          </button>
-        )}
+        <button
+          onClick={() => setActiveTab('assets')}
+          className={`flex-1 px-4 py-2 text-sm ${
+            activeTab === 'assets'
+              ? 'text-blue-400 border-b-2 border-blue-400'
+              : 'text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          Assets
+        </button>
         <button
           onClick={() => setActiveTab('layers')}
           className={`flex-1 px-4 py-2 text-sm ${
@@ -128,7 +122,7 @@ export function LeftPanel() {
       {/* Conditional render based on active tab */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === 'elements' && <Palette />}
-        {activeTab === 'assets' && isPro && <AssetLibraryPanel />}
+        {activeTab === 'assets' && <AssetLibraryPanel />}
         {activeTab === 'layers' && <LayersPanel />}
       </div>
 

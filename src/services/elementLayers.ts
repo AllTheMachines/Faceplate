@@ -129,7 +129,7 @@ export function detectElementLayers(svgContent: string, category: ElementCategor
 
       // Match if identifier contains the role key
       // Examples: 'slider-thumb' matches 'thumb', 'Indicator' matches 'indicator'
-      if (identifierLower.includes(role.toLowerCase())) {
+      if (identifierLower.includes(role.toLowerCase()) && detected[role]) {
         detected[role].push(identifier)
       }
     })

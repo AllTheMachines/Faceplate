@@ -34,9 +34,8 @@ export class FontManager {
       // Use native File System Access API to get directory handle
       // @ts-ignore - showDirectoryPicker may not be in all type definitions
       const handle = await window.showDirectoryPicker({
-        id: 'vst-ui-fonts',
         mode: 'read',
-      })
+      } as any)
 
       // Store handle for persistence
       await storeDirectoryHandle(handle)

@@ -10,14 +10,16 @@ export function BreadcrumbRenderer({ config }: BreadcrumbRendererProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   // Determine visible items based on maxVisibleItems
-  let visibleItems: (BreadcrumbItem | { id: 'ellipsis'; label: '...' })[] = config.items
+  let visibleItems: Array<BreadcrumbItem | { id: 'ellipsis'; label: '...' }> = [...config.items]
 
   // Only collapse if maxVisibleItems is set AND not expanded
   if (!isExpanded && config.maxVisibleItems > 0 && config.items.length > config.maxVisibleItems) {
     // Show first item, ellipsis, and last (maxVisibleItems - 2) items
     const firstItem = config.items[0]
     const lastItems = config.items.slice(-(config.maxVisibleItems - 2))
-    visibleItems = [firstItem, { id: 'ellipsis', label: '...' }, ...lastItems]
+    if (firstItem) {
+      visibleItems = [firstItem, { id: 'ellipsis', label: '...' }, ...lastItems]
+    }
   }
 
   const lastIndex = visibleItems.length - 1

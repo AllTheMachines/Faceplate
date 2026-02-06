@@ -15,7 +15,7 @@ interface LicenseSettingsProps {
 }
 
 export function LicenseSettings({ isOpen, onClose }: LicenseSettingsProps) {
-  const { isPro, license, isValidating, isExpired, setLicense, clearLicense } = useLicense()
+  const { isPro, license, isValidating: _isValidating, isExpired, setLicense, clearLicense } = useLicense()
   const [licenseKey, setLicenseKey] = useState('')
   const [validating, setValidating] = useState(false)
   const [error, setError] = useState<string | null>(null)

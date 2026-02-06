@@ -337,7 +337,14 @@ export function sanitizeSVG(svgContent: string): string {
   const contentWithoutXmlDecl = svgContent.replace(/<\?xml[^?]*\?>\s*/gi, '');
 
   // DOMPurify.sanitize returns a string by default (when RETURN_DOM* options are false)
-  const sanitized = DOMPurify.sanitize(contentWithoutXmlDecl, SANITIZE_CONFIG);
+  // Cast config arrays to mutable types as required by DOMPurify
+  const sanitized = DOMPurify.sanitize(contentWithoutXmlDecl, {
+    ...SANITIZE_CONFIG,
+    ALLOWED_TAGS: [...SANITIZE_CONFIG.ALLOWED_TAGS],
+    ALLOWED_ATTR: [...SANITIZE_CONFIG.ALLOWED_ATTR],
+    FORBID_TAGS: [...SANITIZE_CONFIG.FORBID_TAGS],
+    FORBID_ATTR: [...SANITIZE_CONFIG.FORBID_ATTR],
+  });
 
   // Ensure we always return a string
   return typeof sanitized === 'string' ? sanitized : '';

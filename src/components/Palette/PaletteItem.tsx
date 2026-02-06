@@ -327,8 +327,7 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           ...baseOverrides,
           width: 60,
           height: 40,
-          sliderCount: 4,
-          sliderWidth: 10,
+          bandCount: 4,
           ...variant,
         })
       case 'bipolarslider':
@@ -437,7 +436,11 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           ...baseOverrides,
           width: 60,
           height: 24,
-          segments: ['A', 'B', 'C'],
+          segments: [
+            { displayMode: 'text', text: 'A' },
+            { displayMode: 'text', text: 'B' },
+            { displayMode: 'text', text: 'C' },
+          ],
           ...variant,
         })
       case 'label':
@@ -852,7 +855,7 @@ export function PaletteItem({ id, elementType, name, variant }: PaletteItemProps
           ...baseOverrides,
           width: 60,
           height: 20,
-          items: [{ label: 'A' }, { label: 'B' }],
+          items: [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }],
           fontSize: 8,
           ...variant,
         })

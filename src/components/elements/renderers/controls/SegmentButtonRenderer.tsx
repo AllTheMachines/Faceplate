@@ -251,6 +251,8 @@ function StyledSegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
           ? `inset(0 ${100 - ((selectedIndex + 1) / segmentCount) * 100}% 0 ${(selectedIndex / segmentCount) * 100}%)`
           : `inset(${(selectedIndex / segmentCount) * 100}% 0 ${100 - ((selectedIndex + 1) / segmentCount) * 100}% 0)`
 
+        const highlightContent = layers.highlight!
+
         return (
           <div
             key={selectedIndex}
@@ -260,7 +262,7 @@ function StyledSegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
               transition: 'none', // Instant selection change
             }}
           >
-            <SafeSVG content={layers.highlight} style={{ width: '100%', height: '100%' }} />
+            <SafeSVG content={highlightContent} style={{ width: '100%', height: '100%' }} />
           </div>
         )
       })}
@@ -303,8 +305,8 @@ function StyledSegmentButtonRenderer({ config }: SegmentButtonRendererProps) {
  */
 function renderSegmentContentStyled(
   segment: SegmentConfig,
-  isSelected: boolean,
-  config: SegmentButtonElementConfig
+  _isSelected: boolean,
+  _config: SegmentButtonElementConfig
 ) {
   switch (segment.displayMode) {
     case 'text':

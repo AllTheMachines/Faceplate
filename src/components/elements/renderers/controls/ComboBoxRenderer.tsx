@@ -73,7 +73,7 @@ export function ComboBoxRenderer({ config }: ComboBoxRendererProps) {
           break
         case 'Enter':
           event.preventDefault()
-          if (filteredOptions.length > 0) {
+          if (filteredOptions.length > 0 && filteredOptions[highlightedIndex]) {
             selectOption(filteredOptions[highlightedIndex])
           }
           break

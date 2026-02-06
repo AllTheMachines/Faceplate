@@ -1,4 +1,3 @@
-import React from 'react'
 import type { LUFSMomentaryMonoElementConfig, LUFSMomentaryStereoElementConfig } from '../../../../../types/elements/displays'
 import { SegmentedMeter } from './SegmentedMeter'
 import { MeterScale } from './MeterScale'

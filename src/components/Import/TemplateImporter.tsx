@@ -42,9 +42,13 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
   const addElementToWindow = useStore((state) => state.addElementToWindow)
   const snapToGrid = useStore((state) => state.snapToGrid)
   const gridSize = useStore((state) => state.gridSize)
+  const showGrid = useStore((state) => state.showGrid)
+  const gridColor = useStore((state) => state.gridColor)
   const selectedIds = useStore((state) => state.selectedIds)
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
+  const elementStyles = useStore((state) => state.elementStyles)
+  const layers = useStore((state) => state.layers)
   const setLastModified = useStore((state) => state.setLastModified)
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -151,9 +155,13 @@ export function TemplateImporter({ isOpen, onClose }: TemplateImporterProps) {
         windows,
         snapToGrid,
         gridSize,
+        showGrid,
+        gridColor,
         selectedIds,
         assets,
         knobStyles,
+        elementStyles,
+        layers,
       })
 
       await saveProjectFile(json)
