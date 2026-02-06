@@ -51,7 +51,7 @@ To use your own fonts in Faceplate, point the application to a folder containing
 4. Faceplate scans the folder and loads the fonts
 5. A status message confirms how many fonts were loaded
 
-![Font settings showing the Select Fonts Folder button and scan status](../images/fonts-folder-selection.png)
+![Font settings showing the Select Fonts Folder button and scan status](http://all-the-machines.com/github/faceplate/manual/fonts-folder-selection.png)
 
 After scanning, custom fonts appear in font dropdowns throughout the application alongside the built-in fonts. The dropdown shows each font rendered in its own typeface so you can preview how it looks.
 

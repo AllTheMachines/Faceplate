@@ -9,7 +9,7 @@ This is the primary export workflow for using your Faceplate design in a JUCE pl
 1. Click the **Export** button in the toolbar (or use the Export panel in the left sidebar)
 2. The Export modal opens showing your project summary and options
 
-![Export modal showing export mode, options, and action buttons](../images/export-modal.png)
+![Export modal showing export mode, options, and action buttons](http://all-the-machines.com/github/faceplate/manual/export-modal.png)
 
 ### Export Mode
 

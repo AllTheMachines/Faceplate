@@ -2,7 +2,7 @@
 
 The Properties panel on the right side of the interface shows the settings for the currently selected element. Select any element on the canvas to view and edit its properties here.
 
-![Properties panel showing settings for a selected knob element](../images/properties-panel-overview.png)
+![Properties panel showing settings for a selected knob element](http://all-the-machines.com/github/faceplate/manual/properties-panel-overview.png)
 
 ## Common Properties
 
@@ -56,7 +56,7 @@ params.push_back(std::make_unique<juce::AudioParameterFloat>(
 
 The Parameter ID is a freeform text field -- it must match the parameter name defined in your JUCE C++ code exactly. Any element that the user interacts with (knobs, sliders, buttons, switches) can have a Parameter ID. Display-only elements like meters and labels typically do not need one.
 
-![Parameter ID field in the Identity section of the properties panel](../images/properties-parameter-id-field.png)
+![Parameter ID field in the Identity section of the properties panel](http://all-the-machines.com/github/faceplate/manual/properties-parameter-id-field.png)
 
 ## Element-Specific Properties
 
@@ -200,7 +200,7 @@ Each section in the Properties panel has a **(?)** button in its header. Click t
 
 You can also press **F1** while an element is selected to open contextual help for that element type. The help panel includes **Related Topics** links at the bottom for navigating to related documentation.
 
-![Help panel open showing property documentation and Related Topics links](../images/properties-help-panel-open.png)
+![Help panel open showing property documentation and Related Topics links](http://all-the-machines.com/github/faceplate/manual/properties-help-panel-open.png)
 
 ---
 

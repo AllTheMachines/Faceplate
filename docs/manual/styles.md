@@ -25,7 +25,7 @@ Each category has its own set of layer roles that map to specific parts of the c
 
 To apply a style to an element, select the element on the canvas (e.g., a knob, slider, button, or meter) and use the **Style** dropdown in the Properties panel.
 
-![Style dropdown in the Properties panel showing available styles for a knob](../images/styles-dropdown-properties.png)
+![Style dropdown in the Properties panel showing available styles for a knob](http://all-the-machines.com/github/faceplate/manual/10-style-dropdown.png)
 
 The dropdown shows all available styles for that element's category. Select a style to apply it -- the element updates immediately on the canvas. Select **No style** to revert to the default appearance.
 
@@ -41,7 +41,7 @@ Color overrides are per-element, not per-style. If you apply the same style to m
 
 Access the Manage Styles dialog by clicking **Manage styles...** below the style dropdown in the Properties panel. The dialog shows all styles for the current element category (e.g., all rotary styles when editing a knob).
 
-![Manage Styles dialog showing imported styles with rename and delete options](../images/styles-manage-dialog.png)
+![Manage Styles dialog showing imported styles with rename and delete options](http://all-the-machines.com/github/faceplate/manual/06-manage-styles-dialog.png)
 
 From here you can:
 

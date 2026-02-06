@@ -29,13 +29,11 @@ Before you can run Faceplate, you need to install Node.js.
 
 After running `npm run dev`, your browser should automatically open to http://localhost:5173 showing Faceplate with a blank canvas ready for your first design.
 
-![Faceplate running in the browser with a blank canvas](../images/getting-started-fresh-launch.png)
+![Faceplate running in the browser with a blank canvas](http://all-the-machines.com/github/faceplate/manual/getting-started-fresh-launch.png)
 
 ## Interface Overview
 
 Faceplate uses a three-panel layout designed for efficient UI design workflows. The panels are always visible and arranged to keep your tools, canvas, and properties accessible at all times.
-
-![Three-panel layout showing left panel, canvas, and properties panel](../images/interface-overview.png)
 
 ### Left Panel
 
@@ -97,7 +95,7 @@ You will see element categories organized by function:
 - **Value Displays** -- Labels, value displays, LED indicators
 - And more...
 
-![Element palette showing categories of available elements](../images/getting-started-palette.png)
+![Element palette showing categories of available elements](http://all-the-machines.com/github/faceplate/manual/getting-started-palette.png)
 
 ### Step 2: Add a Knob to the Canvas
 
@@ -109,7 +107,7 @@ Find **Knob** under the **Controls** category (it should be near the top of the 
 
 A knob element appears on the canvas at the position where you released the mouse. The knob uses default styling (dark background, light pointer, value label below).
 
-![Knob element placed on the canvas](../images/getting-started-knob-placed.png)
+![Knob element placed on the canvas](http://all-the-machines.com/github/faceplate/manual/getting-started-knob-placed.png)
 
 ### Step 3: Select and Inspect the Element
 
@@ -119,8 +117,6 @@ When selected:
 - Blue resize handles appear at the corners and edges
 - The properties panel on the right updates to show the knob's settings
 - You can drag the knob to move it, or drag the resize handles to change its size
-
-![Selected knob with properties panel showing knob settings](../images/getting-started-knob-selected.png)
 
 ### Step 4: Configure the Element
 
@@ -141,7 +137,7 @@ The `parameterId` is how JUCE will connect this knob to your audio processing co
 - Update **label** to change the text displayed below the knob (e.g., "Gain")
 - Adjust colors in the **Style** section (pointer color, background color, border)
 
-![Properties panel with parameterId set to gain](../images/getting-started-parameter-binding.png)
+![Properties panel with parameterId set to gain](http://all-the-machines.com/github/faceplate/manual/getting-started-parameter-binding.png)
 
 ### Step 5: Preview Your Design
 
@@ -152,8 +148,6 @@ Now that you've configured your knob, preview how it will look and behave in a p
 3. A new browser tab opens showing your UI rendered as it would appear in a JUCE WebView2 plugin
 
 In the preview, the knob is fully interactive -- you can click and drag to rotate it, and the value updates in real-time. This is exactly how it will behave when integrated into your JUCE plugin.
-
-![Browser preview showing the designed UI](../images/getting-started-preview.png)
 
 ### Tips for Efficient Design
 

@@ -4,7 +4,7 @@ Most plugin UIs consist of a single main window, but complex instruments or effe
 
 Faceplate lets you design multiple windows in a single project. Each window has its own canvas with its own elements, dimensions, and background settings. You can configure button elements to navigate between windows, creating a multi-page plugin UI experience for your users.
 
-![Window tabs showing multiple windows at the bottom of the interface](../images/windows-tabs-bar.png)
+![Window tabs showing multiple windows at the bottom of the interface](http://all-the-machines.com/github/faceplate/manual/windows-tabs-bar.png)
 
 The window tabs appear at the bottom of the interface. Click any tab to switch to that window and view its canvas. Each window is independent -- selecting, copying, or modifying elements on one window does not affect elements on other windows.
 
@@ -65,7 +65,7 @@ When no element is selected on the canvas, the **Properties** panel shows the cu
 
 These properties apply to the current window only. In multi-window projects, each window can have its own dimensions and background configuration.
 
-![Window properties in the Properties panel when no element is selected](../images/windows-properties-panel.png)
+![Window properties in the Properties panel when no element is selected](http://all-the-machines.com/github/faceplate/manual/windows-properties-panel.png)
 
 **Window dimensions:** The width and height values set here determine the size of the exported JUCE WebView2 window in your plugin. These dimensions are independent of the canvas zoom level in Faceplate. When your plugin loads in a DAW, each window will open at the size you specified. Common plugin window sizes range from 400x300 (small utility plugin) to 1200x800 (complex synthesizer), though you can use any dimensions your plugin requires.
 

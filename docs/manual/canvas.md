@@ -14,7 +14,7 @@ Add elements to your design by dragging them from the **Element Palette** onto t
 
 If snap grid is enabled (see [Canvas Settings](#snap-grid) below), the element snaps to the nearest grid point when placed.
 
-![Dragging an element from the palette onto the canvas](../images/canvas-drag-drop.png)
+![Dragging an element from the palette onto the canvas](http://all-the-machines.com/github/faceplate/manual/canvas-drag-drop.png)
 
 ## Selecting Elements
 
@@ -45,7 +45,7 @@ The marquee activates after dragging at least 5 pixels to prevent accidental sel
 
 Press **Escape** to deselect all elements.
 
-![Multiple elements selected with resize handles visible](../images/canvas-selection.png)
+![Multiple elements selected with resize handles visible](http://all-the-machines.com/github/faceplate/manual/canvas-selection.png)
 
 ## Positioning Elements
 
@@ -79,8 +79,6 @@ Control which elements appear in front of or behind other elements:
 - **Ctrl+Shift+[** (or **Cmd+Shift+[** on Mac) -- Send to Back
 - **Ctrl+]** (or **Cmd+]** on Mac) -- Bring Forward one level
 - **Ctrl+[** (or **Cmd+[** on Mac) -- Send Backward one level
-
-![Repositioning elements with drag and resize handles](../images/canvas-positioning.png)
 
 ## Editing & History
 
@@ -143,7 +141,7 @@ The snap grid helps you align elements precisely by snapping their positions to 
 - The default grid size is `10` pixels -- you can adjust this in the canvas settings
 - You can also change the grid color (default is white)
 
-![Canvas with snap grid enabled showing grid lines](../images/canvas-snap-grid.png)
+![Canvas with snap grid enabled showing grid lines](http://all-the-machines.com/github/faceplate/manual/canvas-snap-grid.png)
 
 ### Background Configuration
 
@@ -156,16 +154,6 @@ Configure the canvas background to match your plugin's design.
 3. Select **Color** as the background type
 4. Use the color picker to choose your background color
 
-**Gradient:**
-
-1. Select **Gradient** as the background type
-2. Choose the start and end colors
-3. Adjust the angle to control the gradient direction
-
-Background settings apply to the current window. In multi-window projects, each window can have its own background configuration.
-
-![Background configuration options in the properties panel](../images/canvas-background-options.png)
-
 ## Container Editing
 
 Containers (Panel, Frame, Group Box, Collapsible) can hold child elements inside them. When you need to add or arrange elements within a container, use the container editing mode.
@@ -177,7 +165,7 @@ Containers (Panel, Frame, Group Box, Collapsible) can hold child elements inside
 3. The canvas switches to an isolated view showing only the container's children
 4. The breadcrumb bar appears at the top showing your navigation path
 
-![Container edit mode with breadcrumb navigation](../images/canvas-container-editing.png)
+![Container edit mode with breadcrumb navigation](http://all-the-machines.com/github/faceplate/manual/canvas-container-editing.png)
 
 ### Breadcrumb Navigation
 
@@ -215,7 +203,7 @@ Navigate around the canvas, especially useful for large or complex layouts.
 - **Zoom limits** -- 10% (0.1x) minimum to 1000% (10x) maximum
 - **Zoom indicator** -- Shown in the bottom-right corner of the canvas; click it to type a specific zoom level, double-click to reset to 100%
 
-![Zoom indicator in the bottom-right corner of the canvas](../images/canvas-zoom-controls.png)
+![Zoom indicator in the bottom-right corner of the canvas](http://all-the-machines.com/github/faceplate/manual/canvas-zoom-controls.png)
 
 ## Keyboard Shortcuts
 

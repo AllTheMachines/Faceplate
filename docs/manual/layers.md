@@ -4,7 +4,7 @@ Layers let you organize your design elements into groups. Each layer can be inde
 
 The **Layers** tab is in the left panel. Every project starts with a **Default** layer that cannot be renamed or deleted. You can create additional layers to organize your design.
 
-![Layers panel showing multiple layers with visibility and lock icons](../images/layers-panel-overview.png)
+![Layers panel showing multiple layers with visibility and lock icons](http://all-the-machines.com/github/faceplate/manual/layers-panel-overview.png)
 
 ### Why Use Layers?
 
@@ -32,7 +32,7 @@ Add new layers to organize your design elements into logical groups.
 
 New layers appear at the top of the layer list, above existing layers. This means newly created layers render on top of existing layers by default.
 
-![Creating a new layer with name and color selection](../images/layers-create-layer.png)
+![Creating a new layer with name and color selection](http://all-the-machines.com/github/faceplate/manual/layers-create-layer.png)
 
 **Available layer colors:**
 
@@ -54,7 +54,7 @@ Change a layer's name to better describe its contents.
 
 Note: The **Default** layer cannot be renamed.
 
-![Renaming a layer by double-clicking the layer name](../images/layers-rename-layer.png)
+![Renaming a layer by double-clicking the layer name](http://all-the-machines.com/github/faceplate/manual/layers-rename-layer.png)
 
 When you double-click a layer name, the text field automatically selects all text, making it easy to type a completely new name without having to clear the existing text first.
 
@@ -72,7 +72,7 @@ Remove layers you no longer need.
 
 Note: The **Default** layer cannot be deleted.
 
-![Delete layer confirmation dialog showing element count](../images/layers-delete-confirmation.png)
+![Delete layer confirmation dialog showing element count](http://all-the-machines.com/github/faceplate/manual/layers-delete-confirmation.png)
 
 The confirmation dialog displays:
 
@@ -96,8 +96,6 @@ Control whether a layer's elements are shown on the canvas and in exported outpu
 
 Hidden layers and their elements are not included in exported output. This is useful for hiding guidelines, reference images, or work-in-progress elements without deleting them.
 
-![Layer visibility toggle showing eye icon states](../images/layers-visibility-toggle.png)
-
 When a layer is hidden:
 
 - The eye icon changes to a closed eye with a slash
@@ -118,8 +116,6 @@ Lock layers to prevent accidental changes to their elements.
 4. Click the lock icon again to toggle back to unlocked
 
 Locking a layer prevents interaction on the canvas, but you can still view an element's properties if you select it through other means. This is useful for protecting background elements from accidental changes while working on foreground elements.
-
-![Layer lock toggle showing locked and unlocked states](../images/layers-lock-toggle.png)
 
 **What happens when a layer is locked:**
 
@@ -149,8 +145,6 @@ Elements on the topmost layer always appear in front of elements on lower layers
 
 Note: The **Default** layer always stays at the bottom of the list and cannot be reordered.
 
-![Reordering layers by dragging the drag handle](../images/layers-reorder.png)
-
 **How layer z-order works:**
 
 Think of layers as stacked sheets of paper. The topmost sheet (highest in the layers panel) covers sheets below it. When you drag a layer higher in the panel, it moves forward and renders on top of layers below it. When you drag a layer lower in the panel, it moves backward and renders behind layers above it.
@@ -178,8 +172,6 @@ To move an element from one layer to another:
 5. The element is moved to the selected layer immediately
 
 This works for single elements. To move multiple elements, select them all first (see [Canvas](canvas.md) for selection methods), then right-click any selected element to access the **Move to Layer** option. All selected elements will be moved to the chosen layer together.
-
-![Move to Layer context menu with layer submenu](../images/layers-move-to-layer.png)
 
 **Layer submenu details:**
 

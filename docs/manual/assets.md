@@ -2,8 +2,6 @@
 
 The Asset Library stores your imported SVG graphics for reuse across your designs. Access it from the **Assets** tab in the left panel.
 
-![Asset library tab in the left panel showing imported SVG graphics](../images/assets-library-sidebar.png)
-
 ## Importing SVGs
 
 Import SVG graphics to use as logos, icons, decorations, or background elements in your plugin UI.
@@ -18,7 +16,7 @@ Import SVG graphics to use as logos, icons, decorations, or background elements 
 
 Categories are optional tags that help you organize your assets as your library grows. You can assign multiple categories to a single asset. For example, a company logo SVG might be tagged as both **logo** and **decoration** if you use it in multiple contexts.
 
-![SVG import dialog showing preview, name field, and category selection](../images/assets-import-dialog.png)
+![SVG import dialog showing preview, name field, and category selection](http://all-the-machines.com/github/faceplate/manual/assets-import-dialog.png)
 
 Faceplate automatically sanitizes imported SVGs to remove potentially unsafe content like embedded scripts, ensuring your exported JUCE WebView2 bundle is secure.
 

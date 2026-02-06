@@ -2,7 +2,7 @@
 
 Complete guide to designing audio plugin UIs with Faceplate. This manual covers everything from installation to exporting production-ready JUCE WebView2 bundles.
 
-> **Note on Screenshots:** Throughout this manual, screenshot placeholders use the format `![description](../images/filename.png)` with descriptive filenames indicating what to capture. Screenshots will be added during the documentation finalization phase.
+> **Note on Screenshots:** Throughout this manual, screenshot placeholders use the format `![description](http://all-the-machines.com/github/faceplate/manual/filename.png)` with descriptive filenames indicating what to capture. Screenshots will be added during the documentation finalization phase.
 
 ## Table of Contents
 

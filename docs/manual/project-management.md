@@ -26,7 +26,7 @@ Faceplate protects against accidental work loss with three indicators:
 - **Last saved timestamp:** The left panel shows "Last saved: [time]" with a relative time indicator (e.g., "2 minutes ago")
 - **Browser warning:** If you attempt to close the browser tab with unsaved changes, the browser displays a confirmation dialog
 
-![Project save panel showing unsaved changes asterisk and last saved timestamp](../images/project-save-load.png)
+![Project save panel showing unsaved changes asterisk and last saved timestamp](http://all-the-machines.com/github/faceplate/manual/project-save-load.png)
 
 ## Template Import
 

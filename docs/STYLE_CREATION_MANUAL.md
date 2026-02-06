@@ -45,19 +45,19 @@ Start by exporting an element to get the correct layer structure.
 1. **Add an element to the canvas**
    - Drag a Knob (or Slider, Button, Meter) from the palette
 
-   ![Element selected on canvas](images/01-element-selected.png)
+   ![Element selected on canvas](http://all-the-machines.com/github/faceplate/manual/01-element-selected.png)
 
 2. **Open the Property Panel**
    - The panel shows on the right when an element is selected
    - Scroll down to the "SVG" section
 
-   ![Property Panel SVG section](images/02-svg-export-button.png)
+   ![Property Panel SVG section](http://all-the-machines.com/github/faceplate/manual/02-svg-export-button.png)
 
 3. **Click Export**
    - A file download starts (e.g., `knob-Faceplate-7475b627.svg`)
    - This SVG contains all the layers with proper naming
 
-   ![Downloaded SVG file](images/03-downloaded-file.png)
+   ![Downloaded SVG file](http://all-the-machines.com/github/faceplate/manual/03-downloaded-file.png)
 
 ---
 
@@ -124,7 +124,7 @@ Open the exported SVG in your vector editor. You'll see groups with specific IDs
 
 *Multi-color fills and scale are supported for import. Use them for professional meter designs with colored zones.
 
-![SVG in vector editor](images/04-vector-editor-layers.png)
+![SVG in vector editor](http://all-the-machines.com/github/faceplate/manual/04-vector-editor-layers.png)
 
 ---
 
@@ -187,25 +187,25 @@ This example shows a rotary (knob) style. For other categories, adapt the layer 
    - In the Property Panel, find the Style dropdown
    - Below it, click "Manage styles..."
 
-   ![Manage styles link](images/05-manage-styles-link.png)
+   ![Manage styles link](http://all-the-machines.com/github/faceplate/manual/05-manage-styles-link.png)
 
 3. **The Manage Styles dialog opens**
    - Shows existing styles for this category
    - Click **"+ Import New [Type] Style"**
 
-   ![Manage Styles dialog](images/06-manage-styles-dialog.png)
+   ![Manage Styles dialog](http://all-the-machines.com/github/faceplate/manual/06-manage-styles-dialog.png)
 
 4. **Drop or select your SVG file**
    - Drag your custom SVG onto the dropzone
    - Or click to browse
 
-   ![Import dropzone](images/07-import-dropzone.png)
+   ![Import dropzone](http://all-the-machines.com/github/faceplate/manual/07-import-dropzone.png)
 
 5. **Review auto-detected layers**
    - The system auto-detects layers by name
    - A toast shows how many layers were detected
 
-   ![Layer mapping](images/08-layer-mapping.png)
+   ![Layer mapping](http://all-the-machines.com/github/faceplate/manual/08-layer-mapping.png)
 
 ---
 
@@ -229,7 +229,7 @@ The layer mapping screen shows:
    - Hover over a row to highlight that layer in the preview
    - Helps verify correct mapping
 
-   ![Hover highlighting](images/09-hover-highlight.png)
+   ![Hover highlighting](http://all-the-machines.com/github/faceplate/manual/09-hover-highlight.png)
 
 4. **Click Next (for rotary/arc) or Save (for others)**
 
@@ -242,7 +242,7 @@ The layer mapping screen shows:
 3. **Select your new style**
 4. **Preview updates instantly**
 
-   ![Style dropdown](images/10-style-dropdown.png)
+   ![Style dropdown](http://all-the-machines.com/github/faceplate/manual/10-style-dropdown.png)
 
 ---
 
@@ -256,7 +256,7 @@ If layer detection was wrong, or you updated your SVG:
 4. **Adjust layer assignments**
 5. **Save**
 
-![Re-map button](images/11-remap-button.png)
+![Re-map button](http://all-the-machines.com/github/faceplate/manual/11-remap-button.png)
 
 ---
 
