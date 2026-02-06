@@ -90,10 +90,11 @@ setupKnobInteraction('knob-id', 'parameterId', 0.5);
 ---
 
 #### steppedknob
-Knob with discrete step positions.
+Knob with discrete step positions. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `stepCount` | number | 12 | Number of steps (12/24/36/48/64) |
 | `showStepIndicators` | boolean | true | Show tick marks at steps |
 | *(plus all knob properties)* | | | |
@@ -101,10 +102,11 @@ Knob with discrete step positions.
 ---
 
 #### centerdetentknob
-Knob that snaps to center position (pan/EQ style).
+Knob that snaps to center position (pan/EQ style). Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `snapThreshold` | number | 0.05 | Distance from center to snap (0-1) |
 | `showCenterMark` | boolean | true | Show center indicator |
 | *(plus all knob properties)* | | | |
@@ -112,10 +114,11 @@ Knob that snaps to center position (pan/EQ style).
 ---
 
 #### dotindicatorknob
-Knob with minimal dot indicator aesthetic.
+Knob with minimal dot indicator aesthetic. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `dotRadius` | number | 4 | Indicator dot radius |
 | *(plus knob properties, no fillColor)* | | | |
 
@@ -175,10 +178,11 @@ setupRangeSliderInteraction('range-slider-id', 'paramIdLow', 'paramIdHigh', 0.3,
 ---
 
 #### arcslider
-Circular slider moving along an arc path.
+Circular slider moving along an arc path. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `diameter` | number | 100 | Arc diameter |
 | `startAngle` | number | -135 | Start angle |
 | `endAngle` | number | 135 | End angle |
@@ -188,10 +192,11 @@ Circular slider moving along an arc path.
 ---
 
 #### bipolarslider
-Slider with center position (pan/balance).
+Slider with center position (pan/balance). Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `centerValue` | number | 0.5 | Center position value |
 | `centerLineColor` | string | "#666" | Center mark color |
 | *(plus slider properties)* | | | |
@@ -199,10 +204,11 @@ Slider with center position (pan/balance).
 ---
 
 #### crossfadeslider
-Slider with A/B labels for crossfading.
+Slider with A/B labels for crossfading. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `labelA` | string | "A" | Left/bottom label |
 | `labelB` | string | "B" | Right/top label |
 | `labelColor` | string | "#888" | Label text color |
@@ -211,10 +217,11 @@ Slider with A/B labels for crossfading.
 ---
 
 #### notchedslider
-Slider with detent/notch positions.
+Slider with detent/notch positions. Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `notchCount` | number | 5 | Number of notch positions |
 | `notchPositions` | number[] | [] | Custom notch positions (0-1) |
 | `showNotchLabels` | boolean | true | Show labels at notches |
@@ -223,10 +230,11 @@ Slider with detent/notch positions.
 ---
 
 #### multislider
-Multiple parallel sliders (equalizer-style).
+Multiple parallel sliders (equalizer-style). Supports custom SVG styles via Element Styles.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
+| `styleId` | string | - | Element Style ID for custom SVG appearance |
 | `bandCount` | number | 8 | Number of slider bands |
 | `bandValues` | number[] | [0.5...] | Value per band (0-1) |
 | `min` | number | -12 | Minimum value (dB) |

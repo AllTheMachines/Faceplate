@@ -33,7 +33,7 @@ Complete guide to designing audio plugin UIs with Faceplate. This manual covers 
 
 ### Reference
 
-- [Element Reference](../ELEMENT_REFERENCE.md) -- All 109 element types with properties
+- [Element Reference](../ELEMENT_REFERENCE.md) -- All 107 element types with properties
 - [Style Creation Manual](../STYLE_CREATION_MANUAL.md) -- SVG layer naming and import workflow
 - [JUCE Integration Guide](../JUCE_INTEGRATION.md) -- C++ WebView2 setup and parameter sync
 - [Export Format Reference](../EXPORT_FORMAT.md) -- Bundle structure details
