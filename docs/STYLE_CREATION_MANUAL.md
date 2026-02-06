@@ -15,10 +15,24 @@ The style system allows you to replace the default appearance of elements (knobs
 
 ---
 
+## Supported Categories
+
+The style system supports five element categories, each with its own layer structure:
+
+| Category | Elements | Key Layer |
+|----------|----------|-----------|
+| Rotary | Knob, Stepped Knob, Center Detent, Dot Indicator | `indicator` (rotating pointer) |
+| Linear | Slider, Range Slider, Bipolar, Crossfade, Notched, Multi-Slider | `thumb` (draggable handle) |
+| Arc | Arc Slider | `thumb` (handle on arc path) |
+| Button | Button, Icon Button, Toggle, Power, Rocker, Rotary Switch, Segment | `normal` (default state) |
+| Meter | Meter (and all professional meter variants) | `body` (meter housing) |
+
+---
+
 ## Prerequisites
 
-- Pro license (styles are a Pro feature)
 - Vector editor (Illustrator, Inkscape, Figma, Affinity Designer, etc.)
+- Note: Meter styles are available to all users. Knob/Slider/Button styles require Pro license.
 
 ---
 
@@ -126,17 +140,20 @@ Now create your own design while keeping the layer structure.
    - Or use the prefixed format: `knob-indicator`, `slider-thumb`, etc.
 
 2. **Maintain viewBox proportions**
-   - Square for knobs (e.g., `viewBox="0 0 100 100"`)
+   - Square for rotary elements (knobs): `viewBox="0 0 100 100"`
+   - Rectangular for linear elements (sliders): match element's aspect ratio
    - The element will scale to fit any size
 
 3. **Center rotating elements**
-   - For knobs, the `indicator` group rotates around the center
+   - For rotary elements (knobs), the `indicator` group rotates around the center
    - Design it pointing straight up (12 o'clock position)
 
 4. **Use groups for multi-part layers**
    - Wrap related shapes in a `<g id="layername">` group
 
-### Example SVG Structure
+### Example SVG Structure (Rotary/Knob)
+
+This example shows a rotary (knob) style. For other categories, adapt the layer IDs to match the roles listed in Part 2.
 
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
@@ -164,7 +181,7 @@ Now create your own design while keeping the layer structure.
 ### Steps
 
 1. **Select an element of the target type**
-   - Click on a Knob if importing a rotary style
+   - Click on an element of the matching category (e.g., a Knob for rotary styles, a Slider for linear styles)
 
 2. **Click "Manage styles..."**
    - In the Property Panel, find the Style dropdown
@@ -303,3 +320,12 @@ The system accepts both formats:
 | Meter | `body` |
 
 Everything else is optional but enhances the visual.
+
+---
+
+## See Also
+
+- [User Manual](manual/README.md) -- Complete user guide
+- [Element Styles Guide](manual/styles.md) -- Overview of the style system
+- [Element Reference](ELEMENT_REFERENCE.md) -- All element types with styleId property
+- [Faceplate Documentation](FACEPLATE_DOCUMENTATION.md) -- Complete technical specification
