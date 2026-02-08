@@ -14,11 +14,9 @@ A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI
 ![Faceplate Interface](http://all-the-machines.com/github/faceplate/manual/getting-started-fresh-launch.png)
 *The main Faceplate interface with canvas, element palette, and properties panel*
 
-![Element Palette](http://all-the-machines.com/github/faceplate/manual/getting-started-palette.png)
-*Drag elements from the palette onto the canvas*
-
-![Properties Panel](http://all-the-machines.com/github/faceplate/manual/properties-panel-overview.png)
-*Configure element properties and bind to JUCE parameters*
+| ![Element Palette](http://all-the-machines.com/github/faceplate/manual/getting-started-palette.png) | ![Properties Panel](http://all-the-machines.com/github/faceplate/manual/properties-panel-overview.png) |
+|:--:|:--:|
+| *Drag elements from the palette onto the canvas* | *Configure element properties and bind to JUCE parameters* |
 
 ## Download
 
