@@ -6,6 +6,20 @@ A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI
 
 > **🖥️ Platform Note**: The exported plugin UI code has only been tested with JUCE WebView2 on **Windows**. macOS (WKWebView) and Linux support may work but are untested. Faceplate itself (the design tool) runs in any browser on any platform.
 
+## Screenshots
+
+[![Faceplate Demo Video](https://img.youtube.com/vi/CvMnC0zIG1o/maxresdefault.jpg)](https://www.youtube.com/watch?v=CvMnC0zIG1o)
+*Watch the demo video*
+
+![Faceplate Interface](http://all-the-machines.com/github/faceplate/manual/getting-started-fresh-launch.png)
+*The main Faceplate interface with canvas, element palette, and properties panel*
+
+![Element Palette](http://all-the-machines.com/github/faceplate/manual/getting-started-palette.png)
+*Drag elements from the palette onto the canvas*
+
+![Properties Panel](http://all-the-machines.com/github/faceplate/manual/properties-panel-overview.png)
+*Configure element properties and bind to JUCE parameters*
+
 ## Download
 
 Get the latest stable version from the **[Releases Page](https://github.com/AllTheMachines/Faceplate/releases)**.
