@@ -1,4 +1,6 @@
-# Faceplate
+<p align="center">
+  <img src="./docs/images/FACEPLATE_small.png" alt="Faceplate">
+</p>
 
 A visual design tool for creating audio plugin user interfaces. Drag-and-drop UI components onto a canvas, configure properties, and export working code for JUCE WebView2 plugins.
 
