@@ -13,7 +13,7 @@ import {
 } from '../services/export'
 import type { ElementConfig } from '../types/elements'
 
-export function usePreviewShortcut() {
+export function usePreviewShortcut(enabled = true) {
   const allElements = useStore((state) => state.elements)
   const windows = useStore((state) => state.windows)
   const activeWindow = useStore((state) => state.getActiveWindow())
@@ -118,9 +118,10 @@ export function usePreviewShortcut() {
     {
       preventDefault: true,
       enableOnFormTags: true,
-      enableOnContentEditable: true
+      enableOnContentEditable: true,
+      enabled,
     },
-    [openPreview]
+    [openPreview, enabled]
   )
 
   return { openPreview }

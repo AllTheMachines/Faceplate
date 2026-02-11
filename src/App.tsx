@@ -19,6 +19,8 @@ import { useBeforeUnload } from './hooks/useBeforeUnload'
 import { useHelpShortcut } from './hooks/useHelpShortcut'
 import { usePreviewShortcut } from './hooks/usePreviewShortcut'
 import { useStore } from './store'
+import { isEmbedMode } from './lib/embedMode'
+import { loadBuiltInTemplate } from './services/templateLoader'
 import { snapValue } from './store/canvasSlice'
 import { getSVGNaturalSize } from './services/svg'
 import { isProElement } from './services/proElements'
@@ -161,8 +163,7 @@ function App() {
   // History panel visibility controlled by Ctrl+Shift+H
   const { isPanelVisible } = useHistoryPanel()
 
-  // Dirty state tracking for unsaved changes warning
-  // Subscribe to state that isDirty depends on, then compute
+  // Dirty state tracking for unsaved changes warning (skipped in embed mode)
   const savedStateSnapshot = useStore((state) => state.savedStateSnapshot)
   const elements = useStore((state) => state.elements)
   const windows = useStore((state) => state.windows)
@@ -171,8 +172,7 @@ function App() {
   const assets = useStore((state) => state.assets)
   const knobStyles = useStore((state) => state.knobStyles)
 
-  // Compute isDirty from subscribed state
-  const isDirty = (() => {
+  const isDirty = isEmbedMode ? false : (() => {
     if (savedStateSnapshot === null) {
       return elements.length > 0
     }
@@ -187,11 +187,15 @@ function App() {
     return currentSnapshot !== savedStateSnapshot
   })()
 
-  // Install beforeunload warning when project has unsaved changes
-  useBeforeUnload(isDirty)
+  // Install beforeunload warning when project has unsaved changes (skipped in embed mode)
+  useBeforeUnload(isEmbedMode ? false : isDirty)
 
-  // Update document title with asterisk when dirty
+  // Update document title
   useEffect(() => {
+    if (isEmbedMode) {
+      document.title = 'Faceplate - Try It'
+      return
+    }
     const baseTitle = 'Faceplate - VST3 UI Designer'
     document.title = isDirty ? `* ${baseTitle}` : baseTitle
   }, [isDirty])
@@ -199,8 +203,41 @@ function App() {
   // F1 help shortcut - opens contextual or general help
   useHelpShortcut()
 
-  // Ctrl+Shift+P preview shortcut - opens browser preview
-  usePreviewShortcut()
+  // Ctrl+Shift+P preview shortcut - opens browser preview (skipped in embed mode)
+  usePreviewShortcut(!isEmbedMode)
+
+  // Auto-load effect-starter template in embed mode
+  useEffect(() => {
+    if (!isEmbedMode) return
+
+    const loadTemplate = async () => {
+      try {
+        const template = await loadBuiltInTemplate('effect-starter')
+        const store = useStore.getState()
+
+        const windowId = crypto.randomUUID()
+        const templateWindow = {
+          id: windowId,
+          name: 'Main Window',
+          type: 'release' as const,
+          width: template.metadata.canvasWidth,
+          height: template.metadata.canvasHeight,
+          backgroundColor: template.metadata.backgroundColor,
+          backgroundType: 'color' as const,
+          elementIds: template.elements.map(el => el.id),
+          createdAt: Date.now(),
+        }
+
+        store.setWindows([templateWindow])
+        store.selectMultiple([])
+        store.setElements(template.elements)
+      } catch {
+        // Template load failed silently in embed mode
+      }
+    }
+
+    loadTemplate()
+  }, [])
 
   // Configure sensors with activation constraint to prevent accidental drags
   const sensors = useSensors(

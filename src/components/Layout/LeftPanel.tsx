@@ -6,6 +6,7 @@ import { AssetLibraryPanel } from '../AssetLibrary'
 import { LayersPanel } from '../Layers'
 import { FontSettings } from '../Settings/FontSettings'
 import { useStore as useAppStore } from '../../store'
+import { isEmbedMode } from '../../lib/embedMode'
 
 export function LeftPanel() {
   const [fontSettingsOpen, setFontSettingsOpen] = useState(false)
@@ -46,7 +47,7 @@ export function LeftPanel() {
       <div className="p-4 border-b border-gray-700">
         <img src="/FACEPLATE_LOGO_UI.png" alt="Faceplate" />
         <div className="flex flex-col gap-0.5">
-          <span className="text-xs text-gray-500">{lastSavedText}</span>
+          <span className="text-xs text-gray-500">{isEmbedMode ? 'Demo Mode' : lastSavedText}</span>
         </div>
       </div>
 
