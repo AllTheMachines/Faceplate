@@ -33,3 +33,23 @@ Before running `gh release create`:
 3. Check for console errors in the browser
 
 Never create multiple rapid-fire releases to fix issues - test locally first, then release once when it works.
+
+## Embed Deploy (GitHub Pages)
+
+**After every release**, update the GitHub Pages embed build:
+
+```bash
+npm run build:embed
+git checkout gh-pages
+# Remove old assets
+git rm -rf assets/ index.html FACEPLATE_LOGO_UI.png .nojekyll 2>/dev/null
+# Copy new build
+cp -r dist/* .
+touch .nojekyll
+git add index.html assets/ .nojekyll FACEPLATE_LOGO_UI.png
+git commit -m "deploy: update embed build"
+git push origin gh-pages
+git checkout main
+```
+
+This keeps the live embed at `https://allthemachines.github.io/Faceplate/` in sync with releases.
